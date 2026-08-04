@@ -396,4 +396,51 @@ html[data-theme=dark] .msg.user{color:#171310}
 .splash.hide{opacity:0;pointer-events:none}
 .splash b{font-family:'Space Grotesk';font-size:3rem;animation:pulse 1.4s infinite}
 
+/* ============ أيقونات SVG المضمّنة ============ */
+.ic{vertical-align:-.18em;flex-shrink:0}
+button .ic{pointer-events:none}
+
+/* ============ مبدّل النطاق (بياناتي/الفريق) ============ */
+.scope-switch{
+  display:flex;background:var(--bg-inset);border:1px solid var(--line);border-radius:99px;
+  padding:3px;margin-bottom:.7rem;
+}
+.scope-switch button{
+  flex:1;min-height:38px;border-radius:99px;font-size:.82rem;font-weight:700;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;gap:.35rem;
+  transition:background .2s,color .2s,box-shadow .2s;
+}
+.scope-switch button.on{background:var(--bg-elev);color:var(--accent);box-shadow:var(--sh-1)}
+.member-chip{
+  display:inline-block;font-size:.62rem;font-weight:700;border-radius:99px;padding:.2rem .55rem;
+  background:var(--accent-soft);color:var(--accent);max-width:6.5rem;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;
+}
+
+/* ============ معالج الجدولة داخل الدردشة ============ */
+.sched-card{overflow:hidden;align-self:stretch;animation:fadeUp .3s ease}
+.sched-head{
+  display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;
+  background:var(--accent-soft);border-bottom:1px solid var(--line);
+}
+.sched-head b{font-size:.88rem;display:inline-flex;align-items:center;gap:.4rem}
+.sched-row{display:flex;gap:.6rem;padding:.65rem 1rem;border-bottom:1px solid var(--line-soft);align-items:flex-start}
+.sched-row.off{opacity:.55}
+.sched-ic{flex-shrink:0;margin-top:.15rem}
+.sched-info{flex:1;min-width:0}
+.sched-info small{display:block;font-size:.66rem;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+.sched-info b{font-size:.83rem;display:block;margin-top:.1rem}
+.sched-cands{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.4rem}
+.sched-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:.7rem 1rem;background:var(--bg-soft);
+}
+
+/* حالات تحويم أوضح (قائمة فحص UI/UX Pro Max) */
+.chip:hover,.mini-chip:hover{border-color:var(--accent)}
+.nav-btn{transition:filter .15s,transform .15s}
+.nav-btn:hover{filter:brightness(1.06)}
+.qa-chip,.chip,.mini-chip,.btn-primary,.btn-dark,.btn-ghost{transition:background .18s,color .18s,border-color .18s,filter .18s,box-shadow .18s}
+.dash-table [data-vedit]:hover{text-decoration:underline}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

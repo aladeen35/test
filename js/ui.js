@@ -6,6 +6,37 @@
 const main=$("#main");
 let leafletMap=null, mapDayFilter="all", editMode=false;
 
+/* ============ مكتبة أيقونات SVG (بديل الإيموجي في عناصر التفاعل) ============ */
+const ICONS={
+  sparkles:'<path d="M12 3l1.7 4.6L18 9.2l-4.3 1.7L12 15.5l-1.7-4.6L6 9.2l4.3-1.6L12 3z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/>',
+  pencil:'<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>',
+  share:'<path d="M7 17L17 7"/><path d="M8 7h9v9"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  nav:'<path d="M3 11l19-9-9 19-2-8-8-2z"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+  refresh:'<path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+  send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 7-7z"/>',
+  sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+  alert:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  flask:'<path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.5a1 1 0 0 0 .9 1.5h12.8a1 1 0 0 0 .9-1.5L14.2 10.4a2 2 0 0 1-.2-.9V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  trend:'<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',
+  droplet:'<path d="M12 2.7l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+  leaf:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+};
+function ic(name, size=16){
+  return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||""}</svg>`;
+}
+
 const TAB_META={
   plan:     ["الخطة الأسبوعية","توليد وتتبع مسار زياراتك"],
   branches: ["إدارة الفروع","78+ فرعًا عبر المملكة"],
@@ -56,7 +87,7 @@ function ringSVG(pct, size=76, stroke=8, color="var(--ok)"){
 function renderPlan(){
   const plan=activePlan(), s=state.settings;
   let html=`<div class="page">
-    <button class="btn-primary" id="gen-btn">✨ توليد الخطة الأسبوعية</button>`;
+    <button class="btn-primary" id="gen-btn">${ic("sparkles",17)} توليد الخطة الأسبوعية</button>`;
   if(!s.homeLocation) html+=`<div class="hint">💡 حدّد موقع الانطلاق ومقر اجتماع الأحد من تبويب الإعدادات لنتائج أدق</div>`;
 
   if(state.plans.length>1){
@@ -85,10 +116,10 @@ function renderPlan(){
     </div>`;
 
     html+=`<div style="display:flex;align-items:center;justify-content:flex-end;margin:0 0 .8rem;gap:.4rem;flex-wrap:wrap">
-      <button class="btn-dark" id="edit-btn" style="${editMode?'background:var(--accent);color:var(--accent-ink)':''}">${editMode?"✓ إنهاء التعديل":"✏️ تعديل"}</button>
-      <button class="btn-dark" id="share-btn">↗ مشاركة</button>
-      <button class="btn-ghost" id="pdf-btn">📄 PDF</button>
-      <button class="btn-ghost" id="img-btn">🖼️ صورة</button>
+      <button class="btn-dark" id="edit-btn" style="${editMode?'background:var(--accent);color:var(--accent-ink)':''}">${editMode?`${ic("check",13)} إنهاء التعديل`:`${ic("pencil",13)} تعديل`}</button>
+      <button class="btn-dark" id="share-btn">${ic("share",13)} مشاركة</button>
+      <button class="btn-ghost" id="pdf-btn">${ic("file",13)} PDF</button>
+      <button class="btn-ghost" id="img-btn">${ic("image",13)} صورة</button>
     </div>`;
     if(editMode) html+=`<div class="edit-banner">✏️ <b>وضع التعديل:</b> اسحب ⠿ لإعادة ترتيب الزيارات داخل اليوم أو أفلِتها فوق يوم آخر، أو استخدم قائمة "نقل إلى". التوقيتات تُعاد حسابها تلقائيًا.</div>`;
 
@@ -116,12 +147,12 @@ function renderPlan(){
           </select>`;
         }else{
           html+=`<div style="display:flex;flex-direction:column;gap:.3rem;align-items:flex-end">`;
-          if(!v) html+=`<button class="nav-btn" style="background:var(--ok);color:#fff" data-arrive="${st.branchId}">✅ أنا وصلت</button>`;
+          if(!v) html+=`<button class="nav-btn" style="background:var(--ok);color:#fff" data-arrive="${st.branchId}">${ic("check",12)} أنا وصلت</button>`;
           else if(v.status==="open") html+=`<button class="nav-btn" style="background:var(--accent);color:var(--accent-ink)" data-endvisit="${v.id}">⏹ إنهاء الزيارة</button>`;
           else if(!v.dataComplete) html+=`<button class="nav-btn" style="background:var(--accent);color:var(--accent-ink)" data-endvisit="${v.id}">📝 أكمل البيانات</button>`;
           else html+=`<button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-endvisit="${v.id}">✏️ تعديل البيانات</button>`;
-          html+=`<button class="nav-btn" data-navlat="${st.lat}" data-navlng="${st.lng}">🧭 ملاحة</button>
-            <button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-sharename="${esc(st.nameAr)}" data-sharelat="${st.lat}" data-sharelng="${st.lng}">↗ الموقع</button>
+          html+=`<button class="nav-btn" data-navlat="${st.lat}" data-navlng="${st.lng}">${ic("nav",12)} ملاحة</button>
+            <button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-sharename="${esc(st.nameAr)}" data-sharelat="${st.lat}" data-sharelng="${st.lng}">${ic("share",12)} الموقع</button>
           </div>`;
         }
         html+=`</div>`;
@@ -138,11 +169,11 @@ function renderPlan(){
   const editBtn=$("#edit-btn");
   if(editBtn) editBtn.onclick=()=>{ editMode=!editMode; renderPlan(); };
   const shareBtn=$("#share-btn");
-  if(shareBtn) shareBtn.onclick=async()=>{ shareBtn.textContent="…"; shareBtn.textContent=await sharePlan(activePlan()); setTimeout(()=>shareBtn.textContent="↗ مشاركة",2500); };
+  if(shareBtn) shareBtn.onclick=async()=>{ shareBtn.textContent="…"; shareBtn.textContent=await sharePlan(activePlan()); setTimeout(()=>shareBtn.innerHTML=`${ic("share",13)} مشاركة`,2500); };
   const pdfBtn=$("#pdf-btn");
-  if(pdfBtn) pdfBtn.onclick=async()=>{ pdfBtn.textContent="…"; try{await exportPlanPDF(activePlan());}catch(e){toast("تعذّر التصدير","err");} pdfBtn.textContent="📄 PDF"; };
+  if(pdfBtn) pdfBtn.onclick=async()=>{ pdfBtn.textContent="…"; try{await exportPlanPDF(activePlan());}catch(e){toast("تعذّر التصدير","err");} pdfBtn.innerHTML=`${ic("file",13)} PDF`; };
   const imgBtn=$("#img-btn");
-  if(imgBtn) imgBtn.onclick=async()=>{ imgBtn.textContent="…"; try{await exportPlanImage(activePlan());}catch(e){toast("تعذّر التصدير","err");} imgBtn.textContent="🖼️ صورة"; };
+  if(imgBtn) imgBtn.onclick=async()=>{ imgBtn.textContent="…"; try{await exportPlanImage(activePlan());}catch(e){toast("تعذّر التصدير","err");} imgBtn.innerHTML=`${ic("image",13)} صورة`; };
   main.querySelectorAll("[data-sel]").forEach(b=>b.onclick=async()=>{state.activePlanId=b.dataset.sel; editMode=false; await persist(); scheduleReminders(); renderPlan();});
   main.querySelectorAll("[data-share]").forEach(b=>b.onclick=async()=>{const p=state.plans.find(x=>x.id===b.dataset.share); b.textContent="…"; b.textContent=await sharePlan(p); setTimeout(()=>b.textContent="مشاركة",2500);});
   main.querySelectorAll("[data-delplan]").forEach(b=>b.onclick=async()=>{
@@ -410,8 +441,8 @@ function renderBranches(){
 
   let html=`<div class="page">
     <div style="display:flex;gap:.5rem;margin-bottom:.8rem">
-      <button class="btn-primary" id="add-branch-btn" style="flex:1">➕ إضافة فرع يدويًا</button>
-      <button class="btn-dark" id="export-branches" style="flex-shrink:0">📊 تصدير Excel</button>
+      <button class="btn-primary" id="add-branch-btn" style="flex:1">${ic("plus",16)} إضافة فرع يدويًا</button>
+      <button class="btn-dark" id="export-branches" style="flex-shrink:0">${ic("download",13)} تصدير Excel</button>
     </div>
     <div class="dropzone" id="dz">
       <input type="file" id="xl-file" accept=".xlsx,.xls" style="display:none">
@@ -471,6 +502,8 @@ function renderBranches(){
 
 /* ---- إضافة فرع يدويًا ---- */
 let addCoords=null;
+/* يُستدعى بعد حفظ فرع جديد (مثلاً من معالج الجدولة) بدل إعادة رسم تبويب الفروع */
+let addBranchCallback=null;
 function openAddBranch(){
   addCoords=null;
   $("#add-body").innerHTML=`
@@ -515,7 +548,7 @@ function openAddBranch(){
   $("#add-modal").classList.add("open");
   bindAddBranch();
 }
-function closeAddBranch(){ $("#add-modal").classList.remove("open"); }
+function closeAddBranch(){ $("#add-modal").classList.remove("open"); addBranchCallback=null; }
 
 function parseMapsUrl(url){
   let m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
@@ -581,14 +614,18 @@ function bindAddBranch(){
     if(!name){ st.style.color="var(--danger)"; st.textContent="⚠️ أدخل اسم الفرع"; return; }
     syncManual();
     if(!addCoords){ st.style.color="var(--danger)"; st.textContent="⚠️ حدّد الموقع بإحدى الطرق الثلاث أعلاه"; return; }
+    const newId="br-m-"+Date.now().toString(36);
     state.branches.push({
-      id:"br-m-"+Date.now().toString(36),
+      id:newId,
       nameAr:name, nameEn:name,
       region:body.querySelector("#ab-region").value.trim()||"فروع مضافة",
       lat:addCoords.lat, lng:addCoords.lng, size, active:true
     });
-    await persist(); closeAddBranch(); renderBranches();
+    const cb=addBranchCallback; addBranchCallback=null;
+    await persist(); closeAddBranch();
     toast("أُضيف الفرع ✓","ok");
+    if(cb) cb(newId);
+    else if(state.tab==="branches") renderBranches();
   };
 }
 
@@ -687,6 +724,8 @@ function renderMap(){
 
 /* ==================== تبويب المساعد الذكي ==================== */
 let aiBusy=false, aiSetupOpen=false;
+/* معالج إنشاء الجدول من قائمة فروع في الدردشة */
+let schedWizard=null; // {items:[{token,status,chosenId,candidates}]}
 
 function renderAI(){
   const cfg=aiConfig();
@@ -695,14 +734,14 @@ function renderAI(){
 
   let html=`<div class="page">
     <div class="ai-hero">
-      <b>✦ مساعد ½M الذكي</b>
-      <p>يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك، ويكتب تقاريرك الأسبوعية، ويقترح أولويات الزيارات — مدعوم بنماذج Claude.</p>
+      <b>${ic("sparkles",18)} مساعد ½M الذكي</b>
+      <p>يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك. <b>جديد:</b> أرسل قائمة بأسماء فروعك — حتى بالإنجليزية مثل <span dir="ltr" class="mono">shobra, taif</span> — وسيبني جدول أسبوعك فورًا.</p>
       <div style="display:flex;gap:.4rem;margin-top:.6rem;align-items:center;flex-wrap:wrap">
         ${aiReady()
           ? `<span class="visit-chip done-chip">● متصل · ${esc(modelLbl)}</span>`
-          : `<span class="visit-chip auto-chip">○ غير مفعّل — أضف مفتاح API</span>`}
-        <button class="mini-chip" id="ai-setup-btn">${aiSetupOpen?"إخفاء الإعداد":"⚙️ إعداد الذكاء"}</button>
-        ${aiChat.length?'<button class="mini-chip" id="ai-clear-btn">🗑 مسح المحادثة</button>':""}
+          : `<span class="visit-chip auto-chip">○ الدردشة الذكية غير مفعّلة — الجدولة بالقائمة تعمل دون مفتاح</span>`}
+        <button class="mini-chip" id="ai-setup-btn">${ic("sliders",12)} ${aiSetupOpen?"إخفاء الإعداد":"إعداد الذكاء"}</button>
+        ${aiChat.length?`<button class="mini-chip" id="ai-clear-btn">${ic("trash",12)} مسح المحادثة</button>`:""}
       </div>
     </div>`;
 
@@ -726,21 +765,22 @@ function renderAI(){
     </div>`;
   }
 
-  html+=`<h2 class="sec">⚡ رؤى فورية <span class="faint" style="font-weight:500">(تُحسب على جهازك دون إنترنت)</span></h2>`;
+  html+=`<h2 class="sec">${ic("trend",13)} رؤى فورية <span class="faint" style="font-weight:500">(تُحسب على جهازك دون إنترنت)</span></h2>`;
   for(const ins of insights){
     html+=`<div class="card insight" style="--acc:${ins.acc}">
-      <span class="em">${ins.em}</span>
+      <span class="em" style="color:${ins.acc}">${ins.icon?ic(ins.icon,20):ins.em}</span>
       <div><b>${esc(ins.title)}</b><p>${esc(ins.body)}</p></div>
     </div>`;
   }
 
-  html+=`<h2 class="sec">💬 اسأل المساعد</h2>
+  html+=`<h2 class="sec">${ic("msg",13)} اسأل المساعد</h2>
     <div class="scroll-x" style="margin-bottom:.6rem">
+      <button class="qa-chip" id="qa-sched">${ic("calendar",13)} جدول من قائمة فروع</button>
       ${AI_QUICK.map((q,i)=>`<button class="qa-chip" data-qa="${i}">${q.em} ${q.label}</button>`).join("")}
     </div>
     <div class="card chat-box" id="chat-box">`;
-  if(!aiChat.length){
-    html+=`<div class="empty" style="padding:1.5rem 1rem"><div class="art">💬</div><b>ابدأ محادثة</b><p>جرّب: "ما أكثر فرع سجّل مخالفات Critical هذا الشهر؟"</p></div>`;
+  if(!aiChat.length && !schedWizard){
+    html+=`<div class="empty" style="padding:1.5rem 1rem"><div class="art">💬</div><b>ابدأ محادثة</b><p>اسأل: "ما أكثر فرع سجّل مخالفات؟"<br>أو أرسل قائمة: <span dir="ltr" class="mono">shobra, azizyah, taif</span> لبناء جدولك</p></div>`;
   }
   for(let i=0;i<aiChat.length;i++){
     const m=aiChat[i];
@@ -748,10 +788,11 @@ function renderAI(){
     else html+=`<div class="msg ai">${mdLite(m.content)}</div>
       <div class="msg-tools"><button data-copy="${i}">📋 نسخ</button><button data-sharemsg="${i}">↗ مشاركة</button></div>`;
   }
+  if(schedWizard) html+=schedWizardHTML();
   html+=`</div>
     <div class="chat-input">
-      <textarea id="chat-in" rows="1" placeholder="اكتب سؤالك عن الفروع أو الخطة أو الزيارات…"></textarea>
-      <button class="send-btn" id="chat-send" aria-label="إرسال" ${aiBusy?"disabled":""}>➤</button>
+      <textarea id="chat-in" rows="1" placeholder="اسأل عن الفروع… أو ألصق قائمة أسماء لبناء الجدول"></textarea>
+      <button class="send-btn" id="chat-send" aria-label="إرسال" ${aiBusy?"disabled":""}>${ic("send",19)}</button>
     </div>
     <p class="faint" style="font-size:.66rem;margin-top:.5rem;text-align:center">قد يخطئ الذكاء الاصطناعي — راجع الأرقام المهمة قبل اعتمادها</p>
   </div>`;
@@ -797,15 +838,164 @@ function renderAI(){
   const autoGrow=()=>{ input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,140)+"px"; };
   input.oninput=autoGrow;
   input.onkeydown=e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send.click(); } };
-  send.onclick=()=>{ const t=input.value.trim(); if(t) askAi(t); };
+  send.onclick=()=>{
+    const t=input.value.trim(); if(!t) return;
+    // اعتراض محلي: هل الرسالة قائمة فروع لبناء جدول؟
+    const items=detectScheduleIntent(t);
+    if(items){
+      schedWizard={items};
+      input.value=""; autoGrow();
+      renderAI();
+      return;
+    }
+    askAi(t);
+  };
+  $("#qa-sched").onclick=()=>{
+    input.value="جدولي: ";
+    input.focus();
+    input.setSelectionRange(input.value.length,input.value.length);
+    toast("ألصق أسماء فروعك مفصولة بفواصل — بالعربية أو الإنجليزية","info",4000);
+  };
+  bindSchedWizard();
 
   // مرّر لأسفل فقط عند وجود محادثة قائمة؛ وإلا اعرض البطاقة التعريفية والرؤى
-  if(aiChat.length || aiBusy){
+  if(aiChat.length || aiBusy || schedWizard){
     const box=$("#chat-box"); box.scrollTop=box.scrollHeight;
     main.scrollTop = main.scrollHeight;
   } else {
     main.scrollTop = 0;
   }
+}
+
+/* ---- بطاقة معالج الجدولة داخل الدردشة ---- */
+function schedWizardHTML(){
+  const w=schedWizard;
+  const resolved=w.items.filter(i=>i.status==="match").length;
+  let rows="";
+  w.items.forEach((it,idx)=>{
+    if(it.status==="match"){
+      const b=state.branches.find(x=>x.id===it.chosenId);
+      rows+=`<div class="sched-row ok">
+        <span class="sched-ic" style="color:var(--ok)">${ic("check",15)}</span>
+        <div class="sched-info">
+          <small dir="auto">${esc(it.token)}</small>
+          <b>${esc(b?b.nameAr:"؟")}</b>
+        </div>
+        ${it.candidates.length>1?`<button class="mini-chip" data-sw-change="${idx}">تغيير</button>`:""}
+        <button class="mini-chip" data-sw-skip="${idx}">تجاهل</button>
+      </div>`;
+    } else if(it.status==="ambiguous"){
+      rows+=`<div class="sched-row ask">
+        <span class="sched-ic" style="color:var(--warn)">${ic("alert",15)}</span>
+        <div class="sched-info">
+          <small dir="auto">${esc(it.token)}</small>
+          <b>أي فرع تقصد؟</b>
+          <div class="sched-cands">
+            ${it.candidates.map(c=>`<button class="mini-chip" data-sw-pick="${idx}:${c.id}">${esc(c.name)}</button>`).join("")}
+          </div>
+        </div>
+        <button class="mini-chip" data-sw-skip="${idx}">تجاهل</button>
+      </div>`;
+    } else if(it.status==="unknown"){
+      rows+=`<div class="sched-row unk">
+        <span class="sched-ic" style="color:var(--danger)">${ic("x",15)}</span>
+        <div class="sched-info">
+          <small dir="auto">${esc(it.token)}</small>
+          <b>فرع غير معروف</b>
+          <div class="sched-cands">
+            <button class="mini-chip on" data-sw-add="${idx}">${ic("plus",11)} إضافته كفرع جديد</button>
+            <button class="mini-chip" data-sw-skip="${idx}">تجاهل</button>
+          </div>
+        </div>
+      </div>`;
+    } else { // ignored
+      rows+=`<div class="sched-row off">
+        <span class="sched-ic faint">—</span>
+        <div class="sched-info"><small dir="auto" style="text-decoration:line-through">${esc(it.token)}</small></div>
+        <button class="mini-chip" data-sw-undo="${idx}">استرجاع</button>
+      </div>`;
+    }
+  });
+  const pending=w.items.filter(i=>i.status==="ambiguous"||i.status==="unknown").length;
+  return `<div class="card sched-card">
+    <div class="sched-head">
+      <b>${ic("calendar",15)} إنشاء جدول من قائمتك</b>
+      <button class="sheet-x" data-sw-cancel aria-label="إلغاء" style="font-size:1rem">${ic("x",15)}</button>
+    </div>
+    ${rows}
+    <div class="sched-foot">
+      <span class="faint" style="font-size:.7rem">${resolved} جاهز${pending?` · ${pending} بانتظار قرارك`:""}</span>
+      <button class="btn-primary" data-sw-go style="width:auto;padding:.6rem 1.1rem;font-size:.85rem" ${resolved?"":"disabled"}>
+        ${ic("sparkles",14)} توليد الجدول (${resolved})
+      </button>
+    </div>
+  </div>`;
+}
+
+function bindSchedWizard(){
+  if(!schedWizard) return;
+  const w=schedWizard;
+  main.querySelectorAll("[data-sw-pick]").forEach(b=>b.onclick=()=>{
+    const [idx,id]=b.dataset.swPick.split(":");
+    const it=w.items[Number(idx)];
+    it.chosenId=id; it.status="match";
+    renderAI();
+  });
+  main.querySelectorAll("[data-sw-change]").forEach(b=>b.onclick=()=>{
+    w.items[Number(b.dataset.swChange)].status="ambiguous";
+    renderAI();
+  });
+  main.querySelectorAll("[data-sw-skip]").forEach(b=>b.onclick=()=>{
+    w.items[Number(b.dataset.swSkip)].status="ignored";
+    renderAI();
+  });
+  main.querySelectorAll("[data-sw-undo]").forEach(b=>b.onclick=()=>{
+    const it=w.items[Number(b.dataset.swUndo)];
+    Object.assign(it, matchBranchToken(it.token));
+    renderAI();
+  });
+  main.querySelectorAll("[data-sw-add]").forEach(b=>b.onclick=()=>{
+    const idx=Number(b.dataset.swAdd);
+    const it=w.items[idx];
+    openAddBranch();
+    const nameEl=document.getElementById("ab-name");
+    if(nameEl) nameEl.value=it.token;
+    // بعد حفظ الفرع الجديد يُربط تلقائيًا بالقائمة
+    addBranchCallback=(newId)=>{
+      _brIdx=null; // إعادة بناء فهرس المطابقة
+      it.chosenId=newId; it.status="match";
+      it.candidates=[{id:newId, name:state.branches.find(x=>x.id===newId)?.nameAr, score:1}];
+      renderAI();
+    };
+  });
+  const cancel=main.querySelector("[data-sw-cancel]");
+  if(cancel) cancel.onclick=()=>{ schedWizard=null; renderAI(); };
+  const go=main.querySelector("[data-sw-go]");
+  if(go) go.onclick=async()=>{
+    const ids=[...new Set(w.items.filter(i=>i.status==="match").map(i=>i.chosenId))];
+    if(!ids.length) return;
+    // فعّل الفروع المختارة واجعلها اختيار الأسبوع
+    for(const id of ids){ const b=state.branches.find(x=>x.id===id); if(b) b.active=true; }
+    state.weekSelection=ids;
+    const p=generatePlan();
+    // المستخدم طلب هذه الفروع صراحةً: أي فرع أسقطه المحرك لضيق الدوام
+    // يُوزَّع على أقل الأيام ازدحامًا حتى لا يختفي بصمت
+    const scheduled=new Set(p.days.flatMap(d=>d.stops.map(s=>s.branchId)));
+    const missing=ids.filter(id=>!scheduled.has(id));
+    for(const id of missing){
+      const b=state.branches.find(x=>x.id===id); if(!b) continue;
+      const day=[...p.days].sort((a,c)=>a.stops.length-c.stops.length)[0];
+      day.stops.push({branchId:b.id,nameAr:b.nameAr,nameEn:b.nameEn,lat:b.lat,lng:b.lng,size:b.size,
+        arrivalTime:"",departureTime:"",travelMinutes:0,distanceKm:0});
+    }
+    if(missing.length) recalcPlanTimes(p);
+    state.plans.unshift(p); state.activePlanId=p.id;
+    schedWizard=null;
+    await persist(); scheduleReminders();
+    setTab("plan");
+    if(missing.length) toast(`جُهّز الجدول — ${missing.length} فرعًا بعيدًا قد يتجاوز ساعات الدوام، راجع التوقيتات`,"info",5000);
+    else toast(`جُهّز جدول ${ids.length} فرعًا ✨`,"ok");
+  };
 }
 
 async function askAi(prompt){
@@ -848,14 +1038,15 @@ async function askAi(prompt){
 
 /* ==================== تبويب لوحة البيانات ==================== */
 let dashPeriod="week", dashStatus="all", dashQuery="";
+let dashScope="mine", dashMember="all", teamLoading=false, teamError=null;
 function weekBounds(offset=0){
   const now=new Date(), sun=new Date(now);
   sun.setDate(now.getDate()-now.getDay()+offset*7); sun.setHours(0,0,0,0);
   const end=new Date(sun); end.setDate(sun.getDate()+7);
   return [sun.getTime(), end.getTime()];
 }
-function filteredVisits(){
-  let list=[...state.visits];
+function filteredVisits(base){
+  let list=[...(base??state.visits)];
   if(dashPeriod==="week"){ const [a,b]=weekBounds(0); list=list.filter(v=>v.startedAt>=a&&v.startedAt<b); }
   else if(dashPeriod==="lastweek"){ const [a,b]=weekBounds(-1); list=list.filter(v=>v.startedAt>=a&&v.startedAt<b); }
   if(dashStatus==="complete") list=list.filter(v=>v.dataComplete);
@@ -864,6 +1055,12 @@ function filteredVisits(){
   const q=dashQuery.trim();
   if(q) list=list.filter(v=>v.nameAr.includes(q));
   return list.sort((a,b)=>b.startedAt-a.startedAt);
+}
+/* تحميل بيانات الفريق ثم إعادة رسم اللوحة */
+function loadTeamThenRender(force=false){
+  teamLoading=true; teamError=null;
+  teamPull(force).then(()=>{ teamLoading=false; if(state.tab==="dash") renderDash(); })
+    .catch(()=>{ teamLoading=false; teamError="تعذّر جلب بيانات الفريق — تحقق من المفتاح والرمز"; if(state.tab==="dash") renderDash(); });
 }
 
 /* مخطط أعمدة أسبوعي SVG — الأحد يمينًا (اتجاه القراءة العربية) */
@@ -906,7 +1103,15 @@ function severityBarSVG(c,m,mi){
 }
 
 function renderDash(){
-  const list=filteredVisits();
+  const team = dashScope==="team" && teamReady();
+  let base=state.visits, memberNames=[];
+  if(team){
+    if(!teamCache.members && !teamLoading && !teamError) loadTeamThenRender();
+    memberNames=Object.keys(teamCache.members??{});
+    base = teamCache.members ? mergeTeamVisits(teamCache.members) : [];
+    if(dashMember!=="all") base=base.filter(v=>v.owner===dashMember);
+  }
+  const list=filteredVisits(base);
   const sum=k=>list.reduce((t,v)=>t+(v[k]??0),0);
   const withVal=k=>list.filter(v=>v[k]!=null);
   const avg=k=>{const l=withVal(k);return l.length?(l.reduce((t,v)=>t+v[k],0)/l.length).toFixed(1):"—";};
@@ -915,14 +1120,43 @@ function renderDash(){
 
   const chip=(group,val,label)=>`<button class="chip ${(group==="period"?dashPeriod:dashStatus)===val?"on":""}" data-${group}="${val}">${label}</button>`;
 
-  let html=`<div class="page">
-    <div class="scroll-x">
-      <button class="btn-dark" id="dash-ai" style="flex-shrink:0;background:var(--accent);color:var(--accent-ink)">✦ تقرير ذكي</button>
-      <button class="btn-dark" id="dash-share" style="flex-shrink:0">↗ مشاركة</button>
-      <button class="btn-ghost" id="dash-pdf" style="flex-shrink:0">📄 PDF</button>
-      <button class="btn-ghost" id="dash-xlsx" style="flex-shrink:0">📊 Excel</button>
-    </div>
-    <div class="scroll-x" style="margin-top:.2rem">
+  let html=`<div class="page">`;
+
+  // مبدّل النطاق: بياناتي / الفريق (يظهر فقط عند تفعيل نظام الفريق)
+  if(teamReady()){
+    html+=`<div class="scope-switch">
+      <button class="${dashScope==="mine"?"on":""}" data-scope="mine">بياناتي</button>
+      <button class="${dashScope==="team"?"on":""}" data-scope="team">${ic("users",14)} الفريق</button>
+    </div>`;
+  } else if(dashScope==="team"){ dashScope="mine"; }
+
+  html+=`<div class="scroll-x">
+      <button class="btn-dark" id="dash-ai" style="flex-shrink:0;background:var(--accent);color:var(--accent-ink)">${ic("sparkles",13)} تقرير ذكي</button>
+      <button class="btn-dark" id="dash-share" style="flex-shrink:0">${ic("share",13)} مشاركة</button>
+      <button class="btn-ghost" id="dash-pdf" style="flex-shrink:0">${ic("file",13)} PDF</button>
+      <button class="btn-ghost" id="dash-xlsx" style="flex-shrink:0">${ic("download",13)} Excel</button>
+      ${team?`<button class="btn-ghost" id="dash-refresh" style="flex-shrink:0">${ic("refresh",13)} تحديث</button>`:""}
+    </div>`;
+
+  if(team){
+    if(teamLoading){
+      html+=`<div class="skeleton" style="height:64px;margin:.5rem 0"></div>
+        <div class="skeleton" style="height:140px;margin-bottom:.5rem"></div></div>`;
+      main.innerHTML=html;
+      main.querySelectorAll("[data-scope]").forEach(b=>b.onclick=()=>{dashScope=b.dataset.scope; renderDash();});
+      return;
+    }
+    if(teamError){
+      html+=`<div class="hint" style="border-color:var(--danger);color:var(--danger)">${esc(teamError)} — <button style="min-height:auto;font-weight:700;text-decoration:underline" id="team-retry">إعادة المحاولة</button></div>`;
+    } else if(memberNames.length){
+      html+=`<div class="scroll-x" style="margin-top:.2rem">
+        <button class="chip ${dashMember==="all"?"on":""}" data-member="all">كل الأعضاء (${memberNames.length})</button>
+        ${memberNames.map(n=>`<button class="chip ${dashMember===n?"on":""}" data-member="${esc(n)}">${esc(n)}</button>`).join("")}
+      </div>`;
+    }
+  }
+
+  html+=`<div class="scroll-x" style="margin-top:.2rem">
       ${chip("period","week","هذا الأسبوع")}${chip("period","lastweek","الأسبوع الماضي")}${chip("period","all","الكل")}
     </div>
     <div class="scroll-x" style="padding:.2rem 0 .4rem">
@@ -932,6 +1166,7 @@ function renderDash(){
 
     <div class="stat-grid">
       <div class="card stat"><b>${list.length}</b><span>زيارة</span></div>
+      ${team?`<div class="card stat"><b style="color:var(--day-0)">${memberNames.length}</b><span>أعضاء الفريق</span></div>`:""}
       <div class="card stat"><b style="color:var(--ok)">${complete}</b><span>مكتملة البيانات</span></div>
       <div class="card stat"><b style="color:var(--danger)">${sum("critical")}</b><span>Critical</span></div>
       <div class="card stat"><b style="color:var(--accent)">${sum("major")}</b><span>Major</span></div>
@@ -949,20 +1184,23 @@ function renderDash(){
   html+=`<h2 class="sec">سجل الزيارات <span class="mono faint" dir="ltr">(${list.length})</span></h2>`;
 
   if(!list.length){
-    html+=`<div class="card empty"><div class="art">📭</div><b>لا توجد زيارات ضمن هذا الفلتر</b><p>سجّل وصولك من صفحة الخطة بزر "✅ أنا وصلت" وستظهر هنا نتائج الفحص والمؤشرات</p></div>`;
+    html+=team
+      ? `<div class="card empty"><div class="art">👥</div><b>لا توجد زيارات فريق ضمن هذا الفلتر</b><p>تأكد أن زملاءك فعّلوا نظام الفريق بنفس الرمز والمفتاح، وأنهم سجّلوا زيارات</p></div>`
+      : `<div class="card empty"><div class="art">📭</div><b>لا توجد زيارات ضمن هذا الفلتر</b><p>سجّل وصولك من صفحة الخطة بزر "✅ أنا وصلت" وستظهر هنا نتائج الفحص والمؤشرات</p></div>`;
   } else {
     html+=`<div class="card table-wrap"><table class="dash-table">
-      <thead><tr><th>الفرع</th><th>التاريخ</th><th>المدة</th><th style="color:var(--danger)">C</th><th style="color:var(--accent)">M</th><th>m</th><th>PH</th><th>TDS</th><th>الحالة</th><th></th></tr></thead><tbody>`;
+      <thead><tr>${team?"<th>العضو</th>":""}<th>الفرع</th><th>التاريخ</th><th>المدة</th><th style="color:var(--danger)">C</th><th style="color:var(--accent)">M</th><th>m</th><th>PH</th><th>TDS</th><th>الحالة</th>${team?"":"<th></th>"}</tr></thead><tbody>`;
     for(const v of list){
       const st=v.status==="open"?"⏱ جارية":v.dataComplete?"✓ مكتملة":"⚠ ناقصة";
       html+=`<tr>
+        ${team?`<td><span class="member-chip">${esc(v.owner??"—")}</span></td>`:""}
         <td title="${esc(v.notes??"")}">${esc(v.nameAr)}${v.notes?" 📝":""}</td>
         <td class="mono" dir="ltr">${new Date(v.startedAt).toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit"})} ${new Date(v.startedAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}</td>
         <td class="mono" dir="ltr">${visitElapsedMin(v)}د${v.manualTime?" ✎":""}</td>
         <td class="mono">${v.critical??"—"}</td><td class="mono">${v.major??"—"}</td><td class="mono">${v.minor??"—"}</td>
         <td class="mono">${v.ph??"—"}</td><td class="mono">${v.tds??"—"}</td>
         <td style="font-size:.62rem;font-weight:700">${st}</td>
-        <td><button data-vedit="${v.id}" style="min-height:auto;color:var(--accent);font-weight:700;font-size:.68rem;padding:.2rem .4rem" aria-label="تعديل">✏️</button></td>
+        ${team?"":`<td><button data-vedit="${v.id}" style="min-height:auto;color:var(--accent);font-weight:700;font-size:.68rem;padding:.2rem .4rem" aria-label="تعديل">✏️</button></td>`}
       </tr>`;
     }
     html+=`</tbody></table></div>`;
@@ -970,6 +1208,12 @@ function renderDash(){
   html+=`</div>`;
   main.innerHTML=html;
 
+  main.querySelectorAll("[data-scope]").forEach(b=>b.onclick=()=>{dashScope=b.dataset.scope; dashMember="all"; renderDash();});
+  main.querySelectorAll("[data-member]").forEach(b=>b.onclick=()=>{dashMember=b.dataset.member; renderDash();});
+  const refreshBtn=$("#dash-refresh");
+  if(refreshBtn) refreshBtn.onclick=()=>loadTeamThenRender(true);
+  const retryBtn=$("#team-retry");
+  if(retryBtn) retryBtn.onclick=()=>loadTeamThenRender(true);
   main.querySelectorAll("[data-period]").forEach(b=>b.onclick=()=>{dashPeriod=b.dataset.period; renderDash();});
   main.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{dashStatus=b.dataset.status; renderDash();});
   const q=$("#dash-q"); q.oninput=()=>{dashQuery=q.value; renderDash(); const x=$("#dash-q"); x.focus(); x.setSelectionRange(x.value.length,x.value.length);};
@@ -983,7 +1227,7 @@ function renderDash(){
     setTab("ai");
     setTimeout(()=>askAi(`اكتب تقريرًا تنفيذيًا عن زيارات ${periodLbl}: الملخص، الأرقام الرئيسية، الفروع الحرجة، وتوصيات عملية.`), 60);
   };
-  $("#dash-pdf").onclick=async()=>{ const b=$("#dash-pdf"); b.textContent="…"; try{await exportDashPDF(list,statsObj);}catch(e){toast("تعذّر التصدير","err");} b.textContent="📄 PDF"; };
+  $("#dash-pdf").onclick=async()=>{ const b=$("#dash-pdf"); b.textContent="…"; try{await exportDashPDF(list,statsObj);}catch(e){toast("تعذّر التصدير","err");} b.innerHTML=`${ic("file",13)} PDF`; };
   $("#dash-xlsx").onclick=()=>{ try{exportDashExcel(list); toast("صُدّر التقرير ✓","ok");}catch(e){toast("تعذّر التصدير","err");} };
 
   $("#dash-share").onclick=async()=>{
@@ -999,7 +1243,7 @@ function renderDash(){
     let msg="نُسخ التقرير ✓";
     if(navigator.share){ try{ await navigator.share({title:"تقرير زيارات هاف مليون",text}); msg="تمت المشاركة ✓"; }catch(e){ if(e.name==="AbortError")return; try{await navigator.clipboard.writeText(text);}catch(_){}}}
     else { try{ await navigator.clipboard.writeText(text); }catch(e){} }
-    btn.textContent=msg; setTimeout(()=>btn.textContent="↗ مشاركة",2500);
+    btn.textContent=msg; setTimeout(()=>btn.innerHTML=`${ic("share",13)} مشاركة`,2500);
   };
 }
 
@@ -1075,6 +1319,29 @@ function renderSettings(){
       </div>
     </section>
     <section class="card pad">
+      <b style="display:inline-flex;align-items:center;gap:.4rem">${ic("users",16)} نظام الفريق</b>
+      <p class="muted" style="font-size:.75rem;margin:.4rem 0 .7rem;line-height:1.7">
+        اجمع نتائج زيارات كل أعضاء الفريق في لوحة واحدة. ينشئ قائد الفريق صندوقًا ويشارك
+        <b>المفتاح</b> و<b>رمز الصندوق</b> مع الأعضاء — كلٌ يرفع زياراته وتُدمج للجميع في تبويب اللوحة.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+        <span style="font-weight:600;font-size:.9rem">تفعيل نظام الفريق</span>
+        <button class="toggle ${s.teamEnabled?"on":""}" id="team-toggle" role="switch" aria-checked="${s.teamEnabled}"><i></i></button>
+      </div>
+      <div id="team-fields" style="${s.teamEnabled?"":"display:none"}">
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">اسمك (كما سيظهر للفريق)</label>
+        <input id="team-name" placeholder="مثال: علاء الدين" value="${esc(s.memberName??"")}" style="margin-bottom:.5rem">
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">مفتاح JSONBin المشترك (X-Master-Key)</label>
+        <input dir="ltr" class="mono" id="team-key" placeholder="$2a$10$..." value="${esc(s.teamKey??"")}" style="font-size:.78rem;margin-bottom:.5rem">
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز صندوق الفريق — اتركه فارغًا لإنشاء فريق جديد</label>
+        <input dir="ltr" class="mono" id="team-bin" placeholder="يرسله لك قائد الفريق" value="${esc(s.teamBinId??"")}" style="font-size:.78rem;margin-bottom:.6rem">
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-dark" id="team-connect" style="flex:1">${ic("users",13)} إنشاء / انضمام</button>
+          <button class="btn-dark" id="team-test" style="flex:1;background:var(--ok)">${ic("refresh",13)} اختبار الجلب</button>
+        </div>
+        <p id="team-status" style="font-size:.78rem;font-weight:700;margin-top:.6rem;text-align:center"></p>
+      </div>
+    </section>
+    <section class="card pad">
       <b>🔗 تحميل خطة مشتركة</b>
       <p class="muted" style="font-size:.78rem;margin:.4rem 0 .6rem">أدخل رمز الخطة الذي شاركه معك زميلك</p>
       <div style="display:flex;gap:.5rem">
@@ -1141,6 +1408,49 @@ function renderSettings(){
     updateSyncStatus("جارٍ الجلب…","var(--text-2)");
     const ok=await cloudPull();
     if(ok){ updateSyncStatus("تم جلب البيانات ومزامنتها ✓","var(--ok)"); render(); }
+  };
+
+  /* ---- نظام الفريق ---- */
+  const teamToggle=$("#team-toggle");
+  if(teamToggle) teamToggle.onclick=async()=>{ s.teamEnabled=!s.teamEnabled; await persist(); renderSettings(); };
+  const tName=$("#team-name"), tKey=$("#team-key"), tBin=$("#team-bin");
+  const saveTeamFields=async()=>{
+    s.memberName=tName.value.trim();
+    s.teamKey=tKey.value.trim()||null;
+    s.teamBinId=tBin.value.trim()||null;
+    teamCache={ts:0, members:null};
+    await persist();
+  };
+  if(tName){ tName.onchange=saveTeamFields; tKey.onchange=saveTeamFields; tBin.onchange=saveTeamFields; }
+  const teamConnect=$("#team-connect");
+  if(teamConnect) teamConnect.onclick=async()=>{
+    await saveTeamFields();
+    if(!s.memberName){ updateTeamStatus("أدخل اسمك أولاً","var(--danger)"); return; }
+    if(!s.teamKey){ updateTeamStatus("أدخل مفتاح JSONBin المشترك","var(--danger)"); return; }
+    updateTeamStatus("جارٍ الاتصال…","var(--text-2)");
+    try{
+      if(!s.teamBinId){
+        s.teamBinId=await teamCreateBin(s.teamKey, s.memberName);
+        tBin.value=s.teamBinId;
+        await persist();
+        updateTeamStatus("أُنشئ فريق جديد ✓ — شارك المفتاح والرمز مع أعضائك: "+s.teamBinId,"var(--ok)");
+      } else {
+        await teamPush();
+        updateTeamStatus("انضممت للفريق ورُفعت زياراتك ✓","var(--ok)");
+      }
+      teamCache={ts:0, members:null};
+    }catch(e){ updateTeamStatus("تعذّر الاتصال — تحقق من المفتاح والرمز","var(--danger)"); }
+  };
+  const teamTest=$("#team-test");
+  if(teamTest) teamTest.onclick=async()=>{
+    await saveTeamFields();
+    if(!teamReady()){ updateTeamStatus("أكمل الاسم والمفتاح والرمز أولاً","var(--danger)"); return; }
+    updateTeamStatus("جارٍ الجلب…","var(--text-2)");
+    try{
+      const members=await teamPull(true);
+      const names=Object.keys(members??{});
+      updateTeamStatus(`متصل ✓ — ${names.length} عضو: ${names.join("، ")||"لا أعضاء بعد"}`,"var(--ok)");
+    }catch(e){ updateTeamStatus("تعذّر الجلب — تحقق من المفتاح والرمز","var(--danger)"); }
   };
 
   $("#load-shared").onclick=async()=>{

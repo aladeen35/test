@@ -18,7 +18,9 @@ const DEFAULT_SETTINGS = {
   notificationsEnabled:true, leadTimeMinutes:30,
   nonMeetingStart:"home", customStart:null,
   maxBranchesPerDay:0,
-  syncEnabled:false, syncBinId:null, syncKey:null
+  syncEnabled:false, syncBinId:null, syncKey:null,
+  /* نظام الفريق: صندوق JSONBin مشترك يجمع زيارات كل الأعضاء */
+  teamEnabled:false, teamBinId:null, teamKey:null, memberName:""
 };
 
 let state = {
@@ -89,6 +91,7 @@ async function persist(){
     activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits
   }));
   scheduleCloudPush();
+  scheduleTeamPush();
 }
 
 async function hydrate(){
@@ -165,6 +168,81 @@ async function cloudCreateBin(masterKey){
 }
 function updateSyncStatus(msg,color){
   const el=document.getElementById("sync-status");
+  if(el){ el.textContent=msg; el.style.color=color; }
+}
+
+/* ================= نظام الفريق =================
+   صندوق JSONBin واحد يتشاركه الفريق:
+   { type:"hm-team", members: { "<اسم العضو>": { visits:[...], updatedAt } } }
+   كل عضو يكتب مدخلته فقط (قراءة ← تعديل ← كتابة) وتُدمج القراءات في اللوحة. */
+let teamTimer=null, teamBusy=false;
+let teamCache={ts:0, members:null};
+
+function teamReady(){
+  const s=state.settings;
+  return !!(s.teamEnabled && s.teamBinId && s.teamKey && (s.memberName||"").trim());
+}
+function scheduleTeamPush(){
+  if(!teamReady()) return;
+  clearTimeout(teamTimer);
+  teamTimer=setTimeout(teamPush, 3000);
+}
+async function teamFetch(){
+  const s=state.settings;
+  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}/latest`,{headers:{"X-Master-Key":s.teamKey}});
+  if(!r.ok) throw new Error(r.status);
+  const j=await r.json();
+  const rec=j.record;
+  return (rec && rec.type==="hm-team") ? rec : {type:"hm-team", members:{}};
+}
+async function teamPush(){
+  if(!teamReady() || teamBusy) return;
+  teamBusy=true;
+  try{
+    const s=state.settings;
+    let rec;
+    try{ rec=await teamFetch(); }catch(e){ rec={type:"hm-team", members:{}}; }
+    rec.members = rec.members ?? {};
+    rec.members[s.memberName.trim()] = { visits:state.visits, updatedAt:Date.now() };
+    const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
+      method:"PUT",
+      headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
+      body:JSON.stringify(rec)
+    });
+    if(!r.ok) throw new Error(r.status);
+    updateTeamStatus("مُزامَن مع الفريق ✓ "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),"var(--ok)");
+  }catch(e){
+    updateTeamStatus("تعذّر الرفع للفريق — سيُعاد عند التعديل التالي","var(--danger)");
+  }finally{ teamBusy=false; }
+}
+async function teamPull(force=false){
+  if(!teamReady()) return null;
+  // ذاكرة مؤقتة 60 ثانية لتخفيف الطلبات
+  if(!force && teamCache.members && Date.now()-teamCache.ts<60000) return teamCache.members;
+  const rec=await teamFetch();
+  teamCache={ts:Date.now(), members:rec.members??{}};
+  return teamCache.members;
+}
+/* دمج زيارات كل الأعضاء مع وسم كل زيارة باسم صاحبها */
+function mergeTeamVisits(members){
+  const out=[];
+  for(const [name,entry] of Object.entries(members??{})){
+    for(const v of (entry.visits??[])) out.push({...v, owner:name});
+  }
+  return out;
+}
+async function teamCreateBin(masterKey, memberName){
+  const r=await fetch(`${JB_BASE}/b`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","X-Master-Key":masterKey,"X-Bin-Name":"half-million-team","X-Bin-Private":"true"},
+    body:JSON.stringify({type:"hm-team", members:{ [memberName]: {visits:state.visits, updatedAt:Date.now()} }})
+  });
+  if(!r.ok) throw new Error(r.status);
+  const j=await r.json();
+  return j.metadata.id;
+}
+function updateTeamStatus(msg,color){
+  const el=document.getElementById("team-status");
   if(el){ el.textContent=msg; el.style.color=color; }
 }
 
@@ -485,7 +563,9 @@ async function exportDashPDF(list, stats){
   pdf.save(`تقرير_الزيارات_${new Date().toISOString().slice(0,10)}.pdf`);
 }
 function exportDashExcel(list){
+  const hasOwner=list.some(v=>v.owner);
   const rows=list.map(v=>({
+    ...(hasOwner?{"العضو":v.owner??""}:{}),
     "الفرع":v.nameAr, "اليوم":DAYS_AR[v.dayIndex]??"",
     "التاريخ":new Date(v.startedAt).toLocaleDateString("en-GB"),
     "وقت البدء":new Date(v.startedAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),
