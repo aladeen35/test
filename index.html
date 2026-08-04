@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>هاف مليون ½M — مخطط الزيارات الذكي</title>
+<meta name="description" content="تطبيق تخطيط زيارات فروع هاف مليون مع مساعد ذكاء اصطناعي، خرائط، ولوحة بيانات." />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#C9AE85" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="css/app.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* تطبيق السمة قبل الرسم الأول لتفادي وميض الوضع الفاتح */
+(function(){
+  try{
+    var t = localStorage.getItem("hm-theme") || "auto";
+    var dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    if(dark) document.documentElement.dataset.theme = "dark";
+  }catch(e){}
+})();
+</script>
+</head>
+<body>
+
+<div class="splash" id="splash"><b>½M</b></div>
+
+<div id="toast-stack" aria-live="polite"></div>
+
+<!-- تنبيه موعد الانطلاق -->
+<div id="remind"><div class="inner">
+  <div class="bell">🔔</div>
+  <div style="flex:1;min-width:0">
+    <b id="remind-title" style="font-size:.95rem;line-height:1.5"></b>
+    <div id="remind-time" class="mono" dir="ltr" style="font-size:.78rem;opacity:.8;margin-top:2px"></div>
+    <div style="display:flex;gap:.5rem;margin-top:.7rem">
+      <button id="remind-nav" style="flex:1;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:.8rem;padding:.6rem;font-size:.85rem">🧭 الملاحة النشطة</button>
+      <button id="remind-close" style="border:1px solid #b2926788;font-weight:600;border-radius:.8rem;padding:.6rem 1rem;font-size:.85rem">لاحقًا</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- نافذة خيارات توليد الخطة -->
+<div id="gen-modal" class="modal">
+  <div class="backdrop" onclick="closeGenModal()"></div>
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <b>✨ خيارات توليد الخطة</b>
+      <button class="sheet-x" onclick="closeGenModal()" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="sheet-body" id="gen-body"></div>
+    <div class="sheet-foot"><button class="btn-primary" id="gen-confirm">توليد الخطة</button></div>
+  </div>
+</div>
+
+<!-- نافذة إضافة فرع -->
+<div id="add-modal" class="modal">
+  <div class="backdrop" onclick="closeAddBranch()"></div>
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <b>➕ إضافة فرع يدويًا</b>
+      <button class="sheet-x" onclick="closeAddBranch()" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="sheet-body" id="add-body"></div>
+    <div class="sheet-foot"><button class="btn-primary" id="add-save">حفظ الفرع</button></div>
+  </div>
+</div>
+
+<!-- نافذة تأكيد الزيارة -->
+<div id="visit-modal" class="modal" style="z-index:95">
+  <div class="backdrop" onclick="closeVisitModal()"></div>
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <b id="visit-title">✅ تأكيد زيارة الفرع</b>
+      <button class="sheet-x" onclick="closeVisitModal()" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="sheet-body" id="visit-body"></div>
+    <div class="sheet-foot"><button class="btn-primary" id="visit-save">حفظ بيانات الزيارة</button></div>
+  </div>
+</div>
+
+<header class="app">
+  <span class="logo">½M</span>
+  <div class="titles">
+    <span class="tab-name" id="tab-name">الخطة الأسبوعية</span>
+    <span class="tab-sub" id="tab-sub">هاف مليون — مخطط الزيارات</span>
+  </div>
+  <button class="icon-btn" id="theme-btn" aria-label="تبديل الوضع الليلي" title="الوضع الليلي/النهاري">
+    <svg id="theme-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></svg>
+  </button>
+</header>
+
+<main id="main"></main>
+
+<nav class="tabs" aria-label="التنقل الرئيسي"><div class="row">
+  <button data-tab="plan" class="active" aria-label="الخطة">
+    <span class="nicon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+    <span class="lbl">الخطة</span>
+  </button>
+  <button data-tab="branches" aria-label="الفروع">
+    <span class="nicon"><svg viewBox="0 0 24 24"><path d="M17 9h2.5a2.5 2.5 0 0 1 0 5H17M4 9h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM8 2v2M12 2v2"/></svg></span>
+    <span class="lbl">الفروع</span>
+  </button>
+  <button data-tab="map" aria-label="الخريطة">
+    <span class="nicon"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg></span>
+    <span class="lbl">الخريطة</span>
+  </button>
+  <button data-tab="ai" aria-label="المساعد الذكي" style="position:relative">
+    <span class="nicon"><svg viewBox="0 0 24 24"><path d="M12 3l1.7 4.6L18 9.2l-4.3 1.7L12 15.5l-1.7-4.6L6 9.2l4.3-1.6L12 3z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15zM5 16l.6 1.6L7 18l-1.4.6L5 20l-.6-1.4L3 18l1.4-.4L5 16z"/></svg></span>
+    <span class="lbl">الذكاء</span>
+  </button>
+  <button data-tab="dash" aria-label="لوحة البيانات">
+    <span class="nicon"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg></span>
+    <span class="lbl">اللوحة</span>
+  </button>
+  <button data-tab="settings" aria-label="الإعدادات">
+    <span class="nicon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></span>
+    <span class="lbl">الإعدادات</span>
+  </button>
+</div></nav>
+
+<script src="js/seed.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
