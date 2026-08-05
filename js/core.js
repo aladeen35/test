@@ -20,12 +20,14 @@ const DEFAULT_SETTINGS = {
   maxBranchesPerDay:0,
   syncEnabled:false, syncBinId:null, syncKey:null,
   /* نظام الفريق: صندوق JSONBin مشترك يجمع زيارات كل الأعضاء */
-  teamEnabled:false, teamBinId:null, teamKey:null, memberName:""
+  teamEnabled:false, teamBinId:null, teamKey:null, memberName:"",
+  teamManager:false /* يُظهر أدوات إدارة مهام الفريق (حماية واجهة فقط) */
 };
 
 let state = {
   branches:[], plans:[], settings:{...DEFAULT_SETTINGS},
-  activePlanId:null, tab:"plan", weekSelection:null, visits:[]
+  activePlanId:null, tab:"plan", weekSelection:null, visits:[],
+  tasks:[] /* المهام الأسبوعية المحلية */
 };
 let memStore = {};
 
@@ -88,7 +90,8 @@ async function stSet(key, val, shared=false){
 async function persist(){
   await stSet("hm-data", JSON.stringify({
     branches:state.branches, plans:state.plans, settings:state.settings,
-    activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits
+    activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits,
+    tasks:state.tasks
   }));
   scheduleCloudPush();
   scheduleTeamPush();
@@ -105,6 +108,7 @@ async function hydrate(){
       state.activePlanId = d.activePlanId ?? (state.plans[0]?.id ?? null);
       state.weekSelection = d.weekSelection ?? null;
       state.visits = d.visits ?? [];
+      state.tasks = d.tasks ?? [];
       return;
     }catch(e){}
   }
@@ -116,7 +120,8 @@ const JB_BASE="https://api.jsonbin.io/v3";
 let cloudTimer=null, cloudBusy=false;
 function cloudPayload(){
   return {branches:state.branches, plans:state.plans, settings:state.settings,
-    activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits, _ts:Date.now()};
+    activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits,
+    tasks:state.tasks, _ts:Date.now()};
 }
 function scheduleCloudPush(){
   const s=state.settings;
@@ -148,6 +153,7 @@ async function cloudPull(){
     const j=await r.json(); const d=j.record;
     if(d && d.branches){
       state.branches=d.branches; state.plans=d.plans??[]; state.visits=d.visits??[];
+      state.tasks=d.tasks??state.tasks??[];
       state.weekSelection=d.weekSelection??null; state.activePlanId=d.activePlanId??null;
       state.settings={...state.settings, ...(d.settings??{}), syncEnabled:true, syncBinId:s.syncBinId, syncKey:s.syncKey};
       await stSet("hm-data", JSON.stringify({branches:state.branches, plans:state.plans, settings:state.settings, activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits}));
@@ -176,7 +182,7 @@ function updateSyncStatus(msg,color){
    { type:"hm-team", members: { "<اسم العضو>": { visits:[...], updatedAt } } }
    كل عضو يكتب مدخلته فقط (قراءة ← تعديل ← كتابة) وتُدمج القراءات في اللوحة. */
 let teamTimer=null, teamBusy=false;
-let teamCache={ts:0, members:null};
+let teamCache={ts:0, members:null, tasks:[]};
 
 function teamReady(){
   const s=state.settings;
@@ -220,7 +226,7 @@ async function teamPull(force=false){
   // ذاكرة مؤقتة 60 ثانية لتخفيف الطلبات
   if(!force && teamCache.members && Date.now()-teamCache.ts<60000) return teamCache.members;
   const rec=await teamFetch();
-  teamCache={ts:Date.now(), members:rec.members??{}};
+  teamCache={ts:Date.now(), members:rec.members??{}, tasks:rec.tasks??[]};
   return teamCache.members;
 }
 /* دمج زيارات كل الأعضاء مع وسم كل زيارة باسم صاحبها */
@@ -244,6 +250,64 @@ async function teamCreateBin(masterKey, memberName){
 function updateTeamStatus(msg,color){
   const el=document.getElementById("team-status");
   if(el){ el.textContent=msg; el.style.color=color; }
+}
+
+/* ================= المهام الأسبوعية =================
+   مهمة تُقيَّم في كل زيارة بمقياس A/B/C:
+   A مطابق تمامًا · B متوسط/به ملاحظة · C مخالف تمامًا (+ لا ينطبق)
+   المصدر: "local" على هذا الجهاز فقط، أو "team" من صندوق الفريق المشترك. */
+function weekStart(ts=Date.now()){
+  const d=new Date(ts);
+  d.setDate(d.getDate()-d.getDay()); d.setHours(0,0,0,0);
+  return d.getTime();
+}
+function taskIsCurrent(t){
+  if(!t || t.active===false) return false;
+  if(t.once && t.weekOf!==weekStart()) return false;
+  return true;
+}
+/* المهام الفعالة الآن: مهام الفريق أولًا ثم المحلية */
+function activeTasks(){
+  const local=state.tasks.filter(taskIsCurrent);
+  const team=(teamReady()?(teamCache.tasks??[]):[])
+    .filter(taskIsCurrent)
+    .filter(tt=>!local.some(l=>l.id===tt.id));
+  return [...team, ...local];
+}
+function newTask(title, desc, source, once){
+  return {
+    id:"tsk-"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    title, desc:desc||"", source,
+    createdBy:(state.settings.memberName||"").trim()||null,
+    once:!!once, weekOf: once?weekStart():null,
+    active:true, createdAt:Date.now()
+  };
+}
+/* حفظ/حذف مهمة فريق في الصندوق المشترك (قراءة ← تعديل ← كتابة) */
+async function teamTaskSave(task){
+  const s=state.settings;
+  let rec;
+  try{ rec=await teamFetch(); }catch(e){ rec={type:"hm-team", members:{}}; }
+  rec.tasks=[...(rec.tasks??[]).filter(t=>t.id!==task.id), task];
+  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
+    body:JSON.stringify(rec)
+  });
+  if(!r.ok) throw new Error(r.status);
+  teamCache={ts:Date.now(), members:rec.members??{}, tasks:rec.tasks};
+}
+async function teamTaskDelete(taskId){
+  const s=state.settings;
+  const rec=await teamFetch();
+  rec.tasks=(rec.tasks??[]).filter(t=>t.id!==taskId);
+  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
+    body:JSON.stringify(rec)
+  });
+  if(!r.ok) throw new Error(r.status);
+  teamCache={ts:Date.now(), members:rec.members??{}, tasks:rec.tasks};
 }
 
 /* ================= محرك التخطيط ================= */
@@ -320,7 +384,7 @@ function generatePlan(){
   return {
     id:"plan-"+Date.now().toString(36),
     createdAt:Date.now(),
-    weekLabel:"أسبوع "+new Date().toLocaleDateString("ar-SA",{day:"numeric",month:"long",year:"numeric"}),
+    weekLabel:(isEn()?"Week of ":"أسبوع ")+new Date().toLocaleDateString(isEn()?"en-GB":"ar-SA",{day:"numeric",month:"long",year:"numeric"}),
     days
   };
 }
@@ -369,10 +433,10 @@ async function checkIn(planId,branchId){
   await persist();
 }
 window.checkInMap=async(branchId)=>{
-  const p=activePlan(); if(!p){ toast("ولّد خطة أولاً من تبويب الخطة","err"); return; }
+  const p=activePlan(); if(!p){ toast(tx("ولّد خطة أولاً من تبويب الخطة","Generate a plan first from the Plan tab"),"err"); return; }
   await checkIn(p.id,branchId);
   leafletMap?.closePopup();
-  toast("سُجّل الوصول — بدأ عدّاد الزيارة","ok");
+  toast(tx("سُجّل الوصول — بدأ عدّاد الزيارة","Checked in — visit timer started"),"ok");
 };
 
 /* الإغلاق التلقائي عند تجاوز مدة الزيارة */
@@ -405,12 +469,12 @@ function scheduleReminders(){
 function fireReminder(stop){
   showRemind(stop);
   if("Notification" in window && Notification.permission==="granted"){
-    new Notification("⏰ حان وقت الانطلاق!", {body:`توجّه الآن إلى ${stop.nameAr} — الوصول المجدول ${stop.arrivalTime}`});
+    new Notification(tx("⏰ حان وقت الانطلاق!","⏰ Time to go!"), {body:tx(`توجّه الآن إلى ${stopName(stop)} — الوصول المجدول ${stop.arrivalTime}`,`Head to ${stopName(stop)} now — scheduled arrival ${stop.arrivalTime}`)});
   }
 }
 function showRemind(stop){
   const t=document.getElementById("remind");
-  document.getElementById("remind-title").textContent=`حان وقت الانطلاق إلى ${stop.nameAr}!`;
+  document.getElementById("remind-title").textContent=tx(`حان وقت الانطلاق إلى ${stopName(stop)}!`,`Time to head to ${stopName(stop)}!`);
   document.getElementById("remind-time").textContent=`Scheduled arrival: ${stop.arrivalTime}`;
   document.getElementById("remind-nav").onclick=()=>{openNav(stop.lat,stop.lng); hideRemind();};
   t.classList.add("show");
@@ -566,13 +630,14 @@ function exportDashExcel(list){
   const hasOwner=list.some(v=>v.owner);
   const rows=list.map(v=>({
     ...(hasOwner?{"العضو":v.owner??""}:{}),
-    "الفرع":v.nameAr, "اليوم":DAYS_AR[v.dayIndex]??"",
+    "الفرع":visitName(v), "اليوم":dayName(v.dayIndex),
     "التاريخ":new Date(v.startedAt).toLocaleDateString("en-GB"),
     "وقت البدء":new Date(v.startedAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),
     "المدة (دقيقة)":visitElapsedMin(v),
     "Critical":v.critical??"", "Major":v.major??"", "Minor":v.minor??"",
     "PH":v.ph??"", "TDS":v.tds??"",
     "الحالة":v.status==="open"?"جارية":v.dataComplete?"مكتملة":"ناقصة",
+    "المهام":(v.tasks??[]).map(t=>`${t.title}: ${t.grade}${t.note?` (${t.note})`:""}`).join(" | "),
     "ملاحظات":v.notes??""
   }));
   const ws=XLSX.utils.json_to_sheet(rows); ws["!rtl"]=true;

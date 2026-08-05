@@ -1,9 +1,10 @@
 /* هاف مليون ½M — Service Worker */
-const CACHE = "hm-planner-v2";
+const CACHE = "hm-planner-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/app.css",
+  "./js/i18n.js",
   "./js/seed.js",
   "./js/core.js",
   "./js/ai.js",

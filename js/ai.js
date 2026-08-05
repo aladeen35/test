@@ -45,22 +45,22 @@ function computeInsights(){
   for(const v of visits){
     const rec = now - v.startedAt < 30*864e5 ? 1.5 : 1;
     const score = ((v.critical??0)*3 + (v.major??0)*2 + (v.minor??0)) * rec;
-    const e = byBranch.get(v.branchId) ?? {name:v.nameAr, score:0, visits:0, critical:0};
+    const e = byBranch.get(v.branchId) ?? {name:visitName(v), score:0, visits:0, critical:0};
     e.score+=score; e.visits++; e.critical+=(v.critical??0);
     byBranch.set(v.branchId,e);
   }
   const risky=[...byBranch.values()].filter(b=>b.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
   if(risky.length){
-    out.push({em:"🚨", icon:"alert", acc:"var(--danger)", title:"فروع تحتاج متابعة عاجلة",
+    out.push({em:"🚨", icon:"alert", acc:"var(--danger)", title:tx("فروع تحتاج متابعة عاجلة","Branches needing urgent follow-up"),
       body: risky.map(b=>`${b.name} (مؤشر الخطورة ${Math.round(b.score)}${b.critical?` · ${b.critical} Critical`:""})`).join(" · ")});
   }
 
   // 2) قراءات جودة خارج النطاق
   const badQ=visits.filter(v=>(v.ph!=null&&(v.ph<PH_RANGE[0]||v.ph>PH_RANGE[1]))||(v.tds!=null&&(v.tds<TDS_RANGE[0]||v.tds>TDS_RANGE[1])));
   if(badQ.length){
-    const last=badQ.slice(-3).map(v=>`${v.nameAr}${v.ph!=null&&(v.ph<PH_RANGE[0]||v.ph>PH_RANGE[1])?` PH ${v.ph}`:""}${v.tds!=null&&(v.tds<TDS_RANGE[0]||v.tds>TDS_RANGE[1])?` TDS ${v.tds}`:""}`);
-    out.push({em:"🧪", icon:"flask", acc:"var(--warn)", title:`${badQ.length} قراءة جودة خارج النطاق الآمن`,
-      body:`آخرها: ${last.join(" · ")} — النطاق المرجعي PH ${PH_RANGE[0]}–${PH_RANGE[1]} و TDS ${TDS_RANGE[0]}–${TDS_RANGE[1]} ppm`});
+    const last=badQ.slice(-3).map(v=>`${visitName(v)}${v.ph!=null&&(v.ph<PH_RANGE[0]||v.ph>PH_RANGE[1])?` PH ${v.ph}`:""}${v.tds!=null&&(v.tds<TDS_RANGE[0]||v.tds>TDS_RANGE[1])?` TDS ${v.tds}`:""}`);
+    out.push({em:"🧪", icon:"flask", acc:"var(--warn)", title:tx(`${badQ.length} قراءة جودة خارج النطاق الآمن`,`${badQ.length} quality readings outside the safe range`),
+      body:tx(`آخرها: ${last.join(" · ")} — النطاق المرجعي PH ${PH_RANGE[0]}–${PH_RANGE[1]} و TDS ${TDS_RANGE[0]}–${TDS_RANGE[1]} ppm`,`Latest: ${last.join(" · ")} — reference range PH ${PH_RANGE[0]}–${PH_RANGE[1]}, TDS ${TDS_RANGE[0]}–${TDS_RANGE[1]} ppm`)});
   }
 
   // 3) فروع نشطة لم تُزَر منذ مدة طويلة (أو أبدًا)
@@ -69,8 +69,21 @@ function computeInsights(){
   const activeBr=state.branches.filter(b=>b.active);
   const overdue=activeBr.filter(b=>{const t=lastVisit.get(b.id); return !t || now-t > 21*864e5;});
   if(state.visits.length && overdue.length){
-    out.push({em:"⏳", icon:"clock", acc:"var(--accent)", title:`${overdue.length} فرعًا لم يُزَر منذ أكثر من 3 أسابيع`,
-      body:`منها: ${overdue.slice(0,4).map(b=>b.nameAr).join(" · ")}${overdue.length>4?" وغيرها…":""} — رشّحها لخطة الأسبوع القادم`});
+    out.push({em:"⏳", icon:"clock", acc:"var(--accent)", title:tx(`${overdue.length} فرعًا لم يُزَر منذ أكثر من 3 أسابيع`,`${overdue.length} branches not visited in 3+ weeks`),
+      body:tx(`منها: ${overdue.slice(0,4).map(b=>b.nameAr).join(" · ")}${overdue.length>4?" وغيرها…":""} — رشّحها لخطة الأسبوع القادم`,`Including: ${overdue.slice(0,4).map(b=>bName(b)).join(" · ")}${overdue.length>4?" and more…":""} — shortlist them for next week`)});
+  }
+
+  // 3.5) المهمة الأسبوعية الأكثر مخالفة
+  const tAgg=new Map();
+  for(const v of visits) for(const t of (v.tasks??[])){
+    const e=tAgg.get(t.title)??{C:0,B:0,n:0};
+    if(t.grade==="C")e.C++; else if(t.grade==="B")e.B++;
+    e.n++; tAgg.set(t.title,e);
+  }
+  const worst=[...tAgg.entries()].filter(([,e])=>e.C>0).sort((a,b)=>b[1].C-a[1].C)[0];
+  if(worst){
+    out.push({em:"📋", icon:"x", acc:"var(--danger)", title:tx(`المهمة الأكثر مخالفة: ${worst[0]}`,`Most-violated task: ${worst[0]}`),
+      body:tx(`سُجّلت ${worst[1].C} مخالفة (C)${worst[1].B?` و${worst[1].B} تقييم متوسط (B)`:""} من أصل ${worst[1].n} تقييمًا — راجع ملاحظاتها في اللوحة`,`${worst[1].C} non-conforming (C)${worst[1].B?` and ${worst[1].B} average (B)`:""} out of ${worst[1].n} gradings — review its notes in the dashboard`)});
   }
 
   // 4) تقدم خطة الأسبوع الحالية
@@ -80,8 +93,8 @@ function computeInsights(){
     const done=plan.days.reduce((t,d)=>t+d.stops.filter(s=>{const v=findVisit(plan.id,s.branchId);return v&&v.status!=="open";}).length,0);
     if(total){
       const pct=Math.round(done/total*100);
-      out.push({em:"📈", icon: pct>=80?"flag":"trend", acc:"var(--ok)", title:`إنجاز الخطة الحالية ${pct}%`,
-        body:`اكتملت ${done} من ${total} زيارة مجدولة${pct<50?" — ركّز على الفروع المتبقية أو أعد توزيعها من وضع التعديل":""}`});
+      out.push({em:"📈", icon: pct>=80?"flag":"trend", acc:"var(--ok)", title:tx(`إنجاز الخطة الحالية ${pct}%`,`Current plan ${pct}% complete`),
+        body:tx(`اكتملت ${done} من ${total} زيارة مجدولة${pct<50?" — ركّز على الفروع المتبقية أو أعد توزيعها من وضع التعديل":""}`,`${done} of ${total} scheduled visits done${pct<50?" — focus on the remaining branches or redistribute them in edit mode":""}`)});
     }
   }
 
@@ -90,13 +103,13 @@ function computeInsights(){
   if(phs.length>=3){
     const avgPh=(phs.reduce((t,v)=>t+v.ph,0)/phs.length).toFixed(2);
     const avgTds=tdss.length?Math.round(tdss.reduce((t,v)=>t+v.tds,0)/tdss.length):"—";
-    out.push({em:"💧", icon:"droplet", acc:"var(--day-0)", title:`متوسط الجودة: PH ${avgPh} · TDS ${avgTds} ppm`,
-      body:`محسوب من ${phs.length} قراءة موثّقة${(avgPh>=PH_RANGE[0]&&avgPh<=PH_RANGE[1])?" — ضمن النطاق الصحي ✓":" — راجع معايرة أجهزة القياس"}`});
+    out.push({em:"💧", icon:"droplet", acc:"var(--day-0)", title:tx(`متوسط الجودة: PH ${avgPh} · TDS ${avgTds} ppm`,`Quality averages: PH ${avgPh} · TDS ${avgTds} ppm`),
+      body:tx(`محسوب من ${phs.length} قراءة موثّقة${(avgPh>=PH_RANGE[0]&&avgPh<=PH_RANGE[1])?" — ضمن النطاق الصحي ✓":" — راجع معايرة أجهزة القياس"}`,`Computed from ${phs.length} documented readings${(avgPh>=PH_RANGE[0]&&avgPh<=PH_RANGE[1])?" — within the healthy range ✓":" — recalibrate your meters"}`)});
   }
 
   if(!out.length){
-    out.push({em:"🌱", icon:"leaf", acc:"var(--ok)", title:"لا توجد ملاحظات بعد",
-      body:"سجّل زياراتك بنتائج الفحص (Critical/Major/Minor) وقراءات PH وTDS وستظهر هنا رؤى فورية عن أداء الفروع"});
+    out.push({em:"🌱", icon:"leaf", acc:"var(--ok)", title:tx("لا توجد ملاحظات بعد","No insights yet"),
+      body:tx("سجّل زياراتك بنتائج الفحص (Critical/Major/Minor) وقراءات PH وTDS وستظهر هنا رؤى فورية عن أداء الفروع","Log visits with findings (Critical/Major/Minor) and PH/TDS readings and instant insights will appear here")});
   }
   return out;
 }
@@ -109,6 +122,7 @@ function buildAiContext(){
     day:DAYS_AR[v.dayIndex]??null, minutes:visitElapsedMin(v),
     critical:v.critical, major:v.major, minor:v.minor, ph:v.ph, tds:v.tds,
     status:v.status==="open"?"جارية":(v.dataComplete?"مكتملة":"ناقصة"),
+    tasks:(v.tasks&&v.tasks.length)?v.tasks.map(t=>`${t.title}: ${t.grade}${t.note?` (${t.note})`:""}`):undefined,
     notes:v.notes||undefined
   }));
   const regions={};
@@ -119,6 +133,7 @@ function buildAiContext(){
     branches_total:state.branches.length,
     branches_active:state.branches.filter(b=>b.active).length,
     branches_by_region:regions,
+    weekly_tasks:activeTasks().map(t=>t.title+(t.source==="team"?" (فريق)":"")),
     active_plan: plan ? {
       week:plan.weekLabel,
       days:plan.days.map(d=>({
@@ -136,12 +151,12 @@ function buildAiContext(){
 
 function aiSystemPrompt(){
   return `أنت "مساعد ½M" — مساعد ذكي داخل تطبيق تخطيط زيارات فروع سلسلة قهوة "هاف مليون" في السعودية.
-المستخدم مشرف جودة يزور الفروع أسبوعيًا (الأحد–الخميس، يبدأ الأحد باجتماع الفريق)، يسجّل مخالفات الفحص بثلاث درجات (Critical الأخطر، ثم Major، ثم Minor) وقراءات جودة مياه القهوة (PH النطاق الصحي 6.5–8.5، وTDS النطاق 50–250 ppm).
+المستخدم مشرف جودة يزور الفروع أسبوعيًا (الأحد–الخميس، يبدأ الأحد باجتماع الفريق)، يسجّل مخالفات الفحص بثلاث درجات (Critical الأخطر، ثم Major، ثم Minor) وقراءات جودة مياه القهوة (PH النطاق الصحي 6.5–8.5، وTDS النطاق 50–250 ppm)، ويقيّم مهامًا أسبوعية بمقياس A (مطابق تمامًا) / B (متوسط أو به ملاحظة) / C (مخالف تمامًا).
 
 مهامك: تحليل بيانات الزيارات والمخالفات، اقتراح أولويات الزيارات، كتابة تقارير أسبوعية تنفيذية، والإجابة عن أي سؤال حول الفروع والخطة.
 
 قواعد:
-- أجب بالعربية الفصحى المبسطة وبإيجاز عملي. الأرقام والأكواد بالإنجليزية.
+- ${isEn()?"أجب بالإنجليزية دائمًا (المستخدم اختار واجهة إنجليزية).":"أجب بالعربية الفصحى المبسطة وبإيجاز عملي. الأرقام والأكواد بالإنجليزية."}
 - استند حصريًا إلى بيانات التطبيق المرفقة أدناه؛ إن لم تتوفر معلومة فقل ذلك صراحة ولا تخترع أرقامًا.
 - عند كتابة تقرير: ابدأ بملخص تنفيذي من سطرين، ثم أبرز الأرقام، ثم الفروع الحرجة، ثم توصيات مرقّمة قابلة للتنفيذ.
 - استخدم عناوين قصيرة تبدأ بـ "## " وقوائم تبدأ بـ "- " عند الحاجة، دون جداول.
@@ -238,10 +253,18 @@ async function testAiKey(key, model){
 
 /* أسئلة سريعة جاهزة */
 const AI_QUICK=[
-  {em:"📄", label:"تقرير أسبوعي تنفيذي", prompt:"اكتب تقريرًا أسبوعيًا تنفيذيًا شاملًا عن زيارات هذا الأسبوع: الملخص، الأرقام، الفروع الحرجة، وتوصيات للأسبوع القادم."},
-  {em:"🧭", label:"أولويات الأسبوع القادم", prompt:"بناءً على سجل الزيارات والمخالفات، ما الفروع التي يجب أن أضعها في أولوية زيارات الأسبوع القادم؟ رتّبها مع سبب لكل فرع."},
-  {em:"🧪", label:"تحليل قراءات الجودة", prompt:"حلّل قراءات PH وTDS المسجلة: هل هناك فروع خارج النطاق الصحي أو اتجاه مقلق؟ وما الإجراء المقترح؟"},
-  {em:"🗓️", label:"لخّص خطة الأسبوع", prompt:"لخّص لي خطة الأسبوع الحالية يومًا بيوم مع أي ملاحظات على التوزيع أو أوقات القيادة."},
+  {em:"📄", label:"تقرير أسبوعي تنفيذي",
+   prompt:"اكتب تقريرًا أسبوعيًا تنفيذيًا شاملًا عن زيارات هذا الأسبوع: الملخص، الأرقام، الفروع الحرجة، نتائج المهام الأسبوعية، وتوصيات للأسبوع القادم.",
+   promptEn:"Write a comprehensive executive weekly report on this week's visits: summary, key numbers, critical branches, weekly task results, and recommendations for next week."},
+  {em:"🧭", label:"أولويات الأسبوع القادم",
+   prompt:"بناءً على سجل الزيارات والمخالفات، ما الفروع التي يجب أن أضعها في أولوية زيارات الأسبوع القادم؟ رتّبها مع سبب لكل فرع.",
+   promptEn:"Based on the visit log and findings, which branches should I prioritize next week? Rank them with a reason for each."},
+  {em:"🧪", label:"تحليل قراءات الجودة",
+   prompt:"حلّل قراءات PH وTDS المسجلة: هل هناك فروع خارج النطاق الصحي أو اتجاه مقلق؟ وما الإجراء المقترح؟",
+   promptEn:"Analyze the recorded PH and TDS readings: any branches outside the healthy range or a worrying trend? What action do you suggest?"},
+  {em:"🗓️", label:"لخّص خطة الأسبوع",
+   prompt:"لخّص لي خطة الأسبوع الحالية يومًا بيوم مع أي ملاحظات على التوزيع أو أوقات القيادة.",
+   promptEn:"Summarize the current weekly plan day by day, with any notes on distribution or driving times."},
 ];
 
 /* ============ مطابقة أسماء الفروع من الدردشة ============
@@ -288,7 +311,7 @@ let _brIdx=null, _brIdxLen=0;
 function branchIndex(){
   if(_brIdx && _brIdxLen===state.branches.length) return _brIdx;
   _brIdx=state.branches.map(b=>({
-    id:b.id, nameAr:b.nameAr, active:b.active,
+    id:b.id, nameAr:b.nameAr, nameEn:b.nameEn, active:b.active,
     words:[...new Set([...normTxt(b.nameAr).split(" "), ...normTxt(b.nameEn).split(" ")].filter(w=>w.length>=2))],
     full:normTxt(b.nameAr)+" "+normTxt(b.nameEn)
   }));
@@ -313,7 +336,7 @@ function matchBranchToken(token){
   const tokenWords=t.split(" ").filter(w=>w.length>=2);
   if(!tokenWords.length) return {token, status:"unknown", candidates:[]};
   const scored=branchIndex()
-    .map(e=>({id:e.id, name:e.nameAr, active:e.active, score:branchScore(tokenWords,e)}))
+    .map(e=>({id:e.id, name:isEn()?(e.nameEn||e.nameAr):e.nameAr, active:e.active, score:branchScore(tokenWords,e)}))
     .filter(c=>c.score>=0.62)
     .sort((a,b)=>b.score-a.score)
     .slice(0,5);

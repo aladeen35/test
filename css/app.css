@@ -285,6 +285,15 @@ html[data-theme=dark] .meeting-badge{color:#171310}
 #map{position:absolute;inset:0;background:var(--bg-inset)}
 #map-chips{position:absolute;top:.75rem;right:.75rem;left:.75rem;z-index:500;display:flex;gap:.5rem;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .hm-marker{border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:'Space Grotesk';font-weight:700;box-shadow:0 3px 10px #1c191750}
+.map-fab{
+  position:absolute;bottom:1.1rem;inset-inline-start:1rem;z-index:650;
+  width:54px;height:54px;min-height:54px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;
+  box-shadow:0 6px 20px #c77b2e59;transition:transform .2s,filter .15s;
+}
+.map-fab:hover{filter:brightness(1.06)}
+.map-fab.armed{transform:rotate(45deg);background:var(--danger);color:#fff}
+.leaflet-container.placing{cursor:crosshair}
 html[data-theme=dark] .leaflet-container{background:#131009}
 
 /* ============ المفاتيح ============ */
@@ -435,6 +444,29 @@ button .ic{pointer-events:none}
   display:flex;align-items:center;justify-content:space-between;gap:.6rem;
   padding:.7rem 1rem;background:var(--bg-soft);
 }
+
+/* ============ المهام الأسبوعية ============ */
+.task-row{display:flex;gap:.7rem;padding:.75rem 1rem;border-top:1px solid var(--line-soft);align-items:flex-start}
+.task-eval{
+  border:1px solid var(--line);border-radius:var(--r-m);padding:.7rem .8rem;margin-bottom:.6rem;
+  background:var(--bg-elev);transition:border-color .2s,box-shadow .2s;
+}
+.task-eval.task-missing{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-soft)}
+.grade-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin-top:.5rem}
+.grade-seg button{
+  min-height:40px;border-radius:.55rem;font-size:.68rem;font-weight:700;
+  border:1.5px solid var(--line);background:var(--bg-soft);color:var(--text-2);
+  padding:.3rem .2rem;transition:background .15s,color .15s,border-color .15s;
+}
+.grade-seg button:hover{border-color:var(--text-3)}
+.grade-seg .gA.sel{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade-seg .gB.sel{background:var(--warn);border-color:var(--warn);color:#fff}
+.grade-seg .gC.sel{background:var(--danger);border-color:var(--danger);color:#fff}
+html[data-theme=dark] .grade-seg .gC.sel{color:#1c0b0a}
+html[data-theme=dark] .grade-seg .gB.sel{color:#1c1508}
+.grade-seg .gNA.sel{background:var(--text-3);border-color:var(--text-3);color:var(--bg)}
+.tk-bar{display:flex;gap:2px;height:14px;border-radius:5px;overflow:hidden;margin-top:.3rem}
+.tk-bar i{display:block;min-width:4px;border-radius:2px}
 
 /* حالات تحويم أوضح (قائمة فحص UI/UX Pro Max) */
 .chip:hover,.mini-chip:hover{border-color:var(--accent)}

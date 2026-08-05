@@ -91,12 +91,27 @@
   </div>
 </div>
 
+<!-- نافذة إضافة مهمة أسبوعية -->
+<div id="task-modal" class="modal">
+  <div class="backdrop" onclick="closeTaskModal()"></div>
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <b id="task-modal-title">📋 مهمة أسبوعية جديدة</b>
+      <button class="sheet-x" onclick="closeTaskModal()" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="sheet-body" id="task-body"></div>
+    <div class="sheet-foot"><button class="btn-primary" id="task-save">حفظ المهمة</button></div>
+  </div>
+</div>
+
 <header class="app">
   <span class="logo">½M</span>
   <div class="titles">
     <span class="tab-name" id="tab-name">الخطة الأسبوعية</span>
     <span class="tab-sub" id="tab-sub">هاف مليون — مخطط الزيارات</span>
   </div>
+  <button class="icon-btn" id="lang-btn" aria-label="Switch language" title="عربي / English" style="font-weight:700;font-size:.85rem">EN</button>
   <button class="icon-btn" id="theme-btn" aria-label="تبديل الوضع الليلي" title="الوضع الليلي/النهاري">
     <svg id="theme-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></svg>
   </button>
@@ -131,6 +146,7 @@
   </button>
 </div></nav>
 
+<script src="js/i18n.js"></script>
 <script src="js/seed.js"></script>
 <script src="js/core.js"></script>
 <script src="js/ai.js"></script>

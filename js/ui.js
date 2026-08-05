@@ -89,6 +89,7 @@ function renderPlan(){
   let html=`<div class="page">
     <button class="btn-primary" id="gen-btn">${ic("sparkles",17)} توليد الخطة الأسبوعية</button>`;
   if(!s.homeLocation) html+=`<div class="hint">💡 حدّد موقع الانطلاق ومقر اجتماع الأحد من تبويب الإعدادات لنتائج أدق</div>`;
+  html+=tasksCardHTML();
 
   if(state.plans.length>1){
     html+=`<h2 class="sec">الخطط السابقة (${state.plans.length})</h2>`;
@@ -126,7 +127,7 @@ function renderPlan(){
     for(const day of plan.days){
       html+=`<div class="card day-card">
         <div class="day-head" style="--day-accent:${dayColor(day.dayIndex)}">
-          <b style="font-size:.9rem">${day.dayNameAr}${day.isMeetingDay?'<span class="meeting-badge">📋 اجتماع الفريق ثم الانطلاق من المقر</span>':''}</b>
+          <b style="font-size:.9rem">${dayName(day.dayIndex)}${day.isMeetingDay?'<span class="meeting-badge">📋 اجتماع الفريق ثم الانطلاق من المقر</span>':''}</b>
           <span class="mono faint" dir="ltr" style="font-size:.72rem">${day.totalDriveKm} km</span>
         </div>
         <div class="stops-list" data-day="${day.dayIndex}" style="min-height:${editMode?"2.2rem":"0"}">`;
@@ -137,13 +138,13 @@ function renderPlan(){
         html+=`<div class="stop${doneCls}" data-branch="${st.branchId}">
           ${editMode?`<button class="drag-handle" data-drag aria-label="سحب لإعادة الترتيب">⠿</button>`:`<span class="num mono">${v&&v.dataComplete?"✓":i+1}</span>`}
           <div style="flex:1;min-width:0">
-            <b style="font-size:.85rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(st.nameAr)}</b>
+            <b style="font-size:.85rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(stopName(st))}</b>
             <span class="mono faint" dir="ltr" style="font-size:.66rem">${st.arrivalTime} → ${st.departureTime} · ${st.size==="large"?"120":"90"}min · ${st.distanceKm}km</span>
             <div style="margin-top:.25rem">${visitBadge(v)}</div>
           </div>`;
         if(editMode){
           html+=`<select class="move-sel" data-move="${st.branchId}" aria-label="نقل إلى يوم">
-            ${plan.days.map(d=>`<option value="${d.dayIndex}" ${d.dayIndex===day.dayIndex?"selected":""}>${d.dayNameAr}</option>`).join("")}
+            ${plan.days.map(d=>`<option value="${d.dayIndex}" ${d.dayIndex===day.dayIndex?"selected":""}>${dayName(d.dayIndex)}</option>`).join("")}
           </select>`;
         }else{
           html+=`<div style="display:flex;flex-direction:column;gap:.3rem;align-items:flex-end">`;
@@ -152,7 +153,7 @@ function renderPlan(){
           else if(!v.dataComplete) html+=`<button class="nav-btn" style="background:var(--accent);color:var(--accent-ink)" data-endvisit="${v.id}">📝 أكمل البيانات</button>`;
           else html+=`<button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-endvisit="${v.id}">✏️ تعديل البيانات</button>`;
           html+=`<button class="nav-btn" data-navlat="${st.lat}" data-navlng="${st.lng}">${ic("nav",12)} ملاحة</button>
-            <button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-sharename="${esc(st.nameAr)}" data-sharelat="${st.lat}" data-sharelng="${st.lng}">${ic("share",12)} الموقع</button>
+            <button class="nav-btn" style="background:var(--bg-inset);color:var(--text-2)" data-sharename="${esc(stopName(st))}" data-sharelat="${st.lat}" data-sharelng="${st.lng}">${ic("share",12)} الموقع</button>
           </div>`;
         }
         html+=`</div>`;
@@ -166,24 +167,25 @@ function renderPlan(){
   main.innerHTML=html;
 
   $("#gen-btn").onclick=openGenModal;
+  bindTasksCard(renderPlan);
   const editBtn=$("#edit-btn");
   if(editBtn) editBtn.onclick=()=>{ editMode=!editMode; renderPlan(); };
   const shareBtn=$("#share-btn");
   if(shareBtn) shareBtn.onclick=async()=>{ shareBtn.textContent="…"; shareBtn.textContent=await sharePlan(activePlan()); setTimeout(()=>shareBtn.innerHTML=`${ic("share",13)} مشاركة`,2500); };
   const pdfBtn=$("#pdf-btn");
-  if(pdfBtn) pdfBtn.onclick=async()=>{ pdfBtn.textContent="…"; try{await exportPlanPDF(activePlan());}catch(e){toast("تعذّر التصدير","err");} pdfBtn.innerHTML=`${ic("file",13)} PDF`; };
+  if(pdfBtn) pdfBtn.onclick=async()=>{ pdfBtn.textContent="…"; try{await exportPlanPDF(activePlan());}catch(e){toast(tx("تعذّر التصدير","Export failed"),"err");} pdfBtn.innerHTML=`${ic("file",13)} PDF`; };
   const imgBtn=$("#img-btn");
-  if(imgBtn) imgBtn.onclick=async()=>{ imgBtn.textContent="…"; try{await exportPlanImage(activePlan());}catch(e){toast("تعذّر التصدير","err");} imgBtn.innerHTML=`${ic("image",13)} صورة`; };
+  if(imgBtn) imgBtn.onclick=async()=>{ imgBtn.textContent="…"; try{await exportPlanImage(activePlan());}catch(e){toast(tx("تعذّر التصدير","Export failed"),"err");} imgBtn.innerHTML=`${ic("image",13)} صورة`; };
   main.querySelectorAll("[data-sel]").forEach(b=>b.onclick=async()=>{state.activePlanId=b.dataset.sel; editMode=false; await persist(); scheduleReminders(); renderPlan();});
   main.querySelectorAll("[data-share]").forEach(b=>b.onclick=async()=>{const p=state.plans.find(x=>x.id===b.dataset.share); b.textContent="…"; b.textContent=await sharePlan(p); setTimeout(()=>b.textContent="مشاركة",2500);});
   main.querySelectorAll("[data-delplan]").forEach(b=>b.onclick=async()=>{
     state.plans=state.plans.filter(x=>x.id!==b.dataset.delplan);
     if(state.activePlanId===b.dataset.delplan) state.activePlanId=state.plans[0]?.id??null;
-    await persist(); renderPlan(); toast("حُذفت الخطة","ok");
+    await persist(); renderPlan(); toast(tx("حُذفت الخطة","Plan deleted"),"ok");
   });
   main.querySelectorAll("[data-navlat]").forEach(b=>b.onclick=()=>openNav(b.dataset.navlat,b.dataset.navlng));
   main.querySelectorAll("[data-sharename]").forEach(b=>b.onclick=()=>shareLocation(b.dataset.sharename,b.dataset.sharelat,b.dataset.sharelng,b));
-  main.querySelectorAll("[data-arrive]").forEach(b=>b.onclick=async()=>{ await checkIn(activePlan().id,b.dataset.arrive); toast("بدأ عدّاد الزيارة ⏱","ok"); renderPlan(); });
+  main.querySelectorAll("[data-arrive]").forEach(b=>b.onclick=async()=>{ await checkIn(activePlan().id,b.dataset.arrive); toast(tx("بدأ عدّاد الزيارة ⏱","Visit timer started ⏱"),"ok"); renderPlan(); });
   main.querySelectorAll("[data-endvisit]").forEach(b=>b.onclick=()=>openVisitForm(b.dataset.endvisit));
 
   if(editMode){
@@ -242,6 +244,143 @@ function setupDragAndDrop(){
       handle.addEventListener("pointerup",onUp);
     });
   });
+}
+
+/* ---- بطاقة المهام الأسبوعية (تبويب الخطة) ---- */
+function tasksCardHTML(){
+  const tasks=activeTasks();
+  const inactive=state.tasks.filter(t=>!taskIsCurrent(t));
+  let html=`<div class="card" style="overflow:hidden;margin:1rem 0">
+    <div class="day-head" style="--day-accent:var(--accent)">
+      <b style="font-size:.9rem;display:inline-flex;align-items:center;gap:.4rem">${ic("check",14)} المهام الأسبوعية
+        <span class="mono faint" dir="ltr" style="font-size:.7rem">(${tasks.length})</span></b>
+      <button class="mini-chip on" id="task-add-btn">${ic("plus",11)} إضافة مهمة</button>
+    </div>`;
+  if(!tasks.length && !inactive.length){
+    html+=`<p class="muted" style="padding:.8rem 1rem;font-size:.78rem;line-height:1.7">
+      أضف مهامًا تُقيَّم في كل زيارة بمقياس <b style="color:var(--ok)">A</b>/<b style="color:var(--warn)">B</b>/<b style="color:var(--danger)">C</b> —
+      مثل "التحقق من نكهة قهوة التقطير" أو "صلاحية الحليب". مهام الفريق تصل لجميع الأعضاء تلقائيًا.</p>`;
+  }
+  const canManageTeam=state.settings.teamManager;
+  for(const t of tasks){
+    const isTeam=t.source==="team";
+    const canManage=!isTeam || canManageTeam;
+    html+=`<div class="task-row">
+      <div style="flex:1;min-width:0">
+        <b style="font-size:.83rem">${esc(t.title)}</b>
+        ${t.desc?`<small class="muted" style="display:block;font-size:.7rem">${esc(t.desc)}</small>`:""}
+        <div style="display:flex;gap:.3rem;margin-top:.25rem;flex-wrap:wrap">
+          <span class="visit-chip ${isTeam?"done-chip":"auto-chip"}">${isTeam?"👥 فريق":"محلية"}</span>
+          ${t.createdBy?`<span class="visit-chip" style="background:var(--bg-inset);color:var(--text-2)">أضافها: ${esc(t.createdBy)}</span>`:""}
+          ${t.once?`<span class="visit-chip" style="background:var(--bg-inset);color:var(--text-2)">هذا الأسبوع فقط</span>`:""}
+        </div>
+      </div>
+      ${canManage?`<div style="display:flex;flex-direction:column;gap:.25rem;align-items:flex-end">
+        <button class="mini-chip" data-task-off="${t.id}" data-task-src="${t.source}">تعطيل</button>
+        <button class="del-btn" data-task-del="${t.id}" data-task-src="${t.source}">حذف</button>
+      </div>`:""}
+    </div>`;
+  }
+  for(const t of inactive){
+    html+=`<div class="task-row" style="opacity:.5">
+      <div style="flex:1;min-width:0"><b style="font-size:.8rem;text-decoration:line-through">${esc(t.title)}</b>
+        <span class="visit-chip auto-chip" style="margin-inline-start:.3rem">${t.once&&t.weekOf!==weekStart()?"انتهى أسبوعها":"معطّلة"}</span></div>
+      ${!t.once||t.weekOf===weekStart()?`<button class="mini-chip" data-task-on="${t.id}">تفعيل</button>`:""}
+      <button class="del-btn" data-task-del="${t.id}" data-task-src="local">حذف</button>
+    </div>`;
+  }
+  html+=`</div>`;
+  return html;
+}
+
+function bindTasksCard(rerender){
+  const addBtn=$("#task-add-btn");
+  if(addBtn) addBtn.onclick=openTaskModal;
+  main.querySelectorAll("[data-task-off]").forEach(b=>b.onclick=async()=>{
+    await setTaskActive(b.dataset.taskOff, b.dataset.taskSrc, false, rerender);
+  });
+  main.querySelectorAll("[data-task-on]").forEach(b=>b.onclick=async()=>{
+    const t=state.tasks.find(x=>x.id===b.dataset.taskOn);
+    if(t){ t.active=true; await persist(); rerender(); }
+  });
+  main.querySelectorAll("[data-task-del]").forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.taskDel, src=b.dataset.taskSrc;
+    if(src==="team"){
+      b.textContent="…";
+      try{ await teamTaskDelete(id); toast(tx("حُذفت مهمة الفريق","Team task deleted"),"ok"); }
+      catch(e){ toast(tx("تعذّر حذف مهمة الفريق — تحقق من الاتصال","Could not delete team task — check connection"),"err"); }
+    } else {
+      state.tasks=state.tasks.filter(x=>x.id!==id);
+      await persist(); toast(tx("حُذفت المهمة","Task deleted"),"ok");
+    }
+    rerender();
+  });
+}
+async function setTaskActive(id, src, active, rerender){
+  if(src==="team"){
+    const t=(teamCache.tasks??[]).find(x=>x.id===id);
+    if(!t) return;
+    try{ await teamTaskSave({...t, active}); toast(tx(active?"فُعّلت المهمة":"عُطّلت المهمة",active?"Task enabled":"Task disabled"),"ok"); }
+    catch(e){ toast(tx("تعذّر تعديل مهمة الفريق","Could not update team task"),"err"); }
+  } else {
+    const t=state.tasks.find(x=>x.id===id);
+    if(t){ t.active=active; await persist(); }
+  }
+  rerender();
+}
+
+/* ---- نافذة إضافة مهمة ---- */
+let taskScope="local", taskOnce=false;
+function openTaskModal(){
+  taskScope = teamReady() ? "team" : "local";
+  taskOnce=false;
+  renderTaskModalBody();
+  $("#task-modal").classList.add("open");
+}
+function closeTaskModal(){ $("#task-modal").classList.remove("open"); }
+function renderTaskModalBody(){
+  $("#task-body").innerHTML=`
+    <h2 class="sec" style="margin-top:.4rem">📝 وصف المهمة</h2>
+    <input id="tk-title" placeholder="مثال: التحقق من نكهة قهوة التقطير" style="margin-bottom:.5rem">
+    <input id="tk-desc" placeholder="تفاصيل إضافية (اختياري)" style="margin-bottom:.9rem">
+    <h2 class="sec">النطاق</h2>
+    <div style="display:flex;gap:.5rem">
+      ${teamReady()?`<button class="chip ${taskScope==="team"?"on":""}" data-tk-scope="team" style="flex:1">${ic("users",13)} كل الفريق</button>`:""}
+      <button class="chip ${taskScope==="local"?"on":""}" data-tk-scope="local" style="flex:1">هذا الجهاز فقط</button>
+    </div>
+    ${!teamReady()?`<p class="faint" style="font-size:.7rem;margin-top:.4rem">💡 فعّل نظام الفريق من الإعدادات لإرسال المهام لكل الأعضاء</p>`:""}
+    <h2 class="sec">التكرار</h2>
+    <div style="display:flex;gap:.5rem">
+      <button class="chip ${!taskOnce?"on":""}" data-tk-once="0" style="flex:1">كل أسبوع حتى أعطّلها</button>
+      <button class="chip ${taskOnce?"on":""}" data-tk-once="1" style="flex:1">هذا الأسبوع فقط</button>
+    </div>
+    <div class="hint" style="margin-top:1rem">تظهر المهمة في نموذج كل زيارة وتُقيَّم:
+      <b style="color:var(--ok)">A</b> مطابق تمامًا ·
+      <b style="color:var(--warn)">B</b> متوسط/به ملاحظة ·
+      <b style="color:var(--danger)">C</b> مخالف تمامًا (تتطلب ملاحظة)</div>
+    <p id="tk-err" style="color:var(--danger);font-size:.78rem;font-weight:700;margin-top:.5rem"></p>`;
+  const body=$("#task-body");
+  body.querySelectorAll("[data-tk-scope]").forEach(b=>b.onclick=()=>{ const v=body.querySelector("#tk-title").value, d=body.querySelector("#tk-desc").value; taskScope=b.dataset.tkScope; renderTaskModalBody(); $("#tk-title").value=v; $("#tk-desc").value=d; });
+  body.querySelectorAll("[data-tk-once]").forEach(b=>b.onclick=()=>{ const v=body.querySelector("#tk-title").value, d=body.querySelector("#tk-desc").value; taskOnce=b.dataset.tkOnce==="1"; renderTaskModalBody(); $("#tk-title").value=v; $("#tk-desc").value=d; });
+  $("#task-save").onclick=saveTaskModal;
+}
+async function saveTaskModal(){
+  const title=$("#tk-title").value.trim();
+  if(!title){ $("#tk-err").textContent="⚠️ اكتب عنوان المهمة"; return; }
+  const task=newTask(title, $("#tk-desc").value.trim(), taskScope, taskOnce);
+  const btn=$("#task-save");
+  if(taskScope==="team"){
+    btn.disabled=true; btn.textContent="جارٍ الإرسال للفريق…";
+    try{ await teamTaskSave(task); toast(tx("أُرسلت المهمة لكل الفريق ✓","Task sent to the whole team ✓"),"ok"); }
+    catch(e){ btn.disabled=false; btn.textContent="حفظ المهمة"; $("#tk-err").textContent="⚠️ تعذّر الإرسال — تحقق من اتصال الفريق"; return; }
+    btn.disabled=false; btn.textContent="حفظ المهمة";
+  } else {
+    state.tasks.push(task);
+    await persist();
+    toast(tx("أُضيفت المهمة ✓","Task added ✓"),"ok");
+  }
+  closeTaskModal();
+  render();
 }
 
 /* ---- نافذة خيارات توليد الخطة ---- */
@@ -360,7 +499,7 @@ function bindGenEvents(){
     state.plans.unshift(p); state.activePlanId=p.id;
     await persist(); scheduleReminders();
     closeGenModal(); renderPlan();
-    toast("جُهّزت خطة الأسبوع ✨","ok");
+    toast(tx("جُهّزت خطة الأسبوع ✨","Weekly plan ready ✨"),"ok");
   };
 }
 
@@ -370,7 +509,7 @@ const vTimeVal=ts=>{const d=new Date(ts);return String(d.getHours()).padStart(2,
 function openVisitForm(visitId){
   visitFormId=visitId;
   const v=state.visits.find(x=>x.id===visitId); if(!v)return;
-  $("#visit-title").textContent=`✅ تأكيد زيارة: ${v.nameAr}`;
+  $("#visit-title").textContent=tx(`✅ تأكيد زيارة: ${visitName(v)}`,`✅ Confirm visit: ${visitName(v)}`);
   $("#visit-body").innerHTML=`
     <p class="mono faint" dir="ltr" style="font-size:.72rem;margin-bottom:.8rem">
       ${new Date(v.startedAt).toLocaleString("en-GB")} · ${visitElapsedMin(v)} min ${v.status==="auto"?"· auto-closed":""}
@@ -398,12 +537,51 @@ function openVisitForm(visitId){
       <div class="finding"><label>TDS (ppm)</label>
         <input dir="ltr" type="number" min="0" class="mono" id="vf-tds" value="${v.tds??""}" placeholder="120"></div>
     </div>
+    ${visitTasksHTML(v)}
     <h2 class="sec">ملاحظات (اختيارية)</h2>
     <textarea id="vf-notes" placeholder="أي ملاحظات عن الزيارة…">${esc(v.notes??"")}</textarea>
     <p id="vf-err" style="color:var(--danger);font-size:.78rem;font-weight:700;margin-top:.5rem"></p>
   `;
+  bindVisitTasks();
   $("#visit-modal").classList.add("open");
   $("#visit-save").onclick=saveVisitForm;
+  // حدّث مهام الفريق في الخلفية إن كانت قديمة
+  if(teamReady()) teamPull().catch(()=>{});
+}
+
+/* قسم تقييم المهام الأسبوعية داخل نموذج الزيارة */
+function visitTasksHTML(v){
+  const saved=new Map((v.tasks??[]).map(t=>[t.taskId,t]));
+  // المهام الفعالة + أي مهمة قُيّمت سابقًا في هذه الزيارة ولم تعد فعالة
+  const rows=[...activeTasks()];
+  for(const st of (v.tasks??[])) if(!rows.some(r=>r.id===st.taskId)) rows.push({id:st.taskId, title:st.title, desc:"", source:st.source??"local", legacy:true});
+  if(!rows.length) return "";
+  let html=`<h2 class="sec req">المهام الأسبوعية — قيّم كل مهمة</h2>`;
+  for(const t of rows){
+    const sv=saved.get(t.id);
+    const g=sv?.grade??null;
+    html+=`<div class="task-eval" data-tid="${t.id}" data-ttitle="${esc(t.title)}" data-grade="${g??""}">
+      <b style="font-size:.83rem">${esc(t.title)} ${t.source==="team"?'<span class="visit-chip done-chip">👥 فريق</span>':""}</b>
+      ${t.desc?`<small class="muted" style="display:block;font-size:.7rem;margin-top:.1rem">${esc(t.desc)}</small>`:""}
+      <div class="grade-seg" role="radiogroup" aria-label="${esc(t.title)}">
+        <button type="button" data-g="A"  class="gA ${g==="A"?"sel":""}"  aria-pressed="${g==="A"}">A · مطابق تمامًا</button>
+        <button type="button" data-g="B"  class="gB ${g==="B"?"sel":""}"  aria-pressed="${g==="B"}">B · متوسط</button>
+        <button type="button" data-g="C"  class="gC ${g==="C"?"sel":""}"  aria-pressed="${g==="C"}">C · مخالف تمامًا</button>
+        <button type="button" data-g="NA" class="gNA ${g==="NA"?"sel":""}" aria-pressed="${g==="NA"}">لا ينطبق</button>
+      </div>
+      <input class="task-note" placeholder="ملاحظة (إلزامية عند C)" value="${esc(sv?.note??"")}" style="font-size:.8rem;padding:.5rem .8rem;margin-top:.4rem">
+    </div>`;
+  }
+  return html;
+}
+function bindVisitTasks(){
+  document.querySelectorAll("#visit-body .task-eval").forEach(row=>{
+    row.querySelectorAll(".grade-seg button").forEach(b=>b.onclick=()=>{
+      row.dataset.grade=b.dataset.g;
+      row.querySelectorAll(".grade-seg button").forEach(x=>{x.classList.toggle("sel",x===b); x.setAttribute("aria-pressed",x===b);});
+      row.classList.remove("task-missing");
+    });
+  });
 }
 function closeVisitModal(){ $("#visit-modal").classList.remove("open"); visitFormId=null; }
 async function saveVisitForm(){
@@ -414,6 +592,28 @@ async function saveVisitForm(){
     $("#vf-err").textContent="⚠️ أدخل أعداد Critical و Major و Minor (ضع 0 إن لم توجد)";
     return;
   }
+  // تحقق من تقييم كل المهام (C تتطلب ملاحظة)
+  const taskRows=[...document.querySelectorAll("#visit-body .task-eval")];
+  const taskResults=[];
+  for(const row of taskRows){
+    const g=row.dataset.grade;
+    const note=row.querySelector(".task-note").value.trim();
+    if(!g){
+      row.classList.add("task-missing");
+      $("#vf-err").textContent="⚠️ قيّم كل المهام الأسبوعية (A/B/C أو لا ينطبق)";
+      row.scrollIntoView({block:"center",behavior:"smooth"});
+      return;
+    }
+    if(g==="C" && !note){
+      row.classList.add("task-missing");
+      $("#vf-err").textContent=`⚠️ مهمة "${row.dataset.ttitle}" مخالفة (C) — اكتب ملاحظة توضح المخالفة`;
+      row.scrollIntoView({block:"center",behavior:"smooth"});
+      return;
+    }
+    taskResults.push({taskId:row.dataset.tid, title:row.dataset.ttitle, grade:g, note});
+  }
+  v.tasks=taskResults;
+
   v.critical=critical; v.major=major; v.minor=minor;
   v.ph=num("vf-ph"); v.tds=num("vf-tds");
   v.notes=$("#vf-notes").value.trim();
@@ -427,7 +627,7 @@ async function saveVisitForm(){
   v.manualTime = !!(startEl?.value || dur!=null);
   v.status="closed"; v.dataComplete=true;
   await persist(); closeVisitModal();
-  toast("حُفظت بيانات الزيارة ✓","ok");
+  toast(tx("حُفظت بيانات الزيارة ✓","Visit data saved ✓"),"ok");
   if(state.tab==="plan") renderPlan(); else if(state.tab==="dash") renderDash();
 }
 
@@ -460,7 +660,7 @@ function renderBranches(){
     for(const b of vis){
       html+=`<div class="card branch ${b.active?"":"off"}">
         <button class="dot" data-toggle="${b.id}" aria-label="تفعيل/تعطيل">☕</button>
-        <div class="info"><b>${esc(b.nameAr)}</b><small dir="ltr">${esc(b.nameEn)}</small>
+        <div class="info"><b dir="auto">${esc(bName(b))}</b><small dir="auto">${esc(isEn()?b.nameAr:b.nameEn)}</small>
         <small class="mono" dir="ltr">${b.lat.toFixed(5)}, ${b.lng.toFixed(5)}</small></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem">
           <button class="size-btn ${b.size==="large"?"large":""}" data-size="${b.id}">${b.size==="large"?"كبير · 120د":"صغير · 90د"}</button>
@@ -476,7 +676,7 @@ function renderBranches(){
   main.innerHTML=html;
 
   $("#add-branch-btn").onclick=()=>openAddBranch();
-  $("#export-branches").onclick=()=>{ try{exportBranchesExcel(); toast("صُدّر ملف الفروع ✓","ok");}catch(e){toast("تعذّر التصدير","err");} };
+  $("#export-branches").onclick=()=>{ try{exportBranchesExcel(); toast(tx("صُدّر ملف الفروع ✓","Branches exported ✓"),"ok");}catch(e){toast(tx("تعذّر التصدير","Export failed"),"err");} };
   const dz=$("#dz"), fi=$("#xl-file");
   dz.onclick=()=>fi.click();
   dz.ondragover=e=>{e.preventDefault();dz.classList.add("drag");};
@@ -490,13 +690,13 @@ function renderBranches(){
       const parsed=await parseExcel(f);
       if(!parsed.length){ $("#import-msg").textContent="لم يُعثر على فروع بإحداثيات صالحة في الملف"; return; }
       state.branches.push(...parsed); await persist(); renderBranches();
-      toast(`استُورد ${parsed.length} فرعًا ✓`,"ok");
+      toast(tx(`استُورد ${parsed.length} فرعًا ✓`,`Imported ${parsed.length} branches ✓`),"ok");
     }catch(e){ $("#import-msg").textContent="تعذّرت قراءة الملف — تأكد أنه بصيغة .xlsx"; }
   }
   $("#search").oninput=e=>{branchQuery=e.target.value; renderBranches(); const s=$("#search"); s.focus(); s.setSelectionRange(s.value.length,s.value.length);};
   main.querySelectorAll("[data-toggle]").forEach(x=>x.onclick=async()=>{const b=state.branches.find(y=>y.id===x.dataset.toggle); b.active=!b.active; await persist(); renderBranches();});
   main.querySelectorAll("[data-size]").forEach(x=>x.onclick=async()=>{const b=state.branches.find(y=>y.id===x.dataset.size); b.size=b.size==="small"?"large":"small"; await persist(); renderBranches();});
-  main.querySelectorAll("[data-del]").forEach(x=>x.onclick=async()=>{state.branches=state.branches.filter(y=>y.id!==x.dataset.del); await persist(); renderBranches(); toast("حُذف الفرع","ok");});
+  main.querySelectorAll("[data-del]").forEach(x=>x.onclick=async()=>{state.branches=state.branches.filter(y=>y.id!==x.dataset.del); await persist(); renderBranches(); toast(tx("حُذف الفرع","Branch deleted"),"ok");});
   main.querySelectorAll("[data-shloc]").forEach(x=>x.onclick=()=>{const b=state.branches.find(y=>y.id===x.dataset.shloc); shareLocation(b.nameAr,b.lat,b.lng,x);});
 }
 
@@ -623,7 +823,7 @@ function bindAddBranch(){
     });
     const cb=addBranchCallback; addBranchCallback=null;
     await persist(); closeAddBranch();
-    toast("أُضيف الفرع ✓","ok");
+    toast(tx("أُضيف الفرع ✓","Branch added ✓"),"ok");
     if(cb) cb(newId);
     else if(state.tab==="branches") renderBranches();
   };
@@ -668,11 +868,15 @@ function renderMap(){
     chips=`<div id="map-chips"><button class="chip ${mapDayFilter==="all"?"on":""}" data-day="all">الكل</button>`;
     plan.days.forEach(d=>{
       const on=mapDayFilter===d.dayIndex;
-      chips+=`<button class="chip" data-day="${d.dayIndex}" style="${on?`background:${dayColor(d.dayIndex)};color:#fff;border-color:${dayColor(d.dayIndex)}`:""}">${d.dayNameAr}</button>`;
+      chips+=`<button class="chip" data-day="${d.dayIndex}" style="${on?`background:${dayColor(d.dayIndex)};color:#fff;border-color:${dayColor(d.dayIndex)}`:""}">${dayName(d.dayIndex)}</button>`;
     });
     chips+=`</div>`;
   }
   main.innerHTML=`<div style="position:absolute;inset:0"><div id="map"></div>${chips}
+    <button class="map-fab" id="map-add-fab" aria-label="إضافة فرع من الخريطة" title="إضافة فرع من الخريطة">${ic("plus",22)}</button>
+    <div id="map-place-hint" style="display:none;position:absolute;bottom:5.2rem;right:.75rem;left:.75rem;z-index:600;background:var(--espresso);color:var(--bg);border-radius:.9rem;padding:.7rem 1rem;font-size:.8rem;font-weight:600;text-align:center;box-shadow:var(--sh-3)">
+      📍 اضغط على موقع الفرع الجديد في الخريطة — <button id="map-place-cancel" style="min-height:auto;font-weight:700;text-decoration:underline;color:inherit">إلغاء</button>
+    </div>
     <div id="tile-notice" style="display:none;position:absolute;bottom:1rem;right:.75rem;left:.75rem;z-index:600;background:var(--espresso);color:var(--bg);border-radius:.9rem;padding:.7rem 1rem;font-size:.78rem;line-height:1.7;box-shadow:var(--sh-3)">
       🗺️ يبدو أن هذه المعاينة تحجب صور الخرائط. العلامات والمسارات تعمل، وستظهر الشوارع كاملة عند فتح التطبيق كموقع ويب.
     </div></div>`;
@@ -692,7 +896,7 @@ function renderMap(){
     const size=b.size==="large"?38:30;
     const icon=L.divIcon({className:"",html:`<div class="hm-marker" style="background:${color};width:${size}px;height:${size}px;font-size:${b.size==="large"?12:9}px">½M</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
     L.marker([b.lat,b.lng],{icon}).addTo(leafletMap).bindPopup(
-      `<b>${esc(b.nameAr)}</b><br><span dir="ltr" style="font-size:11px">${esc(b.nameEn)}</span><br>`+
+      `<b dir="auto">${esc(bName(b))}</b><br><span dir="auto" style="font-size:11px">${esc(isEn()?b.nameAr:b.nameEn)}</span><br>`+
       `<a href="https://www.google.com/maps/dir/?api=1&destination=${b.lat},${b.lng}" target="_blank">🧭 الملاحة</a> · `+
       `<a href="#" onclick="shareLoc('${b.id}',event)">↗ مشاركة</a>`+
       (dayOf.has(b.id)&&!findVisit(plan?.id,b.id)?` · <a href="#" onclick="event.preventDefault();checkInMap('${b.id}')" style="color:#2E8C76;font-weight:700">✅ أنا وصلت</a>`:"")+
@@ -719,6 +923,40 @@ function renderMap(){
   document.querySelectorAll("#map-chips .chip").forEach(ch=>ch.onclick=()=>{
     mapDayFilter=ch.dataset.day==="all"?"all":Number(ch.dataset.day);
     leafletMap.remove(); leafletMap=null; renderMap();
+  });
+
+  /* وضع "إضافة فرع من الخريطة": ضغطة على الموقع تفتح نافذة الإضافة بإحداثياته */
+  let placing=false, tempMarker=null;
+  const fab=$("#map-add-fab"), hint=$("#map-place-hint");
+  const stopPlacing=()=>{
+    placing=false;
+    hint.style.display="none";
+    fab.classList.remove("armed");
+    leafletMap?.getContainer()?.classList.remove("placing");
+  };
+  fab.onclick=()=>{
+    placing=!placing;
+    hint.style.display=placing?"block":"none";
+    fab.classList.toggle("armed",placing);
+    leafletMap.getContainer().classList.toggle("placing",placing);
+  };
+  $("#map-place-cancel").onclick=stopPlacing;
+  leafletMap.on("click",e=>{
+    if(!placing) return;
+    stopPlacing();
+    const {lat,lng}=e.latlng;
+    if(tempMarker) leafletMap.removeLayer(tempMarker);
+    const icon=L.divIcon({className:"",html:`<div class="hm-marker" style="background:var(--accent);width:34px;height:34px;font-size:15px">+</div>`,iconSize:[34,34],iconAnchor:[17,17]});
+    tempMarker=L.marker([lat,lng],{icon}).addTo(leafletMap);
+    openAddBranch();
+    $("#ab-lat").value=lat.toFixed(6);
+    $("#ab-lng").value=lng.toFixed(6);
+    addCoords={lat:Number(lat.toFixed(6)), lng:Number(lng.toFixed(6))};
+    const st=$("#ab-status");
+    st.style.color="var(--ok)";
+    st.textContent=`✓ من الخريطة: ${lat.toFixed(5)}, ${lng.toFixed(5)} — اكتب اسم الفرع واحفظ`;
+    // بعد الحفظ: أعد رسم الخريطة ليظهر الفرع الجديد مكان العلامة المؤقتة
+    addBranchCallback=()=>{ tempMarker=null; renderMap(); };
   });
 }
 
@@ -801,7 +1039,7 @@ function renderAI(){
 
   $("#ai-setup-btn").onclick=()=>{ aiSetupOpen=!aiSetupOpen; renderAI(); };
   const clearBtn=$("#ai-clear-btn");
-  if(clearBtn) clearBtn.onclick=()=>{ clearChat(); renderAI(); toast("مُسحت المحادثة","ok"); };
+  if(clearBtn) clearBtn.onclick=()=>{ clearChat(); renderAI(); toast(tx("مُسحت المحادثة","Chat cleared"),"ok"); };
 
   const saveBtn=$("#ai-save");
   if(saveBtn) saveBtn.onclick=async()=>{
@@ -814,7 +1052,7 @@ function renderAI(){
       await testAiKey(key, model);
       saveAiConfig({apiKey:key, model});
       aiSetupOpen=false;
-      toast("تم الاتصال بنجاح ✦","ok");
+      toast(tx("تم الاتصال بنجاح ✦","Connected successfully ✦"),"ok");
       renderAI();
     }catch(e){
       msg.style.color="var(--danger)"; msg.textContent="⚠️ "+e.message;
@@ -822,16 +1060,16 @@ function renderAI(){
     }
   };
   const forgetBtn=$("#ai-forget");
-  if(forgetBtn) forgetBtn.onclick=()=>{ saveAiConfig({apiKey:null}); renderAI(); toast("نُسي المفتاح","ok"); };
+  if(forgetBtn) forgetBtn.onclick=()=>{ saveAiConfig({apiKey:null}); renderAI(); toast(tx("نُسي المفتاح","Key forgotten"),"ok"); };
 
-  main.querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>askAi(AI_QUICK[Number(b.dataset.qa)].prompt));
+  main.querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>{const q=AI_QUICK[Number(b.dataset.qa)]; askAi(tx(q.prompt,q.promptEn??q.prompt));});
   main.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
-    try{ await navigator.clipboard.writeText(aiChat[Number(b.dataset.copy)].content); toast("نُسخ الرد ✓","ok"); }catch(e){}
+    try{ await navigator.clipboard.writeText(aiChat[Number(b.dataset.copy)].content); toast(tx("نُسخ الرد ✓","Reply copied ✓"),"ok"); }catch(e){}
   });
   main.querySelectorAll("[data-sharemsg]").forEach(b=>b.onclick=async()=>{
     const text=aiChat[Number(b.dataset.sharemsg)].content;
     if(navigator.share){ try{ await navigator.share({title:"تقرير مساعد ½M", text}); }catch(e){} }
-    else { try{ await navigator.clipboard.writeText(text); toast("نُسخ ✓","ok"); }catch(e){} }
+    else { try{ await navigator.clipboard.writeText(text); toast(tx("نُسخ ✓","Copied ✓"),"ok"); }catch(e){} }
   });
 
   const input=$("#chat-in"), send=$("#chat-send");
@@ -851,10 +1089,10 @@ function renderAI(){
     askAi(t);
   };
   $("#qa-sched").onclick=()=>{
-    input.value="جدولي: ";
+    input.value=tx("جدولي: ","my schedule: ");
     input.focus();
     input.setSelectionRange(input.value.length,input.value.length);
-    toast("ألصق أسماء فروعك مفصولة بفواصل — بالعربية أو الإنجليزية","info",4000);
+    toast(tx("ألصق أسماء فروعك مفصولة بفواصل — بالعربية أو الإنجليزية","Paste your branch names separated by commas — Arabic or English"),"info",4000);
   };
   bindSchedWizard();
 
@@ -879,7 +1117,7 @@ function schedWizardHTML(){
         <span class="sched-ic" style="color:var(--ok)">${ic("check",15)}</span>
         <div class="sched-info">
           <small dir="auto">${esc(it.token)}</small>
-          <b>${esc(b?b.nameAr:"؟")}</b>
+          <b dir="auto">${esc(bName(b))}</b>
         </div>
         ${it.candidates.length>1?`<button class="mini-chip" data-sw-change="${idx}">تغيير</button>`:""}
         <button class="mini-chip" data-sw-skip="${idx}">تجاهل</button>
@@ -993,14 +1231,14 @@ function bindSchedWizard(){
     schedWizard=null;
     await persist(); scheduleReminders();
     setTab("plan");
-    if(missing.length) toast(`جُهّز الجدول — ${missing.length} فرعًا بعيدًا قد يتجاوز ساعات الدوام، راجع التوقيتات`,"info",5000);
-    else toast(`جُهّز جدول ${ids.length} فرعًا ✨`,"ok");
+    if(missing.length) toast(tx(`جُهّز الجدول — ${missing.length} فرعًا بعيدًا قد يتجاوز ساعات الدوام، راجع التوقيتات`,`Schedule ready — ${missing.length} distant branches may exceed working hours, review the times`),"info",5000);
+    else toast(tx(`جُهّز جدول ${ids.length} فرعًا ✨`,`Schedule for ${ids.length} branches ready ✨`),"ok");
   };
 }
 
 async function askAi(prompt){
   if(aiBusy) return;
-  if(!aiReady()){ aiSetupOpen=true; renderAI(); toast("أضف مفتاح Anthropic API أولاً","err"); return; }
+  if(!aiReady()){ aiSetupOpen=true; renderAI(); toast(tx("أضف مفتاح Anthropic API أولاً","Add your Anthropic API key first"),"err"); return; }
   aiBusy=true;
   aiChat.push({role:"user", content:prompt});
   saveChat();
@@ -1072,10 +1310,10 @@ function weekBarsSVG(list){
   let bars="";
   for(let d=0;d<5;d++){
     const h=Math.max(3,Math.round(byDay[d]/max*92));
-    const x=pad+(4-d)*(bw+gap), y=H-34-h;
+    const x=pad+(isEn()?d:(4-d))*(bw+gap), y=H-34-h;
     bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="4" fill="${dayColor(d)}"/>
       <text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">${byDay[d]||""}</text>
-      <text x="${x+bw/2}" y="${H-14}" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--text-2)">${DAYS_AR[d]}</text>`;
+      <text x="${x+bw/2}" y="${H-14}" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--text-2)">${dayName(d)}</text>`;
   }
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="توزيع الزيارات على أيام الأسبوع">
     <line x1="${pad}" y1="${H-33}" x2="${W-pad}" y2="${H-33}" stroke="var(--line)" stroke-width="1"/>
@@ -1100,6 +1338,34 @@ function severityBarSVG(c,m,mi){
   ).join("");
   return `<svg viewBox="0 0 ${W} ${bh}" style="width:100%;height:auto;display:block" role="img" aria-label="توزيع المخالفات حسب الدرجة">${rects}</svg>
     <div style="display:flex;gap:1rem;margin-top:.5rem;flex-wrap:wrap">${legend}</div>`;
+}
+
+/* ملخص نتائج المهام الأسبوعية: شريط A/B/C/لا ينطبق لكل مهمة */
+function taskSummaryHTML(list){
+  const agg=new Map();
+  for(const v of list) for(const t of (v.tasks??[])){
+    const e=agg.get(t.title)??{A:0,B:0,C:0,NA:0,notes:[]};
+    e[t.grade]=(e[t.grade]??0)+1;
+    if(t.note) e.notes.push(t.note);
+    agg.set(t.title,e);
+  }
+  if(!agg.size) return "";
+  let rows="";
+  for(const [title,e] of agg){
+    const total=e.A+e.B+e.C+e.NA;
+    const segs=[["A",e.A,"var(--ok)"],["B",e.B,"var(--warn)"],["C",e.C,"var(--danger)"],["—",e.NA,"var(--bg-inset)"]].filter(x=>x[1]>0);
+    rows+=`<div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:.5rem">
+        <b style="font-size:.78rem;flex:1;min-width:0">${esc(title)}</b>
+        <span class="mono faint" dir="ltr" style="font-size:.66rem">A:${e.A} B:${e.B} C:${e.C}${e.NA?" NA:"+e.NA:""}</span>
+      </div>
+      <div class="tk-bar" title="${esc(title)}">
+        ${segs.map(x=>`<i style="flex:${x[1]};background:${x[2]}"></i>`).join("")}
+      </div>
+      ${e.notes.length?`<small class="faint" style="font-size:.66rem;display:block;margin-top:.2rem">📝 ${esc(e.notes.slice(-2).join(" · "))}</small>`:""}
+    </div>`;
+  }
+  return `<div class="card viz"><h3>نتائج المهام الأسبوعية <span class="faint" style="font-weight:500">A مطابق · B متوسط · C مخالف</span></h3>${rows}</div>`;
 }
 
 function renderDash(){
@@ -1178,7 +1444,8 @@ function renderDash(){
 
   if(list.length){
     html+=`<div class="card viz"><h3>توزيع الزيارات على أيام الأسبوع</h3>${weekBarsSVG(list)}</div>
-      <div class="card viz"><h3>توزيع المخالفات حسب الدرجة</h3>${severityBarSVG(sum("critical"),sum("major"),sum("minor"))}</div>`;
+      <div class="card viz"><h3>توزيع المخالفات حسب الدرجة</h3>${severityBarSVG(sum("critical"),sum("major"),sum("minor"))}</div>
+      ${taskSummaryHTML(list)}`;
   }
 
   html+=`<h2 class="sec">سجل الزيارات <span class="mono faint" dir="ltr">(${list.length})</span></h2>`;
@@ -1194,7 +1461,7 @@ function renderDash(){
       const st=v.status==="open"?"⏱ جارية":v.dataComplete?"✓ مكتملة":"⚠ ناقصة";
       html+=`<tr>
         ${team?`<td><span class="member-chip">${esc(v.owner??"—")}</span></td>`:""}
-        <td title="${esc(v.notes??"")}">${esc(v.nameAr)}${v.notes?" 📝":""}</td>
+        <td title="${esc(v.notes??"")}" dir="auto">${esc(visitName(v))}${v.notes?" 📝":""}</td>
         <td class="mono" dir="ltr">${new Date(v.startedAt).toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit"})} ${new Date(v.startedAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}</td>
         <td class="mono" dir="ltr">${visitElapsedMin(v)}د${v.manualTime?" ✎":""}</td>
         <td class="mono">${v.critical??"—"}</td><td class="mono">${v.major??"—"}</td><td class="mono">${v.minor??"—"}</td>
@@ -1227,8 +1494,8 @@ function renderDash(){
     setTab("ai");
     setTimeout(()=>askAi(`اكتب تقريرًا تنفيذيًا عن زيارات ${periodLbl}: الملخص، الأرقام الرئيسية، الفروع الحرجة، وتوصيات عملية.`), 60);
   };
-  $("#dash-pdf").onclick=async()=>{ const b=$("#dash-pdf"); b.textContent="…"; try{await exportDashPDF(list,statsObj);}catch(e){toast("تعذّر التصدير","err");} b.innerHTML=`${ic("file",13)} PDF`; };
-  $("#dash-xlsx").onclick=()=>{ try{exportDashExcel(list); toast("صُدّر التقرير ✓","ok");}catch(e){toast("تعذّر التصدير","err");} };
+  $("#dash-pdf").onclick=async()=>{ const b=$("#dash-pdf"); b.textContent="…"; try{await exportDashPDF(list,statsObj);}catch(e){toast(tx("تعذّر التصدير","Export failed"),"err");} b.innerHTML=`${ic("file",13)} PDF`; };
+  $("#dash-xlsx").onclick=()=>{ try{exportDashExcel(list); toast("صُدّر التقرير ✓","ok");}catch(e){toast(tx("تعذّر التصدير","Export failed"),"err");} };
 
   $("#dash-share").onclick=async()=>{
     const btn=$("#dash-share");
@@ -1264,6 +1531,12 @@ function renderSettings(){
         <button class="chip ${pref==="auto"?"on":""}" data-theme-set="auto" style="flex:1">تلقائي</button>
         <button class="chip ${pref==="light"?"on":""}" data-theme-set="light" style="flex:1">☀️ فاتح</button>
         <button class="chip ${pref==="dark"?"on":""}" data-theme-set="dark" style="flex:1">🌙 داكن</button>
+      </div>
+      <div style="height:.9rem"></div>
+      <b>🌐 اللغة</b>
+      <div style="display:flex;gap:.5rem;margin-top:.7rem">
+        <button class="chip ${!isEn()?"on":""}" data-lang-set="ar" style="flex:1">العربية</button>
+        <button class="chip ${isEn()?"on":""}" data-lang-set="en" style="flex:1">English</button>
       </div>
     </section>
     <section class="card pad">
@@ -1338,6 +1611,10 @@ function renderSettings(){
           <button class="btn-dark" id="team-connect" style="flex:1">${ic("users",13)} إنشاء / انضمام</button>
           <button class="btn-dark" id="team-test" style="flex:1;background:var(--ok)">${ic("refresh",13)} اختبار الجلب</button>
         </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.8rem">
+          <span style="font-weight:600;font-size:.85rem">أنا مدير الفريق (يُظهر أدوات إدارة مهام الفريق)</span>
+          <button class="toggle ${s.teamManager?"on":""}" id="team-mgr-toggle" role="switch" aria-checked="${s.teamManager}"><i></i></button>
+        </div>
         <p id="team-status" style="font-size:.78rem;font-weight:700;margin-top:.6rem;text-align:center"></p>
       </div>
     </section>
@@ -1356,6 +1633,7 @@ function renderSettings(){
     try{ localStorage.setItem("hm-theme", b.dataset.themeSet); }catch(e){}
     applyTheme(); renderSettings();
   });
+  main.querySelectorAll("[data-lang-set]").forEach(b=>b.onclick=()=>setLang(b.dataset.langSet));
 
   const save=async()=>{
     const num=(id)=>{const v=Number(document.getElementById(id).value);return isFinite(v)?v:null;};
@@ -1373,8 +1651,8 @@ function renderSettings(){
     navigator.geolocation?.getCurrentPosition(p=>{
       document.getElementById(id+"-lat").value=p.coords.latitude.toFixed(6);
       document.getElementById(id+"-lng").value=p.coords.longitude.toFixed(6);
-      save(); toast("حُدّد الموقع ✓","ok");
-    },()=>toast("تعذّر تحديد الموقع — فعّل صلاحية الموقع للمتصفح","err"));
+      save(); toast(tx("حُدّد الموقع ✓","Location set ✓"),"ok");
+    },()=>toast(tx("تعذّر تحديد الموقع — فعّل صلاحية الموقع للمتصفح","Could not get location — allow browser location access"),"err"));
   }
 
   $("#notif-toggle").onclick=async()=>{
@@ -1413,6 +1691,8 @@ function renderSettings(){
   /* ---- نظام الفريق ---- */
   const teamToggle=$("#team-toggle");
   if(teamToggle) teamToggle.onclick=async()=>{ s.teamEnabled=!s.teamEnabled; await persist(); renderSettings(); };
+  const teamMgrToggle=$("#team-mgr-toggle");
+  if(teamMgrToggle) teamMgrToggle.onclick=async()=>{ s.teamManager=!s.teamManager; await persist(); renderSettings(); };
   const tName=$("#team-name"), tKey=$("#team-key"), tBin=$("#team-bin");
   const saveTeamFields=async()=>{
     s.memberName=tName.value.trim();
@@ -1468,9 +1748,11 @@ function renderSettings(){
 /* ==================== التشغيل ==================== */
 document.getElementById("remind-close").onclick=hideRemind;
 document.getElementById("theme-btn").onclick=toggleTheme;
+document.getElementById("lang-btn").onclick=()=>setLang(isEn()?"ar":"en");
 
 (async function init(){
   applyTheme();
+  applyLang();
   await hydrate();
   // خطة مشتركة من الرابط (#p=) أو التخزين المشترك (?planId=)
   try{
@@ -1485,6 +1767,8 @@ document.getElementById("theme-btn").onclick=toggleTheme;
   if(state.settings.syncEnabled && state.settings.syncBinId && state.settings.syncKey){
     await cloudPull();
   }
+  // جلب مهام الفريق في الخلفية كي تظهر في نماذج الزيارات
+  if(teamReady()) teamPull().then(()=>{ if(state.tab==="plan") render(); }).catch(()=>{});
   await persist();
   scheduleReminders();
   const splash=document.getElementById("splash");
