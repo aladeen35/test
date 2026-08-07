@@ -6,7 +6,11 @@
 
 /* ============ إعدادات الذكاء ============
    تُخزَّن محليًا فقط (hm-ai) ولا تُرفع أبدًا للمزامنة السحابية
-   حفاظًا على سرية مفتاح API. */
+   حفاظًا على سرية مفتاح API.
+   سلسلة مزوّدين تلقائية كي يعمل الذكاء دون أي إعداد:
+   1) "proxy" — خادم الشركة الوسيط إن حُدّد في js/config.js (بلا مفتاح للمستخدم)
+   2) "key"   — مفتاح Anthropic أدخله المستخدم (خيار متقدم)
+   3) "puter" — خدمة Puter المجانية بلا مفتاح (تسجيل دخول مجاني عند أول رسالة) */
 const AI_MODELS = [
   {id:"claude-opus-5",   label:"Opus 5 — الأذكى (موصى به)"},
   {id:"claude-sonnet-5", label:"Sonnet 5 — متوازن"},
@@ -21,7 +25,39 @@ function saveAiConfig(patch){
   try{ localStorage.setItem("hm-ai", JSON.stringify(cfg)); }catch(e){}
   return cfg;
 }
-function aiReady(){ return !!aiConfig().apiKey; }
+function aiProxyUrl(){
+  return (typeof APP_CONFIG!=="undefined" && APP_CONFIG?.ai?.proxyUrl) || null;
+}
+function aiProvider(){
+  if(aiConfig().apiKey) return "key";
+  if(aiProxyUrl()) return "proxy";
+  return "puter";
+}
+/* الذكاء متاح دائمًا الآن — Puter يعمل كخيار أخير بلا مفتاح */
+function aiReady(){ return true; }
+
+/* تحميل Puter عند الحاجة فقط (لا يُحمَّل إن وُجد مفتاح أو خادم وسيط) */
+const PUTER_SRC="https://js.puter.com/v2/";
+let puterLoading=null;
+function loadPuter(){
+  if(window.puter?.ai) return Promise.resolve(true);
+  if(puterLoading) return puterLoading;
+  puterLoading=new Promise(res=>{
+    const sc=document.createElement("script");
+    sc.src=PUTER_SRC; sc.async=true;
+    sc.onload=()=>res(!!window.puter?.ai);
+    sc.onerror=()=>{ puterLoading=null; res(false); };
+    document.head.appendChild(sc);
+    setTimeout(()=>res(!!window.puter?.ai), 15000);
+  });
+  return puterLoading;
+}
+/* أقرب نموذج Claude متاح عبر Puter لكل خيار في القائمة */
+const PUTER_MODEL_MAP={
+  "claude-opus-5":"claude-opus-4-1",
+  "claude-sonnet-5":"claude-sonnet-4-5",
+  "claude-haiku-4-5":"claude-haiku-4-5",
+};
 
 /* سجل المحادثة — محلي فقط، بحد أقصى 60 رسالة */
 let aiChat = [];
@@ -165,20 +201,58 @@ function aiSystemPrompt(){
 ${JSON.stringify(buildAiContext())}`;
 }
 
-/* ============ عميل Claude API (متدفق) ============ */
-async function claudeStream(messages, {onDelta, onDone, onError}){
-  const cfg=aiConfig();
-  if(!cfg.apiKey){ onError?.("أضف مفتاح Anthropic API أولاً من إعدادات الذكاء"); return; }
+/* ============ عميل الذكاء (متدفق) — يختار المزوّد تلقائيًا ============ */
+async function claudeStream(messages, handlers){
+  const provider=aiProvider();
+  if(provider==="puter") return puterStream(messages, handlers);
+  return anthropicStream(provider, messages, handlers);
+}
+
+/* مزوّد Puter المجاني — بلا مفتاح API (تسجيل دخول مجاني تلقائي عند أول رسالة) */
+async function puterStream(messages, {onDelta, onDone, onError}){
+  const ok=await loadPuter();
+  if(!ok){ onError?.(tx("تعذّر تحميل مزوّد الذكاء المجاني — تحقق من الإنترنت أو أضف مفتاحك من إعداد الذكاء","Couldn't load the free AI provider — check your connection or add your own key in AI Setup")); return; }
+  const msgs=[{role:"system", content:aiSystemPrompt()}, ...messages];
+  const model=PUTER_MODEL_MAP[aiConfig().model]||"claude-sonnet-4-5";
   let resp;
   try{
-    resp = await fetch("https://api.anthropic.com/v1/messages",{
+    resp=await puter.ai.chat(msgs,{model, stream:true});
+  }catch(e){
+    /* النموذج المطلوب غير متاح؟ جرّب النموذج الافتراضي لدى Puter */
+    try{ resp=await puter.ai.chat(msgs,{stream:true}); }
+    catch(e2){
+      const m=String(e2?.message||e2?.error?.message||"");
+      onError?.(m.includes("auth")||m.includes("sign")
+        ? tx("أكمل تسجيل الدخول المجاني في النافذة المنبثقة ثم أعد الإرسال","Complete the free sign-in in the popup, then resend")
+        : tx("تعذّر الاتصال بالمزوّد المجاني — أعد المحاولة أو أضف مفتاحك من إعداد الذكاء","Free provider failed — retry or add your own key in AI Setup"));
+      return;
+    }
+  }
+  let full="";
+  try{
+    for await(const part of resp){
+      const t=part?.text ?? "";
+      if(t){ full+=t; onDelta?.(t, full); }
+    }
+  }catch(e){ onError?.(tx("انقطع الاتصال أثناء التوليد — أعد المحاولة","Connection dropped while generating — try again")); return; }
+  if(!full){ onError?.(tx("لم يصل رد من المزوّد المجاني — أعد المحاولة","No reply from the free provider — try again")); return; }
+  onDone?.(full);
+}
+
+/* Anthropic مباشرة (مفتاح المستخدم) أو عبر خادم الشركة الوسيط */
+async function anthropicStream(provider, messages, {onDelta, onDone, onError}){
+  const cfg=aiConfig();
+  const url = provider==="proxy" ? aiProxyUrl() : "https://api.anthropic.com/v1/messages";
+  const headers={"content-type":"application/json","anthropic-version":"2023-06-01"};
+  if(provider==="key"){
+    headers["x-api-key"]=cfg.apiKey;
+    headers["anthropic-dangerous-direct-browser-access"]="true";
+  }
+  let resp;
+  try{
+    resp = await fetch(url,{
       method:"POST",
-      headers:{
-        "content-type":"application/json",
-        "x-api-key":cfg.apiKey,
-        "anthropic-version":"2023-06-01",
-        "anthropic-dangerous-direct-browser-access":"true"
-      },
+      headers,
       body:JSON.stringify({
         model:cfg.model||"claude-opus-5",
         max_tokens:4096,
