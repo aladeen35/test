@@ -86,21 +86,16 @@ svg{display:block}
 
 /* ============ Logo & Brand ============ */
 .brand{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6) 0 var(--space-5)}
-.brand-badge{position:relative;width:180px;height:180px;filter:drop-shadow(0 0 20px rgba(224,145,47,.45)) drop-shadow(0 0 44px rgba(124,140,63,.3))}
-.brand-badge svg{width:100%;height:100%}
+.brand-logo{
+  width:min(320px,78vw);height:auto;
+  filter:drop-shadow(0 12px 34px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(224,145,47,.22));
+}
 .brand h1{
-  font-family:var(--font-display);font-size:clamp(2.6rem,8vw,4rem);letter-spacing:1px;
-  background:linear-gradient(105deg,#A8C05A 10%,#F2C14E 45%,#E0912F 85%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  text-shadow:0 0 34px rgba(224,145,47,.35);
+  position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap;
 }
 .brand .tagline{color:var(--text-dim);font-weight:600;font-size:1.05rem}
 .brand .tagline-en{color:var(--text-faint);font-size:.85rem;letter-spacing:4px;text-transform:uppercase}
-.brand-pill{
-  background:#7C8C3F;color:#F6EFDC;border:1.5px solid rgba(242,228,192,.4);
-  border-radius:999px;padding:4px 22px;font-weight:800;font-size:.92rem;
-  box-shadow:0 0 18px rgba(124,140,63,.35);
-}
 
 /* ============ Cards & Panels ============ */
 .card{
@@ -487,114 +482,8 @@ table.records{width:100%;border-collapse:collapse;min-width:620px;font-size:.92r
   <!-- ================= START SCREEN ================= -->
   <section class="screen active" id="screen-start" aria-labelledby="brandTitle">
     <div class="brand">
-      <div class="brand-badge" aria-hidden="true">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="fmSilverDome" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#F0EDE6"/><stop offset="45%" stop-color="#C9C4BA"/><stop offset="100%" stop-color="#969084"/>
-    </linearGradient>
-    <linearGradient id="fmSilverSide" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#D8D4CB"/><stop offset="100%" stop-color="#8E887C"/>
-    </linearGradient>
-    <linearGradient id="fmStove" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#5A4026"/><stop offset="60%" stop-color="#3A2817"/><stop offset="100%" stop-color="#241708"/>
-    </linearGradient>
-    <linearGradient id="fmFire" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0%" stop-color="#F59E0B"/><stop offset="60%" stop-color="#FB923C"/><stop offset="100%" stop-color="#FDE68A"/>
-    </linearGradient>
-    <radialGradient id="fmBeans" cx="50%" cy="35%" r="80%">
-      <stop offset="0%" stop-color="#A96A2E"/><stop offset="100%" stop-color="#7A4A1E"/>
-    </radialGradient>
-  </defs>
-
-  <!-- الحلقات الخارجية -->
-  <circle cx="200" cy="200" r="192" fill="#F2E4C0"/>
-  <circle cx="200" cy="200" r="183" fill="#E0912F"/>
-  <circle cx="200" cy="200" r="162" fill="#5C3A21"/>
-
-  <!-- القرص المنقسم: برتقالي / أخضر -->
-  <path d="M200 50 A150 150 0 0 0 200 350 Z" fill="#DE8127"/>
-  <path d="M200 50 A150 150 0 0 1 200 350 Z" fill="#7C8C3F"/>
-
-  <!-- علامات استفهام على الجانب البرتقالي -->
-  <g fill="#B96A1D" opacity=".85" font-family="Cairo, sans-serif" font-weight="900">
-    <text x="95" y="150" font-size="62" transform="rotate(-14 95 150)">؟</text>
-    <text x="70" y="230" font-size="46" transform="rotate(10 70 230)">؟</text>
-    <text x="105" y="295" font-size="38" transform="rotate(-8 105 295)">؟</text>
-  </g>
-  <!-- علامات تعجب على الجانب الأخضر -->
-  <g fill="#5E7030" opacity=".9" font-family="Cairo, sans-serif" font-weight="900">
-    <text x="285" y="150" font-size="62" transform="rotate(14 285 150)">!</text>
-    <text x="315" y="230" font-size="46" transform="rotate(-10 315 230)">!</text>
-    <text x="290" y="295" font-size="38" transform="rotate(8 290 295)">!</text>
-  </g>
-
-  <!-- البخار -->
-  <g stroke="#EFE8DA" stroke-width="7" stroke-linecap="round" opacity=".65" fill="none">
-    <path d="M150 96 q-10 -16 2 -30 q10 -12 2 -24"/>
-    <path d="M250 100 q12 -16 0 -30 q-10 -12 0 -24"/>
-  </g>
-
-  <!-- الموقد -->
-  <g>
-    <path d="M128 252 h144 v66 q0 22 -72 22 q-72 0 -72 -22 Z" fill="url(#fmStove)"/>
-    <ellipse cx="200" cy="252" rx="72" ry="16" fill="#4A3320"/>
-    <circle cx="150" cy="290" r="9" fill="#6B4A2A" opacity=".55"/>
-    <circle cx="252" cy="305" r="7" fill="#6B4A2A" opacity=".5"/>
-    <!-- فتحة النار -->
-    <path d="M178 300 h44 v30 q0 8 -22 8 q-22 0 -22 -8 Z" fill="#160C05"/>
-    <path d="M188 330 q-4 -14 6 -20 q-2 10 6 12 q6 -8 4 -16 q12 8 8 24 q-4 10 -12 10 q-9 0 -12 -10Z" fill="url(#fmFire)"/>
-  </g>
-
-  <!-- جسم القدر -->
-  <path d="M110 226 q0 34 90 34 q90 0 90 -34 l-6 -18 h-168 Z" fill="url(#fmSilverSide)"/>
-
-  <!-- وعاء الفول -->
-  <ellipse cx="200" cy="212" rx="96" ry="24" fill="#B4AFA5"/>
-  <ellipse cx="200" cy="210" rx="86" ry="19" fill="url(#fmBeans)"/>
-  <g fill="#C97C35">
-    <circle cx="150" cy="207" r="6"/><circle cx="167" cy="213" r="6.5"/><circle cx="185" cy="206" r="6"/>
-    <circle cx="203" cy="214" r="6.5"/><circle cx="222" cy="207" r="6"/><circle cx="240" cy="212" r="6"/>
-    <circle cx="158" cy="199" r="5.5"/><circle cx="194" cy="198" r="5.5"/><circle cx="232" cy="199" r="5.5"/>
-    <circle cx="176" cy="219" r="5.5"/><circle cx="214" cy="221" r="5.5"/><circle cx="251" cy="205" r="5"/>
-  </g>
-  <g fill="#E09A55">
-    <circle cx="148" cy="205" r="2"/><circle cx="183" cy="204" r="2"/><circle cx="220" cy="205" r="2"/>
-    <circle cx="201" cy="212" r="2"/><circle cx="238" cy="210" r="2"/>
-  </g>
-  <!-- نعناع -->
-  <g fill="#5F8F3E">
-    <ellipse cx="196" cy="203" rx="7" ry="3.5" transform="rotate(-20 196 203)"/>
-    <ellipse cx="206" cy="200" rx="7" ry="3.5" transform="rotate(25 206 200)"/>
-    <ellipse cx="200" cy="196" rx="6" ry="3" transform="rotate(0 200 196)"/>
-  </g>
-
-  <!-- الغطاء -->
-  <g>
-    <path d="M118 186 q10 -68 82 -70 q72 2 82 70 q-40 12 -82 12 q-42 0 -82 -12 Z" fill="url(#fmSilverDome)"/>
-    <path d="M132 156 q28 -32 68 -33 q40 1 68 33" stroke="#8F887E" stroke-width="2.5" fill="none" opacity=".7"/>
-    <path d="M146 134 q24 -18 54 -19 q30 1 54 19" stroke="#8F887E" stroke-width="2" fill="none" opacity=".6"/>
-    <ellipse cx="200" cy="188" rx="84" ry="14" fill="#CFCAC0"/>
-    <ellipse cx="200" cy="186" rx="84" ry="13" fill="#E4E0D8"/>
-    <!-- المقبض -->
-    <rect x="192" y="96" width="16" height="22" rx="4" fill="url(#fmSilverSide)"/>
-    <ellipse cx="200" cy="96" rx="14" ry="6" fill="#EDEAE3"/>
-    <ellipse cx="200" cy="92" rx="9" ry="4" fill="#C9C4BA"/>
-  </g>
-
-  <!-- المغرفة -->
-  <g transform="rotate(24 200 200)">
-    <rect x="88" y="150" width="200" height="11" rx="5.5" fill="url(#fmSilverSide)"/>
-    <rect x="88" y="150" width="200" height="4.5" rx="2" fill="#EDEAE3" opacity=".8"/>
-    <rect x="76" y="146" width="22" height="19" rx="6" fill="#A9A399"/>
-    <ellipse cx="298" cy="168" rx="21" ry="15" fill="#B4AFA5"/>
-    <ellipse cx="296" cy="165" rx="16" ry="10" fill="#8E887C"/>
-  </g>
-</svg>
-      </div>
+      <img src="logo.webp" alt="" class="brand-logo" width="892" height="1107">
       <h1 id="brandTitle">فول مارك</h1>
-      <div class="tagline-en">Full Mark</div>
-      <div class="brand-pill">تطبيق مسابقات وأسئلة</div>
       <div class="tagline">تحدّي المعلومات العائلي — 100 نقطة كاملة!</div>
     </div>
 
