@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فول مارك | Full Mark — لعبة التحدي العائلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   فول مارك — Full Mark | Design Tokens
+   ============================================================ */
+:root{
+  --bg:#0B0614;
+  --surface:#151022;
+  --surface-2:#1E1631;
+  --surface-3:#271C3F;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.18);
+
+  --purple:#A855F7;
+  --purple-soft:rgba(168,85,247,.16);
+  --gold:#FBBF24;
+  --gold-soft:rgba(251,191,36,.14);
+  --pink:#EC4899;
+  --pink-soft:rgba(236,72,153,.15);
+  --green:#34D399;
+  --green-soft:rgba(52,211,153,.14);
+  --red:#F87171;
+  --red-soft:rgba(248,113,113,.15);
+  --blue:#38BDF8;
+  --blue-soft:rgba(56,189,248,.14);
+
+  --text:#F5F0FF;
+  --text-dim:#B9AED6;
+  --text-faint:#7E719E;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --shadow-glow-purple:0 0 24px rgba(168,85,247,.45);
+  --shadow-glow-gold:0 0 24px rgba(251,191,36,.4);
+  --shadow-glow-pink:0 0 24px rgba(236,72,153,.4);
+
+  --font-display:'Lalezar','Cairo',system-ui,sans-serif;
+  --font-body:'Cairo',system-ui,sans-serif;
+
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:
+    radial-gradient(1000px 600px at 85% -10%, rgba(168,85,247,.18), transparent 60%),
+    radial-gradient(800px 500px at 10% 110%, rgba(236,72,153,.14), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  min-height:100dvh;
+  line-height:1.6;
+  touch-action:manipulation;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+input{font-family:inherit}
+svg{display:block}
+
+.app{max-width:880px;margin:0 auto;padding:var(--space-4) var(--space-4) var(--space-7)}
+
+/* ============ Screens ============ */
+.screen{display:none;animation:screenIn .3s ease-out}
+.screen.active{display:block}
+@keyframes screenIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* ============ Logo & Brand ============ */
+.brand{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6) 0 var(--space-5)}
+.brand-badge{position:relative;width:132px;height:132px;filter:drop-shadow(0 0 18px rgba(168,85,247,.55)) drop-shadow(0 0 40px rgba(236,72,153,.3))}
+.brand h1{
+  font-family:var(--font-display);font-size:clamp(2.6rem,8vw,4rem);letter-spacing:1px;
+  background:linear-gradient(105deg,var(--gold) 15%,var(--pink) 50%,var(--purple) 85%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 34px rgba(236,72,153,.35);
+}
+.brand .tagline{color:var(--text-dim);font-weight:600;font-size:1.05rem}
+.brand .tagline-en{color:var(--text-faint);font-size:.85rem;letter-spacing:4px;text-transform:uppercase}
+
+/* ============ Cards & Panels ============ */
+.card{
+  background:linear-gradient(180deg,var(--surface-2),var(--surface));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:var(--space-5);
+}
+.card + .card{margin-top:var(--space-4)}
+.card h2{font-family:var(--font-display);font-size:1.5rem;margin-bottom:var(--space-4);display:flex;align-items:center;gap:var(--space-3)}
+.card h2 .ico{color:var(--gold)}
+
+/* ============ Forms ============ */
+.field{margin-bottom:var(--space-5)}
+.field label{display:block;font-weight:700;margin-bottom:var(--space-2)}
+.field .hint{color:var(--text-faint);font-size:.85rem;margin-top:var(--space-1)}
+.field input[type=text]{
+  width:100%;padding:14px 16px;font-size:1.05rem;font-weight:600;color:var(--text);
+  background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-sm);
+  transition:border-color .2s,box-shadow .2s;
+}
+.field input[type=text]::placeholder{color:var(--text-faint)}
+.field input[type=text]:focus{border-color:var(--purple);box-shadow:0 0 0 4px var(--purple-soft);outline:none}
+.field .error-msg{color:var(--red);font-size:.9rem;font-weight:700;margin-top:var(--space-2);display:none}
+.field.invalid input{border-color:var(--red)}
+.field.invalid .error-msg{display:block}
+
+.avatar-row{display:flex;gap:var(--space-3);flex-wrap:wrap}
+.avatar-btn{
+  width:56px;height:56px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface);border:2px solid var(--border-strong);color:var(--text-dim);
+  transition:transform .15s,border-color .2s,color .2s,box-shadow .2s;
+}
+.avatar-btn:hover{transform:scale(1.06)}
+.avatar-btn:active{transform:scale(.95)}
+.avatar-btn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);box-shadow:var(--shadow-glow-gold)}
+.avatar-btn svg{width:28px;height:28px}
+
+/* ============ Buttons ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+  min-height:52px;padding:12px 28px;border-radius:14px;font-size:1.1rem;font-weight:900;
+  transition:transform .15s,box-shadow .2s,filter .2s;user-select:none;
+}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary{
+  background:linear-gradient(105deg,var(--purple),var(--pink));color:#fff;
+  box-shadow:0 6px 22px rgba(168,85,247,.4);
+}
+.btn-primary:hover:not(:disabled){filter:brightness(1.12);box-shadow:var(--shadow-glow-purple)}
+.btn-gold{background:linear-gradient(105deg,#F59E0B,var(--gold));color:#1c1300;box-shadow:0 6px 22px rgba(251,191,36,.35)}
+.btn-gold:hover:not(:disabled){filter:brightness(1.08);box-shadow:var(--shadow-glow-gold)}
+.btn-ghost{background:var(--surface-3);color:var(--text);border:1.5px solid var(--border-strong)}
+.btn-ghost:hover:not(:disabled){border-color:var(--purple);box-shadow:0 0 14px var(--purple-soft)}
+.btn-block{width:100%}
+.btn-lg{min-height:60px;font-size:1.25rem}
+
+/* ============ Rules table ============ */
+.rules-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3)}
+@media (max-width:640px){.rules-flow{grid-template-columns:repeat(2,1fr)}}
+.rule-chip{
+  border-radius:var(--radius-sm);padding:var(--space-3);text-align:center;
+  border:1px solid var(--border);background:var(--surface);
+}
+.rule-chip .lvl{font-family:var(--font-display);font-size:1.05rem}
+.rule-chip .pts{font-family:var(--font-display);font-size:1.6rem;line-height:1.2}
+.rule-chip .meta{color:var(--text-faint);font-size:.78rem;font-weight:600}
+.rule-chip.easy .lvl,.rule-chip.easy .pts{color:var(--green)}
+.rule-chip.medium .lvl,.rule-chip.medium .pts{color:var(--gold)}
+.rule-chip.bonus .lvl,.rule-chip.bonus .pts{color:var(--blue)}
+.rule-chip.hard .lvl,.rule-chip.hard .pts{color:var(--pink)}
+.total-line{
+  margin-top:var(--space-4);text-align:center;font-family:var(--font-display);font-size:1.3rem;
+  color:var(--gold);text-shadow:0 0 18px rgba(251,191,36,.4);
+}
+
+/* ============ Level intro ============ */
+.level-hero{text-align:center;padding:var(--space-7) var(--space-4)}
+.level-hero .lvl-icon{width:88px;height:88px;margin:0 auto var(--space-4);display:grid;place-items:center;border-radius:26px}
+.level-hero .lvl-icon svg{width:46px;height:46px}
+.level-hero h2{font-family:var(--font-display);font-size:clamp(2rem,7vw,3rem);margin-bottom:var(--space-2)}
+.level-hero p{color:var(--text-dim);max-width:520px;margin:0 auto var(--space-3);font-weight:600}
+.level-hero .lvl-stats{display:flex;justify-content:center;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-6)}
+.lvl-stat{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);font-weight:700}
+.lvl-stat b{font-family:var(--font-display);font-size:1.15rem}
+.tone-easy{background:var(--green-soft);color:var(--green);box-shadow:0 0 26px var(--green-soft)}
+.tone-medium{background:var(--gold-soft);color:var(--gold);box-shadow:0 0 26px var(--gold-soft)}
+.tone-bonus{background:var(--blue-soft);color:var(--blue);box-shadow:0 0 26px var(--blue-soft)}
+.tone-hard{background:var(--pink-soft);color:var(--pink);box-shadow:0 0 26px var(--pink-soft)}
+
+/* ============ Game HUD ============ */
+.hud{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);
+  flex-wrap:wrap;
+}
+.hud .who{display:flex;align-items:center;gap:var(--space-2);font-weight:700;min-width:0}
+.hud .who .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface-3);border:2px solid var(--border-strong);flex-shrink:0}
+.hud .who .avatar svg{width:20px;height:20px}
+.hud .who .role{display:block;font-size:.7rem;color:var(--text-faint);font-weight:700;line-height:1.2}
+.hud .who .nm{display:block;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.hud .who.host .avatar{color:var(--gold);border-color:rgba(251,191,36,.5)}
+.hud .who.player .avatar{color:var(--pink);border-color:rgba(236,72,153,.5)}
+.hud .score-pill{
+  font-family:var(--font-display);font-size:1.3rem;color:var(--gold);
+  background:var(--gold-soft);border:1px solid rgba(251,191,36,.35);border-radius:999px;
+  padding:4px 18px;font-variant-numeric:tabular-nums;
+}
+.level-tag{
+  display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 16px;
+  font-weight:900;font-size:.9rem;border:1px solid var(--border-strong);
+}
+.level-tag .dot{width:10px;height:10px;border-radius:50%}
+.level-tag.easy{color:var(--green)}.level-tag.easy .dot{background:var(--green);box-shadow:0 0 10px var(--green)}
+.level-tag.medium{color:var(--gold)}.level-tag.medium .dot{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.level-tag.hard{color:var(--pink)}.level-tag.hard .dot{background:var(--pink);box-shadow:0 0 10px var(--pink)}
+
+.progress-dots{display:flex;gap:8px;justify-content:center;margin-bottom:var(--space-4)}
+.progress-dots .pd{width:12px;height:12px;border-radius:50%;background:var(--surface-3);border:1px solid var(--border-strong)}
+.progress-dots .pd.done-good{background:var(--green);border-color:var(--green);box-shadow:0 0 8px var(--green)}
+.progress-dots .pd.done-bad{background:var(--red);border-color:var(--red)}
+.progress-dots .pd.current{border-color:var(--gold);box-shadow:0 0 10px var(--gold)}
+
+/* ============ Timer ============ */
+.timer-wrap{display:flex;align-items:center;justify-content:center;gap:var(--space-4);margin-bottom:var(--space-4);flex-wrap:wrap}
+.timer-ring{position:relative;width:96px;height:96px}
+.timer-ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.timer-ring .tr-bg{fill:none;stroke:var(--surface-3);stroke-width:8}
+.timer-ring .tr-fg{fill:none;stroke:var(--gold);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .25s linear,stroke .3s}
+.timer-ring.warn .tr-fg{stroke:var(--red)}
+.timer-ring .tr-num{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--font-display);font-size:2rem;font-variant-numeric:tabular-nums;
+}
+.timer-ring.warn .tr-num{color:var(--red);animation:pulse .5s infinite alternate}
+@keyframes pulse{to{transform:scale(1.12)}}
+.timer-paused-note{color:var(--blue);font-weight:800;font-size:.9rem;display:none}
+.timer-paused-note.show{display:block}
+
+/* ============ Question & choices ============ */
+.q-card{
+  background:linear-gradient(180deg,var(--surface-3),var(--surface-2));
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  padding:var(--space-5);margin-bottom:var(--space-4);
+}
+.q-card .q-num{color:var(--text-faint);font-weight:800;font-size:.85rem;margin-bottom:var(--space-2)}
+.q-card .q-text{font-size:clamp(1.2rem,4vw,1.55rem);font-weight:900;line-height:1.55}
+.host-instruction{
+  display:flex;align-items:center;gap:var(--space-2);
+  background:var(--gold-soft);border:1px solid rgba(251,191,36,.3);border-radius:var(--radius-sm);
+  color:var(--gold);font-weight:700;font-size:.95rem;padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);
+}
+.host-instruction svg{width:20px;height:20px;flex-shrink:0}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+@media (max-width:640px){.choices{grid-template-columns:1fr}}
+.choice{
+  display:flex;align-items:center;gap:var(--space-3);text-align:start;
+  min-height:64px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-sm);
+  background:var(--surface);border:1.5px solid var(--border-strong);
+  font-size:1.05rem;font-weight:700;color:var(--text);
+  transition:border-color .2s,box-shadow .2s,transform .15s,opacity .3s,background .3s;
+}
+.choice .key{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;
+  background:var(--purple-soft);color:var(--purple);font-family:var(--font-display);font-size:1.1rem;
+}
+.choice:hover:not(:disabled){border-color:var(--purple);box-shadow:0 0 16px var(--purple-soft);transform:translateY(-2px)}
+.choice:active:not(:disabled){transform:scale(.98)}
+.choice:disabled{cursor:not-allowed}
+.choice.locked{opacity:.55}
+.choice.eliminated{opacity:.18;text-decoration:line-through}
+.choice.correct{background:var(--green-soft);border-color:var(--green);box-shadow:0 0 20px var(--green-soft)}
+.choice.correct .key{background:var(--green);color:#04120c}
+.choice.wrong{background:var(--red-soft);border-color:var(--red)}
+.choice.wrong .key{background:var(--red);color:#190505}
+
+.verdict{
+  display:none;align-items:center;justify-content:center;gap:var(--space-2);
+  margin-top:var(--space-4);padding:var(--space-3);border-radius:var(--radius-sm);
+  font-family:var(--font-display);font-size:1.3rem;
+}
+.verdict.show{display:flex;animation:screenIn .25s ease-out}
+.verdict.good{background:var(--green-soft);color:var(--green)}
+.verdict.bad{background:var(--red-soft);color:var(--red)}
+.verdict.skip{background:var(--blue-soft);color:var(--blue)}
+.verdict svg{width:26px;height:26px}
+
+.action-row{display:flex;gap:var(--space-3);margin-top:var(--space-4);flex-wrap:wrap}
+.action-row .btn{flex:1;min-width:180px}
+
+/* ============ Lifelines ============ */
+.lifelines{margin-top:var(--space-5)}
+.lifelines h3{font-size:.85rem;color:var(--text-faint);font-weight:800;letter-spacing:.5px;margin-bottom:var(--space-3);text-align:center}
+.ll-row{display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap}
+.ll-btn{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  min-width:96px;padding:var(--space-3);border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1.5px solid var(--border-strong);
+  font-weight:800;font-size:.82rem;color:var(--text-dim);
+  transition:border-color .2s,box-shadow .2s,transform .15s;
+}
+.ll-btn svg{width:26px;height:26px}
+.ll-btn:hover:not(:disabled){transform:translateY(-3px)}
+.ll-btn:active:not(:disabled){transform:scale(.96)}
+.ll-btn:disabled{opacity:.32;cursor:not-allowed}
+.ll-btn.used{opacity:.32;cursor:not-allowed;text-decoration:line-through}
+.ll-fifty{color:var(--gold)}.ll-fifty:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 16px var(--gold-soft)}
+.ll-call{color:var(--green)}.ll-call:hover:not(:disabled){border-color:var(--green);box-shadow:0 0 16px var(--green-soft)}
+.ll-swap{color:var(--blue)}.ll-swap:hover:not(:disabled){border-color:var(--blue);box-shadow:0 0 16px var(--blue-soft)}
+.ll-ai{color:var(--purple)}.ll-ai:hover:not(:disabled){border-color:var(--purple);box-shadow:0 0 16px var(--purple-soft)}
+.ll-jet{color:var(--pink)}.ll-jet:hover:not(:disabled){border-color:var(--pink);box-shadow:0 0 16px var(--pink-soft)}
+
+/* ============ Bonus round ============ */
+.bonus-timer{
+  font-family:var(--font-display);font-size:clamp(3.2rem,14vw,5.5rem);text-align:center;line-height:1.1;
+  color:var(--blue);text-shadow:0 0 30px rgba(56,189,248,.5);font-variant-numeric:tabular-nums;
+  margin-bottom:var(--space-2);
+}
+.bonus-timer.warn{color:var(--red);text-shadow:0 0 30px rgba(248,113,113,.6);animation:pulse .4s infinite alternate}
+.bonus-progress{text-align:center;color:var(--text-dim);font-weight:800;margin-bottom:var(--space-4)}
+.bonus-q{
+  background:linear-gradient(180deg,var(--surface-3),var(--surface-2));
+  border:1px solid rgba(56,189,248,.35);border-radius:var(--radius);
+  padding:var(--space-6) var(--space-5);text-align:center;margin-bottom:var(--space-3);
+}
+.bonus-q .bq-text{font-size:clamp(1.35rem,5vw,1.9rem);font-weight:900;line-height:1.5}
+.bonus-answer{
+  text-align:center;color:var(--text-faint);font-weight:700;font-size:.95rem;margin-bottom:var(--space-4);
+}
+.bonus-answer b{color:var(--blue)}
+.bonus-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+.bonus-score-live{
+  text-align:center;font-family:var(--font-display);font-size:1.2rem;color:var(--gold);margin-top:var(--space-4);
+}
+
+/* ============ Modals ============ */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(5,2,12,.72);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:var(--space-4);z-index:100;
+}
+.modal-backdrop.show{display:flex;animation:screenIn .2s ease-out}
+.modal{
+  width:100%;max-width:480px;background:linear-gradient(180deg,var(--surface-3),var(--surface));
+  border:1px solid var(--border-strong);border-radius:var(--radius);padding:var(--space-5);
+  max-height:85dvh;overflow-y:auto;
+}
+.modal h3{font-family:var(--font-display);font-size:1.4rem;margin-bottom:var(--space-3);display:flex;align-items:center;gap:var(--space-2)}
+.modal p{color:var(--text-dim);font-weight:600;margin-bottom:var(--space-4)}
+.call-timer{
+  font-family:var(--font-display);font-size:3.5rem;text-align:center;color:var(--green);
+  text-shadow:0 0 24px var(--green-soft);font-variant-numeric:tabular-nums;margin-bottom:var(--space-3);
+}
+.ai-hint{
+  background:var(--purple-soft);border:1px solid rgba(168,85,247,.35);border-radius:var(--radius-sm);
+  padding:var(--space-4);font-weight:700;line-height:1.8;margin-bottom:var(--space-4);
+}
+.ai-hint .ai-label{display:flex;align-items:center;gap:8px;color:var(--purple);font-size:.85rem;font-weight:900;margin-bottom:var(--space-2)}
+.ai-hint .ai-label svg{width:18px;height:18px}
+
+/* ============ Scoreboard ============ */
+.final-title{text-align:center;padding:var(--space-6) 0 var(--space-4)}
+.final-title h2{
+  font-family:var(--font-display);font-size:clamp(2.2rem,8vw,3.4rem);
+  background:linear-gradient(105deg,var(--gold),var(--pink),var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.final-title p{color:var(--text-dim);font-weight:700}
+.medal-wrap{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);margin-bottom:var(--space-5)}
+.medal{width:110px;height:110px;filter:drop-shadow(0 0 22px rgba(251,191,36,.45))}
+.medal-label{font-family:var(--font-display);font-size:1.4rem;color:var(--gold)}
+.score-rows{display:flex;flex-direction:column;gap:var(--space-3)}
+.score-row{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:var(--space-4);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:var(--space-3) var(--space-4);
+}
+.score-row .sr-name{font-weight:900;display:flex;align-items:center;gap:8px;min-width:130px}
+.score-row .sr-name .sdot{width:10px;height:10px;border-radius:50%}
+.score-row .sr-bar{display:block;height:12px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.score-row .sr-fill{display:block;height:100%;border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.score-row .sr-val{font-family:var(--font-display);font-size:1.15rem;font-variant-numeric:tabular-nums;min-width:76px;text-align:left}
+.score-row.easy .sdot,.score-row.easy .sr-fill{background:var(--green)}
+.score-row.medium .sdot,.score-row.medium .sr-fill{background:var(--gold)}
+.score-row.bonus .sdot,.score-row.bonus .sr-fill{background:var(--blue)}
+.score-row.hard .sdot,.score-row.hard .sr-fill{background:var(--pink)}
+.grand-total{
+  margin-top:var(--space-4);text-align:center;background:linear-gradient(180deg,var(--surface-3),var(--surface-2));
+  border:1px solid rgba(251,191,36,.4);border-radius:var(--radius);padding:var(--space-5);
+  box-shadow:0 0 30px rgba(251,191,36,.12);
+}
+.grand-total .gt-label{color:var(--text-dim);font-weight:800;margin-bottom:4px}
+.grand-total .gt-val{
+  font-family:var(--font-display);font-size:clamp(2.6rem,10vw,4rem);color:var(--gold);
+  text-shadow:0 0 28px rgba(251,191,36,.45);font-variant-numeric:tabular-nums;line-height:1.1;
+}
+.players-line{display:flex;justify-content:center;gap:var(--space-5);margin-bottom:var(--space-5);flex-wrap:wrap}
+.pl-chip{display:flex;align-items:center;gap:var(--space-2);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:6px 18px;font-weight:800}
+.pl-chip .avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface-3)}
+.pl-chip .avatar svg{width:16px;height:16px}
+.pl-chip.host-chip .avatar{color:var(--gold)}
+.pl-chip.player-chip .avatar{color:var(--pink)}
+.pl-chip small{color:var(--text-faint);font-weight:700}
+
+/* ============ Toast ============ */
+.toast{
+  position:fixed;bottom:24px;inset-inline:0;margin-inline:auto;width:fit-content;max-width:90vw;
+  background:var(--surface-3);border:1px solid var(--border-strong);border-radius:999px;
+  padding:10px 24px;font-weight:800;z-index:200;display:none;
+}
+.toast.show{display:block;animation:screenIn .25s ease-out}
+
+/* ============ Sound toggle ============ */
+.top-bar{display:flex;justify-content:flex-end;padding-top:var(--space-3)}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text-dim);
+  transition:color .2s,border-color .2s;
+}
+.icon-btn:hover{color:var(--gold);border-color:var(--gold)}
+.icon-btn svg{width:22px;height:22px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top-bar">
+    <button class="icon-btn" id="soundToggle" aria-label="كتم الصوت أو تفعيله" aria-pressed="true" title="الصوت">
+      <svg id="soundOnIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg id="soundOffIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M11 5 6 9H2v6h4l5 4V5z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
+    </button>
+  </div>
+
+  <!-- ================= START SCREEN ================= -->
+  <section class="screen active" id="screen-start" aria-labelledby="brandTitle">
+    <div class="brand">
+      <div class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 132 132" fill="none">
+          <defs>
+            <linearGradient id="lgCrown" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+            <linearGradient id="lgRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#A855F7"/><stop offset="55%" stop-color="#EC4899"/><stop offset="100%" stop-color="#FBBF24"/>
+            </linearGradient>
+          </defs>
+          <circle cx="66" cy="66" r="60" stroke="url(#lgRing)" stroke-width="5"/>
+          <circle cx="66" cy="66" r="50" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+          <path d="M38 58 L50 70 L66 48 L82 70 L94 58 L88 88 L44 88 Z" fill="url(#lgCrown)" stroke="#FDE68A" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="38" cy="56" r="4.5" fill="#FDE68A"/><circle cx="66" cy="45" r="4.5" fill="#FDE68A"/><circle cx="94" cy="56" r="4.5" fill="#FDE68A"/>
+          <text x="66" y="112" text-anchor="middle" font-family="Lalezar, Cairo, sans-serif" font-size="20" fill="#EC4899" style="filter:drop-shadow(0 0 6px rgba(236,72,153,.8))">100%</text>
+        </svg>
+      </div>
+      <h1 id="brandTitle">فول مارك</h1>
+      <div class="tagline">تحدّي المعلومات العائلي — 100 نقطة كاملة!</div>
+      <div class="tagline-en">Full Mark</div>
+    </div>
+
+    <div class="card">
+      <h2>
+        <svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        المتنافسان
+      </h2>
+      <div class="field" id="fieldHost">
+        <label for="hostName">اسم المضيف <span style="color:var(--gold)">(يدير الجولة ويقرأ الأسئلة)</span></label>
+        <input type="text" id="hostName" placeholder="مثال: أبو خالد" maxlength="20" autocomplete="off">
+        <div class="hint">المضيف يقرأ الأسئلة، يشغّل المؤقت، ويحتسب النقاط.</div>
+        <div class="error-msg">فضلاً أدخل اسم المضيف.</div>
+        <div style="margin-top:12px">
+          <div class="avatar-row" id="hostAvatars" role="group" aria-label="اختيار أفاتار المضيف"></div>
+        </div>
+      </div>
+      <div class="field" id="fieldPlayer">
+        <label for="playerName">اسم اللاعب <span style="color:var(--pink)">(يخوض التحدي ويجيب)</span></label>
+        <input type="text" id="playerName" placeholder="مثال: نورة" maxlength="20" autocomplete="off">
+        <div class="hint">اللاعب يجيب عن الأسئلة ويجمع النقاط.</div>
+        <div class="error-msg">فضلاً أدخل اسم اللاعب.</div>
+        <div style="margin-top:12px">
+          <div class="avatar-row" id="playerAvatars" role="group" aria-label="اختيار أفاتار اللاعب"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>
+        <svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        نظام الجولة — 100 نقطة
+      </h2>
+      <div class="rules-flow">
+        <div class="rule-chip easy"><div class="lvl">سهل</div><div class="pts">15</div><div class="meta">5 أسئلة × 3 نقاط<br>5 ثوانٍ للإجابة</div></div>
+        <div class="rule-chip medium"><div class="lvl">متوسط</div><div class="pts">25</div><div class="meta">5 أسئلة × 5 نقاط<br>30 ثانية + «الطيارة»</div></div>
+        <div class="rule-chip bonus"><div class="lvl">بونص السرعة</div><div class="pts">10</div><div class="meta">10 أسئلة في 30 ثانية<br>نقطة لكل إجابة</div></div>
+        <div class="rule-chip hard"><div class="lvl">صعب</div><div class="pts">50</div><div class="meta">5 أسئلة × 10 نقاط<br>30 ثانية + 4 وسائل مساعدة</div></div>
+      </div>
+      <div class="total-line">المجموع الكامل = 100 نقطة «فول مارك»</div>
+    </div>
+
+    <div style="margin-top:24px">
+      <button class="btn btn-primary btn-lg btn-block" id="startBtn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        ابدأ التحدي!
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= LEVEL INTRO ================= -->
+  <section class="screen" id="screen-level" aria-live="polite">
+    <div class="level-hero">
+      <div class="lvl-icon" id="levelIcon"></div>
+      <h2 id="levelTitle"></h2>
+      <p id="levelDesc"></p>
+      <div class="lvl-stats" id="levelStats"></div>
+      <button class="btn btn-gold btn-lg" id="levelGoBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        انطلق!
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= GAMEPLAY (MCQ) ================= -->
+  <section class="screen" id="screen-play">
+    <div class="hud">
+      <div class="who host">
+        <span class="avatar" id="hudHostAvatar"></span>
+        <span><span class="role">المضيف</span><span class="nm" id="hudHostName"></span></span>
+      </div>
+      <span class="level-tag" id="hudLevelTag"><span class="dot"></span><span id="hudLevelName"></span></span>
+      <div class="who player">
+        <span class="avatar" id="hudPlayerAvatar"></span>
+        <span><span class="role">اللاعب</span><span class="nm" id="hudPlayerName"></span></span>
+      </div>
+      <div class="score-pill" id="hudScore">0</div>
+    </div>
+
+    <div class="progress-dots" id="progressDots" aria-hidden="true"></div>
+
+    <div class="timer-wrap">
+      <div class="timer-ring" id="timerRing">
+        <svg viewBox="0 0 96 96">
+          <circle class="tr-bg" cx="48" cy="48" r="42"/>
+          <circle class="tr-fg" id="timerArc" cx="48" cy="48" r="42"/>
+        </svg>
+        <div class="tr-num" id="timerNum">--</div>
+      </div>
+      <div>
+        <button class="btn btn-gold" id="startTimerBtn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>
+          ابدأ المؤقت
+        </button>
+        <div class="timer-paused-note" id="timerPausedNote">⏸ المؤقت متوقف مؤقتاً — وسيلة مساعدة قيد الاستخدام</div>
+      </div>
+    </div>
+
+    <div class="host-instruction" id="hostInstruction">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+      <span id="hostInstructionText"></span>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num" id="qNum"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="verdict" id="verdict" role="status"></div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" id="nextBtn" style="display:none">
+        السؤال التالي
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      </button>
+    </div>
+
+    <div class="lifelines" id="lifelinesWrap">
+      <h3>وسائل المساعدة</h3>
+      <div class="ll-row" id="lifelinesRow"></div>
+    </div>
+  </section>
+
+  <!-- ================= BONUS ROUND ================= -->
+  <section class="screen" id="screen-bonus">
+    <div class="hud">
+      <div class="who host">
+        <span class="avatar" id="bonusHostAvatar"></span>
+        <span><span class="role">المضيف</span><span class="nm" id="bonusHostName"></span></span>
+      </div>
+      <span class="level-tag" style="color:var(--blue)"><span class="dot" style="background:var(--blue);box-shadow:0 0 10px var(--blue)"></span>بونص السرعة ⚡ 10 في 30</span>
+      <div class="score-pill" id="bonusHudScore">0</div>
+    </div>
+
+    <div class="bonus-timer" id="bonusTimer">30</div>
+    <div class="bonus-progress" id="bonusProgress">السؤال 1 من 10</div>
+
+    <div class="bonus-q">
+      <div class="bq-text" id="bonusQText">جاهزون؟</div>
+    </div>
+    <div class="bonus-answer" id="bonusAnswer" style="visibility:hidden">الإجابة (للمضيف): <b id="bonusAnswerText"></b></div>
+
+    <div class="bonus-actions" id="bonusActions" style="display:none">
+      <button class="btn btn-primary btn-lg" id="bonusCorrectBtn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        صحيح (+1)
+      </button>
+      <button class="btn btn-ghost btn-lg" id="bonusSkipBtn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        خطأ / تخطّي
+      </button>
+    </div>
+    <div style="margin-top:24px">
+      <button class="btn btn-gold btn-lg btn-block" id="bonusStartBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        ابدأ العدّ التنازلي!
+      </button>
+    </div>
+    <div class="bonus-score-live" id="bonusScoreLive"></div>
+  </section>
+
+  <!-- ================= FINAL SCOREBOARD ================= -->
+  <section class="screen" id="screen-final">
+    <div class="final-title">
+      <h2>النتيجة النهائية</h2>
+      <p>انتهى التحدي — هذه حصيلة الجولة!</p>
+    </div>
+
+    <div class="medal-wrap">
+      <svg class="medal" viewBox="0 0 110 110" fill="none" aria-hidden="true">
+        <circle cx="55" cy="62" r="34" fill="url(#lgMedal)" stroke="#FDE68A" stroke-width="3"/>
+        <defs><linearGradient id="lgMedal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs>
+        <path d="M38 34 30 8h18l7 18zM72 34l8-26H62l-7 18z" fill="#EC4899" stroke="#F9A8D4" stroke-width="2" stroke-linejoin="round"/>
+        <text x="55" y="72" text-anchor="middle" font-family="Lalezar, Cairo, sans-serif" font-size="26" fill="#451A03" id="medalPct">%</text>
+      </svg>
+      <div class="medal-label" id="medalLabel"></div>
+    </div>
+
+    <div class="players-line">
+      <div class="pl-chip player-chip"><span class="avatar" id="finalPlayerAvatar"></span><span id="finalPlayerName"></span><small>اللاعب</small></div>
+      <div class="pl-chip host-chip"><span class="avatar" id="finalHostAvatar"></span><span id="finalHostName"></span><small>المضيف</small></div>
+    </div>
+
+    <div class="card">
+      <div class="score-rows">
+        <div class="score-row easy">
+          <span class="sr-name"><span class="sdot"></span>المستوى السهل</span>
+          <span class="sr-bar"><span class="sr-fill" id="barEasy"></span></span>
+          <span class="sr-val" id="valEasy">0 / 15</span>
+        </div>
+        <div class="score-row medium">
+          <span class="sr-name"><span class="sdot"></span>المستوى المتوسط</span>
+          <span class="sr-bar"><span class="sr-fill" id="barMedium"></span></span>
+          <span class="sr-val" id="valMedium">0 / 25</span>
+        </div>
+        <div class="score-row bonus">
+          <span class="sr-name"><span class="sdot"></span>فقرة البونص</span>
+          <span class="sr-bar"><span class="sr-fill" id="barBonus"></span></span>
+          <span class="sr-val" id="valBonus">0 / 10</span>
+        </div>
+        <div class="score-row hard">
+          <span class="sr-name"><span class="sdot"></span>المستوى الصعب</span>
+          <span class="sr-bar"><span class="sr-fill" id="barHard"></span></span>
+          <span class="sr-val" id="valHard">0 / 50</span>
+        </div>
+      </div>
+      <div class="grand-total">
+        <div class="gt-label">المجموع الكلي النهائي</div>
+        <div class="gt-val"><span id="grandTotal">0</span> / 100</div>
+      </div>
+    </div>
+
+    <div class="action-row" style="margin-top:24px">
+      <button class="btn btn-primary btn-lg" id="swapRolesBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+        تبديل الأدوار والّلعب مجدداً
+      </button>
+      <button class="btn btn-ghost btn-lg" id="restartBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        لعبة جديدة
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="modal-backdrop" id="callModal" role="dialog" aria-modal="true" aria-labelledby="callTitle">
+  <div class="modal">
+    <h3 id="callTitle">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      مكالمة صديق
+    </h3>
+    <p>اتصلوا بصديق خارج اللعبة! أمامكم 30 ثانية لسماع إجابته. مؤقت السؤال متوقف الآن.</p>
+    <div class="call-timer" id="callTimer">30</div>
+    <button class="btn btn-primary btn-block" id="callDoneBtn">انتهت المكالمة — عودة للسؤال</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="aiModal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+  <div class="modal">
+    <h3 id="aiTitle">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+      مساعد الذكاء الاصطناعي
+    </h3>
+    <p>مؤقت السؤال متوقف. المساعد الذكي يفكّر…</p>
+    <div class="ai-hint">
+      <div class="ai-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>
+        تلميح المساعد
+      </div>
+      <div id="aiHintText"></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="aiDoneBtn">فهمت — عودة للسؤال</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ============================================================
+   فول مارك — Full Mark | Game Engine
+   ============================================================ */
+
+/* ---------- بنك الأسئلة ---------- */
+const BANK = {
+  easy: [
+    {q:'ما عاصمة المملكة العربية السعودية؟', c:['الرياض','جدة','الدمام','مكة المكرمة'], a:0},
+    {q:'ما العملة الرسمية في اليابان؟', c:['الين','اليوان','الوون','الروبية'], a:0},
+    {q:'في أي مدينة يقع برج خليفة؟', c:['دبي','أبوظبي','الدوحة','الرياض'], a:0},
+    {q:'كم عدد أيام السنة الميلادية غير الكبيسة؟', c:['365','360','366','350'], a:0},
+    {q:'ما أكبر كواكب المجموعة الشمسية؟', c:['المشتري','زحل','الأرض','المريخ'], a:0},
+    {q:'ما عاصمة جمهورية مصر العربية؟', c:['القاهرة','الإسكندرية','الجيزة','أسوان'], a:0},
+    {q:'ما العملة الرسمية في بريطانيا؟', c:['الجنيه الإسترليني','اليورو','الدولار','الفرنك'], a:0},
+    {q:'في أي مدينة يقع تمثال الحرية؟', c:['نيويورك','واشنطن','لوس أنجلوس','شيكاغو'], a:0},
+    {q:'كم عدد قارات العالم؟', c:['7','5','6','8'], a:0},
+    {q:'ما اللون الناتج عن خلط الأزرق مع الأصفر؟', c:['الأخضر','البرتقالي','البنفسجي','البني'], a:0},
+    {q:'ما عاصمة تركيا؟', c:['أنقرة','إسطنبول','إزمير','بورصة'], a:0},
+    {q:'ما أسرع حيوان برّي في العالم؟', c:['الفهد','الأسد','الحصان','النمر'], a:0},
+  ],
+  medium: [
+    {q:'ما أطول أنهار العالم؟', c:['نهر النيل','نهر الأمازون','نهر المسيسيبي','نهر اليانغتسي'], a:0},
+    {q:'أيٌّ من هذه المعادن هو الأثمن سعراً؟', c:['الروديوم','الذهب','البلاتين','الفضة'], a:0},
+    {q:'من مكتشف البنسلين؟', c:['ألكسندر فلمنغ','لويس باستور','إسحاق نيوتن','ماري كوري'], a:0},
+    {q:'ما الغذاء الأساسي لمعظم شعوب شرق آسيا؟', c:['الأرز','القمح','الذرة','البطاطس'], a:0},
+    {q:'ما أكبر صحراء رملية في العالم؟', c:['الصحراء الكبرى','الربع الخالي','صحراء جوبي','صحراء كلهاري'], a:0},
+    {q:'أي دولة تُلقَّب بأرض الشمس المشرقة؟', c:['اليابان','الصين','كوريا الجنوبية','تايلاند'], a:0},
+    {q:'ما الغاز الأكثر وفرة في الغلاف الجوي للأرض؟', c:['النيتروجين','الأكسجين','الهيدروجين','ثاني أكسيد الكربون'], a:0},
+    {q:'من الرحّالة الذي وصل إلى قارة أمريكا عام 1492؟', c:['كريستوفر كولومبوس','ماجلان','فاسكو دا غاما','جيمس كوك'], a:0},
+    {q:'ما أعمق محيطات العالم؟', c:['المحيط الهادئ','المحيط الأطلسي','المحيط الهندي','المتجمد الشمالي'], a:0},
+    {q:'أي معدن يُستخدم غالباً في صناعة أسلاك الكهرباء؟', c:['النحاس','الحديد','الرصاص','القصدير'], a:0},
+    {q:'ما أطول سلسلة جبال في العالم؟', c:['جبال الأنديز','جبال الهيمالايا','جبال الألب','الجبال الصخرية'], a:0},
+    {q:'ما أكبر دولة منتجة للبن في العالم؟', c:['البرازيل','كولومبيا','إثيوبيا','فيتنام'], a:0},
+  ],
+  bonus: [
+    {q:'من مؤسس شركة آبل؟', a:'ستيف جوبز'},
+    {q:'من مؤسس شركة مايكروسوفت؟', a:'بيل غيتس'},
+    {q:'ما عكس كلمة «قريب»؟', a:'بعيد'},
+    {q:'ما عكس كلمة «نور»؟', a:'ظلام'},
+    {q:'كم ثانية في الدقيقة الواحدة؟', a:'60'},
+    {q:'كم شهراً في السنة؟', a:'12'},
+    {q:'من هو ملك الغابة؟', a:'الأسد'},
+    {q:'ما الحيوان الملقّب بسفينة الصحراء؟', a:'الجمل'},
+    {q:'من صاحب قانون الجاذبية؟', a:'نيوتن'},
+    {q:'كم ضلعاً للمثلث؟', a:'3'},
+    {q:'ما عاصمة الأردن؟', a:'عمّان'},
+    {q:'ما عكس كلمة «سريع»؟', a:'بطيء'},
+    {q:'ما اسم الكوكب الذي نعيش عليه؟', a:'الأرض'},
+    {q:'كم دقيقة في الساعة؟', a:'60'},
+    {q:'من مخترع المصباح الكهربائي؟', a:'إديسون'},
+    {q:'ما أكبر محيطات العالم؟', a:'الهادئ'},
+    {q:'كم يوماً في الأسبوع؟', a:'7'},
+    {q:'من الرئيس التنفيذي لشركة تسلا؟', a:'إيلون ماسك'},
+    {q:'ما العملة الرسمية لأمريكا؟', a:'الدولار'},
+    {q:'ما عكس كلمة «فوق»؟', a:'تحت'},
+    {q:'ما الحشرة التي تصنع العسل؟', a:'النحلة'},
+    {q:'كم حرفاً في اللغة العربية؟', a:'28'},
+    {q:'ما أقرب نجم إلى الأرض؟', a:'الشمس'},
+    {q:'ما لقب اللاعب محمد صلاح؟', a:'الفرعون'},
+    {q:'ما عاصمة فرنسا؟', a:'باريس'},
+  ],
+  hard: [
+    {q:'في أي دولة تقع مدينة البتراء الأثرية؟', c:['الأردن','سوريا','لبنان','العراق'], a:0,
+     hint:'مدينة وردية اللون نحتها الأنباط في الصخر، وهي من عجائب الدنيا السبع الجديدة.'},
+    {q:'ما الظاهرة الفيزيائية التي تفسّر زرقة السماء؟', c:['تشتُّت الضوء','انعكاس الضوء','انكسار الضوء','امتصاص الضوء'], a:0,
+     hint:'تتعلق بتشتّت الأطوال الموجية القصيرة للضوء في الغلاف الجوي (تشتت رايلي).'},
+    {q:'من مؤلف رواية «مئة عام من العزلة»؟', c:['غابرييل غارسيا ماركيز','باولو كويلو','نجيب محفوظ','إرنست همنغواي'], a:0,
+     hint:'روائي كولومبي حاز جائزة نوبل للآداب عام 1982، ورائد الواقعية السحرية.'},
+    {q:'ما أول فيلم رسوم متحركة طويل أنتجته ديزني؟', c:['سنو وايت والأقزام السبعة','سندريلا','بينوكيو','بامبي'], a:0,
+     hint:'صدر عام 1937 وبطلته أميرة بشرتها بيضاء كالثلج.'},
+    {q:'أي لغة تُكتب تقليدياً من الأعلى إلى الأسفل؟', c:['اليابانية','العربية','الهندية','اليونانية'], a:0,
+     hint:'لغة من شرق آسيا تستخدم حروف الكانجي والهيراغانا.'},
+    {q:'في أي دولة تقع مدينة «ماتشو بيتشو» الأثرية؟', c:['البيرو','المكسيك','تشيلي','كولومبيا'], a:0,
+     hint:'مدينة الإنكا المفقودة، تقع على قمم جبال الأنديز في أمريكا الجنوبية.'},
+    {q:'ما العنصر الكيميائي الذي رمزه Au؟', c:['الذهب','الفضة','الألمنيوم','الزئبق'], a:0,
+     hint:'الرمز مشتق من اسمه اللاتيني Aurum، وهو معدن نفيس أصفر اللون.'},
+    {q:'ما أقدم جامعة في العالم ما زالت تعمل حتى اليوم؟', c:['جامعة القرويين','جامعة الأزهر','جامعة بولونيا','جامعة أكسفورد'], a:0,
+     hint:'تقع في مدينة فاس المغربية، وأسّستها فاطمة الفهرية عام 859م.'},
+    {q:'أين يقع «حزام النار» المشهور بالزلازل والبراكين؟', c:['حول المحيط الهادئ','حول المحيط الأطلسي','حول المحيط الهندي','في وسط آسيا'], a:0,
+     hint:'يمرّ بدول مثل اليابان وإندونيسيا وتشيلي.'},
+    {q:'من أول امرأة فازت بجائزة نوبل؟', c:['ماري كوري','روزاليند فرانكلين','أدا لوفلايس','فلورنس نايتنجيل'], a:0,
+     hint:'عالمة بولندية-فرنسية فازت بنوبل مرتين: في الفيزياء ثم الكيمياء.'},
+  ],
+};
+
+/* ---------- الأفاتارات (SVG) ---------- */
+const AVATARS = [
+  {id:'crown', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 8 4 4 6-6 6 6 4-4-2 12H4L2 8z"/></svg>'},
+  {id:'star', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'},
+  {id:'rocket', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>'},
+  {id:'bolt', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>'},
+  {id:'gamepad', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>'},
+  {id:'trophy', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>'},
+];
+
+/* ---------- إعدادات المستويات ---------- */
+const LEVELS = {
+  easy:   {name:'المستوى السهل',   tone:'easy',   color:'var(--green)', per:3,  count:5, time:5,
+           desc:'5 أسئلة معلومات عامة مباشرة. 3 نقاط لكل إجابة، و5 ثوانٍ فقط بعد قراءة الخيارات — بدون وسائل مساعدة!'},
+  medium: {name:'المستوى المتوسط', tone:'medium', color:'var(--gold)',  per:5,  count:5, time:30,
+           desc:'5 أسئلة جغرافية وثقافية. 5 نقاط لكل إجابة و30 ثانية للتفكير. معكم «الطيارة» مرة واحدة: تخطٍّ مباشر مع نقاط السؤال كاملة!'},
+  hard:   {name:'المستوى الصعب',   tone:'hard',   color:'var(--pink)',  per:10, count:5, time:30,
+           desc:'5 أسئلة متعمّقة ودقيقة بـ 10 نقاط لكل سؤال. معكم 4 وسائل مساعدة، والمؤقت يتوقف أثناء استخدامها.'},
+};
+const BONUS_TIME = 30, BONUS_COUNT = 10, CALL_TIME = 30;
+
+/* ---------- الحالة ---------- */
+const state = {
+  host:{name:'', avatar:0},
+  player:{name:'', avatar:0},
+  scores:{easy:0, medium:0, bonus:0, hard:0},
+  level:null, qIndex:0, questions:{}, results:[],
+  answered:false, timerStarted:false,
+  lifelines:{jet:false, fifty:false, call:false, swap:false, ai:false},
+  spareHard:[],
+};
+
+/* ---------- أدوات ---------- */
+const $ = id => document.getElementById(id);
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function prepMcq(item){
+  const order = shuffle([0,1,2,3]);
+  return {q:item.q, hint:item.hint||'', c:order.map(i=>item.c[i]), a:order.indexOf(item.a)};
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0});
+}
+let toastTid=null;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTid); toastTid=setTimeout(()=>t.classList.remove('show'),3200);
+}
+const totalScore = () => state.scores.easy+state.scores.medium+state.scores.bonus+state.scores.hard;
+
+/* ---------- الصوت (WebAudio) ---------- */
+let soundOn = true, audioCtx = null;
+function beep(freq, dur=0.12, type='sine', gain=0.06){
+  if(!soundOn) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(gain, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){/* الصوت غير متاح */}
+}
+const sfx = {
+  tick:  ()=>beep(880,0.05,'square',0.03),
+  good:  ()=>{beep(660,0.1);setTimeout(()=>beep(880,0.14),90);setTimeout(()=>beep(1100,0.2),200);},
+  bad:   ()=>{beep(220,0.2,'sawtooth',0.05);setTimeout(()=>beep(160,0.3,'sawtooth',0.05),140);},
+  timeUp:()=>{beep(440,0.15,'square',0.05);setTimeout(()=>beep(330,0.3,'square',0.05),150);},
+  fanfare:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.22,'triangle',0.07),i*140));},
+};
+$('soundToggle').addEventListener('click',()=>{
+  soundOn=!soundOn;
+  $('soundToggle').setAttribute('aria-pressed', String(soundOn));
+  $('soundOnIco').style.display = soundOn?'block':'none';
+  $('soundOffIco').style.display = soundOn?'none':'block';
+});
+
+/* ---------- المؤقت الدائري ---------- */
+const ARC_LEN = 2*Math.PI*42;
+$('timerArc').style.strokeDasharray = ARC_LEN;
+const timer = {
+  total:0, left:0, iid:null, running:false, onDone:null,
+  start(seconds, onDone){
+    this.stop(); this.total=seconds; this.left=seconds; this.onDone=onDone; this.running=true;
+    this.render();
+    this.iid=setInterval(()=>{
+      this.left--;
+      if(this.left<=5 && this.left>0) sfx.tick();
+      this.render();
+      if(this.left<=0){ this.stop(); sfx.timeUp(); if(this.onDone) this.onDone(); }
+    },1000);
+  },
+  pause(){ if(this.running){ clearInterval(this.iid); this.running=false; $('timerPausedNote').classList.add('show'); } },
+  resume(){
+    if(!this.running && this.left>0){
+      $('timerPausedNote').classList.remove('show');
+      this.running=true;
+      this.iid=setInterval(()=>{
+        this.left--;
+        if(this.left<=5 && this.left>0) sfx.tick();
+        this.render();
+        if(this.left<=0){ this.stop(); sfx.timeUp(); if(this.onDone) this.onDone(); }
+      },1000);
+    }
+  },
+  stop(){ clearInterval(this.iid); this.running=false; $('timerPausedNote').classList.remove('show'); },
+  reset(seconds){ this.stop(); this.total=seconds; this.left=seconds; this.render(); },
+  render(){
+    $('timerNum').textContent = this.left>=0? this.left : 0;
+    const frac = this.total? this.left/this.total : 0;
+    $('timerArc').style.strokeDashoffset = ARC_LEN*(1-frac);
+    const started = this.running || (this.total>0 && this.left<this.total);
+    $('timerRing').classList.toggle('warn', started && this.left<=5 && this.left>0);
+  },
+};
+
+/* ---------- شاشة البداية ---------- */
+function buildAvatarRow(containerId, who){
+  const row = $(containerId); row.innerHTML='';
+  AVATARS.forEach((av,i)=>{
+    const b=document.createElement('button');
+    b.className='avatar-btn'; b.innerHTML=av.svg; b.type='button';
+    b.setAttribute('aria-label','أفاتار '+(i+1));
+    b.setAttribute('aria-pressed', String(state[who].avatar===i));
+    b.addEventListener('click',()=>{
+      state[who].avatar=i;
+      row.querySelectorAll('.avatar-btn').forEach((x,xi)=>x.setAttribute('aria-pressed',String(xi===i)));
+    });
+    row.appendChild(b);
+  });
+}
+buildAvatarRow('hostAvatars','host');
+state.player.avatar = 3;
+buildAvatarRow('playerAvatars','player');
+
+$('startBtn').addEventListener('click',()=>{
+  const hn=$('hostName').value.trim(), pn=$('playerName').value.trim();
+  $('fieldHost').classList.toggle('invalid',!hn);
+  $('fieldPlayer').classList.toggle('invalid',!pn);
+  if(!hn||!pn) return;
+  state.host.name=hn; state.player.name=pn;
+  startGame();
+});
+
+/* ---------- بدء الجولة ---------- */
+function startGame(){
+  state.scores={easy:0,medium:0,bonus:0,hard:0};
+  state.lifelines={jet:false,fifty:false,call:false,swap:false,ai:false};
+  state.questions.easy   = shuffle(BANK.easy).slice(0,5).map(prepMcq);
+  state.questions.medium = shuffle(BANK.medium).slice(0,5).map(prepMcq);
+  state.questions.bonus  = shuffle(BANK.bonus).slice(0,BONUS_COUNT);
+  const hardAll = shuffle(BANK.hard).map(prepMcq);
+  state.questions.hard = hardAll.slice(0,5);
+  state.spareHard = hardAll.slice(5);
+  showLevelIntro('easy');
+}
+
+/* ---------- مقدمة المستوى ---------- */
+const LEVEL_ICONS = {
+  easy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+  medium:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  bonus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>',
+  hard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+};
+let pendingLevel=null;
+function showLevelIntro(level){
+  pendingLevel=level;
+  const icon=$('levelIcon');
+  if(level==='bonus'){
+    icon.className='lvl-icon tone-bonus'; icon.innerHTML=LEVEL_ICONS.bonus;
+    $('levelTitle').textContent='⚡ فقرة البونص: تحدي السرعة';
+    $('levelTitle').style.color='var(--blue)';
+    $('levelDesc').textContent='10 أسئلة خاطفة في 30 ثانية فقط! نقطة لكل إجابة صحيحة. المضيف يقرأ بسرعة ويضغط «صحيح» أو «تخطّي» — التحدي يتوقف فور انتهاء العداد.';
+    $('levelStats').innerHTML='<span class="lvl-stat">🕒 <b>30</b> ثانية إجمالية</span><span class="lvl-stat">❓ <b>10</b> أسئلة</span><span class="lvl-stat">⭐ <b>10</b> نقاط بونص</span>';
+  }else{
+    const L=LEVELS[level];
+    icon.className='lvl-icon tone-'+L.tone; icon.innerHTML=LEVEL_ICONS[level];
+    $('levelTitle').textContent=L.name;
+    $('levelTitle').style.color=L.color;
+    $('levelDesc').textContent=L.desc;
+    $('levelStats').innerHTML=
+      '<span class="lvl-stat">❓ <b>'+L.count+'</b> أسئلة</span>'+
+      '<span class="lvl-stat">⭐ <b>'+L.per+'</b> نقاط للسؤال</span>'+
+      '<span class="lvl-stat">🕒 <b>'+L.time+'</b> ثانية</span>';
+  }
+  showScreen('screen-level');
+}
+$('levelGoBtn').addEventListener('click',()=>{
+  if(pendingLevel==='bonus') startBonus();
+  else{ state.level=pendingLevel; state.qIndex=0; state.results=Array(LEVELS[pendingLevel].count).fill(null); renderHud(); renderQuestion(); showScreen('screen-play'); }
+});
+
+/* ---------- HUD ---------- */
+function avatarSvg(who){ return AVATARS[state[who].avatar].svg; }
+function renderHud(){
+  $('hudHostName').textContent=state.host.name;
+  $('hudPlayerName').textContent=state.player.name;
+  $('hudHostAvatar').innerHTML=avatarSvg('host');
+  $('hudPlayerAvatar').innerHTML=avatarSvg('player');
+  $('hudScore').textContent=totalScore();
+  const L=LEVELS[state.level];
+  $('hudLevelTag').className='level-tag '+L.tone;
+  $('hudLevelName').textContent=L.name+' — '+L.per+' نقاط';
+}
+
+/* ---------- وسائل المساعدة ---------- */
+const LL_DEFS = {
+  jet:  {cls:'ll-jet',  label:'الطيارة (تخطٍّ + النقاط)', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>'},
+  fifty:{cls:'ll-fifty',label:'حذف إجابتين 50:50', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8.5 8.5 7 7"/><path d="m15.5 8.5-7 7"/></svg>'},
+  call: {cls:'ll-call', label:'مكالمة صديق', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'},
+  swap: {cls:'ll-swap', label:'تغيير السؤال', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>'},
+  ai:   {cls:'ll-ai',   label:'مساعد الذكاء الاصطناعي', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'},
+};
+function renderLifelines(){
+  const row=$('lifelinesRow'); row.innerHTML='';
+  const list = state.level==='medium' ? ['jet'] : state.level==='hard' ? ['fifty','call','swap','ai'] : [];
+  $('lifelinesWrap').style.display = list.length? 'block':'none';
+  list.forEach(key=>{
+    const d=LL_DEFS[key];
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='ll-btn '+d.cls+(state.lifelines[key]?' used':'');
+    b.innerHTML=d.icon+'<span>'+d.label+'</span>';
+    b.disabled = state.lifelines[key] || state.answered || !state.timerStarted;
+    b.addEventListener('click',()=>useLifeline(key));
+    row.appendChild(b);
+  });
+}
+
+/* ---------- عرض السؤال ---------- */
+function renderQuestion(){
+  const L=LEVELS[state.level];
+  const item=state.questions[state.level][state.qIndex];
+  state.answered=false; state.timerStarted=false;
+
+  $('qNum').textContent='السؤال '+(state.qIndex+1)+' من '+L.count+' • '+L.per+' نقاط';
+  $('qText').textContent=item.q;
+  $('hostInstructionText').textContent = 'يا '+state.host.name+'، اقرأ السؤال والخيارات بصوت واضح ثم اضغط «ابدأ المؤقت». يا '+state.player.name+'، أمامك '+L.time+' ثوانٍ للإجابة!';
+
+  const dots=$('progressDots'); dots.innerHTML='';
+  for(let i=0;i<L.count;i++){
+    const d=document.createElement('span');
+    d.className='pd'+(i===state.qIndex?' current':'')+(state.results[i]==='good'?' done-good':state.results[i]==='bad'?' done-bad':'');
+    dots.appendChild(d);
+  }
+
+  const wrap=$('choices'); wrap.innerHTML='';
+  const keys=['أ','ب','ج','د'];
+  item.c.forEach((txt,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='choice locked'; b.disabled=true; b.dataset.idx=i;
+    b.innerHTML='<span class="key">'+keys[i]+'</span><span>'+txt+'</span>';
+    b.addEventListener('click',()=>answer(i));
+    wrap.appendChild(b);
+  });
+
+  $('verdict').className='verdict'; $('verdict').innerHTML='';
+  $('nextBtn').style.display='none';
+  $('startTimerBtn').disabled=false;
+  timer.reset(L.time);
+  renderLifelines();
+}
+
+$('startTimerBtn').addEventListener('click',()=>{
+  if(state.answered||state.timerStarted) return;
+  state.timerStarted=true;
+  $('startTimerBtn').disabled=true;
+  document.querySelectorAll('#choices .choice').forEach(b=>{
+    if(!b.classList.contains('eliminated')){ b.disabled=false; b.classList.remove('locked'); }
+  });
+  renderLifelines();
+  timer.start(LEVELS[state.level].time, onTimeUp);
+});
+
+function onTimeUp(){
+  if(state.answered) return;
+  settle(null); // انتهى الوقت
+}
+
+function answer(idx){
+  if(state.answered) return;
+  settle(idx);
+}
+
+function settle(chosenIdx){
+  const L=LEVELS[state.level];
+  const item=state.questions[state.level][state.qIndex];
+  state.answered=true;
+  timer.stop();
+
+  const btns=[...document.querySelectorAll('#choices .choice')];
+  btns.forEach(b=>{b.disabled=true; b.classList.remove('locked');});
+  btns[item.a].classList.add('correct');
+
+  const v=$('verdict');
+  if(chosenIdx===item.a){
+    state.scores[state.level]+=L.per;
+    state.results[state.qIndex]='good';
+    v.className='verdict good show';
+    v.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> إجابة صحيحة! +'+L.per+' نقاط';
+    sfx.good();
+  }else{
+    state.results[state.qIndex]='bad';
+    if(chosenIdx!==null){
+      btns[chosenIdx].classList.add('wrong');
+      v.className='verdict bad show';
+      v.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> إجابة غير صحيحة — الإجابة: '+item.c[item.a];
+    }else{
+      v.className='verdict bad show';
+      v.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg> انتهى الوقت! الإجابة: '+item.c[item.a];
+    }
+    sfx.bad();
+  }
+  $('hudScore').textContent=totalScore();
+  const dots=$('progressDots').children;
+  dots[state.qIndex].className='pd '+(state.results[state.qIndex]==='good'?'done-good':'done-bad');
+  $('nextBtn').style.display='inline-flex';
+  $('nextBtn').textContent = state.qIndex+1<L.count ? 'السؤال التالي' : (state.level==='medium'?'إلى فقرة البونص ⚡':state.level==='easy'?'إلى المستوى المتوسط':'النتيجة النهائية 🏆');
+  renderLifelines();
+}
+
+$('nextBtn').addEventListener('click',()=>{
+  const L=LEVELS[state.level];
+  if(state.qIndex+1<L.count){
+    state.qIndex++;
+    renderQuestion();
+  }else{
+    if(state.level==='easy') showLevelIntro('medium');
+    else if(state.level==='medium') showLevelIntro('bonus');
+    else showFinal();
+  }
+});
+
+/* ---------- تنفيذ وسائل المساعدة ---------- */
+function useLifeline(key){
+  if(state.lifelines[key]||state.answered||!state.timerStarted) return;
+
+  if(key==='jet'){
+    state.lifelines.jet=true;
+    const L=LEVELS.medium;
+    timer.stop();
+    state.answered=true;
+    state.scores.medium+=L.per;
+    state.results[state.qIndex]='good';
+    const item=state.questions.medium[state.qIndex];
+    const btns=[...document.querySelectorAll('#choices .choice')];
+    btns.forEach(b=>b.disabled=true);
+    btns[item.a].classList.add('correct');
+    const v=$('verdict');
+    v.className='verdict skip show';
+    v.innerHTML='✈️ «الطيارة»! حصلت على +'+L.per+' نقاط وتخطّيتم السؤال. الإجابة كانت: '+item.c[item.a];
+    sfx.good();
+    $('hudScore').textContent=totalScore();
+    $('progressDots').children[state.qIndex].className='pd done-good';
+    $('nextBtn').style.display='inline-flex';
+    $('nextBtn').textContent = state.qIndex+1<L.count ? 'السؤال التالي' : 'إلى فقرة البونص ⚡';
+    renderLifelines();
+    toast('استُخدمت الطيارة — لا تتوفر مرة أخرى');
+    return;
+  }
+
+  if(key==='fifty'){
+    state.lifelines.fifty=true;
+    const item=state.questions.hard[state.qIndex];
+    const wrongs=[0,1,2,3].filter(i=>i!==item.a);
+    shuffle(wrongs).slice(0,2).forEach(i=>{
+      const b=document.querySelector('#choices .choice[data-idx="'+i+'"]');
+      b.classList.add('eliminated'); b.disabled=true;
+    });
+    toast('حُذفت إجابتان خاطئتان');
+    renderLifelines();
+    return;
+  }
+
+  if(key==='call'){
+    state.lifelines.call=true;
+    timer.pause();
+    openCallModal();
+    renderLifelines();
+    return;
+  }
+
+  if(key==='swap'){
+    if(!state.spareHard.length){
+      toast('لا توجد أسئلة بديلة متبقية!');
+      return;
+    }
+    state.lifelines.swap=true;
+    {
+      state.questions.hard[state.qIndex]=state.spareHard.shift();
+      toast('تم استبدال السؤال بسؤال صعب آخر');
+      renderQuestion();
+      // إعادة تشغيل مباشرة بعد الاستبدال
+      state.timerStarted=true;
+      $('startTimerBtn').disabled=true;
+      document.querySelectorAll('#choices .choice').forEach(b=>{b.disabled=false;b.classList.remove('locked');});
+      renderLifelines();
+      timer.start(LEVELS.hard.time,onTimeUp);
+    }
+    return;
+  }
+
+  if(key==='ai'){
+    state.lifelines.ai=true;
+    timer.pause();
+    const item=state.questions.hard[state.qIndex];
+    $('aiHintText').textContent=item.hint||'فكّر في الخيار الأكثر شهرة وارتباطاً بصيغة السؤال.';
+    $('aiModal').classList.add('show');
+    renderLifelines();
+    return;
+  }
+}
+
+/* مكالمة صديق */
+let callIid=null;
+function openCallModal(){
+  let left=CALL_TIME;
+  $('callTimer').textContent=left;
+  $('callModal').classList.add('show');
+  clearInterval(callIid);
+  callIid=setInterval(()=>{
+    left--;
+    $('callTimer').textContent=left;
+    if(left<=5&&left>0) sfx.tick();
+    if(left<=0){clearInterval(callIid); closeCallModal();}
+  },1000);
+}
+function closeCallModal(){
+  clearInterval(callIid);
+  $('callModal').classList.remove('show');
+  timer.resume();
+}
+$('callDoneBtn').addEventListener('click',closeCallModal);
+$('aiDoneBtn').addEventListener('click',()=>{
+  $('aiModal').classList.remove('show');
+  timer.resume();
+});
+
+/* ---------- فقرة البونص ---------- */
+const bonus={idx:0, correct:0, left:BONUS_TIME, iid:null, running:false};
+function startBonus(){
+  bonus.idx=0; bonus.correct=0; bonus.left=BONUS_TIME; bonus.running=false;
+  $('bonusHostName').textContent=state.host.name;
+  $('bonusHostAvatar').innerHTML=avatarSvg('host');
+  $('bonusHudScore').textContent=totalScore();
+  $('bonusTimer').textContent=BONUS_TIME;
+  $('bonusTimer').classList.remove('warn');
+  $('bonusProgress').textContent='المضيف يمسك الجهاز ويقرأ الأسئلة بسرعة!';
+  $('bonusQText').textContent='جاهزون؟ '+BONUS_COUNT+' أسئلة خاطفة في '+BONUS_TIME+' ثانية!';
+  $('bonusAnswer').style.visibility='hidden';
+  $('bonusActions').style.display='none';
+  $('bonusStartBtn').style.display='inline-flex';
+  $('bonusScoreLive').textContent='';
+  showScreen('screen-bonus');
+}
+$('bonusStartBtn').addEventListener('click',()=>{
+  bonus.running=true;
+  $('bonusStartBtn').style.display='none';
+  $('bonusActions').style.display='grid';
+  $('bonusAnswer').style.visibility='visible';
+  renderBonusQ();
+  bonus.iid=setInterval(()=>{
+    bonus.left--;
+    $('bonusTimer').textContent=bonus.left;
+    if(bonus.left<=10){$('bonusTimer').classList.add('warn'); if(bonus.left>0) sfx.tick();}
+    if(bonus.left<=0) endBonus();
+  },1000);
+});
+function renderBonusQ(){
+  const item=state.questions.bonus[bonus.idx];
+  $('bonusProgress').textContent='السؤال '+(bonus.idx+1)+' من '+BONUS_COUNT;
+  $('bonusQText').textContent=item.q;
+  $('bonusAnswerText').textContent=item.a;
+  $('bonusScoreLive').textContent='رصيد البونص: '+bonus.correct+' / '+BONUS_COUNT;
+}
+function bonusStep(gotIt){
+  if(!bonus.running) return;
+  if(gotIt){bonus.correct++; sfx.good();} else {sfx.bad();}
+  if(bonus.idx+1<BONUS_COUNT){bonus.idx++; renderBonusQ();}
+  else endBonus();
+}
+$('bonusCorrectBtn').addEventListener('click',()=>bonusStep(true));
+$('bonusSkipBtn').addEventListener('click',()=>bonusStep(false));
+function endBonus(){
+  if(!bonus.running) return;
+  bonus.running=false;
+  clearInterval(bonus.iid);
+  state.scores.bonus=bonus.correct;
+  $('bonusQText').textContent='انتهت فقرة البونص! حصلتم على '+bonus.correct+' من '+BONUS_COUNT+' نقاط بونص 🎉';
+  $('bonusAnswer').style.visibility='hidden';
+  $('bonusActions').style.display='none';
+  $('bonusHudScore').textContent=totalScore();
+  sfx.fanfare();
+  setTimeout(()=>showLevelIntro('hard'),1800);
+}
+
+/* ---------- النتيجة النهائية ---------- */
+function showFinal(){
+  const s=state.scores, total=totalScore();
+  $('finalPlayerName').textContent=state.player.name;
+  $('finalHostName').textContent=state.host.name;
+  $('finalPlayerAvatar').innerHTML=avatarSvg('player');
+  $('finalHostAvatar').innerHTML=avatarSvg('host');
+  $('valEasy').textContent=s.easy+' / 15';
+  $('valMedium').textContent=s.medium+' / 25';
+  $('valBonus').textContent=s.bonus+' / 10';
+  $('valHard').textContent=s.hard+' / 50';
+  $('grandTotal').textContent=total;
+  $('medalPct').textContent=total+'%';
+  const label =
+    total===100 ? '🏆 فول مارك! العلامة الكاملة!' :
+    total>=90 ? 'وسام ذهبي — أداء أسطوري!' :
+    total>=75 ? 'وسام فضي — ممتاز جداً!' :
+    total>=50 ? 'وسام برونزي — أداء قوي!' :
+    'وسام المشاركة — الجولة القادمة أفضل!';
+  $('medalLabel').textContent=label;
+  showScreen('screen-final');
+  sfx.fanfare();
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      $('barEasy').style.width=(s.easy/15*100)+'%';
+      $('barMedium').style.width=(s.medium/25*100)+'%';
+      $('barBonus').style.width=(s.bonus/10*100)+'%';
+      $('barHard').style.width=(s.hard/50*100)+'%';
+    },100);
+  });
+}
+
+$('swapRolesBtn').addEventListener('click',()=>{
+  [state.host, state.player]=[state.player, state.host];
+  toast('تم تبديل الأدوار! المضيف الآن: '+state.host.name);
+  resetBars();
+  startGame();
+});
+$('restartBtn').addEventListener('click',()=>{
+  resetBars();
+  $('hostName').value=state.host.name;
+  $('playerName').value=state.player.name;
+  buildAvatarRow('hostAvatars','host');
+  buildAvatarRow('playerAvatars','player');
+  showScreen('screen-start');
+});
+function resetBars(){
+  ['barEasy','barMedium','barBonus','barHard'].forEach(id=>$(id).style.width='0');
+}
+</script>
+</body>
+</html>
