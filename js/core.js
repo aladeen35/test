@@ -18,9 +18,10 @@ const DEFAULT_SETTINGS = {
   notificationsEnabled:true, leadTimeMinutes:30,
   nonMeetingStart:"home", customStart:null,
   maxBranchesPerDay:0,
-  syncEnabled:false, syncBinId:null, syncKey:null,
-  /* نظام الفريق: صندوق JSONBin مشترك يجمع زيارات كل الأعضاء */
-  teamEnabled:false, teamBinId:null, teamKey:null, memberName:"",
+  /* المزامنة: "free" صندوق مجاني بلا حساب (افتراضي) أو "jsonbin" بمفتاح (متقدم) */
+  syncEnabled:false, syncProvider:"free", syncBinId:null, syncKey:null,
+  /* نظام الفريق: صندوق سحابي مشترك يجمع زيارات كل الأعضاء */
+  teamEnabled:false, teamProvider:"free", teamBinId:null, teamKey:null, memberName:"",
   teamManager:false /* يُظهر أدوات إدارة مهام الفريق (حماية واجهة فقط) */
 };
 
@@ -105,6 +106,10 @@ async function hydrate(){
       state.branches = d.branches?.length ? d.branches : structuredClone(SEED_BRANCHES);
       state.plans = d.plans ?? [];
       state.settings = {...DEFAULT_SETTINGS, ...(d.settings??{})};
+      /* ترحيل إعدادات قديمة (قبل وجود المزوّد المجاني): مفتاح+رمز = JSONBin */
+      const old=d.settings??{};
+      if(!old.syncProvider && old.syncBinId && old.syncKey) state.settings.syncProvider="jsonbin";
+      if(!old.teamProvider && old.teamBinId && old.teamKey) state.settings.teamProvider="jsonbin";
       state.activePlanId = d.activePlanId ?? (state.plans[0]?.id ?? null);
       state.weekSelection = d.weekSelection ?? null;
       state.visits = d.visits ?? [];
@@ -115,62 +120,138 @@ async function hydrate(){
   state.branches = structuredClone(SEED_BRANCHES);
 }
 
-/* ================= المزامنة السحابية (JSONBin) ================= */
+/* ================= مزوّد التخزين السحابي =================
+   وضعان لكلٍ من المزامنة والفريق:
+   - "free": صندوق JSONBlob مجاني — بلا حساب وبلا مفتاح، يعمل فورًا بضغطة واحدة
+   - "jsonbin": JSONBin.io بمفتاح X-Master-Key (خيار متقدم بخصوصية أعلى)
+   ملاحظة: صندوق "free" يبقى ما دام يُستخدم (تُحذف الصناديق الخاملة بعد
+   شهر تقريبًا) — والمزامنة الدورية للتطبيق تُبقيه حيًّا تلقائيًا. */
 const JB_BASE="https://api.jsonbin.io/v3";
+const JBLOB_BASE="https://jsonblob.com/api/jsonBlob";
+
+async function storeCreate(provider,key,data,name){
+  if(provider==="jsonbin"){
+    const r=await fetch(`${JB_BASE}/b`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","X-Master-Key":key,"X-Bin-Name":name||"half-million","X-Bin-Private":"true"},
+      body:JSON.stringify(data)
+    });
+    if(!r.ok) throw new Error("store-"+r.status);
+    return (await r.json()).metadata.id;
+  }
+  const r=await fetch(JBLOB_BASE,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify(data)
+  });
+  if(!r.ok) throw new Error("store-"+r.status);
+  const loc=r.headers.get("X-jsonblob")||r.headers.get("Location")||r.headers.get("location")||"";
+  const id=loc.split("/").pop();
+  if(!id) throw new Error("store-noid");
+  return id;
+}
+async function storeRead(provider,key,id){
+  if(provider==="jsonbin"){
+    const r=await fetch(`${JB_BASE}/b/${id}/latest`,{headers:{"X-Master-Key":key}});
+    if(!r.ok) throw new Error("store-"+r.status);
+    return (await r.json()).record;
+  }
+  const r=await fetch(`${JBLOB_BASE}/${id}`,{headers:{"Accept":"application/json"}});
+  if(!r.ok) throw new Error("store-"+r.status);
+  return r.json();
+}
+async function storeWrite(provider,key,id,data){
+  const url=provider==="jsonbin"?`${JB_BASE}/b/${id}`:`${JBLOB_BASE}/${id}`;
+  const headers={"Content-Type":"application/json"};
+  if(provider==="jsonbin") headers["X-Master-Key"]=key;
+  const r=await fetch(url,{method:"PUT",headers,body:JSON.stringify(data)});
+  if(!r.ok) throw new Error("store-"+r.status);
+}
+
+/* رمز ربط قابل للمشاركة يحمل المزوّد والرمز (والمفتاح للوضع المتقدم فقط —
+   مفتاح الذكاء الاصطناعي لا يدخل في أي رمز أبدًا) */
+function connCodeEncode(kind, provider, id, key){
+  const payload=[kind, provider==="jsonbin"?"b":"f", id, key||""].join("|");
+  return "HM"+btoa(unescape(encodeURIComponent(payload))).replace(/=+$/,"");
+}
+function connCodeDecode(raw){
+  const m=String(raw||"").match(/HM[A-Za-z0-9+/=]{8,}/);
+  if(!m) return null;
+  try{
+    const [kind,p,id,key]=decodeURIComponent(escape(atob(m[0].slice(2)))).split("|");
+    if(!id || (kind!=="t"&&kind!=="s")) return null;
+    return {kind, provider:p==="b"?"jsonbin":"free", id, key:key||null};
+  }catch(e){ return null; }
+}
+
+/* ================= المزامنة الشخصية بين الأجهزة ================= */
 let cloudTimer=null, cloudBusy=false;
 function cloudPayload(){
   return {branches:state.branches, plans:state.plans, settings:state.settings,
     activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits,
     tasks:state.tasks, _ts:Date.now()};
 }
-function scheduleCloudPush(){
+function syncReady(){
   const s=state.settings;
-  if(!s.syncEnabled || !s.syncBinId || !s.syncKey) return;
+  return !!(s.syncEnabled && s.syncBinId && (s.syncProvider!=="jsonbin" || s.syncKey));
+}
+function scheduleCloudPush(){
+  if(!syncReady()) return;
   clearTimeout(cloudTimer);
   cloudTimer=setTimeout(cloudPush, 1500);
 }
 async function cloudPush(){
   const s=state.settings;
-  if(!s.syncEnabled || !s.syncBinId || !s.syncKey || cloudBusy) return;
+  if(!syncReady() || cloudBusy) return;
   cloudBusy=true; updateSyncStatus("جارٍ الرفع…","var(--text-2)");
   try{
-    const r=await fetch(`${JB_BASE}/b/${s.syncBinId}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json","X-Master-Key":s.syncKey},
-      body:JSON.stringify(cloudPayload())
-    });
-    if(!r.ok) throw new Error(r.status);
+    await storeWrite(s.syncProvider, s.syncKey, s.syncBinId, cloudPayload());
     updateSyncStatus("مُزامَن ✓ "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),"var(--ok)");
   }catch(e){ updateSyncStatus("تعذّر الرفع — سيُعاد عند التعديل التالي","var(--danger)"); }
   finally{ cloudBusy=false; }
 }
 async function cloudPull(){
   const s=state.settings;
-  if(!s.syncEnabled || !s.syncBinId || !s.syncKey) return false;
+  if(!syncReady()) return false;
   try{
-    const r=await fetch(`${JB_BASE}/b/${s.syncBinId}/latest`,{headers:{"X-Master-Key":s.syncKey}});
-    if(!r.ok) throw new Error(r.status);
-    const j=await r.json(); const d=j.record;
+    const d=await storeRead(s.syncProvider, s.syncKey, s.syncBinId);
     if(d && d.branches){
       state.branches=d.branches; state.plans=d.plans??[]; state.visits=d.visits??[];
       state.tasks=d.tasks??state.tasks??[];
       state.weekSelection=d.weekSelection??null; state.activePlanId=d.activePlanId??null;
-      state.settings={...state.settings, ...(d.settings??{}), syncEnabled:true, syncBinId:s.syncBinId, syncKey:s.syncKey};
-      await stSet("hm-data", JSON.stringify({branches:state.branches, plans:state.plans, settings:state.settings, activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits}));
+      state.settings={...state.settings, ...(d.settings??{}), syncEnabled:true,
+        syncProvider:s.syncProvider, syncBinId:s.syncBinId, syncKey:s.syncKey};
+      await stSet("hm-data", JSON.stringify({branches:state.branches, plans:state.plans, settings:state.settings, activePlanId:state.activePlanId, weekSelection:state.weekSelection, visits:state.visits, tasks:state.tasks}));
       return true;
     }
-  }catch(e){ updateSyncStatus("تعذّر جلب البيانات — تحقق من الرمز والمفتاح","var(--danger)"); }
+  }catch(e){ updateSyncStatus("تعذّر جلب البيانات — تحقق من الرمز","var(--danger)"); }
   return false;
 }
+/* تفعيل المزامنة بضغطة واحدة: صندوق مجاني فوري بلا حساب */
+async function syncQuickCreate(){
+  const s=state.settings;
+  const id=await storeCreate("free", null, cloudPayload());
+  s.syncProvider="free"; s.syncBinId=id; s.syncKey=null; s.syncEnabled=true;
+  await persist();
+  return syncShareCode();
+}
+/* الربط المتقدم عبر JSONBin بمفتاح */
 async function cloudCreateBin(masterKey){
-  const r=await fetch(`${JB_BASE}/b`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json","X-Master-Key":masterKey,"X-Bin-Name":"half-million-sync","X-Bin-Private":"true"},
-    body:JSON.stringify(cloudPayload())
-  });
-  if(!r.ok) throw new Error(r.status);
-  const j=await r.json();
-  return j.metadata.id;
+  return storeCreate("jsonbin", masterKey, cloudPayload(), "half-million-sync");
+}
+function syncShareCode(){
+  const s=state.settings;
+  return s.syncBinId ? connCodeEncode("s", s.syncProvider, s.syncBinId, s.syncKey) : null;
+}
+/* ربط جهاز آخر برمز المزامنة وجلب البيانات */
+async function syncConnectByCode(code){
+  const c=connCodeDecode(code);
+  if(!c || c.kind!=="s") throw new Error("bad-code");
+  const s=state.settings;
+  s.syncProvider=c.provider; s.syncBinId=c.id; s.syncKey=c.key; s.syncEnabled=true;
+  const ok=await cloudPull();
+  if(!ok) throw new Error("pull-failed");
+  return true;
 }
 function updateSyncStatus(msg,color){
   const el=document.getElementById("sync-status");
@@ -178,15 +259,20 @@ function updateSyncStatus(msg,color){
 }
 
 /* ================= نظام الفريق =================
-   صندوق JSONBin واحد يتشاركه الفريق:
+   صندوق سحابي واحد يتشاركه الفريق:
    { type:"hm-team", members: { "<اسم العضو>": { visits:[...], updatedAt } } }
-   كل عضو يكتب مدخلته فقط (قراءة ← تعديل ← كتابة) وتُدمج القراءات في اللوحة. */
+   كل عضو يكتب مدخلته فقط (قراءة ← تعديل ← كتابة) وتُدمج القراءات في اللوحة.
+   الانضمام برمز دعوة HM… أو رابط دعوة — دون أي مفاتيح في الوضع المجاني. */
 let teamTimer=null, teamBusy=false;
 let teamCache={ts:0, members:null, tasks:[]};
 
 function teamReady(){
   const s=state.settings;
-  return !!(s.teamEnabled && s.teamBinId && s.teamKey && (s.memberName||"").trim());
+  return !!(s.teamEnabled && s.teamBinId && (s.teamProvider!=="jsonbin" || s.teamKey) && (s.memberName||"").trim());
+}
+/* اسم عضو تلقائي كي يعمل الانضمام بلا أي إدخال — يُعدَّل من الإعدادات */
+function autoMemberName(){
+  return tx("مشرف","Inspector")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
 }
 function scheduleTeamPush(){
   if(!teamReady()) return;
@@ -195,10 +281,7 @@ function scheduleTeamPush(){
 }
 async function teamFetch(){
   const s=state.settings;
-  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}/latest`,{headers:{"X-Master-Key":s.teamKey}});
-  if(!r.ok) throw new Error(r.status);
-  const j=await r.json();
-  const rec=j.record;
+  const rec=await storeRead(s.teamProvider, s.teamKey, s.teamBinId);
   return (rec && rec.type==="hm-team") ? rec : {type:"hm-team", members:{}};
 }
 async function teamPush(){
@@ -210,12 +293,7 @@ async function teamPush(){
     try{ rec=await teamFetch(); }catch(e){ rec={type:"hm-team", members:{}}; }
     rec.members = rec.members ?? {};
     rec.members[s.memberName.trim()] = { visits:state.visits, updatedAt:Date.now() };
-    const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
-      body:JSON.stringify(rec)
-    });
-    if(!r.ok) throw new Error(r.status);
+    await storeWrite(s.teamProvider, s.teamKey, s.teamBinId, rec);
     updateTeamStatus("مُزامَن مع الفريق ✓ "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),"var(--ok)");
   }catch(e){
     updateTeamStatus("تعذّر الرفع للفريق — سيُعاد عند التعديل التالي","var(--danger)");
@@ -238,14 +316,63 @@ function mergeTeamVisits(members){
   return out;
 }
 async function teamCreateBin(masterKey, memberName){
-  const r=await fetch(`${JB_BASE}/b`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json","X-Master-Key":masterKey,"X-Bin-Name":"half-million-team","X-Bin-Private":"true"},
-    body:JSON.stringify({type:"hm-team", members:{ [memberName]: {visits:state.visits, updatedAt:Date.now()} }})
-  });
-  if(!r.ok) throw new Error(r.status);
-  const j=await r.json();
-  return j.metadata.id;
+  return storeCreate("jsonbin", masterKey,
+    {type:"hm-team", members:{ [memberName]: {visits:state.visits, updatedAt:Date.now()} }, tasks:[]},
+    "half-million-team");
+}
+/* إنشاء فريق بضغطة واحدة — صندوق مجاني بلا حساب، ويعيد رمز الدعوة */
+async function teamQuickCreate(){
+  const s=state.settings;
+  if(!(s.memberName||"").trim()) s.memberName=autoMemberName();
+  const id=await storeCreate("free", null,
+    {type:"hm-team", members:{ [s.memberName.trim()]: {visits:state.visits, updatedAt:Date.now()} }, tasks:[]});
+  s.teamProvider="free"; s.teamBinId=id; s.teamKey=null; s.teamEnabled=true;
+  teamCache={ts:0, members:null, tasks:[]};
+  await persist();
+  return teamInviteCode();
+}
+function teamInviteCode(){
+  const s=state.settings;
+  return s.teamBinId ? connCodeEncode("t", s.teamProvider, s.teamBinId, s.teamKey) : null;
+}
+function teamInviteLink(){
+  const code=teamInviteCode();
+  return code ? location.origin+location.pathname+"#join="+code : null;
+}
+/* الانضمام برمز دعوة أو رابط دعوة — يتحقق من الصندوق ثم يرفع مدخلة العضو */
+async function teamJoinByCode(code){
+  const c=connCodeDecode(code);
+  if(!c || c.kind!=="t") throw new Error("bad-code");
+  const rec=await storeRead(c.provider, c.key, c.id);
+  if(!rec || rec.type!=="hm-team") throw new Error("not-team");
+  const s=state.settings;
+  s.teamProvider=c.provider; s.teamBinId=c.id; s.teamKey=c.key; s.teamEnabled=true;
+  if(!(s.memberName||"").trim()) s.memberName=autoMemberName();
+  teamCache={ts:0, members:null, tasks:[]};
+  await persist();
+  await teamPush();
+  return true;
+}
+/* انضمام تلقائي عند فتح التطبيق: رابط دعوة (#join=) أو كود شركة مسبق في config.js */
+async function teamAutoJoin(){
+  let code=null;
+  const hj=new URLSearchParams(location.hash.slice(1)).get("join");
+  if(hj) code=hj;
+  else if(typeof APP_CONFIG!=="undefined" && APP_CONFIG?.team?.defaultCode && !state.settings.teamBinId)
+    code=APP_CONFIG.team.defaultCode;
+  if(!code) return false;
+  const c=connCodeDecode(code);
+  if(!c || c.kind!=="t") return false;
+  if(state.settings.teamBinId===c.id && teamReady()) return false; // منضم مسبقًا لنفس الفريق
+  try{
+    await teamJoinByCode(code);
+    if(hj) history.replaceState(null,"",location.pathname+location.search);
+    toast(tx(`انضممت للفريق تلقائيًا باسم "${state.settings.memberName}" — عدّل اسمك من الإعدادات`,`Auto-joined the team as "${state.settings.memberName}" — change your name in Settings`),"ok",6000);
+    return true;
+  }catch(e){
+    toast(tx("تعذّر الانضمام للفريق من رابط الدعوة — أعد المحاولة من الإعدادات","Couldn't join the team from the invite link — retry from Settings"),"err",6000);
+    return false;
+  }
 }
 function updateTeamStatus(msg,color){
   const el=document.getElementById("team-status");
@@ -289,24 +416,14 @@ async function teamTaskSave(task){
   let rec;
   try{ rec=await teamFetch(); }catch(e){ rec={type:"hm-team", members:{}}; }
   rec.tasks=[...(rec.tasks??[]).filter(t=>t.id!==task.id), task];
-  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
-    body:JSON.stringify(rec)
-  });
-  if(!r.ok) throw new Error(r.status);
+  await storeWrite(s.teamProvider, s.teamKey, s.teamBinId, rec);
   teamCache={ts:Date.now(), members:rec.members??{}, tasks:rec.tasks};
 }
 async function teamTaskDelete(taskId){
   const s=state.settings;
   const rec=await teamFetch();
   rec.tasks=(rec.tasks??[]).filter(t=>t.id!==taskId);
-  const r=await fetch(`${JB_BASE}/b/${s.teamBinId}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json","X-Master-Key":s.teamKey},
-    body:JSON.stringify(rec)
-  });
-  if(!r.ok) throw new Error(r.status);
+  await storeWrite(s.teamProvider, s.teamKey, s.teamBinId, rec);
   teamCache={ts:Date.now(), members:rec.members??{}, tasks:rec.tasks};
 }
 

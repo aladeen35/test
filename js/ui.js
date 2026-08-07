@@ -975,19 +975,22 @@ function renderAI(){
       <b>${ic("sparkles",18)} مساعد ½M الذكي</b>
       <p>يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك. <b>جديد:</b> أرسل قائمة بأسماء فروعك — حتى بالإنجليزية مثل <span dir="ltr" class="mono">shobra, taif</span> — وسيبني جدول أسبوعك فورًا.</p>
       <div style="display:flex;gap:.4rem;margin-top:.6rem;align-items:center;flex-wrap:wrap">
-        ${aiReady()
-          ? `<span class="visit-chip done-chip">● متصل · ${esc(modelLbl)}</span>`
-          : `<span class="visit-chip auto-chip">○ الدردشة الذكية غير مفعّلة — الجدولة بالقائمة تعمل دون مفتاح</span>`}
+        ${aiProvider()==="key"
+          ? `<span class="visit-chip done-chip">● متصل بمفتاحك · ${esc(modelLbl)}</span>`
+          : aiProvider()==="proxy"
+            ? `<span class="visit-chip done-chip">● متصل عبر خادم الشركة</span>`
+            : `<span class="visit-chip done-chip">● جاهز مجانًا — بلا مفتاح</span>`}
         <button class="mini-chip" id="ai-setup-btn">${ic("sliders",12)} ${aiSetupOpen?"إخفاء الإعداد":"إعداد الذكاء"}</button>
         ${aiChat.length?`<button class="mini-chip" id="ai-clear-btn">${ic("trash",12)} مسح المحادثة</button>`:""}
       </div>
     </div>`;
 
-  if(aiSetupOpen || !aiReady()){
+  if(aiSetupOpen){
     html+=`<div class="card pad" style="margin-bottom:1rem">
-      <b style="font-size:.9rem">⚙️ إعداد الاتصال بـ Claude</b>
+      <b style="font-size:.9rem">⚙️ إعداد الاتصال بـ Claude (اختياري)</b>
       <p class="muted" style="font-size:.74rem;margin:.4rem 0 .7rem;line-height:1.8">
-        أنشئ مفتاح API من <span dir="ltr" class="mono">console.anthropic.com</span> وألصقه هنا.
+        الذكاء يعمل تلقائيًا دون أي إعداد عبر مزوّد مجاني (تسجيل دخول مجاني عند أول رسالة).
+        لأداء أعلى وخصوصية أكبر يمكنك إضافة مفتاحك من <span dir="ltr" class="mono">console.anthropic.com</span> —
         يُحفظ المفتاح على جهازك فقط ولا يُرفع أبدًا مع المزامنة السحابية.</p>
       <label class="muted" style="font-size:.7rem;font-weight:600;display:block">مفتاح Anthropic API</label>
       <input dir="ltr" type="password" class="mono" id="ai-key" placeholder="sk-ant-…" value="${esc(cfg.apiKey??"")}" style="font-size:.8rem;margin:.25rem 0 .6rem" autocomplete="off">
@@ -1045,7 +1048,12 @@ function renderAI(){
   if(saveBtn) saveBtn.onclick=async()=>{
     const key=$("#ai-key").value.trim(), model=$("#ai-model").value;
     const msg=$("#ai-setup-msg");
-    if(!key){ msg.style.color="var(--danger)"; msg.textContent="ألصق المفتاح أولاً"; return; }
+    if(!key){
+      saveAiConfig({model});
+      aiSetupOpen=false; renderAI();
+      toast(tx("حُفظ النموذج — الذكاء يعمل عبر المزوّد المجاني","Model saved — AI runs via the free provider"),"ok");
+      return;
+    }
     msg.style.color="var(--text-2)"; msg.textContent="جارٍ اختبار الاتصال…";
     saveBtn.disabled=true;
     try{
@@ -1060,7 +1068,7 @@ function renderAI(){
     }
   };
   const forgetBtn=$("#ai-forget");
-  if(forgetBtn) forgetBtn.onclick=()=>{ saveAiConfig({apiKey:null}); renderAI(); toast(tx("نُسي المفتاح","Key forgotten"),"ok"); };
+  if(forgetBtn) forgetBtn.onclick=()=>{ saveAiConfig({apiKey:null}); renderAI(); toast(tx("نُسي المفتاح — عاد الذكاء للمزوّد المجاني","Key forgotten — back to the free provider"),"ok"); };
 
   main.querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>{const q=AI_QUICK[Number(b.dataset.qa)]; askAi(tx(q.prompt,q.promptEn??q.prompt));});
   main.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
@@ -1238,7 +1246,6 @@ function bindSchedWizard(){
 
 async function askAi(prompt){
   if(aiBusy) return;
-  if(!aiReady()){ aiSetupOpen=true; renderAI(); toast(tx("أضف مفتاح Anthropic API أولاً","Add your Anthropic API key first"),"err"); return; }
   aiBusy=true;
   aiChat.push({role:"user", content:prompt});
   saveChat();
@@ -1298,7 +1305,7 @@ function filteredVisits(base){
 function loadTeamThenRender(force=false){
   teamLoading=true; teamError=null;
   teamPull(force).then(()=>{ teamLoading=false; if(state.tab==="dash") renderDash(); })
-    .catch(()=>{ teamLoading=false; teamError="تعذّر جلب بيانات الفريق — تحقق من المفتاح والرمز"; if(state.tab==="dash") renderDash(); });
+    .catch(()=>{ teamLoading=false; teamError="تعذّر جلب بيانات الفريق — تحقق من الاتصال"; if(state.tab==="dash") renderDash(); });
 }
 
 /* مخطط أعمدة أسبوعي SVG — الأحد يمينًا (اتجاه القراءة العربية) */
@@ -1452,7 +1459,7 @@ function renderDash(){
 
   if(!list.length){
     html+=team
-      ? `<div class="card empty"><div class="art">👥</div><b>لا توجد زيارات فريق ضمن هذا الفلتر</b><p>تأكد أن زملاءك فعّلوا نظام الفريق بنفس الرمز والمفتاح، وأنهم سجّلوا زيارات</p></div>`
+      ? `<div class="card empty"><div class="art">👥</div><b>لا توجد زيارات فريق ضمن هذا الفلتر</b><p>تأكد أن زملاءك انضموا بنفس رابط الدعوة، وأنهم سجّلوا زيارات</p></div>`
       : `<div class="card empty"><div class="art">📭</div><b>لا توجد زيارات ضمن هذا الفلتر</b><p>سجّل وصولك من صفحة الخطة بزر "✅ أنا وصلت" وستظهر هنا نتائج الفحص والمؤشرات</p></div>`;
   } else {
     html+=`<div class="card table-wrap"><table class="dash-table">
@@ -1572,51 +1579,77 @@ function renderSettings(){
       <p class="muted" style="font-size:.72rem;margin-top:.6rem;line-height:1.6">💡 التنبيهات تعمل أثناء فتح التطبيق في المتصفح.</p>
     </section>
     <section class="card pad">
-      <b>☁️ المزامنة الأونلاين الدائمة</b>
-      <p class="muted" style="font-size:.75rem;margin:.4rem 0 .7rem;line-height:1.7">احفظ بياناتك سحابيًا وزامنها بين كل أجهزتك تلقائيًا. مجاني عبر خدمة JSONBin.io — أنشئ حسابًا مجانيًا وانسخ منه مفتاح <span dir="ltr" class="mono">X-MASTER-KEY</span>.</p>
+      <b>☁️ المزامنة بين أجهزتك</b>
+      <p class="muted" style="font-size:.75rem;margin:.4rem 0 .7rem;line-height:1.7">تعمل فورًا وبلا حساب: عند التفعيل يُنشأ صندوق سحابي مجاني تلقائيًا وتُزامَن بياناتك مع كل تعديل. انسخ <b>رمز المزامنة</b> وأدخله على جهازك الآخر لربطه.</p>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
         <span style="font-weight:600;font-size:.9rem">تفعيل المزامنة</span>
         <button class="toggle ${s.syncEnabled?"on":""}" id="sync-toggle" role="switch" aria-checked="${s.syncEnabled}"><i></i></button>
       </div>
       <div id="sync-fields" style="${s.syncEnabled?"":"display:none"}">
-        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">مفتاح JSONBin (X-Master-Key)</label>
-        <input dir="ltr" class="mono" id="sync-key" placeholder="$2a$10$..." value="${esc(s.syncKey??"")}" style="font-size:.78rem;margin-bottom:.5rem">
-        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز الصندوق (Bin ID) — اتركه فارغًا لإنشاء صندوق جديد</label>
-        <input dir="ltr" class="mono" id="sync-bin" placeholder="تلقائي عند أول ربط" value="${esc(s.syncBinId??"")}" style="font-size:.78rem;margin-bottom:.6rem">
-        <div style="display:flex;gap:.5rem">
-          <button class="btn-dark" id="sync-connect" style="flex:1">🔗 ربط / إنشاء صندوق</button>
-          <button class="btn-dark" id="sync-pull" style="flex:1;background:var(--ok)">⬇️ جلب من السحابة</button>
+        ${s.syncBinId?`
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز المزامنة — أدخله على أجهزتك الأخرى</label>
+        <div style="display:flex;gap:.5rem;margin:.25rem 0 .6rem">
+          <input dir="ltr" class="mono" id="sync-code" readonly value="${esc(syncShareCode()??"")}" style="font-size:.72rem;flex:1">
+          <button class="btn-dark" id="sync-copy" style="flex-shrink:0">📋 نسخ</button>
+        </div>
+        <button class="btn-dark" id="sync-pull-free" style="width:100%;background:var(--ok)">⬇️ جلب أحدث نسخة من السحابة</button>`:""}
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block;margin-top:.6rem">لديك رمز من جهازك الأول؟ ألصقه هنا</label>
+        <div style="display:flex;gap:.5rem;margin-top:.25rem">
+          <input dir="ltr" class="mono" id="sync-code-in" placeholder="HM…" style="font-size:.75rem;flex:1">
+          <button class="btn-dark" id="sync-link" style="flex-shrink:0">🔗 ربط وجلب</button>
         </div>
         <p id="sync-status" style="font-size:.78rem;font-weight:700;margin-top:.6rem;text-align:center"></p>
-        <p class="muted" style="font-size:.7rem;margin-top:.5rem;line-height:1.6">💡 بعد الربط على جهاز، أدخل نفس المفتاح ورمز الصندوق على أجهزتك الأخرى واضغط "جلب من السحابة". <b>ملاحظة:</b> مفتاح الذكاء الاصطناعي لا يُزامن أبدًا ويبقى على جهازك.</p>
+        <p class="muted" style="font-size:.7rem;margin-top:.5rem;line-height:1.6"><b>ملاحظة:</b> مفتاح الذكاء الاصطناعي لا يُزامن أبدًا ويبقى على جهازك.</p>
+        <details style="margin-top:.6rem">
+          <summary class="muted" style="font-size:.72rem;font-weight:700;cursor:pointer">⚙️ خيار متقدم: صندوق JSONBin خاص بمفتاحك</summary>
+          <label class="muted" style="font-size:.7rem;font-weight:600;display:block;margin-top:.5rem">مفتاح JSONBin (X-Master-Key)</label>
+          <input dir="ltr" class="mono" id="sync-key" placeholder="$2a$10$..." value="${esc(s.syncProvider==="jsonbin"?(s.syncKey??""):"")}" style="font-size:.78rem;margin-bottom:.5rem">
+          <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز الصندوق (Bin ID) — اتركه فارغًا لإنشاء صندوق جديد</label>
+          <input dir="ltr" class="mono" id="sync-bin" placeholder="تلقائي عند أول ربط" value="${esc(s.syncProvider==="jsonbin"?(s.syncBinId??""):"")}" style="font-size:.78rem;margin-bottom:.6rem">
+          <button class="btn-dark" id="sync-connect" style="width:100%">🔗 ربط / إنشاء صندوق خاص</button>
+        </details>
       </div>
     </section>
     <section class="card pad">
       <b style="display:inline-flex;align-items:center;gap:.4rem">${ic("users",16)} نظام الفريق</b>
       <p class="muted" style="font-size:.75rem;margin:.4rem 0 .7rem;line-height:1.7">
-        اجمع نتائج زيارات كل أعضاء الفريق في لوحة واحدة. ينشئ قائد الفريق صندوقًا ويشارك
-        <b>المفتاح</b> و<b>رمز الصندوق</b> مع الأعضاء — كلٌ يرفع زياراته وتُدمج للجميع في تبويب اللوحة.</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
-        <span style="font-weight:600;font-size:.9rem">تفعيل نظام الفريق</span>
-        <button class="toggle ${s.teamEnabled?"on":""}" id="team-toggle" role="switch" aria-checked="${s.teamEnabled}"><i></i></button>
+        اجمع نتائج زيارات كل الأعضاء في لوحة واحدة — بلا حسابات وبلا مفاتيح:
+        أنشئ فريقًا <b>بضغطة واحدة</b> وشارك <b>رابط الدعوة</b>، وكل من يفتحه ينضم تلقائيًا.</p>
+      <label class="muted" style="font-size:.7rem;font-weight:600;display:block">اسمك (كما سيظهر للفريق)</label>
+      <input id="team-name" placeholder="مثال: علاء الدين" value="${esc(s.memberName??"")}" style="margin-bottom:.6rem">
+      ${teamReady()?`
+      <div class="visit-chip done-chip" style="margin-bottom:.6rem">● متصل بالفريق${s.teamProvider==="jsonbin"?" (صندوق خاص)":" (الوضع المجاني)"}</div>
+      <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز الدعوة — شاركه مع أعضاء فريقك</label>
+      <div style="display:flex;gap:.5rem;margin:.25rem 0 .5rem">
+        <input dir="ltr" class="mono" id="team-code" readonly value="${esc(teamInviteCode()??"")}" style="font-size:.72rem;flex:1">
+        <button class="btn-dark" id="team-code-copy" style="flex-shrink:0">📋 نسخ</button>
       </div>
-      <div id="team-fields" style="${s.teamEnabled?"":"display:none"}">
-        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">اسمك (كما سيظهر للفريق)</label>
-        <input id="team-name" placeholder="مثال: علاء الدين" value="${esc(s.memberName??"")}" style="margin-bottom:.5rem">
-        <label class="muted" style="font-size:.7rem;font-weight:600;display:block">مفتاح JSONBin المشترك (X-Master-Key)</label>
-        <input dir="ltr" class="mono" id="team-key" placeholder="$2a$10$..." value="${esc(s.teamKey??"")}" style="font-size:.78rem;margin-bottom:.5rem">
+      <div style="display:flex;gap:.5rem">
+        <button class="btn-dark" id="team-invite-share" style="flex:1">↗ مشاركة رابط الدعوة</button>
+        <button class="btn-dark" id="team-test" style="flex:1;background:var(--ok)">${ic("refresh",13)} اختبار الجلب</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.8rem">
+        <span style="font-weight:600;font-size:.85rem">أنا مدير الفريق (يُظهر أدوات إدارة مهام الفريق)</span>
+        <button class="toggle ${s.teamManager?"on":""}" id="team-mgr-toggle" role="switch" aria-checked="${s.teamManager}"><i></i></button>
+      </div>
+      <button class="btn-ghost" id="team-leave" style="width:100%;margin-top:.6rem;color:var(--danger)">مغادرة الفريق</button>
+      `:`
+      <button class="btn-primary" id="team-quick-create" style="width:100%">✨ إنشاء فريق جديد بضغطة واحدة</button>
+      <label class="muted" style="font-size:.7rem;font-weight:600;display:block;margin-top:.7rem">أو انضم برمز أو رابط دعوة وصلك من قائد الفريق</label>
+      <div style="display:flex;gap:.5rem;margin-top:.25rem">
+        <input dir="ltr" class="mono" id="team-code-in" placeholder="HM… أو رابط الدعوة" style="font-size:.75rem;flex:1">
+        <button class="btn-dark" id="team-join" style="flex-shrink:0">${ic("users",13)} انضمام</button>
+      </div>
+      `}
+      <p id="team-status" style="font-size:.78rem;font-weight:700;margin-top:.6rem;text-align:center"></p>
+      <details style="margin-top:.4rem">
+        <summary class="muted" style="font-size:.72rem;font-weight:700;cursor:pointer">⚙️ خيار متقدم: فريق على JSONBin بمفتاح مشترك</summary>
+        <label class="muted" style="font-size:.7rem;font-weight:600;display:block;margin-top:.5rem">مفتاح JSONBin المشترك (X-Master-Key)</label>
+        <input dir="ltr" class="mono" id="team-key" placeholder="$2a$10$..." value="${esc(s.teamProvider==="jsonbin"?(s.teamKey??""):"")}" style="font-size:.78rem;margin-bottom:.5rem">
         <label class="muted" style="font-size:.7rem;font-weight:600;display:block">رمز صندوق الفريق — اتركه فارغًا لإنشاء فريق جديد</label>
-        <input dir="ltr" class="mono" id="team-bin" placeholder="يرسله لك قائد الفريق" value="${esc(s.teamBinId??"")}" style="font-size:.78rem;margin-bottom:.6rem">
-        <div style="display:flex;gap:.5rem">
-          <button class="btn-dark" id="team-connect" style="flex:1">${ic("users",13)} إنشاء / انضمام</button>
-          <button class="btn-dark" id="team-test" style="flex:1;background:var(--ok)">${ic("refresh",13)} اختبار الجلب</button>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.8rem">
-          <span style="font-weight:600;font-size:.85rem">أنا مدير الفريق (يُظهر أدوات إدارة مهام الفريق)</span>
-          <button class="toggle ${s.teamManager?"on":""}" id="team-mgr-toggle" role="switch" aria-checked="${s.teamManager}"><i></i></button>
-        </div>
-        <p id="team-status" style="font-size:.78rem;font-weight:700;margin-top:.6rem;text-align:center"></p>
-      </div>
+        <input dir="ltr" class="mono" id="team-bin" placeholder="يرسله لك قائد الفريق" value="${esc(s.teamProvider==="jsonbin"?(s.teamBinId??""):"")}" style="font-size:.78rem;margin-bottom:.6rem">
+        <button class="btn-dark" id="team-connect" style="width:100%">${ic("users",13)} إنشاء / انضمام بالمفتاح</button>
+      </details>
     </section>
     <section class="card pad">
       <b>🔗 تحميل خطة مشتركة</b>
@@ -1662,75 +1695,149 @@ function renderSettings(){
   };
   main.querySelectorAll("[data-lead]").forEach(b=>b.onclick=async()=>{s.leadTimeMinutes=Number(b.dataset.lead); await persist(); scheduleReminders(); renderSettings();});
 
+  /* ---- المزامنة: تفعيل بضغطة (صندوق مجاني بلا حساب) ---- */
   const syncToggle=$("#sync-toggle");
-  if(syncToggle) syncToggle.onclick=async()=>{ s.syncEnabled=!s.syncEnabled; await persist(); renderSettings(); };
-  const syncKeyEl=$("#sync-key"), syncBinEl=$("#sync-bin");
-  if(syncKeyEl) syncKeyEl.onchange=async()=>{ s.syncKey=syncKeyEl.value.trim()||null; await persist(); };
-  if(syncBinEl) syncBinEl.onchange=async()=>{ s.syncBinId=syncBinEl.value.trim()||null; await persist(); };
-  const connectBtn=$("#sync-connect");
-  if(connectBtn) connectBtn.onclick=async()=>{
-    s.syncKey=$("#sync-key").value.trim()||null; s.syncBinId=$("#sync-bin").value.trim()||null;
-    if(!s.syncKey){ updateSyncStatus("أدخل مفتاح JSONBin أولاً","var(--danger)"); return; }
-    updateSyncStatus("جارٍ الاتصال…","var(--text-2)");
-    try{
-      if(!s.syncBinId){ s.syncBinId=await cloudCreateBin(s.syncKey); $("#sync-bin").value=s.syncBinId; }
-      await persist(); await cloudPush();
-      updateSyncStatus("تم الربط والمزامنة ✓ — رمز صندوقك: "+s.syncBinId,"var(--ok)");
-    }catch(e){ updateSyncStatus("تعذّر الربط — تحقق من صحة المفتاح","var(--danger)"); }
+  if(syncToggle) syncToggle.onclick=async()=>{
+    if(!s.syncEnabled){
+      if(s.syncBinId){ s.syncEnabled=true; await persist(); renderSettings(); return; }
+      syncToggle.classList.add("on");
+      updateSyncStatus("جارٍ إنشاء صندوقك السحابي المجاني…","var(--text-2)");
+      try{
+        await syncQuickCreate();
+        toast(tx("فُعّلت المزامنة ✓ — انسخ رمز المزامنة لأجهزتك الأخرى","Sync enabled ✓ — copy the sync code to your other devices"),"ok");
+        renderSettings();
+      }catch(e){
+        syncToggle.classList.remove("on");
+        updateSyncStatus("تعذّر إنشاء الصندوق — تحقق من الإنترنت وأعد المحاولة","var(--danger)");
+      }
+    } else { s.syncEnabled=false; await persist(); renderSettings(); }
   };
-  const pullBtn=$("#sync-pull");
-  if(pullBtn) pullBtn.onclick=async()=>{
-    s.syncKey=$("#sync-key").value.trim()||null; s.syncBinId=$("#sync-bin").value.trim()||null;
-    if(!s.syncKey||!s.syncBinId){ updateSyncStatus("أدخل المفتاح ورمز الصندوق","var(--danger)"); return; }
-    await persist();
+  const syncCopy=$("#sync-copy");
+  if(syncCopy) syncCopy.onclick=async()=>{
+    try{ await navigator.clipboard.writeText($("#sync-code").value); toast(tx("نُسخ رمز المزامنة ✓","Sync code copied ✓"),"ok"); }
+    catch(e){ $("#sync-code").select(); }
+  };
+  const syncPullFree=$("#sync-pull-free");
+  if(syncPullFree) syncPullFree.onclick=async()=>{
     updateSyncStatus("جارٍ الجلب…","var(--text-2)");
     const ok=await cloudPull();
     if(ok){ updateSyncStatus("تم جلب البيانات ومزامنتها ✓","var(--ok)"); render(); }
   };
+  const syncLink=$("#sync-link");
+  if(syncLink) syncLink.onclick=async()=>{
+    const code=$("#sync-code-in").value.trim();
+    if(!code){ updateSyncStatus("ألصق رمز المزامنة أولاً","var(--danger)"); return; }
+    updateSyncStatus("جارٍ الربط والجلب…","var(--text-2)");
+    try{
+      await syncConnectByCode(code);
+      toast(tx("رُبط الجهاز وجُلبت البيانات ✓","Device linked & data pulled ✓"),"ok");
+      render();
+    }catch(e){ updateSyncStatus("رمز غير صالح أو تعذّر الجلب — تحقق منه","var(--danger)"); }
+  };
+  /* متقدم: JSONBin بمفتاح خاص */
+  const connectBtn=$("#sync-connect");
+  if(connectBtn) connectBtn.onclick=async()=>{
+    const key=$("#sync-key").value.trim(), bin=$("#sync-bin").value.trim();
+    if(!key){ updateSyncStatus("أدخل مفتاح JSONBin أولاً","var(--danger)"); return; }
+    updateSyncStatus("جارٍ الاتصال…","var(--text-2)");
+    try{
+      s.syncProvider="jsonbin"; s.syncKey=key;
+      s.syncBinId=bin||await cloudCreateBin(key);
+      s.syncEnabled=true;
+      await persist(); await cloudPush();
+      updateSyncStatus("تم الربط والمزامنة ✓ — رمز صندوقك: "+s.syncBinId,"var(--ok)");
+      renderSettings();
+    }catch(e){ updateSyncStatus("تعذّر الربط — تحقق من صحة المفتاح","var(--danger)"); }
+  };
 
-  /* ---- نظام الفريق ---- */
-  const teamToggle=$("#team-toggle");
-  if(teamToggle) teamToggle.onclick=async()=>{ s.teamEnabled=!s.teamEnabled; await persist(); renderSettings(); };
+  /* ---- نظام الفريق: إنشاء بضغطة + دعوة بالرابط ---- */
   const teamMgrToggle=$("#team-mgr-toggle");
   if(teamMgrToggle) teamMgrToggle.onclick=async()=>{ s.teamManager=!s.teamManager; await persist(); renderSettings(); };
-  const tName=$("#team-name"), tKey=$("#team-key"), tBin=$("#team-bin");
-  const saveTeamFields=async()=>{
+  const tName=$("#team-name");
+  if(tName) tName.onchange=async()=>{
     s.memberName=tName.value.trim();
-    s.teamKey=tKey.value.trim()||null;
-    s.teamBinId=tBin.value.trim()||null;
-    teamCache={ts:0, members:null};
+    teamCache={ts:0, members:null, tasks:teamCache.tasks??[]};
     await persist();
   };
-  if(tName){ tName.onchange=saveTeamFields; tKey.onchange=saveTeamFields; tBin.onchange=saveTeamFields; }
-  const teamConnect=$("#team-connect");
-  if(teamConnect) teamConnect.onclick=async()=>{
-    await saveTeamFields();
-    if(!s.memberName){ updateTeamStatus("أدخل اسمك أولاً","var(--danger)"); return; }
-    if(!s.teamKey){ updateTeamStatus("أدخل مفتاح JSONBin المشترك","var(--danger)"); return; }
-    updateTeamStatus("جارٍ الاتصال…","var(--text-2)");
+  const teamQuick=$("#team-quick-create");
+  if(teamQuick) teamQuick.onclick=async()=>{
+    s.memberName=tName.value.trim();
+    updateTeamStatus("جارٍ إنشاء فريقك السحابي المجاني…","var(--text-2)");
+    teamQuick.disabled=true;
     try{
-      if(!s.teamBinId){
-        s.teamBinId=await teamCreateBin(s.teamKey, s.memberName);
-        tBin.value=s.teamBinId;
-        await persist();
-        updateTeamStatus("أُنشئ فريق جديد ✓ — شارك المفتاح والرمز مع أعضائك: "+s.teamBinId,"var(--ok)");
-      } else {
-        await teamPush();
-        updateTeamStatus("انضممت للفريق ورُفعت زياراتك ✓","var(--ok)");
-      }
-      teamCache={ts:0, members:null};
-    }catch(e){ updateTeamStatus("تعذّر الاتصال — تحقق من المفتاح والرمز","var(--danger)"); }
+      await teamQuickCreate();
+      toast(tx("أُنشئ فريقك ✓ — شارك رابط الدعوة مع أعضائك","Team created ✓ — share the invite link with members"),"ok");
+      renderSettings();
+    }catch(e){
+      teamQuick.disabled=false;
+      updateTeamStatus("تعذّر إنشاء الفريق — تحقق من الإنترنت وأعد المحاولة","var(--danger)");
+    }
+  };
+  const teamJoin=$("#team-join");
+  if(teamJoin) teamJoin.onclick=async()=>{
+    const code=$("#team-code-in").value.trim();
+    if(!code){ updateTeamStatus("ألصق رمز أو رابط الدعوة أولاً","var(--danger)"); return; }
+    s.memberName=tName.value.trim();
+    updateTeamStatus("جارٍ الانضمام…","var(--text-2)");
+    try{
+      await teamJoinByCode(code);
+      toast(tx("انضممت للفريق ورُفعت زياراتك ✓","Joined the team and uploaded your visits ✓"),"ok");
+      renderSettings();
+    }catch(e){ updateTeamStatus("رمز دعوة غير صالح أو تعذّر الاتصال","var(--danger)"); }
+  };
+  const teamCodeCopy=$("#team-code-copy");
+  if(teamCodeCopy) teamCodeCopy.onclick=async()=>{
+    try{ await navigator.clipboard.writeText(teamInviteCode()); toast(tx("نُسخ رمز الدعوة ✓","Invite code copied ✓"),"ok"); }
+    catch(e){ $("#team-code").select(); }
+  };
+  const teamShare=$("#team-invite-share");
+  if(teamShare) teamShare.onclick=async()=>{
+    const url=teamInviteLink();
+    const text=tx(`انضم لفريق هاف مليون ½M — افتح الرابط وستنضم تلقائيًا:\n${url}`,`Join the Half Million ½M team — open the link to auto-join:\n${url}`);
+    if(navigator.share){ try{ await navigator.share({title:"½M Team", text, url}); return; }catch(e){ if(e.name==="AbortError") return; } }
+    try{ await navigator.clipboard.writeText(text); toast(tx("نُسخ رابط الدعوة ✓","Invite link copied ✓"),"ok"); }catch(e){}
+  };
+  const teamLeave=$("#team-leave");
+  if(teamLeave) teamLeave.onclick=async()=>{
+    s.teamEnabled=false; s.teamBinId=null; s.teamKey=null; s.teamProvider="free";
+    teamCache={ts:0, members:null, tasks:[]};
+    await persist(); renderSettings();
+    toast(tx("غادرت الفريق — بياناتك المحلية كما هي","Left the team — your local data is untouched"),"ok");
   };
   const teamTest=$("#team-test");
   if(teamTest) teamTest.onclick=async()=>{
-    await saveTeamFields();
-    if(!teamReady()){ updateTeamStatus("أكمل الاسم والمفتاح والرمز أولاً","var(--danger)"); return; }
+    if(!teamReady()){ updateTeamStatus("أدخل اسمك أولاً","var(--danger)"); return; }
     updateTeamStatus("جارٍ الجلب…","var(--text-2)");
     try{
       const members=await teamPull(true);
       const names=Object.keys(members??{});
       updateTeamStatus(`متصل ✓ — ${names.length} عضو: ${names.join("، ")||"لا أعضاء بعد"}`,"var(--ok)");
-    }catch(e){ updateTeamStatus("تعذّر الجلب — تحقق من المفتاح والرمز","var(--danger)"); }
+    }catch(e){ updateTeamStatus("تعذّر الجلب — تحقق من الاتصال","var(--danger)"); }
+  };
+  /* متقدم: فريق JSONBin بمفتاح مشترك */
+  const teamConnect=$("#team-connect");
+  if(teamConnect) teamConnect.onclick=async()=>{
+    const key=$("#team-key").value.trim(), bin=$("#team-bin").value.trim();
+    s.memberName=tName.value.trim();
+    if(!s.memberName){ updateTeamStatus("أدخل اسمك أولاً","var(--danger)"); return; }
+    if(!key){ updateTeamStatus("أدخل مفتاح JSONBin المشترك","var(--danger)"); return; }
+    updateTeamStatus("جارٍ الاتصال…","var(--text-2)");
+    try{
+      s.teamProvider="jsonbin"; s.teamKey=key;
+      if(!bin){
+        s.teamBinId=await teamCreateBin(key, s.memberName);
+        s.teamEnabled=true;
+        await persist();
+        updateTeamStatus("أُنشئ فريق جديد ✓ — شارك رمز الدعوة مع أعضائك","var(--ok)");
+      } else {
+        s.teamBinId=bin; s.teamEnabled=true;
+        await persist();
+        await teamPush();
+        updateTeamStatus("انضممت للفريق ورُفعت زياراتك ✓","var(--ok)");
+      }
+      teamCache={ts:0, members:null, tasks:[]};
+      renderSettings();
+    }catch(e){ updateTeamStatus("تعذّر الاتصال — تحقق من المفتاح والرمز","var(--danger)"); }
   };
 
   $("#load-shared").onclick=async()=>{
@@ -1764,9 +1871,11 @@ document.getElementById("lang-btn").onclick=()=>setLang(isEn()?"ar":"en");
     const p=await loadSharedPlan(pid);
     if(p && !state.plans.some(x=>x.id===p.id)){ state.plans.unshift(p); state.activePlanId=p.id; }
   }
-  if(state.settings.syncEnabled && state.settings.syncBinId && state.settings.syncKey){
+  if(syncReady()){
     await cloudPull();
   }
+  // انضمام تلقائي للفريق: رابط دعوة (#join=) أو كود الشركة في js/config.js
+  await teamAutoJoin();
   // جلب مهام الفريق في الخلفية كي تظهر في نماذج الزيارات
   if(teamReady()) teamPull().then(()=>{ if(state.tab==="plan") render(); }).catch(()=>{});
   await persist();
