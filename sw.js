@@ -1,5 +1,5 @@
 /* فول مارك — Service Worker: عمل كامل بدون إنترنت بعد أول زيارة */
-const CACHE = 'fullmark-v1';
+const CACHE = 'fullmark-v2';
 const ASSETS = [
   './',
   './index.html',
