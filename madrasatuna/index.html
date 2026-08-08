@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14245E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%94%3C/text%3E%3C/svg%3E">
+<title>مدرستنا — لعبة العائلة مع أستاذ عدوي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marhey:wght@400;600;700&family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════ شاشة البداية ═══════════ -->
+<section id="screen-home" class="screen active">
+  <div class="curtain-bg"></div>
+  <div class="home-content">
+    <div class="logo-wrap">
+      <svg class="logo-svg" viewBox="0 0 360 260" role="img" aria-label="شعار مدرستنا">
+        <!-- قوس قزح -->
+        <g class="logo-rainbow">
+          <path d="M40 190 A140 140 0 0 1 320 190" fill="none" stroke="#E63946" stroke-width="14"/>
+          <path d="M56 190 A124 124 0 0 1 304 190" fill="none" stroke="#F77F00" stroke-width="14"/>
+          <path d="M72 190 A108 108 0 0 1 288 190" fill="none" stroke="#2E86DE" stroke-width="14"/>
+        </g>
+        <!-- الشمس المشرقة -->
+        <g class="logo-sun">
+          <circle cx="180" cy="190" r="78" fill="#FFC93C"/>
+          <circle cx="180" cy="190" r="62" fill="#FFB020"/>
+          <g stroke="#FFC93C" stroke-width="10" stroke-linecap="round">
+            <line x1="180" y1="88" x2="180" y2="66"/>
+            <line x1="120" y1="112" x2="104" y2="96"/>
+            <line x1="240" y1="112" x2="256" y2="96"/>
+            <line x1="96" y1="164" x2="74" y2="156"/>
+            <line x1="264" y1="164" x2="286" y2="156"/>
+          </g>
+        </g>
+        <!-- أرضية تخفي نصف الشمس -->
+        <rect x="0" y="190" width="360" height="70" fill="var(--curtain-2)"/>
+        <!-- اسم اللعبة -->
+        <text x="180" y="205" class="logo-word" text-anchor="middle">مدرستنا</text>
+        <!-- الشريط السفلي -->
+        <g>
+          <path d="M60 222 L300 222 L292 252 L68 252 Z" fill="#E63946" stroke="#14245E" stroke-width="4"/>
+          <text x="180" y="243" class="logo-ribbon" text-anchor="middle">مع أستاذ عدوي — نسخة العائلة</text>
+        </g>
+      </svg>
+    </div>
+    <p class="home-tagline">لعبة ذكاء وذكريات ومنافسة… بروح المدرسة زمان 🔔</p>
+    <div class="home-buttons">
+      <button class="btn btn-primary btn-big" data-action="new-game">✏️ لعبة جديدة</button>
+      <button class="btn btn-chalk" data-action="how-to">📖 طريقة اللعب</button>
+      <button class="btn btn-chalk btn-sound" data-action="toggle-sound" id="btn-sound">🔊 الصوت: شغّال</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ طريقة اللعب ═══════════ -->
+<section id="screen-howto" class="screen">
+  <div class="paper-sheet">
+    <h2 class="paper-title">📖 طريقة اللعب</h2>
+    <ol class="howto-list">
+      <li><b>الأستاذ (المضيف):</b> واحد منكم يمسك الجهاز، يقرأ الأسئلة بصوت عالٍ، ويحكم على الإجابات بأزرار «صح» و«غلط».</li>
+      <li><b>الفريقان:</b> فريقان (أو لاعبان) يتنافسان في حصص متتالية، ولكل فريق اسم وهتاف خاص.</li>
+      <li><b>حصة الأسئلة:</b> أسئلة بالتناوب، الإجابة الصحيحة = <b>10 نقاط</b>.</li>
+      <li><b>حصة فاكر ولا ناسي:</b> ذكريات وأمثال ناقصة، الإجابة الصحيحة = <b>10 نقاط</b>.</li>
+      <li><b>حصة الجرس:</b> أول فريق يضرب الجرس يجاوب! صح = <b>+10</b>، غلط = <b>−5</b> والسؤال يعدّي للفريق الثاني.</li>
+      <li><b>حصة قول ولا تقولش:</b> لاعب يوصّف الكلمة لفريقه بدون نطقها ولا نطق الممنوعة، كل كلمة صح = <b>+5</b> خلال 60 ثانية.</li>
+      <li><b>الحصة الأخيرة:</b> أسئلة حاسمة بنقاط مضاعفة = <b>20 نقطة</b>… والجرس الأخير يعلن البطل! 🏆</li>
+    </ol>
+    <button class="btn btn-primary" data-action="go-home">رجوع ⬅</button>
+  </div>
+</section>
+
+<!-- ═══════════ إعداد اللعبة ═══════════ -->
+<section id="screen-setup" class="screen">
+  <div class="board-frame setup-board">
+    <h2 class="board-title">✍️ كشف الحضور والغياب</h2>
+
+    <div class="setup-field">
+      <label for="host-name">👨‍🏫 اسم الأستاذ / المضيف</label>
+      <input type="text" id="host-name" maxlength="20" placeholder="مثال: أستاذ عدوي" value="أستاذ عدوي">
+    </div>
+
+    <div class="setup-teams">
+      <div class="setup-team" data-team="0">
+        <label for="team1-name">🔵 الفريق الأول</label>
+        <input type="text" id="team1-name" maxlength="18" placeholder="اسم الفريق الأول">
+        <div class="mascot-row" id="mascots-0"></div>
+      </div>
+      <div class="setup-team" data-team="1">
+        <label for="team2-name">🔴 الفريق الثاني</label>
+        <input type="text" id="team2-name" maxlength="18" placeholder="اسم الفريق الثاني">
+        <div class="mascot-row" id="mascots-1"></div>
+      </div>
+    </div>
+
+    <div class="setup-field">
+      <label>📚 عدد الحصص</label>
+      <div class="rounds-choice">
+        <button class="chip" data-rounds="4">4 حصص</button>
+        <button class="chip active" data-rounds="5">5 حصص (كاملة)</button>
+      </div>
+    </div>
+
+    <div class="setup-actions">
+      <button class="btn btn-chalk" data-action="go-home">⬅ رجوع</button>
+      <button class="btn btn-primary btn-big" data-action="start-game">🔔 دق الجرس وابدأ!</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ مقدمة الحصة ═══════════ -->
+<section id="screen-round-intro" class="screen">
+  <div class="board-frame intro-board">
+    <div class="intro-chip" id="intro-number">الحصة الأولى</div>
+    <h2 class="intro-title" id="intro-title"></h2>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-points" id="intro-points"></div>
+    <button class="btn btn-primary btn-big" data-action="begin-round">🔔 يلّا نبدأ</button>
+  </div>
+</section>
+
+<!-- ═══════════ شاشة السؤال ═══════════ -->
+<section id="screen-question" class="screen">
+  <header class="game-header">
+    <div class="score-tab" id="score-tab-0"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+    <div class="round-label" id="q-round-label"></div>
+    <div class="score-tab" id="score-tab-1"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+  </header>
+
+  <div class="turn-banner" id="turn-banner"></div>
+
+  <div class="paper-sheet question-paper">
+    <div class="q-meta"><span id="q-counter"></span><span class="timer" id="q-timer">30</span></div>
+    <p class="q-text" id="q-text"></p>
+    <p class="q-answer hidden" id="q-answer"></p>
+    <button class="btn btn-reveal" id="btn-reveal" data-action="reveal">👁️ كشف الإجابة (للأستاذ)</button>
+  </div>
+
+  <div class="host-controls" id="host-controls">
+    <button class="btn btn-correct" data-action="judge-correct">✔ صح</button>
+    <button class="btn btn-wrong" data-action="judge-wrong">✘ غلط</button>
+    <button class="btn btn-skip" data-action="judge-skip">تخطّي ↷</button>
+  </div>
+</section>
+
+<!-- ═══════════ شاشة الجرس ═══════════ -->
+<section id="screen-buzzer" class="screen">
+  <header class="game-header">
+    <div class="score-tab" id="bz-score-0"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+    <div class="round-label">🔔 حصة الجرس</div>
+    <div class="score-tab" id="bz-score-1"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+  </header>
+
+  <div class="paper-sheet buzzer-paper">
+    <div class="q-meta"><span id="bz-counter"></span></div>
+    <p class="q-text" id="bz-text"></p>
+    <p class="q-answer hidden" id="bz-answer"></p>
+    <button class="btn btn-reveal hidden" id="bz-reveal" data-action="bz-reveal">👁️ كشف الإجابة (للأستاذ)</button>
+    <div class="buzz-status" id="buzz-status">استعدوا… أول جرس يجاوب! 👇</div>
+  </div>
+
+  <div class="buzzer-pads">
+    <button class="buzz-pad buzz-0" id="buzz-pad-0">🔔<span></span></button>
+    <button class="buzz-pad buzz-1" id="buzz-pad-1">🔔<span></span></button>
+  </div>
+
+  <div class="host-controls hidden" id="bz-controls">
+    <button class="btn btn-correct" data-action="bz-correct">✔ صح +10</button>
+    <button class="btn btn-wrong" data-action="bz-wrong">✘ غلط −5</button>
+    <button class="btn btn-skip" data-action="bz-skip">ولا فريق عرفها ↷</button>
+  </div>
+</section>
+
+<!-- ═══════════ شاشة قول ولا تقولش ═══════════ -->
+<section id="screen-taboo" class="screen">
+  <header class="game-header">
+    <div class="score-tab" id="tb-score-0"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+    <div class="round-label">🤐 قول ولا تقولش</div>
+    <div class="score-tab" id="tb-score-1"><span class="score-mascot"></span><span class="score-name"></span><b class="score-value">0</b></div>
+  </header>
+
+  <div class="turn-banner" id="tb-turn"></div>
+
+  <div class="paper-sheet taboo-paper">
+    <div class="q-meta"><span id="tb-got">أصاب: 0</span><span class="timer" id="tb-timer">60</span></div>
+    <p class="taboo-word" id="tb-word"></p>
+    <p class="taboo-forbidden">🚫 ممنوع تقول: <b id="tb-forbidden"></b></p>
+  </div>
+
+  <div class="host-controls">
+    <button class="btn btn-correct" data-action="tb-correct">✔ عرفوها +5</button>
+    <button class="btn btn-skip" data-action="tb-pass">عدّي ↷</button>
+  </div>
+  <button class="btn btn-primary hidden" id="tb-start" data-action="tb-start">⏱️ ابدأ الدقيقة</button>
+</section>
+
+<!-- ═══════════ نتيجة الحصة ═══════════ -->
+<section id="screen-scoreboard" class="screen">
+  <div class="board-frame score-board">
+    <h2 class="board-title" id="sb-title">📊 النتيجة</h2>
+    <div class="sb-rows">
+      <div class="sb-row" id="sb-row-0"><span class="sb-mascot"></span><span class="sb-name"></span><b class="sb-score"></b></div>
+      <div class="sb-row" id="sb-row-1"><span class="sb-mascot"></span><span class="sb-name"></span><b class="sb-score"></b></div>
+    </div>
+    <p class="sb-comment" id="sb-comment"></p>
+    <button class="btn btn-primary btn-big" data-action="next-round" id="sb-next">➡ الحصة الجاية</button>
+  </div>
+</section>
+
+<!-- ═══════════ شاشة الفائز ═══════════ -->
+<section id="screen-winner" class="screen">
+  <div class="curtain-bg"></div>
+  <canvas id="confetti"></canvas>
+  <div class="winner-content">
+    <div class="winner-cup">🏆</div>
+    <h2 class="winner-title">بطل مدرستنا!</h2>
+    <div class="winner-team" id="winner-team"></div>
+    <p class="winner-cheer" id="winner-cheer"></p>
+    <div class="winner-scores" id="winner-scores"></div>
+    <div class="home-buttons">
+      <button class="btn btn-primary btn-big" data-action="rematch">🔁 عودة بنفس الفرق</button>
+      <button class="btn btn-chalk" data-action="go-home">🏠 الرئيسية</button>
+    </div>
+  </div>
+</section>
+
+<script src="js/questions.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
