@@ -353,7 +353,7 @@ function normTxt(s){
     .replace(/[^\p{L}\p{N} ]/gu," ")
     .replace(/\s+/g," ").trim();
 }
-function stripAl(w){ return w.replace(/^ال/,""); }
+function stripAl(w){ return w.replace(/^و(?=.{4,})/,"").replace(/^ال/,""); }
 
 function levDist(a,b){
   const m=a.length,n=b.length;
@@ -425,7 +425,10 @@ function matchBranchToken(token){
 /* تقسيم رسالة إلى أسماء فروع مع إزالة كلمات النية */
 const INTENT_RE=/جدول(?:تي|ي|ه|ة)?|خط[هة](?:\s+الاسبوع)?|زيارات(?:ي)?|رت[بّ]|اعمل|انشئ|أنشئ|سو[يّ]|schedule|plan|visits?|make|create|my|table/gi;
 function parseBranchList(text){
-  const cleaned=text.replace(INTENT_RE," ");
+  let cleaned=text.replace(INTENT_RE," ");
+  /* واو العطف الملتصقة: "شبرا والعزيزية وطويق" ← "شبرا ، العزيزية ، طويق"
+     (تُشترط 3 أحرف عربية بعد الواو كي لا تنكسر أسماء تبدأ بواو مثل "ووك") */
+  cleaned=cleaned.replace(/(^|[\s,،])و(?=[ء-ي]{3,})/g,"$1، ");
   return cleaned.split(/[,\n،;؛]|\s+و\s+|\s+and\s+/i)
     .map(s=>s.replace(/^[\s.:!?…،؛\-–]+|[\s.:!?…،؛\-–]+$/g,""))
     .filter(s=>s && normTxt(s).length>=2);
@@ -441,6 +444,14 @@ function detectScheduleIntent(text){
   const kw=hasScheduleKeyword(text);
   if((kw && hit>=1) || (tokens.length>=2 && hit>=Math.ceil(tokens.length*0.5)))
     return items;
+  /* محاولة ثانية: قائمة مفصولة بمسافات فقط (shobra azizyah taif) —
+     تُقبل فقط إذا طابقت أغلب الكلمات فروعًا فعلية كي لا تُعترض الأسئلة العادية */
+  const words=[...new Set(normTxt(text.replace(INTENT_RE," ")).split(" ").filter(w=>w.length>=3))];
+  if(words.length>=2 && words.length<=15){
+    const wi=words.map(matchBranchToken);
+    const whit=wi.filter(i=>i.status!=="unknown").length;
+    if(whit>=2 && whit>=Math.ceil(words.length*0.6)) return wi;
+  }
   return null;
 }
 
