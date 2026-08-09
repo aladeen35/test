@@ -5,6 +5,8 @@
 
 const main=$("#main");
 let leafletMap=null, mapDayFilter="all", editMode=false;
+/* معالج الجدولة السريعة (تبويب الخطة): {items:[{token,status,chosenId,candidates}]} */
+let schedWizard=null, schedInput="";
 
 /* ============ مكتبة أيقونات SVG (بديل الإيموجي في عناصر التفاعل) ============ */
 const ICONS={
@@ -89,6 +91,8 @@ function renderPlan(){
   let html=`<div class="page">
     <button class="btn-primary" id="gen-btn">${ic("sparkles",17)} توليد الخطة الأسبوعية</button>`;
   if(!s.homeLocation) html+=`<div class="hint">💡 حدّد موقع الانطلاق ومقر اجتماع الأحد من تبويب الإعدادات لنتائج أدق</div>`;
+  html+=schedListCardHTML();
+  if(schedWizard) html+=schedWizardHTML();
   html+=tasksCardHTML();
 
   if(state.plans.length>1){
@@ -167,6 +171,8 @@ function renderPlan(){
   main.innerHTML=html;
 
   $("#gen-btn").onclick=openGenModal;
+  bindSchedList();
+  bindSchedWizard();
   bindTasksCard(renderPlan);
   const editBtn=$("#edit-btn");
   if(editBtn) editBtn.onclick=()=>{ editMode=!editMode; renderPlan(); };
@@ -244,6 +250,30 @@ function setupDragAndDrop(){
       handle.addEventListener("pointerup",onUp);
     });
   });
+}
+
+/* ---- الجدولة السريعة من قائمة أسماء (تبويب الخطة) ---- */
+function schedListCardHTML(){
+  return `<div class="card pad" style="margin-top:1rem">
+    <b style="font-size:.9rem;display:inline-flex;align-items:center;gap:.4rem">${ic("calendar",15)} جدولة سريعة من قائمة أسماء</b>
+    <p class="muted" style="font-size:.74rem;margin:.35rem 0 .6rem;line-height:1.8">اكتب أو ألصق أسماء فروعك — بالعربية أو الإنجليزية، مفصولة بفواصل أو أسطر — وسيتعرف عليها التطبيق ويبني جدول أسبوعك. مثال: <span dir="ltr" class="mono">shobra, azizyah, النرجس</span></p>
+    <textarea id="sched-in" rows="2" placeholder="شبرا، العزيزية، النرجس…" style="margin-bottom:.6rem">${esc(schedInput)}</textarea>
+    <button class="btn-dark" id="sched-parse" style="width:100%">${ic("sparkles",14)} تحليل القائمة وبناء الجدول</button>
+  </div>`;
+}
+function bindSchedList(){
+  const input=$("#sched-in"), btn=$("#sched-parse");
+  if(!input || !btn) return;
+  input.oninput=()=>{ schedInput=input.value; };
+  input.onkeydown=e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); btn.click(); } };
+  btn.onclick=()=>{
+    const t=input.value.trim();
+    if(!t){ toast(tx("اكتب أسماء الفروع أولاً","Enter your branch names first"),"err"); input.focus(); return; }
+    schedWizard={items:parseScheduleInput(t)};
+    renderPlan();
+    const card=main.querySelector(".sched-card");
+    if(card) card.scrollIntoView({block:"nearest",behavior:"smooth"});
+  };
 }
 
 /* ---- بطاقة المهام الأسبوعية (تبويب الخطة) ---- */
@@ -962,8 +992,6 @@ function renderMap(){
 
 /* ==================== تبويب المساعد الذكي ==================== */
 let aiBusy=false, aiSetupOpen=false;
-/* معالج إنشاء الجدول من قائمة فروع في الدردشة */
-let schedWizard=null; // {items:[{token,status,chosenId,candidates}]}
 
 function renderAI(){
   const cfg=aiConfig();
@@ -973,7 +1001,7 @@ function renderAI(){
   let html=`<div class="page">
     <div class="ai-hero">
       <b>${ic("sparkles",18)} مساعد ½M الذكي</b>
-      <p>يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك. <b>جديد:</b> أرسل قائمة بأسماء فروعك — حتى بالإنجليزية مثل <span dir="ltr" class="mono">shobra, taif</span> — وسيبني جدول أسبوعك فورًا.</p>
+      <p>يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك. ولبناء جدول من قائمة أسماء استخدم «جدولة سريعة» في تبويب الخطة.</p>
       <div style="display:flex;gap:.4rem;margin-top:.6rem;align-items:center;flex-wrap:wrap">
         ${aiProvider()==="key"
           ? `<span class="visit-chip done-chip">● متصل بمفتاحك · ${esc(modelLbl)}</span>`
@@ -1016,12 +1044,11 @@ function renderAI(){
 
   html+=`<h2 class="sec">${ic("msg",13)} اسأل المساعد</h2>
     <div class="scroll-x" style="margin-bottom:.6rem">
-      <button class="qa-chip" id="qa-sched">${ic("calendar",13)} جدول من قائمة فروع</button>
       ${AI_QUICK.map((q,i)=>`<button class="qa-chip" data-qa="${i}">${q.em} ${q.label}</button>`).join("")}
     </div>
     <div class="card chat-box" id="chat-box">`;
-  if(!aiChat.length && !schedWizard){
-    html+=`<div class="empty" style="padding:1.5rem 1rem"><div class="art">💬</div><b>ابدأ محادثة</b><p>اسأل: "ما أكثر فرع سجّل مخالفات؟"<br>أو أرسل قائمة: <span dir="ltr" class="mono">shobra, azizyah, taif</span> لبناء جدولك</p></div>`;
+  if(!aiChat.length){
+    html+=`<div class="empty" style="padding:1.5rem 1rem"><div class="art">💬</div><b>ابدأ محادثة</b><p>اسأل: "ما أكثر فرع سجّل مخالفات؟"<br>أو اطلب تقريرًا أسبوعيًا جاهزًا للمشاركة</p></div>`;
   }
   for(let i=0;i<aiChat.length;i++){
     const m=aiChat[i];
@@ -1029,10 +1056,9 @@ function renderAI(){
     else html+=`<div class="msg ai">${mdLite(m.content)}</div>
       <div class="msg-tools"><button data-copy="${i}">📋 نسخ</button><button data-sharemsg="${i}">↗ مشاركة</button></div>`;
   }
-  if(schedWizard) html+=schedWizardHTML();
   html+=`</div>
     <div class="chat-input">
-      <textarea id="chat-in" rows="1" placeholder="اسأل عن الفروع… أو ألصق قائمة أسماء لبناء الجدول"></textarea>
+      <textarea id="chat-in" rows="1" placeholder="اسأل عن الفروع والخطة والزيارات…"></textarea>
       <button class="send-btn" id="chat-send" aria-label="إرسال" ${aiBusy?"disabled":""}>${ic("send",19)}</button>
     </div>
     <p class="faint" style="font-size:.66rem;margin-top:.5rem;text-align:center">قد يخطئ الذكاء الاصطناعي — راجع الأرقام المهمة قبل اعتمادها</p>
@@ -1086,26 +1112,11 @@ function renderAI(){
   input.onkeydown=e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send.click(); } };
   send.onclick=()=>{
     const t=input.value.trim(); if(!t) return;
-    // اعتراض محلي: هل الرسالة قائمة فروع لبناء جدول؟
-    const items=detectScheduleIntent(t);
-    if(items){
-      schedWizard={items};
-      input.value=""; autoGrow();
-      renderAI();
-      return;
-    }
     askAi(t);
   };
-  $("#qa-sched").onclick=()=>{
-    input.value=tx("جدولي: ","my schedule: ");
-    input.focus();
-    input.setSelectionRange(input.value.length,input.value.length);
-    toast(tx("ألصق أسماء فروعك مفصولة بفواصل — بالعربية أو الإنجليزية","Paste your branch names separated by commas — Arabic or English"),"info",4000);
-  };
-  bindSchedWizard();
 
   // مرّر لأسفل فقط عند وجود محادثة قائمة؛ وإلا اعرض البطاقة التعريفية والرؤى
-  if(aiChat.length || aiBusy || schedWizard){
+  if(aiChat.length || aiBusy){
     const box=$("#chat-box"); box.scrollTop=box.scrollHeight;
     main.scrollTop = main.scrollHeight;
   } else {
@@ -1113,7 +1124,7 @@ function renderAI(){
   }
 }
 
-/* ---- بطاقة معالج الجدولة داخل الدردشة ---- */
+/* ---- بطاقة معالج الجدولة (تبويب الخطة) ---- */
 function schedWizardHTML(){
   const w=schedWizard;
   const resolved=w.items.filter(i=>i.status==="match").length;
@@ -1163,7 +1174,7 @@ function schedWizardHTML(){
     }
   });
   const pending=w.items.filter(i=>i.status==="ambiguous"||i.status==="unknown").length;
-  return `<div class="card sched-card">
+  return `<div class="card sched-card" style="margin-top:.8rem">
     <div class="sched-head">
       <b>${ic("calendar",15)} إنشاء جدول من قائمتك</b>
       <button class="sheet-x" data-sw-cancel aria-label="إلغاء" style="font-size:1rem">${ic("x",15)}</button>
@@ -1185,20 +1196,20 @@ function bindSchedWizard(){
     const [idx,id]=b.dataset.swPick.split(":");
     const it=w.items[Number(idx)];
     it.chosenId=id; it.status="match";
-    renderAI();
+    renderPlan();
   });
   main.querySelectorAll("[data-sw-change]").forEach(b=>b.onclick=()=>{
     w.items[Number(b.dataset.swChange)].status="ambiguous";
-    renderAI();
+    renderPlan();
   });
   main.querySelectorAll("[data-sw-skip]").forEach(b=>b.onclick=()=>{
     w.items[Number(b.dataset.swSkip)].status="ignored";
-    renderAI();
+    renderPlan();
   });
   main.querySelectorAll("[data-sw-undo]").forEach(b=>b.onclick=()=>{
     const it=w.items[Number(b.dataset.swUndo)];
     Object.assign(it, matchBranchToken(it.token));
-    renderAI();
+    renderPlan();
   });
   main.querySelectorAll("[data-sw-add]").forEach(b=>b.onclick=()=>{
     const idx=Number(b.dataset.swAdd);
@@ -1211,11 +1222,11 @@ function bindSchedWizard(){
       _brIdx=null; // إعادة بناء فهرس المطابقة
       it.chosenId=newId; it.status="match";
       it.candidates=[{id:newId, name:state.branches.find(x=>x.id===newId)?.nameAr, score:1}];
-      renderAI();
+      renderPlan();
     };
   });
   const cancel=main.querySelector("[data-sw-cancel]");
-  if(cancel) cancel.onclick=()=>{ schedWizard=null; renderAI(); };
+  if(cancel) cancel.onclick=()=>{ schedWizard=null; renderPlan(); };
   const go=main.querySelector("[data-sw-go]");
   if(go) go.onclick=async()=>{
     const ids=[...new Set(w.items.filter(i=>i.status==="match").map(i=>i.chosenId))];
@@ -1236,9 +1247,10 @@ function bindSchedWizard(){
     }
     if(missing.length) recalcPlanTimes(p);
     state.plans.unshift(p); state.activePlanId=p.id;
-    schedWizard=null;
+    schedWizard=null; schedInput="";
     await persist(); scheduleReminders();
     setTab("plan");
+    main.scrollTop=0;
     if(missing.length) toast(tx(`جُهّز الجدول — ${missing.length} فرعًا بعيدًا قد يتجاوز ساعات الدوام، راجع التوقيتات`,`Schedule ready — ${missing.length} distant branches may exceed working hours, review the times`),"info",5000);
     else toast(tx(`جُهّز جدول ${ids.length} فرعًا ✨`,`Schedule for ${ids.length} branches ready ✨`),"ok");
   };

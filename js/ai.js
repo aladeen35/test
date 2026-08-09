@@ -433,26 +433,22 @@ function parseBranchList(text){
     .map(s=>s.replace(/^[\s.:!?…،؛\-–]+|[\s.:!?…،؛\-–]+$/g,""))
     .filter(s=>s && normTxt(s).length>=2);
 }
-function hasScheduleKeyword(text){ INTENT_RE.lastIndex=0; return INTENT_RE.test(text); }
-
-/* هل هذه الرسالة طلب جدولة بقائمة فروع؟ */
-function detectScheduleIntent(text){
+/* تحليل قائمة أدخلها المستخدم صراحةً في «جدولة سريعة» بتبويب الخطة.
+   لا تخمين نوايا هنا — كل ما يُكتب يُعامل كأسماء فروع.
+   إن كانت القائمة بلا فواصل إطلاقًا (shobra azizyah taif) نجرّب
+   الفصل بالمسافات ونعتمد التفسير الذي يطابق فروعًا أكثر. */
+function parseScheduleInput(text){
   const tokens=parseBranchList(text);
-  if(!tokens.length || tokens.length>40) return null;
-  const items=tokens.map(matchBranchToken);
-  const hit=items.filter(i=>i.status!=="unknown").length;
-  const kw=hasScheduleKeyword(text);
-  if((kw && hit>=1) || (tokens.length>=2 && hit>=Math.ceil(tokens.length*0.5)))
-    return items;
-  /* محاولة ثانية: قائمة مفصولة بمسافات فقط (shobra azizyah taif) —
-     تُقبل فقط إذا طابقت أغلب الكلمات فروعًا فعلية كي لا تُعترض الأسئلة العادية */
-  const words=[...new Set(normTxt(text.replace(INTENT_RE," ")).split(" ").filter(w=>w.length>=3))];
-  if(words.length>=2 && words.length<=15){
-    const wi=words.map(matchBranchToken);
-    const whit=wi.filter(i=>i.status!=="unknown").length;
-    if(whit>=2 && whit>=Math.ceil(words.length*0.6)) return wi;
+  let items=tokens.map(matchBranchToken);
+  if(tokens.length===1 && /\s/.test(tokens[0]) && items[0].status!=="match"){
+    const words=tokens[0].split(/\s+/).filter(w=>normTxt(w).length>=2);
+    if(words.length>=2){
+      const wi=words.map(matchBranchToken);
+      const whit=wi.filter(i=>i.status!=="unknown").length;
+      if(whit>=2) items=wi;
+    }
   }
-  return null;
+  return items;
 }
 
 /* تنسيق مبسط لمخرجات النموذج: عناوين وقوائم وعريض */
