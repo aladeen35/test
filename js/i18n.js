@@ -115,23 +115,30 @@ const I18N_EN = {
 
   /* الذكاء */
   "مساعد ½M الذكي":"½M AI Assistant",
-  "جديد:":"New:",
+  "يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك. ولبناء جدول من قائمة أسماء استخدم «جدولة سريعة» في تبويب الخطة.":"Reads your branches, plan and visit log to answer questions and write your reports. To build a schedule from a name list, use \"Quick Schedule\" in the Plan tab.",
   "إعداد الذكاء":"AI Setup","إخفاء الإعداد":"Hide Setup","مسح المحادثة":"Clear Chat",
   "⚙️ إعداد الاتصال بـ Claude":"⚙️ Connect to Claude",
   "مفتاح Anthropic API":"Anthropic API key","النموذج":"Model",
   "💾 حفظ واختبار الاتصال":"💾 Save & Test Connection","نسيان المفتاح":"Forget Key",
   "رؤى فورية":"Instant Insights","(تُحسب على جهازك دون إنترنت)":"(computed on-device, offline)",
-  "اسأل المساعد":"Ask the Assistant","جدول من قائمة فروع":"Schedule from a list",
+  "اسأل المساعد":"Ask the Assistant",
   "تقرير أسبوعي تنفيذي":"Executive weekly report","أولويات الأسبوع القادم":"Next week priorities",
   "تحليل قراءات الجودة":"Analyze quality readings","لخّص خطة الأسبوع":"Summarize this week's plan",
   "ابدأ محادثة":"Start a conversation",
   "اكتب سؤالك عن الفروع أو الخطة أو الزيارات…":"Ask about branches, plans or visits…",
-  "اسأل عن الفروع… أو ألصق قائمة أسماء لبناء الجدول":"Ask anything… or paste a list of branch names to build a schedule",
+  "اسأل عن الفروع والخطة والزيارات…":"Ask about branches, plan and visits…",
+  "أو اطلب تقريرًا أسبوعيًا جاهزًا للمشاركة":"Or ask for a share-ready weekly report",
   "قد يخطئ الذكاء الاصطناعي — راجع الأرقام المهمة قبل اعتمادها":"AI can make mistakes — verify important numbers",
   "📋 نسخ":"📋 Copy","↗ مشاركة":"↗ Share",
   "إنشاء جدول من قائمتك":"Build schedule from your list",
   "أي فرع تقصد؟":"Which branch do you mean?","فرع غير معروف":"Unknown branch",
   "إضافته كفرع جديد":"Add as new branch","تجاهل":"Skip","استرجاع":"Restore","تغيير":"Change",
+
+  /* الجدولة السريعة (تبويب الخطة) */
+  "جدولة سريعة من قائمة أسماء":"Quick Schedule from a name list",
+  "اكتب أو ألصق أسماء فروعك — بالعربية أو الإنجليزية، مفصولة بفواصل أو أسطر — وسيتعرف عليها التطبيق ويبني جدول أسبوعك. مثال:":"Type or paste your branch names — Arabic or English, separated by commas or new lines — and the app recognizes them and builds your weekly schedule. Example:",
+  "شبرا، العزيزية، النرجس…":"shobra, azizyah, narjis…",
+  "تحليل القائمة وبناء الجدول":"Analyze List & Build Schedule",
 
   /* اللوحة */
   "بياناتي":"My Data","الفريق":"Team","تقرير ذكي":"AI Report","تحديث":"Refresh",
@@ -222,9 +229,6 @@ const I18N_EN = {
   "إلغاء":"Cancel",
 
   /* مقاطع متفرقة */
-  "يقرأ فروعك وخطتك وسجل زياراتك ليجيب عن أسئلتك ويكتب تقاريرك.":"Reads your branches, plan and visit log to answer questions and write your reports.",
-  "أرسل قائمة بأسماء فروعك — حتى بالإنجليزية مثل":"Send a list of your branch names — even in English like",
-  "— وسيبني جدول أسبوعك فورًا.":"— and it builds your weekly schedule instantly.",
   "● جاهز مجانًا — بلا مفتاح":"● Ready for free — no key needed",
   "● متصل عبر خادم الشركة":"● Connected via company server",
   "⚙️ إعداد الاتصال بـ Claude (اختياري)":"⚙️ Connect to Claude (optional)",
@@ -232,7 +236,6 @@ const I18N_EN = {
   "لأداء أعلى وخصوصية أكبر يمكنك إضافة مفتاحك من":"For higher performance and privacy you can add your own key from",
   "يُحفظ المفتاح على جهازك فقط ولا يُرفع أبدًا مع المزامنة السحابية.":"The key is stored on this device only and is never uploaded with cloud sync.",
   "اسأل: \"ما أكثر فرع سجّل مخالفات؟\"":"Ask: \"Which branch logged the most findings?\"",
-  "أو أرسل قائمة:":"Or send a list:","لبناء جدولك":"to build your schedule",
   "جارٍ اختبار الاتصال…":"Testing connection…","ألصق المفتاح أولاً":"Paste the key first",
   "جارٍ الإرسال للفريق…":"Sending to team…","اكتب عنوان المهمة":"⚠️ Enter a task title",
   "· معطّل":"· disabled","معطّل":"disabled","نشط":"active",
