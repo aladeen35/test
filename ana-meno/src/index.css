@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-hosted Cairo variable font (Open Font License). */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/cairo-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF,
+    U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32,
+    U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B,
+    U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D,
+    U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3,
+    U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/cairo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply font-cairo bg-sky-pale text-navy-deep antialiased;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Playful chunky button with a pressed state. */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl font-bold
+    transition-transform duration-100 select-none
+    focus-visible:outline focus-visible:outline-4 focus-visible:outline-sun/70;
+  min-height: 52px;
+  padding-inline: 1.25rem;
+}
+.btn:active { transform: translateY(3px); }
+.btn:disabled { @apply opacity-50 pointer-events-none; }
+
+.btn-primary {
+  @apply btn bg-sun text-navy-deep shadow-[0_5px_0_0_#D99C00];
+}
+.btn-primary:active { box-shadow: 0 1px 0 0 #d99c00; }
+
+.btn-secondary {
+  @apply btn bg-royal text-white shadow-[0_5px_0_0_#14448C];
+}
+.btn-secondary:active { box-shadow: 0 1px 0 0 #14448c; }
+
+.btn-soft {
+  @apply btn bg-white text-navy shadow-[0_4px_0_0_rgba(15,42,79,0.15)] border-2 border-sky-light;
+}
+.btn-soft:active { box-shadow: 0 1px 0 0 rgba(15, 42, 79, 0.15); }
+
+.btn-danger {
+  @apply btn bg-coral text-white shadow-[0_5px_0_0_#B93E33];
+}
+.btn-danger:active { box-shadow: 0 1px 0 0 #b93e33; }
+
+.btn-yes {
+  @apply btn bg-mint text-white shadow-[0_5px_0_0_#1F8F73] text-2xl px-10;
+}
+.btn-no {
+  @apply btn bg-coral text-white shadow-[0_5px_0_0_#B93E33] text-2xl px-10;
+}
+
+.card {
+  @apply bg-white rounded-blob shadow-pop;
+}
+
+.input {
+  @apply w-full rounded-2xl border-2 border-sky-light bg-white px-4 py-3 text-lg
+    font-semibold text-navy-deep placeholder:text-navy/40
+    focus:border-royal focus:outline-none;
+  min-height: 52px;
+}
+
+/* Latin content (room codes, timers) stays LTR inside the RTL layout. */
+.ltr-num {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.screen {
+  @apply flex-1 flex flex-col w-full max-w-lg mx-auto px-4;
+  padding-top: calc(var(--safe-top) + 0.75rem);
+  padding-bottom: calc(var(--safe-bottom) + 1rem);
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0.7; }
+}
+.confetti-piece {
+  position: fixed;
+  top: 0;
+  width: 10px;
+  height: 14px;
+  border-radius: 3px;
+  animation: confetti-fall linear forwards;
+  pointer-events: none;
+  z-index: 60;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

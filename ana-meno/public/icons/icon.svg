@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1E63C8"/>
+  <circle cx="256" cy="248" r="170" fill="#3B82E0"/>
+  <circle cx="256" cy="248" r="140" fill="#4FB3E8" opacity="0.5"/>
+  <text x="256" y="352" text-anchor="middle" font-size="280" font-weight="900"
+    font-family="Cairo, Tahoma, sans-serif" fill="#FFC928"
+    stroke="#173B6C" stroke-width="10" paint-order="stroke">؟</text>
+  <g transform="translate(368,368) rotate(40)">
+    <rect x="-16" y="58" width="32" height="76" rx="16" fill="#8A5A44"/>
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#FFC928" stroke-width="26"/>
+    <circle cx="0" cy="0" r="44" fill="#A8DCF7" opacity="0.6"/>
+  </g>
+</svg>
