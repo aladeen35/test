@@ -5,7 +5,9 @@ export type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'of
 export interface BackendListeners {
   onRoomUpdate?: (room: RoomState) => void;
   onGameUpdate?: (game: PublicGameState) => void;
-  onSecret?: (characterId: number) => void;
+  /** Delivers the player's own secret, tagged with its game id so late or
+   *  early delivery can never be attributed to the wrong game. */
+  onSecret?: (characterId: number, gameId: string) => void;
   onConnectionChange?: (status: ConnectionStatus) => void;
   onOpponentPresence?: (online: boolean) => void;
 }

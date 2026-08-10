@@ -53,13 +53,14 @@ try {
   ok('both players reached the game board');
   await pageA.screenshot({ path: `${SHOT}/05-game-a.png` });
 
-  // Secrets: reveal on both and compare.
+  // Secrets are always visible on each player's own device; read them via
+  // the secret card's aria-label ("شخصيتك السرية: name — profession").
   const readSecret = async (page) => {
-    await page.click('text=شخصيتك السرية');
-    await page.waitForTimeout(300);
-    const t = await page.textContent('button:has-text("شخصيتك السرية")');
-    await page.click('text=شخصيتك السرية'); // hide again
-    return t;
+    await page.waitForFunction(() => {
+      const el = document.querySelector('div[aria-label*="شخصيتك السرية"]');
+      return !!el && el.getAttribute('aria-label').includes('—');
+    }, { timeout: 8000 });
+    return page.getAttribute('div[aria-label*="شخصيتك السرية"]', 'aria-label');
   };
   const secretA = await readSecret(pageA);
   const secretB = await readSecret(pageB);
@@ -113,7 +114,7 @@ try {
   if (pubStateHasSecrets) fail('public DOM leaks secrets'); else ok('DOM clean of secrets');
 
   // Player A guesses B's secret correctly. Extract B's secret name from its chip.
-  const secretName = secretB.match(/السرية(.+?)·/)?.[1].trim();
+  const secretName = secretB.match(/السرية:\s*(.+?)\s*—/)?.[1].trim();
   ok(`player B secret name: ${secretName}`);
 
   await pageA.click('button:has-text("خمّن الشخصية")');

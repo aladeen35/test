@@ -177,15 +177,17 @@ export class SupabaseBackend implements GameBackend {
     const { data, error } = await this.client.rpc('get_my_secret', { p_game_id: gameId });
     if (error) throw toGameError(error);
     this.secretSent = gameId;
-    this.listeners.onSecret?.(data as number);
+    this.listeners.onSecret?.(data as number, gameId);
   }
 
   private async onGameIdChanged(gameId: string | null): Promise<void> {
     this.gameId = gameId;
     if (!gameId) return;
     await this.loadGame(gameId);
-    await this.fetchSecret(gameId);
+    // Emit the game before the secret so the store never interprets the
+    // secret as belonging to a stale game (it is also tagged with gameId).
     this.emitGame();
+    await this.fetchSecret(gameId);
   }
 
   /* ------------------------------ realtime ------------------------------ */

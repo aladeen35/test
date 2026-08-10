@@ -33,7 +33,7 @@ export function AnswerModal() {
         <p className="text-xl font-extrabold text-navy mb-1">{T.question}:</p>
         <p className="text-2xl font-black text-royal leading-relaxed mb-6">{question?.textAr}</p>
         <p className="text-sm font-semibold text-navy/60 mb-4">
-          أجب حسب شخصيتك السرية {state.mySecretId ? `(${getCharacter(state.mySecretId)?.name})` : ''}
+          أجب حسب شخصيتك السرية {state.mySecret ? `(${getCharacter(state.mySecret.characterId)?.name})` : ''}
         </p>
         <div className="flex justify-center gap-4">
           <button className="btn-yes" onClick={() => respond(true)} disabled={sending}>{T.yes}</button>

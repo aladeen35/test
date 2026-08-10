@@ -151,7 +151,7 @@ export class LocalBackend implements GameBackend {
       if (game) {
         this.listeners.onGameUpdate?.(rules.publicStateFor(game));
         if (game.secrets[this.playerId] != null) {
-          this.listeners.onSecret?.(game.secrets[this.playerId]);
+          this.listeners.onSecret?.(game.secrets[this.playerId], game.id);
         }
       }
     }

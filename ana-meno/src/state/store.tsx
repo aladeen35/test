@@ -21,7 +21,8 @@ export interface AppState {
   playerName: string;
   room: RoomState | null;
   game: PublicGameState | null;
-  mySecretId: number | null;
+  /** The player's own secret, tagged with the game it belongs to. */
+  mySecret: { gameId: string; characterId: number } | null;
   eliminated: number[];
   connection: ConnectionStatus;
   opponentOnline: boolean;
@@ -35,7 +36,7 @@ type Action =
   | { type: 'setName'; name: string }
   | { type: 'room'; room: RoomState }
   | { type: 'game'; game: PublicGameState }
-  | { type: 'secret'; characterId: number }
+  | { type: 'secret'; characterId: number; gameId: string }
   | { type: 'connection'; status: ConnectionStatus }
   | { type: 'presence'; online: boolean }
   | { type: 'busy'; label: string | null }
@@ -53,7 +54,7 @@ function initialState(): AppState {
     playerName: localStorage.getItem(NAME_KEY) ?? '',
     room: null,
     game: null,
-    mySecretId: null,
+    mySecret: null,
     eliminated: [],
     connection: 'connecting',
     opponentOnline: false,
@@ -96,11 +97,13 @@ function reducer(state: AppState, action: Action): AppState {
         game: action.game,
         screen,
         eliminated: isNewGame ? [] : state.eliminated,
-        mySecretId: isNewGame ? null : state.mySecretId,
+        // Keep the secret if it already belongs to this game — it can arrive
+        // before the first game event (this was wiping the guest's secret).
+        mySecret: state.mySecret?.gameId === action.game.id ? state.mySecret : null,
       };
     }
     case 'secret':
-      return { ...state, mySecretId: action.characterId };
+      return { ...state, mySecret: { gameId: action.gameId, characterId: action.characterId } };
     case 'connection':
       return { ...state, connection: action.status };
     case 'presence':
@@ -180,7 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           audio.play(iWon ? 'win' : 'lose');
         }
       },
-      onSecret: (characterId) => dispatch({ type: 'secret', characterId }),
+      onSecret: (characterId, gameId) => dispatch({ type: 'secret', characterId, gameId }),
       onConnectionChange: (status) => dispatch({ type: 'connection', status }),
       onOpponentPresence: (online) => {
         dispatch({ type: 'presence', online });
