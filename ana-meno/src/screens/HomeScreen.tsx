@@ -3,7 +3,8 @@ import { useApp } from '../state/store';
 import { LogoMark, LogoTitle } from '../components/Logo';
 import { T } from '../ui/text';
 import { isValidName, MAX_NAME_LENGTH } from '../game/logic';
-import { CHARACTERS, characterImageUrl } from '../game/characters';
+import { CHARACTERS } from '../game/characters';
+import { CharacterImage } from '../components/CharacterImage';
 import { audio } from '../audio/audioManager';
 
 // Official brand artwork, used untouched when present in public/assets/.
@@ -27,14 +28,13 @@ function FloatingCast() {
   return (
     <div className="relative h-40 w-full max-w-xs mx-auto pointer-events-none" aria-hidden="true">
       {cast.map((c, i) => (
-        <img
+        <span
           key={c.slug}
-          src={characterImageUrl(c)}
-          alt=""
-          className={`absolute w-16 h-16 rounded-xl shadow-card animate-floaty ${positions[i]}`}
+          className={`absolute animate-floaty ${positions[i]}`}
           style={{ animationDelay: `${i * 0.45}s` }}
-          draggable={false}
-        />
+        >
+          <CharacterImage character={c} className="w-16 h-16 rounded-xl shadow-card" />
+        </span>
       ))}
       <div className="absolute inset-0 flex items-center justify-center">
         <LogoMark size={104} />

@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import type { Character } from '../game/types';
-import { characterImageUrl } from '../game/characters';
+import { CharacterImage } from './CharacterImage';
 
 interface CharacterCardProps {
   character: Character;
@@ -30,11 +30,8 @@ export const CharacterCard = memo(function CharacterCard({
         ${selected ? 'ring-4 ring-sun' : ''}`}
     >
       <div className="relative overflow-hidden rounded-xl">
-        <img
-          src={characterImageUrl(character)}
-          alt=""
-          loading="lazy"
-          draggable={false}
+        <CharacterImage
+          character={character}
           className={`w-full aspect-square transition-all duration-200 ${eliminated ? 'opacity-45 saturate-[0.25]' : ''}`}
         />
         {eliminated && (

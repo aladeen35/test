@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../state/store';
 import { T } from '../ui/text';
 import { audio } from '../audio/audioManager';
-import { CHARACTERS, characterImageUrl, MYSTERY_IMAGE_URL } from '../game/characters';
+import { CHARACTERS, MYSTERY_IMAGE_URL } from '../game/characters';
+import { CharacterImage } from '../components/CharacterImage';
 
 function StepIllustration({ step }: { step: number }) {
   const sample = CHARACTERS.slice(0, 3);
@@ -24,7 +25,7 @@ function StepIllustration({ step }: { step: number }) {
         <div className="flex justify-center gap-2">
           {sample.map((c, i) => (
             <div key={c.id} className="relative w-20">
-              <img src={characterImageUrl(c)} alt="" className={`rounded-xl ${i !== 1 ? 'opacity-40 saturate-0' : ''}`} />
+              <CharacterImage character={c} className={`rounded-xl ${i !== 1 ? 'opacity-40 saturate-0' : ''}`} />
               {i !== 1 && <span className="absolute inset-0 flex items-center justify-center text-coral text-3xl font-black">✕</span>}
             </div>
           ))}

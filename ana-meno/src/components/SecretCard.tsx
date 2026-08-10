@@ -1,4 +1,5 @@
-import { getCharacter, characterImageUrl, MYSTERY_IMAGE_URL } from '../game/characters';
+import { getCharacter, MYSTERY_IMAGE_URL } from '../game/characters';
+import { CharacterImage } from './CharacterImage';
 import { useApp } from '../state/store';
 import { T } from '../ui/text';
 
@@ -18,12 +19,11 @@ export function SecretCard() {
       aria-label={secret ? `${T.yourSecretCharacter}: ${secret.name} — ${secret.professionAr}` : T.yourSecretCharacter}
       className="card flex items-center gap-3 px-3 py-2 w-full ring-2 ring-sun"
     >
-      <img
-        src={secret ? characterImageUrl(secret) : MYSTERY_IMAGE_URL}
-        alt=""
-        className="w-14 h-14 rounded-xl shrink-0"
-        draggable={false}
-      />
+      {secret ? (
+        <CharacterImage character={secret} className="w-14 h-14 rounded-xl shrink-0" />
+      ) : (
+        <img src={MYSTERY_IMAGE_URL} alt="" className="w-14 h-14 rounded-xl shrink-0" draggable={false} />
+      )}
       <div className="min-w-0 flex-1">
         <div className="font-extrabold text-navy text-sm">🕵️ {T.yourSecretCharacter}</div>
         {secret ? (
