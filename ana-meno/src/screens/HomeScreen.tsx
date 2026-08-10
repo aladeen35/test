@@ -6,6 +6,10 @@ import { isValidName, MAX_NAME_LENGTH } from '../game/logic';
 import { CHARACTERS, characterImageUrl } from '../game/characters';
 import { audio } from '../audio/audioManager';
 
+// Official brand artwork, used untouched when present in public/assets/.
+// Falls back to the generated logo composition if the file is missing.
+const BRAND_LOGO_URL = `${import.meta.env.BASE_URL}assets/logo.png`;
+
 // A small floating cast around the title (doctor, engineer, chef, pilot,
 // designer, teacher) — matches the brand's "wall of character cards".
 const CAST_SLUGS = [
@@ -42,6 +46,7 @@ function FloatingCast() {
 export function HomeScreen() {
   const { state, setName, goto, showToast } = useApp();
   const [nameDraft, setNameDraft] = useState(state.playerName);
+  const [brandLogoOk, setBrandLogoOk] = useState(true);
   const prefs = audio.getPrefs();
   const [, forceRender] = useState(0);
 
@@ -66,9 +71,21 @@ export function HomeScreen() {
   return (
     <div className="screen justify-between gap-4">
       <header className="text-center pt-2">
-        <FloatingCast />
-        <LogoTitle className="text-5xl mt-2" />
-        <p className="font-bold text-navy/70 text-lg mt-1">{T.tagline}</p>
+        {brandLogoOk ? (
+          <img
+            src={BRAND_LOGO_URL}
+            alt={T.appName}
+            onError={() => setBrandLogoOk(false)}
+            draggable={false}
+            className="w-full max-w-sm mx-auto rounded-blob animate-pop-in"
+          />
+        ) : (
+          <>
+            <FloatingCast />
+            <LogoTitle className="text-5xl mt-2" />
+            <p className="font-bold text-navy/70 text-lg mt-1">{T.tagline}</p>
+          </>
+        )}
       </header>
 
       <main className="flex flex-col gap-3">
