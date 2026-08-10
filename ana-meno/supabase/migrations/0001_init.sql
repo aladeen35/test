@@ -7,7 +7,7 @@ create extension if not exists pgcrypto;
 
 /* ------------------------------- tables ------------------------------- */
 
-create table public.characters (
+create table if not exists public.characters (
   id int primary key,
   slug text not null unique,
   name text not null,
@@ -33,14 +33,14 @@ create table public.characters (
   active boolean not null default true
 );
 
-create table public.questions (
+create table if not exists public.questions (
   id text primary key,
   category text not null,
   text_ar text not null,
   active boolean not null default true
 );
 
-create table public.rooms (
+create table if not exists public.rooms (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
   status text not null default 'waiting'
@@ -58,9 +58,9 @@ create table public.rooms (
   expires_at timestamptz not null default now() + interval '60 minutes'
 );
 
-create index rooms_code_idx on public.rooms (code);
+create index if not exists rooms_code_idx on public.rooms (code);
 
-create table public.games (
+create table if not exists public.games (
   id uuid primary key default gen_random_uuid(),
   room_id uuid not null references public.rooms(id) on delete cascade,
   status text not null default 'active' check (status in ('active','finished')),
@@ -81,18 +81,18 @@ create table public.games (
   revealed_secrets jsonb
 );
 
-create index games_room_idx on public.games (room_id);
+create index if not exists games_room_idx on public.games (room_id);
 
 -- Secrets live in their own table so RLS can hide the opponent's secret
 -- completely: a player can only ever select their own row.
-create table public.game_secrets (
+create table if not exists public.game_secrets (
   game_id uuid not null references public.games(id) on delete cascade,
   player_id uuid not null,
   character_id int not null references public.characters(id),
   primary key (game_id, player_id)
 );
 
-create table public.game_questions (
+create table if not exists public.game_questions (
   id uuid primary key default gen_random_uuid(),
   game_id uuid not null references public.games(id) on delete cascade,
   asker_id uuid not null,
@@ -102,7 +102,7 @@ create table public.game_questions (
   answered_at timestamptz
 );
 
-create index game_questions_game_idx on public.game_questions (game_id, asked_at);
+create index if not exists game_questions_game_idx on public.game_questions (game_id, asked_at);
 
 /* --------------------------------- RLS --------------------------------- */
 
@@ -113,16 +113,20 @@ alter table public.games enable row level security;
 alter table public.game_secrets enable row level security;
 alter table public.game_questions enable row level security;
 
+drop policy if exists "characters are public" on public.characters;
 create policy "characters are public" on public.characters
   for select to authenticated, anon using (true);
 
+drop policy if exists "questions are public" on public.questions;
 create policy "questions are public" on public.questions
   for select to authenticated, anon using (true);
 
+drop policy if exists "room members can read their room" on public.rooms;
 create policy "room members can read their room" on public.rooms
   for select to authenticated
   using (auth.uid() in (host_id, guest_id));
 
+drop policy if exists "room members can read their games" on public.games;
 create policy "room members can read their games" on public.games
   for select to authenticated
   using (exists (
@@ -130,10 +134,12 @@ create policy "room members can read their games" on public.games
     where r.id = room_id and auth.uid() in (r.host_id, r.guest_id)
   ));
 
+drop policy if exists "players can read only their own secret" on public.game_secrets;
 create policy "players can read only their own secret" on public.game_secrets
   for select to authenticated
   using (player_id = auth.uid());
 
+drop policy if exists "room members can read game questions" on public.game_questions;
 create policy "room members can read game questions" on public.game_questions
   for select to authenticated
   using (exists (
@@ -526,6 +532,12 @@ end $$;
 
 /* ------------------------------ realtime ------------------------------ */
 
-alter publication supabase_realtime add table public.rooms;
-alter publication supabase_realtime add table public.games;
-alter publication supabase_realtime add table public.game_questions;
+do $$ begin
+  alter publication supabase_realtime add table public.rooms;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.games;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.game_questions;
+exception when duplicate_object then null; end $$;
