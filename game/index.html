@@ -345,7 +345,8 @@
     transition: transform 0.35s;
   }
   .mem-card .back { background: var(--cell); border: 2px solid var(--line); color: var(--muted); font-size: 1.1rem; font-weight: 800; }
-  .mem-card .front { background: var(--surface); border: 2px solid var(--line); transform: rotateY(180deg); }
+  .mem-card .front { background: var(--surface); border: 2px solid var(--line); transform: rotateY(180deg); overflow: hidden; }
+  .mem-card .front img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0.6rem; }
   .mem-card.open .back { transform: rotateY(-180deg); }
   .mem-card.open .front { transform: rotateY(0); }
   .mem-card.matched-1 .front { border-color: var(--p1); background: var(--p1-soft); }
@@ -1123,24 +1124,45 @@
   $("reset-c4").addEventListener("click", () => { C4.turn = C4.turn === 1 ? 2 : 1; c4Build(); });
 
   /* ============ 3) الذاكرة ============ */
+  /* لاستخدام تصاميمك الخاصة: ضع 8 صور مربعة باسم 1.png حتى 8.png
+     داخل مجلد cards/ بجانب index.html — تُستخدم تلقائيًا بدل الإيموجي */
+  const PAIR_COUNT = 8;
   const EMOJI = ["🐱", "🐶", "🦊", "🐼", "🐸", "🦁", "🐰", "🐵"];
   const MEM = { deck: [], open: [], lock: false, turn: 1, pairs: { 1: 0, 2: 0 }, matched: 0 };
+  let memUseImages = false;
+  (function probeCardImages() {
+    let loaded = 0, failed = false;
+    for (let i = 1; i <= PAIR_COUNT; i++) {
+      const img = new Image();
+      img.onload = () => {
+        loaded++;
+        if (loaded === PAIR_COUNT && !failed) { memUseImages = true; memBuild(); }
+      };
+      img.onerror = () => { failed = true; };
+      img.src = "cards/" + i + ".png";
+    }
+  })();
   const memBoard = $("board-mem");
+  function memFront(v) {
+    return memUseImages
+      ? '<img src="cards/' + v + '.png" alt="بطاقة ' + v + '">'
+      : EMOJI[v - 1];
+  }
   function memBuild() {
-    MEM.deck = [...EMOJI, ...EMOJI]
-      .map((e) => ({ e, key: Math.random() }))
+    MEM.deck = [...Array(PAIR_COUNT).keys(), ...Array(PAIR_COUNT).keys()]
+      .map((v) => ({ v: v + 1, key: Math.random() }))
       .sort((a, b) => a.key - b.key)
-      .map((x) => x.e);
+      .map((x) => x.v);
     MEM.open = [];
     MEM.lock = false;
     MEM.pairs = { 1: 0, 2: 0 };
     MEM.matched = 0;
     memBoard.innerHTML = "";
-    MEM.deck.forEach((emoji, i) => {
+    MEM.deck.forEach((v, i) => {
       const card = document.createElement("button");
       card.className = "mem-card";
       card.setAttribute("aria-label", "بطاقة " + (i + 1));
-      card.innerHTML = '<span class="face back">؟</span><span class="face front">' + emoji + "</span>";
+      card.innerHTML = '<span class="face back">؟</span><span class="face front">' + memFront(v) + "</span>";
       card.addEventListener("click", () => memFlip(i));
       memBoard.appendChild(card);
     });
