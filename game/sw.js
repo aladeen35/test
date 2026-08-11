@@ -1,4 +1,4 @@
-const CACHE = "family-game-v1";
+const CACHE = "family-game-v2";
 const ASSETS = [
   "./",
   "./index.html",

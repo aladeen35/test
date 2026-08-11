@@ -23,7 +23,11 @@
     --p1-soft: #FBE3E7;
     --p2-soft: #DCF2EF;
     --gold: #D9942A;
+    --gold-soft: #F7E8CE;
+    --danger: #C2452F;
+    --go: #2E9E4F;
     --shadow: 0 10px 30px rgba(43, 36, 64, 0.10);
+    --shadow-sm: 0 4px 14px rgba(43, 36, 64, 0.08);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -39,7 +43,11 @@
       --p1-soft: #47303C;
       --p2-soft: #24413F;
       --gold: #F0B653;
+      --gold-soft: #423722;
+      --danger: #E06A52;
+      --go: #46C173;
       --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
   }
   :root[data-theme="dark"] {
@@ -55,12 +63,20 @@
     --p1-soft: #47303C;
     --p2-soft: #24413F;
     --gold: #F0B653;
+    --gold-soft: #423722;
+    --danger: #E06A52;
+    --go: #46C173;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
   }
 
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    background: var(--bg);
+    background:
+      radial-gradient(circle at 15% 10%, var(--p1-soft) 0, transparent 22rem),
+      radial-gradient(circle at 85% 90%, var(--p2-soft) 0, transparent 22rem),
+      var(--bg);
     color: var(--ink);
     font-family: "Segoe UI", Tahoma, "Noto Kufi Arabic", "Noto Sans Arabic", system-ui, sans-serif;
     margin: 0;
@@ -70,20 +86,27 @@
     max-width: 30rem;
     margin: 0 auto;
     padding: 1rem 1rem 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
   }
 
-  .masthead { text-align: center; padding-top: 0.5rem; }
+  /* ---------- الشاشات ---------- */
+  .screen { display: none; flex-direction: column; gap: 1rem; }
+  .screen.active { display: flex; animation: screen-in 0.3s ease; }
+  @keyframes screen-in {
+    from { opacity: 0; transform: translateY(0.6rem); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---------- الرئيسية ---------- */
+  .masthead { text-align: center; padding-top: 0.6rem; }
+  .masthead .logo { display: inline-block; margin-bottom: 0.4rem; }
   .masthead h1 {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.5px;
     text-wrap: balance;
   }
-  .masthead p { color: var(--muted); margin: 0.3rem 0 0; font-size: 0.9rem; }
+  .masthead p { color: var(--muted); margin: 0.35rem 0 0; font-size: 0.9rem; }
 
   .scoreboard {
     display: grid;
@@ -99,17 +122,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    box-shadow: var(--shadow);
-    transition: border-color 0.25s, transform 0.25s;
+    box-shadow: var(--shadow-sm);
   }
-  .player-chip.turn { transform: translateY(-3px); }
-  .player-chip[data-p="1"].turn { border-color: var(--p1); }
-  .player-chip[data-p="2"].turn { border-color: var(--p2); }
-  .player-chip .who {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
+  .player-chip .who { display: flex; align-items: center; gap: 0.4rem; }
   .dot { width: 0.8rem; height: 0.8rem; border-radius: 50%; flex: none; }
   .player-chip[data-p="1"] .dot { background: var(--p1); }
   .player-chip[data-p="2"] .dot { background: var(--p2); }
@@ -125,41 +140,87 @@
     border-bottom: 1px dashed transparent;
   }
   .player-chip input:focus { border-bottom-color: var(--muted); }
-  .wins {
-    font-size: 1.3rem;
+  .wins { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .wins small { font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-inline-start: 0.25rem; }
+  .vs { align-self: center; color: var(--muted); font-weight: 800; font-size: 0.85rem; }
+
+  .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .card-game {
+    border: 2px solid var(--line);
+    border-radius: 1.2rem;
+    background: var(--surface);
+    padding: 1rem 0.8rem 0.9rem;
+    text-align: center;
+    cursor: pointer;
+    font: inherit;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .card-game:hover { transform: translateY(-3px); border-color: var(--muted); }
+  .card-game:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .card-game .icon {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 0.9rem;
+    background: var(--board);
+    display: grid;
+    place-items: center;
+  }
+  .card-game .icon svg { width: 2rem; height: 2rem; }
+  .card-game strong { font-size: 1rem; font-weight: 800; }
+  .card-game span { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+
+  .records-link {
+    border: 2px solid var(--line);
+    border-radius: 1.2rem;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
     font-weight: 800;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .records-link:hover { transform: translateY(-2px); border-color: var(--gold); }
+  .records-link:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .records-link .count {
+    background: var(--gold-soft);
+    color: var(--gold);
+    border-radius: 2rem;
+    padding: 0.1rem 0.7rem;
+    font-size: 0.85rem;
     font-variant-numeric: tabular-nums;
   }
-  .wins small { font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-inline-start: 0.25rem; }
-  .vs {
-    align-self: center;
-    color: var(--muted);
-    font-weight: 800;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-  }
 
-  .tabs { display: flex; gap: 0.5rem; }
-  .tabs button {
-    flex: 1;
-    padding: 0.65rem 0.4rem;
+  /* ---------- شريط أعلى شاشات الألعاب ---------- */
+  .topbar { display: grid; grid-template-columns: 2.6rem 1fr 2.6rem; align-items: center; gap: 0.5rem; }
+  .topbar h2 { margin: 0; text-align: center; font-size: 1.25rem; font-weight: 800; }
+  .icon-btn {
+    width: 2.6rem;
+    height: 2.6rem;
     border: 2px solid var(--line);
-    border-radius: 0.9rem;
+    border-radius: 0.85rem;
     background: var(--surface);
-    color: var(--muted);
-    font: inherit;
-    font-weight: 700;
-    font-size: 0.9rem;
+    color: var(--ink);
+    font-size: 1.15rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s;
+    display: grid;
+    place-items: center;
+    transition: border-color 0.15s;
   }
-  .tabs button:hover { border-color: var(--muted); }
-  .tabs button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-  .tabs button.active {
-    background: var(--ink);
-    color: var(--bg);
-    border-color: var(--ink);
-  }
+  .icon-btn:hover { border-color: var(--muted); }
+  .icon-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
   .stage {
     background: var(--surface);
@@ -170,15 +231,39 @@
     flex-direction: column;
     gap: 0.9rem;
   }
-  .status {
-    text-align: center;
-    font-weight: 700;
-    min-height: 1.5em;
-  }
+  .status { text-align: center; font-weight: 700; min-height: 1.5em; margin: 0; }
   .status .name1 { color: var(--p1); }
   .status .name2 { color: var(--p2); }
   .status .draw { color: var(--gold); }
+  .substatus {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+  }
+  .substatus .s1 { color: var(--p1); }
+  .substatus .s2 { color: var(--p2); }
+  .hint { text-align: center; color: var(--muted); font-size: 0.8rem; margin: 0; }
+  .actions { display: flex; justify-content: center; gap: 0.6rem; }
+  .btn {
+    border: none;
+    border-radius: 0.9rem;
+    padding: 0.7rem 1.6rem;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    background: var(--ink);
+    color: var(--bg);
+    transition: transform 0.1s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .btn.ghost { background: transparent; color: var(--muted); border: 2px solid var(--line); }
 
+  /* ---------- إكس أو ---------- */
   .board-ttt {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -206,6 +291,7 @@
   .board-ttt button.o { color: var(--p2); }
   .board-ttt button.win-cell { background: var(--gold); color: var(--bg); }
 
+  /* ---------- أربعة تربح ---------- */
   .board-c4 {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -216,36 +302,25 @@
   }
   .c4-col { display: flex; flex-direction: column; gap: 0.4rem; cursor: pointer; border: none; background: transparent; padding: 0; }
   .c4-col:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 0.5rem; }
-  .c4-cell {
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--cell);
-    transition: background 0.2s;
-  }
+  .c4-cell { aspect-ratio: 1; border-radius: 50%; background: var(--cell); transition: background 0.2s; }
   .c4-cell.f1 { background: var(--p1); }
   .c4-cell.f2 { background: var(--p2); }
   .c4-cell.win-cell { box-shadow: 0 0 0 3px var(--gold) inset, 0 0 0 1px var(--gold); }
-  @keyframes drop {
-    from { transform: translateY(-300%); }
-    to { transform: translateY(0); }
-  }
+  @keyframes drop { from { transform: translateY(-300%); } to { transform: translateY(0); } }
   .c4-cell.dropped { animation: drop 0.3s cubic-bezier(0.3, 0, 0.6, 1.2); }
 
-  .board-mem {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-  }
+  /* ---------- الذاكرة ---------- */
+  .board-mem { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
   .mem-card {
     aspect-ratio: 1;
     border: none;
     border-radius: 0.8rem;
-    background: var(--board);
+    background: transparent;
     font-size: 2rem;
     cursor: pointer;
     perspective: 400px;
     position: relative;
-    transition: transform 0.1s;
+    padding: 0;
   }
   .mem-card:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .mem-card .face {
@@ -257,51 +332,150 @@
     backface-visibility: hidden;
     transition: transform 0.35s;
   }
-  .mem-card .back {
-    background: var(--cell);
-    border: 2px solid var(--line);
-    color: var(--muted);
-    font-size: 1.1rem;
-    font-weight: 800;
-  }
-  .mem-card .front {
-    background: var(--surface);
-    border: 2px solid var(--line);
-    transform: rotateY(180deg);
-  }
+  .mem-card .back { background: var(--cell); border: 2px solid var(--line); color: var(--muted); font-size: 1.1rem; font-weight: 800; }
+  .mem-card .front { background: var(--surface); border: 2px solid var(--line); transform: rotateY(180deg); }
   .mem-card.open .back { transform: rotateY(-180deg); }
   .mem-card.open .front { transform: rotateY(0); }
   .mem-card.matched-1 .front { border-color: var(--p1); background: var(--p1-soft); }
   .mem-card.matched-2 .front { border-color: var(--p2); background: var(--p2-soft); }
-  .mem-score {
-    display: flex;
-    justify-content: center;
-    gap: 1.2rem;
-    font-weight: 700;
-    font-size: 0.9rem;
-    font-variant-numeric: tabular-nums;
-  }
-  .mem-score .s1 { color: var(--p1); }
-  .mem-score .s2 { color: var(--p2); }
 
-  .actions { display: flex; justify-content: center; }
-  .btn {
-    border: none;
-    border-radius: 0.9rem;
-    padding: 0.7rem 1.6rem;
+  /* ---------- حجرة ورقة مقص ---------- */
+  .rps-choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .rps-choices button {
+    border: 2px solid var(--line);
+    border-radius: 1rem;
+    background: var(--cell);
     font: inherit;
+    font-size: 2.4rem;
+    padding: 0.8rem 0.4rem 0.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    transition: transform 0.12s, border-color 0.12s;
+  }
+  .rps-choices button:hover { transform: translateY(-3px); border-color: var(--muted); }
+  .rps-choices button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .rps-choices button small { font-size: 0.75rem; font-weight: 700; color: var(--muted); }
+  .rps-handoff {
+    text-align: center;
+    padding: 2rem 1rem;
+    border: 2px dashed var(--line);
+    border-radius: 1rem;
+    background: var(--board);
     font-weight: 800;
     cursor: pointer;
-    background: var(--ink);
-    color: var(--bg);
-    transition: transform 0.1s, opacity 0.2s;
+    width: 100%;
+    color: var(--ink);
+    font-size: 1.05rem;
   }
-  .btn:hover { transform: translateY(-2px); }
-  .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-  .btn.ghost { background: transparent; color: var(--muted); border: 2px solid var(--line); }
+  .rps-handoff:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .rps-reveal { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.5rem; }
+  .rps-reveal .pick { text-align: center; font-size: 3rem; }
+  .rps-reveal .pick small { display: block; font-size: 0.8rem; font-weight: 700; }
+  .rps-reveal .pick.w1 small { color: var(--p1); }
+  .rps-reveal .pick.w2 small { color: var(--p2); }
+  .rps-reveal .x { color: var(--muted); font-weight: 800; }
 
-  .hint { text-align: center; color: var(--muted); font-size: 0.8rem; margin: 0; }
+  /* ---------- تحدي السرعة ---------- */
+  .react-arena {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 2px solid var(--line);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .react-half {
+    height: 9.5rem;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    background: var(--cell);
+    color: var(--ink);
+    border: none;
+    font-family: inherit;
+  }
+  .react-half.p2 { transform: rotate(180deg); border-bottom: 2px solid var(--line); }
+  .react-half:focus-visible { outline: 3px solid var(--gold); outline-offset: -4px; }
+  .react-arena.armed .react-half { background: var(--p1-soft); }
+  .react-arena.go .react-half { background: var(--go); color: #FFFFFF; }
+  .react-points { display: flex; justify-content: space-between; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .react-points .s1 { color: var(--p1); }
+  .react-points .s2 { color: var(--p2); }
 
+  /* ---------- النقاط والمربعات ---------- */
+  .board-dots-wrap { display: flex; justify-content: center; }
+  .board-dots {
+    display: grid;
+    grid-template-columns: repeat(4, 0.7rem 1fr) 0.7rem;
+    grid-template-rows: repeat(4, 0.7rem 1fr) 0.7rem;
+    gap: 0;
+    width: 100%;
+    max-width: 20rem;
+    aspect-ratio: 1;
+    background: var(--board);
+    border-radius: 1rem;
+    padding: 0.7rem;
+  }
+  .db-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--muted); align-self: center; justify-self: center; }
+  .db-edge { border: none; background: transparent; cursor: pointer; position: relative; padding: 0; }
+  .db-edge::after {
+    content: "";
+    position: absolute;
+    background: var(--line);
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+  .db-edge.h::after { inset: 40% 2px; }
+  .db-edge.v::after { inset: 2px 40%; }
+  .db-edge:hover::after { background: var(--muted); }
+  .db-edge:focus-visible { outline: 2px solid var(--gold); }
+  .db-edge.t1::after { background: var(--p1); }
+  .db-edge.t2::after { background: var(--p2); }
+  .db-edge.t1, .db-edge.t2 { cursor: default; }
+  .db-box { border-radius: 0.3rem; margin: 3px; transition: background 0.2s; }
+  .db-box.b1 { background: var(--p1-soft); }
+  .db-box.b2 { background: var(--p2-soft); }
+
+  /* ---------- سجل الدرجات ---------- */
+  .records-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rec {
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 1rem;
+    padding: 0.65rem 0.9rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.15rem 0.6rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .rec .headline { font-weight: 800; font-size: 0.95rem; }
+  .rec .headline .w1 { color: var(--p1); }
+  .rec .headline .w2 { color: var(--p2); }
+  .rec .headline .draw { color: var(--gold); }
+  .rec .meta { color: var(--muted); font-size: 0.78rem; grid-column: 1; }
+  .rec .game-tag {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    background: var(--board);
+    color: var(--muted);
+    border-radius: 0.7rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .empty-note { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+
+  /* ---------- نافذة الفوز ---------- */
   .overlay {
     position: fixed;
     inset: 0;
@@ -316,16 +490,17 @@
     background: var(--surface);
     color: var(--ink);
     border-radius: 1.4rem;
-    padding: 2rem 2.4rem;
+    padding: 1.8rem 2.2rem;
     text-align: center;
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.9rem;
     max-width: 22rem;
   }
-  .card-win h2 { margin: 0; font-size: 1.6rem; text-wrap: balance; }
+  .card-win h2 { margin: 0; font-size: 1.5rem; text-wrap: balance; }
   .card-win .trophy { font-size: 3rem; line-height: 1; }
+  .card-win .detail { margin: 0; color: var(--muted); font-weight: 700; }
 
   .confetti-bit {
     position: fixed;
@@ -336,70 +511,245 @@
     pointer-events: none;
     animation: fall linear forwards;
   }
-  @keyframes fall {
-    to { transform: translateY(110vh) rotate(720deg); opacity: 0.6; }
-  }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0.6; } }
+
   @media (prefers-reduced-motion: reduce) {
     .confetti-bit, .c4-cell.dropped { animation: none; }
+    .screen.active { animation: none; }
     .mem-card .face { transition: none; }
-    .btn:hover, .player-chip.turn, .board-ttt button:not(:disabled):hover { transform: none; }
+    .btn:hover, .card-game:hover, .records-link:hover, .rps-choices button:hover, .board-ttt button:not(:disabled):hover { transform: none; }
+    .card-game:hover { transform: none; }
   }
 </style>
 </head>
 <body>
 <div id="app" dir="rtl" lang="ar">
-  <header class="masthead">
-    <h1>ليلة اللعب العائلية</h1>
-    <p>ثلاث ألعاب للاعبَين على جهاز واحد — مرّرا الجهاز بينكما</p>
-  </header>
 
-  <section class="scoreboard" aria-label="لوحة النتائج">
-    <div class="player-chip" data-p="1" id="chip1">
-      <span class="who"><span class="dot"></span><input id="name1" value="اللاعب الأول" aria-label="اسم اللاعب الأول" maxlength="14"></span>
-      <span class="wins"><span id="wins1">0</span><small>فوز</small></span>
+  <!-- ============ الرئيسية ============ -->
+  <section class="screen active" id="screen-home">
+    <header class="masthead">
+      <span class="logo">
+        <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
+          <rect x="2" y="2" width="48" height="48" rx="12" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M13 13 L23 23 M23 13 L13 23" stroke="#E85C6E" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="34" cy="34" r="6.5" fill="none" stroke="#1FA396" stroke-width="4"/>
+          <circle cx="26" cy="26" r="3" fill="#D9942A"/>
+        </svg>
+      </span>
+      <h1>ليلة اللعب العائلية</h1>
+      <p>ست ألعاب للاعبَين على جهاز واحد — مرّرا الجهاز بينكما</p>
+    </header>
+
+    <section class="scoreboard" aria-label="اللاعبان ومجموع الانتصارات">
+      <div class="player-chip" data-p="1">
+        <span class="who"><span class="dot"></span><input id="name1" value="اللاعب الأول" aria-label="اسم اللاعب الأول" maxlength="14"></span>
+        <span class="wins"><span id="wins1">0</span><small>فوز</small></span>
+      </div>
+      <span class="vs">ضدّ</span>
+      <div class="player-chip" data-p="2">
+        <span class="who"><span class="dot"></span><input id="name2" value="اللاعب الثاني" aria-label="اسم اللاعب الثاني" maxlength="14"></span>
+        <span class="wins"><span id="wins2">0</span><small>فوز</small></span>
+      </div>
+    </section>
+
+    <nav class="games-grid" aria-label="اختيار اللعبة">
+      <button class="card-game" data-open="ttt">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M11 3 V29 M21 3 V29 M3 11 H29 M3 21 H29" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.45"/>
+            <path d="M4.5 4.5 L9.5 9.5 M9.5 4.5 L4.5 9.5" stroke="#E85C6E" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="26" cy="26" r="3.2" fill="none" stroke="#1FA396" stroke-width="2.4"/>
+          </svg>
+        </span>
+        <strong>إكس – أو</strong>
+        <span>ثلاثة في صف واحد تكفي للفوز</span>
+      </button>
+
+      <button class="card-game" data-open="c4">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="8" cy="24" r="4" fill="#E85C6E"/>
+            <circle cx="16" cy="24" r="4" fill="#1FA396"/>
+            <circle cx="16" cy="15" r="4" fill="#E85C6E"/>
+            <circle cx="24" cy="24" r="4" fill="#E85C6E"/>
+            <circle cx="24" cy="15" r="4" fill="#1FA396"/>
+            <circle cx="24" cy="6" r="4" fill="#E85C6E"/>
+          </svg>
+        </span>
+        <strong>أربعة تربح</strong>
+        <span>صفّ أربعة أقراص قبل خصمك</span>
+      </button>
+
+      <button class="card-game" data-open="mem">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="3" y="6" width="15" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.45"/>
+            <rect x="14" y="6" width="15" height="20" rx="3" fill="none" stroke="#D9942A" stroke-width="2.2"/>
+            <text x="21.5" y="20.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#D9942A">؟</text>
+          </svg>
+        </span>
+        <strong>الذاكرة</strong>
+        <span>من يجمع أزواجًا أكثر؟</span>
+      </button>
+
+      <button class="card-game" data-open="rps">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="9" cy="10" r="5" fill="#E85C6E"/>
+            <rect x="18" y="5" width="10" height="10" rx="2" fill="none" stroke="#1FA396" stroke-width="2.4"/>
+            <path d="M10 28 L16 18 M22 28 L16 18" stroke="#D9942A" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <strong>حجرة ورقة مقص</strong>
+        <span>اختيار سرّي — من يبلغ ٣ جولات أولًا</span>
+      </button>
+
+      <button class="card-game" data-open="react">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M18 2 L7 18 H14 L12 30 L25 13 H17 Z" fill="#D9942A"/>
+          </svg>
+        </span>
+        <strong>تحدي السرعة</strong>
+        <span>أول من يضغط عند اللون الأخضر</span>
+      </button>
+
+      <button class="card-game" data-open="dots">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="6" cy="6" r="2.6" fill="currentColor" opacity="0.5"/>
+            <circle cx="26" cy="6" r="2.6" fill="currentColor" opacity="0.5"/>
+            <circle cx="6" cy="26" r="2.6" fill="currentColor" opacity="0.5"/>
+            <circle cx="26" cy="26" r="2.6" fill="currentColor" opacity="0.5"/>
+            <path d="M6 6 H26 M6 6 V26 M6 26 H26" stroke="#E85C6E" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M26 6 V26" stroke="#1FA396" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <strong>النقاط والمربعات</strong>
+        <span>أغلق مربعات أكثر واكسب دورًا إضافيًا</span>
+      </button>
+    </nav>
+
+    <button class="records-link" id="open-records">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M4 16 V9 M10 16 V4 M16 16 V12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      سجل الدرجات
+      <span class="count" id="records-count">0</span>
+    </button>
+  </section>
+
+  <!-- ============ سجل الدرجات ============ -->
+  <section class="screen" id="screen-records">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>سجل الدرجات</h2>
+      <button class="icon-btn" id="clear-records" aria-label="مسح السجل">🗑</button>
+    </header>
+    <div class="records-list" id="records-list"></div>
+  </section>
+
+  <!-- ============ إكس أو ============ -->
+  <section class="screen" id="screen-ttt">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>إكس – أو</h2>
+      <button class="icon-btn" id="reset-ttt" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-ttt"></p>
+      <div class="board-ttt" id="board-ttt" role="grid" aria-label="لوحة إكس أو"></div>
     </div>
-    <span class="vs">ضدّ</span>
-    <div class="player-chip" data-p="2" id="chip2">
-      <span class="who"><span class="dot"></span><input id="name2" value="اللاعب الثاني" aria-label="اسم اللاعب الثاني" maxlength="14"></span>
-      <span class="wins"><span id="wins2">0</span><small>فوز</small></span>
+  </section>
+
+  <!-- ============ أربعة تربح ============ -->
+  <section class="screen" id="screen-c4">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>أربعة تربح</h2>
+      <button class="icon-btn" id="reset-c4" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-c4"></p>
+      <div class="board-c4" id="board-c4" aria-label="لوحة أربعة تربح"></div>
+      <p class="hint">اضغط على أي عمود لإسقاط قرصك — أول من يصفّ أربعة أقراص يفوز</p>
     </div>
   </section>
 
-  <nav class="tabs" aria-label="اختيار اللعبة">
-    <button id="tab-ttt" class="active">إكس – أو</button>
-    <button id="tab-c4">أربعة تربح</button>
-    <button id="tab-mem">الذاكرة</button>
-  </nav>
-
-  <!-- إكس أو -->
-  <section class="stage" id="stage-ttt">
-    <p class="status" id="status-ttt"></p>
-    <div class="board-ttt" id="board-ttt" role="grid" aria-label="لوحة إكس أو"></div>
-    <div class="actions"><button class="btn ghost" id="reset-ttt">جولة جديدة</button></div>
+  <!-- ============ الذاكرة ============ -->
+  <section class="screen" id="screen-mem">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>الذاكرة</h2>
+      <button class="icon-btn" id="reset-mem" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-mem"></p>
+      <p class="substatus"><span class="s1" id="mem-s1"></span><span class="s2" id="mem-s2"></span></p>
+      <div class="board-mem" id="board-mem" aria-label="لوحة الذاكرة"></div>
+      <p class="hint">من يجد زوجًا متطابقًا يلعب دورًا إضافيًا</p>
+    </div>
   </section>
 
-  <!-- أربعة تربح -->
-  <section class="stage" id="stage-c4" hidden>
-    <p class="status" id="status-c4"></p>
-    <div class="board-c4" id="board-c4" aria-label="لوحة أربعة تربح"></div>
-    <p class="hint">اضغط على أي عمود لإسقاط قرصك — أول من يصفّ أربعة أقراص يفوز</p>
-    <div class="actions"><button class="btn ghost" id="reset-c4">جولة جديدة</button></div>
+  <!-- ============ حجرة ورقة مقص ============ -->
+  <section class="screen" id="screen-rps">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>حجرة ورقة مقص</h2>
+      <button class="icon-btn" id="reset-rps" aria-label="مباراة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-rps"></p>
+      <p class="substatus"><span class="s1" id="rps-s1"></span><span class="s2" id="rps-s2"></span></p>
+      <div id="rps-area"></div>
+      <p class="hint">أول من يفوز بثلاث جولات يكسب المباراة — لا تنظرا لاختيار بعضكما!</p>
+    </div>
   </section>
 
-  <!-- الذاكرة -->
-  <section class="stage" id="stage-mem" hidden>
-    <p class="status" id="status-mem"></p>
-    <div class="mem-score"><span class="s1" id="mem-s1"></span><span class="s2" id="mem-s2"></span></div>
-    <div class="board-mem" id="board-mem" aria-label="لوحة الذاكرة"></div>
-    <p class="hint">اقلبا بطاقتين في كل دور — من يجد زوجًا متطابقًا يلعب دورًا إضافيًا</p>
-    <div class="actions"><button class="btn ghost" id="reset-mem">جولة جديدة</button></div>
+  <!-- ============ تحدي السرعة ============ -->
+  <section class="screen" id="screen-react">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>تحدي السرعة</h2>
+      <button class="icon-btn" id="reset-react" aria-label="مباراة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-react"></p>
+      <div class="react-arena" id="react-arena">
+        <button class="react-half p2" id="react-h2"></button>
+        <button class="react-half p1" id="react-h1"></button>
+      </div>
+      <p class="react-points"><span class="s1" id="react-s1"></span><span class="s2" id="react-s2"></span></p>
+      <div class="actions"><button class="btn" id="react-start">ابدأ الجولة</button></div>
+      <p class="hint">كل لاعب يمسك طرفه من الجهاز — انتظرا اللون الأخضر ثم اضغطا! الضغط المبكر يمنح النقطة للخصم. الفوز عند ٥ نقاط</p>
+    </div>
   </section>
 
+  <!-- ============ النقاط والمربعات ============ -->
+  <section class="screen" id="screen-dots">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>النقاط والمربعات</h2>
+      <button class="icon-btn" id="reset-dots" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-dots"></p>
+      <p class="substatus"><span class="s1" id="dots-s1"></span><span class="s2" id="dots-s2"></span></p>
+      <div class="board-dots-wrap"><div class="board-dots" id="board-dots" aria-label="لوحة النقاط والمربعات"></div></div>
+      <p class="hint">ارسما خطًا بين نقطتين متجاورتين — من يغلق مربعًا يملكه ويلعب مرة أخرى</p>
+    </div>
+  </section>
+
+  <!-- ============ نافذة نهاية الجولة ============ -->
   <div class="overlay" id="overlay" hidden>
     <div class="card-win" role="alertdialog" aria-labelledby="win-title">
       <div class="trophy" id="win-emoji">🏆</div>
       <h2 id="win-title"></h2>
-      <button class="btn" id="win-again">جولة جديدة</button>
+      <p class="detail" id="win-detail"></p>
+      <div class="actions">
+        <button class="btn" id="win-again">جولة جديدة</button>
+        <button class="btn ghost" id="win-home">الرئيسية</button>
+      </div>
     </div>
   </div>
 </div>
@@ -409,33 +759,40 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
 
-  /* ---------- الأسماء والنتائج (محفوظة محليًا) ---------- */
-  const store = { names: "fg2_names", score: "fg2_score" };
+  const GAME_NAMES = {
+    ttt: "إكس – أو",
+    c4: "أربعة تربح",
+    mem: "الذاكرة",
+    rps: "حجرة ورقة مقص",
+    react: "تحدي السرعة",
+    dots: "النقاط والمربعات",
+  };
+
+  /* ---------- الحفظ المحلي ---------- */
+  const store = { names: "fg2_names", score: "fg2_score", history: "fg2_history" };
   let names = { 1: "اللاعب الأول", 2: "اللاعب الثاني" };
   let score = { 1: 0, 2: 0 };
+  let history = [];
   try {
     const n = JSON.parse(localStorage.getItem(store.names) || "null");
     const s = JSON.parse(localStorage.getItem(store.score) || "null");
+    const h = JSON.parse(localStorage.getItem(store.history) || "null");
     if (n && n[1] && n[2]) names = n;
     if (s && typeof s[1] === "number") score = s;
-  } catch (e) { /* التخزين غير متاح — نتابع بدون حفظ */ }
+    if (Array.isArray(h)) history = h;
+  } catch (e) { /* التخزين غير متاح */ }
 
-  function saveState() {
-    try {
-      localStorage.setItem(store.names, JSON.stringify(names));
-      localStorage.setItem(store.score, JSON.stringify(score));
-    } catch (e) { /* تجاهل */ }
+  function save(key, value) {
+    try { localStorage.setItem(store[key], JSON.stringify(value)); } catch (e) { /* تجاهل */ }
   }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function nameSpan(p) { return '<span class="name' + p + '">' + escapeHtml(names[p]) + "</span>"; }
   function renderScore() {
     $("wins1").textContent = score[1];
     $("wins2").textContent = score[2];
-  }
-  function playerName(p) { return names[p]; }
-  function nameSpan(p) {
-    return '<span class="name' + p + '">' + escapeHtml(playerName(p)) + "</span>";
-  }
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    $("records-count").textContent = history.length;
   }
 
   [1, 2].forEach((p) => {
@@ -443,17 +800,85 @@
     input.value = names[p];
     input.addEventListener("input", () => {
       names[p] = input.value.trim() || (p === 1 ? "اللاعب الأول" : "اللاعب الثاني");
-      saveState();
-      refreshAllStatus();
+      save("names", names);
+      refreshStatuses();
     });
   });
 
-  function setTurnChip(p) {
-    $("chip1").classList.toggle("turn", p === 1);
-    $("chip2").classList.toggle("turn", p === 2);
+  /* ---------- التنقل بين الشاشات ---------- */
+  let currentGame = null;
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === "screen-" + id));
+    window.scrollTo(0, 0);
   }
+  document.querySelectorAll(".card-game").forEach((card) => {
+    card.addEventListener("click", () => {
+      currentGame = card.dataset.open;
+      showScreen(currentGame);
+      refreshStatuses();
+    });
+  });
+  document.querySelectorAll("[data-back]").forEach((b) => {
+    b.addEventListener("click", () => {
+      reactAbort();
+      currentGame = null;
+      showScreen("home");
+    });
+  });
+  $("open-records").addEventListener("click", () => {
+    renderRecords();
+    showScreen("records");
+  });
 
-  /* ---------- الفوز والاحتفال ---------- */
+  /* ---------- سجل الدرجات ---------- */
+  const fmtDate = new Intl.DateTimeFormat("ar", { dateStyle: "medium", timeStyle: "short" });
+  function logRound(game, winner, detail) {
+    history.unshift({
+      t: Date.now(),
+      g: game,
+      w: winner, /* 0 = تعادل */
+      n1: names[1],
+      n2: names[2],
+      d: detail || "",
+    });
+    if (history.length > 200) history.length = 200;
+    save("history", history);
+    renderScore();
+  }
+  function renderRecords() {
+    const list = $("records-list");
+    if (!history.length) {
+      list.innerHTML = '<p class="empty-note">لا توجد نتائج بعد — العبا جولة وستُسجَّل هنا تلقائيًا</p>';
+      return;
+    }
+    list.innerHTML = history.map((r) => {
+      let headline;
+      if (r.w === 0) {
+        headline = '<span class="draw">تعادل</span> بين ' + escapeHtml(r.n1) + " و" + escapeHtml(r.n2);
+      } else {
+        const winner = r.w === 1 ? r.n1 : r.n2;
+        const loser = r.w === 1 ? r.n2 : r.n1;
+        headline = 'فاز <span class="w' + r.w + '">' + escapeHtml(winner) + "</span> على " + escapeHtml(loser);
+      }
+      const detail = r.d ? " · " + escapeHtml(r.d) : "";
+      return '<div class="rec">' +
+        '<span class="headline">' + headline + "</span>" +
+        '<span class="meta">' + fmtDate.format(new Date(r.t)) + detail + "</span>" +
+        '<span class="game-tag">' + GAME_NAMES[r.g] + "</span>" +
+        "</div>";
+    }).join("");
+  }
+  $("clear-records").addEventListener("click", () => {
+    if (!history.length) return;
+    if (confirm("مسح كل سجل الدرجات؟")) {
+      history = [];
+      save("history", history);
+      renderScore();
+      renderRecords();
+    }
+  });
+
+  /* ---------- الاحتفال ونهاية الجولة ---------- */
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function confetti(p) {
     if (reducedMotion) return;
@@ -474,17 +899,20 @@
     }
   }
   let overlayAction = null;
-  function celebrate(winner, restartFn) {
+  function endRound(game, winner, detail, restartFn) {
     if (winner) {
       score[winner]++;
-      saveState();
-      renderScore();
+      save("score", score);
+    }
+    logRound(game, winner, detail);
+    if (winner) {
       $("win-emoji").textContent = "🏆";
       $("win-title").innerHTML = "مبروك يا " + nameSpan(winner) + "!";
     } else {
       $("win-emoji").textContent = "🤝";
       $("win-title").innerHTML = '<span class="draw">تعادل!</span> جولة أخرى؟';
     }
+    $("win-detail").textContent = detail || "";
     confetti(winner || 0);
     overlayAction = restartFn;
     $("overlay").hidden = false;
@@ -494,26 +922,14 @@
     $("overlay").hidden = true;
     if (overlayAction) overlayAction();
   });
-  $("overlay").addEventListener("click", (e) => {
-    if (e.target === $("overlay")) {
-      $("overlay").hidden = true;
-      if (overlayAction) overlayAction();
-    }
+  $("win-home").addEventListener("click", () => {
+    $("overlay").hidden = true;
+    if (overlayAction) overlayAction();
+    currentGame = null;
+    showScreen("home");
   });
 
-  /* ---------- التبويبات ---------- */
-  const games = ["ttt", "c4", "mem"];
-  games.forEach((g) => {
-    $("tab-" + g).addEventListener("click", () => {
-      games.forEach((x) => {
-        $("tab-" + x).classList.toggle("active", x === g);
-        $("stage-" + x).hidden = x !== g;
-      });
-      refreshAllStatus();
-    });
-  });
-
-  /* ---------- 1) إكس أو ---------- */
+  /* ============ 1) إكس أو ============ */
   const ttt = { board: Array(9).fill(0), turn: 1, done: false };
   const tttLines = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -537,12 +953,12 @@
     if (line) {
       ttt.done = true;
       line.forEach((j) => tttBoard.children[j].classList.add("win-cell"));
-      celebrate(ttt.turn, tttReset);
+      endRound("ttt", ttt.turn, "", tttReset);
       return;
     }
     if (ttt.board.every(Boolean)) {
       ttt.done = true;
-      celebrate(0, tttReset);
+      endRound("ttt", 0, "", tttReset);
       return;
     }
     ttt.turn = ttt.turn === 1 ? 2 : 1;
@@ -550,18 +966,17 @@
   }
   function tttStatus() {
     $("status-ttt").innerHTML = "دور " + nameSpan(ttt.turn) + " (" + (ttt.turn === 1 ? "✕" : "◯") + ")";
-    setTurnChip(ttt.turn);
   }
   function tttReset() {
     ttt.board.fill(0);
     ttt.done = false;
-    ttt.turn = ttt.turn === 1 ? 2 : 1; /* الخاسر أو التالي يبدأ */
+    ttt.turn = ttt.turn === 1 ? 2 : 1;
     [...tttBoard.children].forEach((c) => { c.textContent = ""; c.className = ""; });
     tttStatus();
   }
   $("reset-ttt").addEventListener("click", tttReset);
 
-  /* ---------- 2) أربعة تربح ---------- */
+  /* ============ 2) أربعة تربح ============ */
   const C4 = { rows: 6, cols: 7, board: [], turn: 1, done: false };
   const c4Board = $("board-c4");
   function c4Build() {
@@ -596,12 +1011,12 @@
     if (win) {
       C4.done = true;
       win.forEach(([wr, wc]) => c4Board.children[wc].children[wr].classList.add("win-cell"));
-      celebrate(C4.turn, c4Build);
+      endRound("c4", C4.turn, "", () => { C4.turn = C4.turn === 1 ? 2 : 1; c4Build(); });
       return;
     }
     if (C4.board.every((row) => row.every(Boolean))) {
       C4.done = true;
-      celebrate(0, c4Build);
+      endRound("c4", 0, "", c4Build);
       return;
     }
     C4.turn = C4.turn === 1 ? 2 : 1;
@@ -626,11 +1041,10 @@
   }
   function c4Status() {
     $("status-c4").innerHTML = "دور " + nameSpan(C4.turn) + " — أسقط قرصك";
-    setTurnChip(C4.turn);
   }
   $("reset-c4").addEventListener("click", () => { C4.turn = C4.turn === 1 ? 2 : 1; c4Build(); });
 
-  /* ---------- 3) الذاكرة ---------- */
+  /* ============ 3) الذاكرة ============ */
   const EMOJI = ["🐱", "🐶", "🦊", "🐼", "🐸", "🦁", "🐰", "🐵"];
   const MEM = { deck: [], open: [], lock: false, turn: 1, pairs: { 1: 0, 2: 0 }, matched: 0 };
   const memBoard = $("board-mem");
@@ -670,7 +1084,7 @@
       memStatus();
       if (MEM.matched === EMOJI.length) {
         const w = MEM.pairs[1] === MEM.pairs[2] ? 0 : (MEM.pairs[1] > MEM.pairs[2] ? 1 : 2);
-        celebrate(w, memBuild);
+        endRound("mem", w, MEM.pairs[1] + " – " + MEM.pairs[2] + " أزواج", memBuild);
       }
     } else {
       MEM.lock = true;
@@ -686,26 +1100,256 @@
   }
   function memStatus() {
     $("status-mem").innerHTML = "دور " + nameSpan(MEM.turn) + " — اقلب بطاقتين";
-    $("mem-s1").textContent = playerName(1) + ": " + MEM.pairs[1] + " زوج";
-    $("mem-s2").textContent = playerName(2) + ": " + MEM.pairs[2] + " زوج";
-    setTurnChip(MEM.turn);
+    $("mem-s1").textContent = names[1] + ": " + MEM.pairs[1];
+    $("mem-s2").textContent = names[2] + ": " + MEM.pairs[2];
   }
   $("reset-mem").addEventListener("click", memBuild);
 
+  /* ============ 4) حجرة ورقة مقص ============ */
+  const RPS_ITEMS = { rock: "✊", paper: "✋", scissors: "✌️" };
+  const RPS_LABELS = { rock: "حجرة", paper: "ورقة", scissors: "مقص" };
+  const RPS_BEATS = { rock: "scissors", paper: "rock", scissors: "paper" };
+  const RPS = { phase: "pick1", picks: {}, rounds: { 1: 0, 2: 0 } };
+  const rpsArea = $("rps-area");
+  function rpsRender() {
+    if (RPS.phase === "pick1" || RPS.phase === "pick2") {
+      const p = RPS.phase === "pick1" ? 1 : 2;
+      $("status-rps").innerHTML = "اختيار " + nameSpan(p) + " بسرّية";
+      rpsArea.innerHTML = '<div class="rps-choices">' +
+        Object.keys(RPS_ITEMS).map((k) =>
+          '<button data-k="' + k + '">' + RPS_ITEMS[k] + "<small>" + RPS_LABELS[k] + "</small></button>"
+        ).join("") + "</div>";
+      rpsArea.querySelectorAll("button").forEach((b) => {
+        b.addEventListener("click", () => {
+          RPS.picks[p] = b.dataset.k;
+          RPS.phase = p === 1 ? "handoff" : "reveal";
+          rpsRender();
+        });
+      });
+    } else if (RPS.phase === "handoff") {
+      $("status-rps").textContent = "تم الاختيار!";
+      rpsArea.innerHTML = '<button class="rps-handoff">مرّر الجهاز إلى ' + escapeHtml(names[2]) + "<br>ثم اضغط هنا</button>";
+      rpsArea.querySelector("button").addEventListener("click", () => {
+        RPS.phase = "pick2";
+        rpsRender();
+      });
+    } else {
+      const a = RPS.picks[1], b = RPS.picks[2];
+      let winner = 0;
+      if (a !== b) winner = RPS_BEATS[a] === b ? 1 : 2;
+      if (winner) RPS.rounds[winner]++;
+      const resultText = winner === 0
+        ? '<span class="draw">تعادل في هذه الجولة</span>'
+        : "جولة لـ " + nameSpan(winner) + "!";
+      $("status-rps").innerHTML = resultText;
+      rpsArea.innerHTML = '<div class="rps-reveal">' +
+        '<div class="pick w1">' + RPS_ITEMS[a] + "<small>" + escapeHtml(names[1]) + "</small></div>" +
+        '<span class="x">ضدّ</span>' +
+        '<div class="pick w2">' + RPS_ITEMS[b] + "<small>" + escapeHtml(names[2]) + "</small></div>" +
+        "</div>" +
+        '<div class="actions" style="margin-top:0.8rem"><button class="btn" id="rps-next">الجولة التالية</button></div>';
+      rpsScores();
+      const matchWinner = RPS.rounds[1] >= 3 ? 1 : (RPS.rounds[2] >= 3 ? 2 : 0);
+      if (matchWinner) {
+        $("rps-next").remove();
+        endRound("rps", matchWinner, RPS.rounds[1] + " – " + RPS.rounds[2], rpsReset);
+        return;
+      }
+      $("rps-next").addEventListener("click", () => {
+        RPS.picks = {};
+        RPS.phase = "pick1";
+        rpsRender();
+      });
+    }
+    rpsScores();
+  }
+  function rpsScores() {
+    $("rps-s1").textContent = names[1] + ": " + RPS.rounds[1];
+    $("rps-s2").textContent = names[2] + ": " + RPS.rounds[2];
+  }
+  function rpsReset() {
+    RPS.phase = "pick1";
+    RPS.picks = {};
+    RPS.rounds = { 1: 0, 2: 0 };
+    rpsRender();
+  }
+  $("reset-rps").addEventListener("click", rpsReset);
+
+  /* ============ 5) تحدي السرعة ============ */
+  const REACT = { points: { 1: 0, 2: 0 }, state: "idle", timer: null, target: 5 };
+  const arena = $("react-arena");
+  function reactLabels(text) {
+    $("react-h1").textContent = text || names[1];
+    $("react-h2").textContent = text || names[2];
+  }
+  function reactScores() {
+    $("react-s1").textContent = names[1] + ": " + REACT.points[1];
+    $("react-s2").textContent = names[2] + ": " + REACT.points[2];
+  }
+  function reactStatus(html) {
+    $("status-react").innerHTML = html;
+  }
+  function reactAbort() {
+    if (REACT.timer) { clearTimeout(REACT.timer); REACT.timer = null; }
+    if (REACT.state === "armed" || REACT.state === "go") {
+      REACT.state = "idle";
+      arena.classList.remove("armed", "go");
+      reactLabels();
+      reactStatus("اضغطا «ابدأ الجولة» عندما تكونان مستعدَّين");
+    }
+  }
+  function reactStart() {
+    if (REACT.state === "armed" || REACT.state === "go") return;
+    REACT.state = "armed";
+    arena.classList.add("armed");
+    arena.classList.remove("go");
+    reactLabels("انتظرا…");
+    reactStatus("استعدا… انتظرا اللون الأخضر");
+    REACT.timer = setTimeout(() => {
+      REACT.state = "go";
+      arena.classList.remove("armed");
+      arena.classList.add("go");
+      reactLabels("اضغط الآن!");
+      REACT.timer = null;
+    }, 1200 + Math.random() * 2800);
+  }
+  function reactTap(p) {
+    if (REACT.state === "go") {
+      reactPoint(p, "أسرع إصبع!");
+    } else if (REACT.state === "armed") {
+      const other = p === 1 ? 2 : 1;
+      reactPoint(other, "ضغط " + names[p] + " مبكرًا — النقطة للخصم");
+    }
+  }
+  function reactPoint(p, why) {
+    if (REACT.timer) { clearTimeout(REACT.timer); REACT.timer = null; }
+    REACT.state = "idle";
+    arena.classList.remove("armed", "go");
+    REACT.points[p]++;
+    reactScores();
+    reactLabels();
+    reactStatus("نقطة لـ " + nameSpan(p) + " — " + escapeHtml(why));
+    if (REACT.points[p] >= REACT.target) {
+      endRound("react", p, REACT.points[1] + " – " + REACT.points[2], reactReset);
+    }
+  }
+  function reactReset() {
+    reactAbort();
+    REACT.points = { 1: 0, 2: 0 };
+    REACT.state = "idle";
+    arena.classList.remove("armed", "go");
+    reactScores();
+    reactLabels();
+    reactStatus("اضغطا «ابدأ الجولة» عندما تكونان مستعدَّين");
+  }
+  $("react-start").addEventListener("click", reactStart);
+  $("react-h1").addEventListener("pointerdown", () => reactTap(1));
+  $("react-h2").addEventListener("pointerdown", () => reactTap(2));
+  $("reset-react").addEventListener("click", reactReset);
+
+  /* ============ 6) النقاط والمربعات ============ */
+  const DOTS = { n: 4, h: [], v: [], boxes: [], turn: 1, count: { 1: 0, 2: 0 }, done: false };
+  const dotsBoard = $("board-dots");
+  function dotsBuild() {
+    const n = DOTS.n;
+    DOTS.h = Array.from({ length: n + 1 }, () => Array(n).fill(0));
+    DOTS.v = Array.from({ length: n }, () => Array(n + 1).fill(0));
+    DOTS.boxes = Array.from({ length: n }, () => Array(n).fill(0));
+    DOTS.count = { 1: 0, 2: 0 };
+    DOTS.done = false;
+    dotsBoard.innerHTML = "";
+    for (let gr = 0; gr < 2 * n + 1; gr++) {
+      for (let gc = 0; gc < 2 * n + 1; gc++) {
+        const rowEven = gr % 2 === 0, colEven = gc % 2 === 0;
+        let el;
+        if (rowEven && colEven) {
+          el = document.createElement("div");
+          el.className = "db-dot";
+        } else if (rowEven && !colEven) {
+          el = document.createElement("button");
+          el.className = "db-edge h";
+          const r = gr / 2, c = (gc - 1) / 2;
+          el.setAttribute("aria-label", "خط أفقي " + (r + 1) + "،" + (c + 1));
+          el.addEventListener("click", () => dotsPlay("h", r, c, el));
+        } else if (!rowEven && colEven) {
+          el = document.createElement("button");
+          el.className = "db-edge v";
+          const r = (gr - 1) / 2, c = gc / 2;
+          el.setAttribute("aria-label", "خط رأسي " + (r + 1) + "،" + (c + 1));
+          el.addEventListener("click", () => dotsPlay("v", r, c, el));
+        } else {
+          el = document.createElement("div");
+          el.className = "db-box";
+          el.dataset.r = (gr - 1) / 2;
+          el.dataset.c = (gc - 1) / 2;
+        }
+        dotsBoard.appendChild(el);
+      }
+    }
+    dotsStatus();
+  }
+  function dotsBoxComplete(r, c) {
+    return DOTS.h[r][c] && DOTS.h[r + 1][c] && DOTS.v[r][c] && DOTS.v[r][c + 1];
+  }
+  function dotsPlay(kind, r, c, el) {
+    if (DOTS.done || DOTS[kind][r][c]) return;
+    DOTS[kind][r][c] = DOTS.turn;
+    el.classList.add("t" + DOTS.turn);
+    /* هل أُغلق مربع؟ */
+    const candidates = [];
+    if (kind === "h") {
+      if (r > 0) candidates.push([r - 1, c]);
+      if (r < DOTS.n) candidates.push([r, c]);
+    } else {
+      if (c > 0) candidates.push([r, c - 1]);
+      if (c < DOTS.n) candidates.push([r, c]);
+    }
+    let claimed = 0;
+    candidates.forEach(([br, bc]) => {
+      if (!DOTS.boxes[br][bc] && dotsBoxComplete(br, bc)) {
+        DOTS.boxes[br][bc] = DOTS.turn;
+        DOTS.count[DOTS.turn]++;
+        claimed++;
+        const box = dotsBoard.querySelector('.db-box[data-r="' + br + '"][data-c="' + bc + '"]');
+        if (box) box.classList.add("b" + DOTS.turn);
+      }
+    });
+    const total = DOTS.count[1] + DOTS.count[2];
+    if (total === DOTS.n * DOTS.n) {
+      DOTS.done = true;
+      const w = DOTS.count[1] === DOTS.count[2] ? 0 : (DOTS.count[1] > DOTS.count[2] ? 1 : 2);
+      dotsStatus();
+      endRound("dots", w, DOTS.count[1] + " – " + DOTS.count[2] + " مربعات", dotsBuild);
+      return;
+    }
+    if (!claimed) DOTS.turn = DOTS.turn === 1 ? 2 : 1;
+    dotsStatus();
+  }
+  function dotsStatus() {
+    $("status-dots").innerHTML = "دور " + nameSpan(DOTS.turn) + " — ارسم خطًا";
+    $("dots-s1").textContent = names[1] + ": " + DOTS.count[1];
+    $("dots-s2").textContent = names[2] + ": " + DOTS.count[2];
+  }
+  $("reset-dots").addEventListener("click", () => { DOTS.turn = DOTS.turn === 1 ? 2 : 1; dotsBuild(); });
+
   /* ---------- تحديث عام ---------- */
-  function refreshAllStatus() {
+  function refreshStatuses() {
     tttStatus();
     c4Status();
     memStatus();
-    if (!$("stage-ttt").hidden) setTurnChip(ttt.turn);
-    else if (!$("stage-c4").hidden) setTurnChip(C4.turn);
-    else setTurnChip(MEM.turn);
+    rpsScores();
+    reactScores();
+    dotsStatus();
+    renderScore();
   }
 
   renderScore();
   tttStatus();
   c4Build();
   memBuild();
+  rpsReset();
+  reactReset();
+  dotsBuild();
 })();
 </script>
 <script>
