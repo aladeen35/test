@@ -140,6 +140,18 @@
     border-bottom: 1px dashed transparent;
   }
   .player-chip input:focus { border-bottom-color: var(--muted); }
+  .edit-name {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 0.1rem;
+    flex: none;
+    line-height: 1;
+  }
+  .edit-name:hover { color: var(--ink); }
+  .edit-name:focus-visible { outline: 2px solid var(--gold); border-radius: 0.3rem; }
   .wins { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
   .wins small { font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-inline-start: 0.25rem; }
   .vs { align-self: center; color: var(--muted); font-weight: 800; font-size: 0.85rem; }
@@ -404,7 +416,7 @@
   }
   .react-half.p2 { transform: rotate(180deg); border-bottom: 2px solid var(--line); }
   .react-half:focus-visible { outline: 3px solid var(--gold); outline-offset: -4px; }
-  .react-arena.armed .react-half { background: var(--p1-soft); }
+  .react-arena.armed .react-half { background: var(--gold-soft); font-size: 2.6rem; font-variant-numeric: tabular-nums; }
   .react-arena.go .react-half { background: var(--go); color: #FFFFFF; }
   .react-points { display: flex; justify-content: space-between; font-weight: 800; font-variant-numeric: tabular-nums; }
   .react-points .s1 { color: var(--p1); }
@@ -414,17 +426,55 @@
   .board-dots-wrap { display: flex; justify-content: center; }
   .board-dots {
     display: grid;
-    grid-template-columns: repeat(4, 0.7rem 1fr) 0.7rem;
-    grid-template-rows: repeat(4, 0.7rem 1fr) 0.7rem;
     gap: 0;
     width: 100%;
-    max-width: 20rem;
-    aspect-ratio: 1;
     background: var(--board);
     border-radius: 1rem;
     padding: 0.7rem;
   }
-  .db-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--muted); align-self: center; justify-self: center; }
+  .db-dot { width: var(--dbdot, 0.7rem); height: var(--dbdot, 0.7rem); border-radius: 50%; background: var(--muted); align-self: center; justify-self: center; }
+  .size-row { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+  .size-row .preset {
+    border: 2px solid var(--line);
+    background: var(--cell);
+    color: var(--ink);
+    border-radius: 2rem;
+    padding: 0.35rem 0.85rem;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .size-row .preset:hover { border-color: var(--muted); }
+  .size-row .preset:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .size-row .preset.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .size-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .stepper { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .stepper button {
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 0.55rem;
+    border: 2px solid var(--line);
+    background: var(--cell);
+    color: var(--ink);
+    font-weight: 800;
+    font-size: 1.05rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .stepper button:hover { border-color: var(--muted); }
+  .stepper button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .stepper .val { min-width: 1.4rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .size-total { color: var(--muted); font-variant-numeric: tabular-nums; }
   .db-edge { border: none; background: transparent; cursor: pointer; position: relative; padding: 0; }
   .db-edge::after {
     content: "";
@@ -542,12 +592,12 @@
 
     <section class="scoreboard" aria-label="اللاعبان ومجموع الانتصارات">
       <div class="player-chip" data-p="1">
-        <span class="who"><span class="dot"></span><input id="name1" value="اللاعب الأول" aria-label="اسم اللاعب الأول" maxlength="14"></span>
+        <span class="who"><span class="dot"></span><input id="name1" value="اللاعب الأول" aria-label="اسم اللاعب الأول" maxlength="14"><button class="edit-name" data-edit="1" aria-label="تغيير اسم اللاعب الأول">✎</button></span>
         <span class="wins"><span id="wins1">0</span><small>فوز</small></span>
       </div>
       <span class="vs">ضدّ</span>
       <div class="player-chip" data-p="2">
-        <span class="who"><span class="dot"></span><input id="name2" value="اللاعب الثاني" aria-label="اسم اللاعب الثاني" maxlength="14"></span>
+        <span class="who"><span class="dot"></span><input id="name2" value="اللاعب الثاني" aria-label="اسم اللاعب الثاني" maxlength="14"><button class="edit-name" data-edit="2" aria-label="تغيير اسم اللاعب الثاني">✎</button></span>
         <span class="wins"><span id="wins2">0</span><small>فوز</small></span>
       </div>
     </section>
@@ -721,7 +771,7 @@
       </div>
       <p class="react-points"><span class="s1" id="react-s1"></span><span class="s2" id="react-s2"></span></p>
       <div class="actions"><button class="btn" id="react-start">ابدأ الجولة</button></div>
-      <p class="hint">كل لاعب يمسك طرفه من الجهاز — انتظرا اللون الأخضر ثم اضغطا! الضغط المبكر يمنح النقطة للخصم. الفوز عند ٥ نقاط</p>
+      <p class="hint">كل لاعب يمسك طرفه من الجهاز — بعد «ابدأ الجولة» يبدأ عد تنازلي ٣ ثم ٢ ثم ١، وعند اللون الأخضر اضغطا! الضغط أثناء العد يمنح النقطة للخصم. الفوز عند ٥ نقاط</p>
     </div>
   </section>
 
@@ -735,6 +785,27 @@
     <div class="stage">
       <p class="status" id="status-dots"></p>
       <p class="substatus"><span class="s1" id="dots-s1"></span><span class="s2" id="dots-s2"></span></p>
+      <div class="size-row" id="dots-presets" aria-label="أحجام جاهزة">
+        <button class="preset" data-r="4" data-c="4">صغيرة ٤×٤</button>
+        <button class="preset" data-r="5" data-c="5">متوسطة ٥×٥</button>
+        <button class="preset" data-r="5" data-c="6">كبيرة ٥×٦</button>
+        <button class="preset" data-r="4" data-c="8">ممتدة ٤×٨</button>
+      </div>
+      <div class="size-custom" aria-label="حجم مخصص">
+        <span>الطول</span>
+        <span class="stepper">
+          <button id="dots-r-minus" aria-label="تقليل الطول">−</button>
+          <span class="val" id="dots-r-val">4</span>
+          <button id="dots-r-plus" aria-label="زيادة الطول">+</button>
+        </span>
+        <span>العرض</span>
+        <span class="stepper">
+          <button id="dots-c-minus" aria-label="تقليل العرض">−</button>
+          <span class="val" id="dots-c-val">4</span>
+          <button id="dots-c-plus" aria-label="زيادة العرض">+</button>
+        </span>
+        <span class="size-total" id="dots-total"></span>
+      </div>
       <div class="board-dots-wrap"><div class="board-dots" id="board-dots" aria-label="لوحة النقاط والمربعات"></div></div>
       <p class="hint">ارسما خطًا بين نقطتين متجاورتين — من يغلق مربعًا يملكه ويلعب مرة أخرى</p>
     </div>
@@ -802,6 +873,13 @@
       names[p] = input.value.trim() || (p === 1 ? "اللاعب الأول" : "اللاعب الثاني");
       save("names", names);
       refreshStatuses();
+    });
+  });
+  document.querySelectorAll(".edit-name").forEach((b) => {
+    b.addEventListener("click", () => {
+      const input = $("name" + b.dataset.edit);
+      input.focus();
+      input.select();
     });
   });
 
@@ -1189,8 +1267,11 @@
   function reactStatus(html) {
     $("status-react").innerHTML = html;
   }
+  function reactClearTimer() {
+    if (REACT.timer) { clearInterval(REACT.timer); REACT.timer = null; }
+  }
   function reactAbort() {
-    if (REACT.timer) { clearTimeout(REACT.timer); REACT.timer = null; }
+    reactClearTimer();
     if (REACT.state === "armed" || REACT.state === "go") {
       REACT.state = "idle";
       arena.classList.remove("armed", "go");
@@ -1203,26 +1284,29 @@
     REACT.state = "armed";
     arena.classList.add("armed");
     arena.classList.remove("go");
-    reactLabels("انتظرا…");
-    reactStatus("استعدا… انتظرا اللون الأخضر");
-    REACT.timer = setTimeout(() => {
+    let n = 3;
+    reactLabels(arNum(n));
+    reactStatus("العد التنازلي… اضغطا فقط عند اللون الأخضر");
+    REACT.timer = setInterval(() => {
+      n--;
+      if (n > 0) { reactLabels(arNum(n)); return; }
+      reactClearTimer();
       REACT.state = "go";
       arena.classList.remove("armed");
       arena.classList.add("go");
       reactLabels("اضغط الآن!");
-      REACT.timer = null;
-    }, 1200 + Math.random() * 2800);
+    }, 1000);
   }
   function reactTap(p) {
     if (REACT.state === "go") {
       reactPoint(p, "أسرع إصبع!");
     } else if (REACT.state === "armed") {
       const other = p === 1 ? 2 : 1;
-      reactPoint(other, "ضغط " + names[p] + " مبكرًا — النقطة للخصم");
+      reactPoint(other, "ضغط " + names[p] + " أثناء العد — النقطة للخصم");
     }
   }
   function reactPoint(p, why) {
-    if (REACT.timer) { clearTimeout(REACT.timer); REACT.timer = null; }
+    reactClearTimer();
     REACT.state = "idle";
     arena.classList.remove("armed", "go");
     REACT.points[p]++;
@@ -1248,18 +1332,28 @@
   $("reset-react").addEventListener("click", reactReset);
 
   /* ============ 6) النقاط والمربعات ============ */
-  const DOTS = { n: 4, h: [], v: [], boxes: [], turn: 1, count: { 1: 0, 2: 0 }, done: false };
+  const DOTS = { rows: 4, cols: 4, h: [], v: [], boxes: [], turn: 1, count: { 1: 0, 2: 0 }, done: false };
+  try {
+    const sz = JSON.parse(localStorage.getItem("fg2_dots_size") || "null");
+    if (sz && sz.r >= 2 && sz.r <= 8 && sz.c >= 2 && sz.c <= 8) { DOTS.rows = sz.r; DOTS.cols = sz.c; }
+  } catch (e) { /* تجاهل */ }
   const dotsBoard = $("board-dots");
   function dotsBuild() {
-    const n = DOTS.n;
-    DOTS.h = Array.from({ length: n + 1 }, () => Array(n).fill(0));
-    DOTS.v = Array.from({ length: n }, () => Array(n + 1).fill(0));
-    DOTS.boxes = Array.from({ length: n }, () => Array(n).fill(0));
+    const R = DOTS.rows, C = DOTS.cols;
+    DOTS.h = Array.from({ length: R + 1 }, () => Array(C).fill(0));
+    DOTS.v = Array.from({ length: R }, () => Array(C + 1).fill(0));
+    DOTS.boxes = Array.from({ length: R }, () => Array(C).fill(0));
     DOTS.count = { 1: 0, 2: 0 };
     DOTS.done = false;
     dotsBoard.innerHTML = "";
-    for (let gr = 0; gr < 2 * n + 1; gr++) {
-      for (let gc = 0; gc < 2 * n + 1; gc++) {
+    const dot = C >= 7 || R >= 7 ? "0.5rem" : "0.7rem";
+    dotsBoard.style.setProperty("--dbdot", dot);
+    dotsBoard.style.gridTemplateColumns = "repeat(" + C + ", " + dot + " 1fr) " + dot;
+    dotsBoard.style.gridTemplateRows = "repeat(" + R + ", " + dot + " 1fr) " + dot;
+    dotsBoard.style.aspectRatio = (2 * C + 1) + " / " + (2 * R + 1);
+    dotsBoard.style.maxWidth = C <= 5 ? "20rem" : "100%";
+    for (let gr = 0; gr < 2 * R + 1; gr++) {
+      for (let gc = 0; gc < 2 * C + 1; gc++) {
         const rowEven = gr % 2 === 0, colEven = gc % 2 === 0;
         let el;
         if (rowEven && colEven) {
@@ -1286,6 +1380,7 @@
         dotsBoard.appendChild(el);
       }
     }
+    dotsSizeUI();
     dotsStatus();
   }
   function dotsBoxComplete(r, c) {
@@ -1299,10 +1394,10 @@
     const candidates = [];
     if (kind === "h") {
       if (r > 0) candidates.push([r - 1, c]);
-      if (r < DOTS.n) candidates.push([r, c]);
+      if (r < DOTS.rows) candidates.push([r, c]);
     } else {
       if (c > 0) candidates.push([r, c - 1]);
-      if (c < DOTS.n) candidates.push([r, c]);
+      if (c < DOTS.cols) candidates.push([r, c]);
     }
     let claimed = 0;
     candidates.forEach(([br, bc]) => {
@@ -1315,7 +1410,7 @@
       }
     });
     const total = DOTS.count[1] + DOTS.count[2];
-    if (total === DOTS.n * DOTS.n) {
+    if (total === DOTS.rows * DOTS.cols) {
       DOTS.done = true;
       const w = DOTS.count[1] === DOTS.count[2] ? 0 : (DOTS.count[1] > DOTS.count[2] ? 1 : 2);
       dotsStatus();
@@ -1330,6 +1425,31 @@
     $("dots-s1").textContent = names[1] + ": " + DOTS.count[1];
     $("dots-s2").textContent = names[2] + ": " + DOTS.count[2];
   }
+  /* اختيار حجم اللوحة */
+  const AR_NUMS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  const arNum = (n) => String(n).split("").map((d) => AR_NUMS[+d] || d).join("");
+  function dotsSizeUI() {
+    $("dots-r-val").textContent = arNum(DOTS.rows);
+    $("dots-c-val").textContent = arNum(DOTS.cols);
+    $("dots-total").textContent = arNum(DOTS.rows * DOTS.cols) + " مربعًا";
+    document.querySelectorAll("#dots-presets .preset").forEach((b) => {
+      b.classList.toggle("active", +b.dataset.r === DOTS.rows && +b.dataset.c === DOTS.cols);
+    });
+  }
+  function dotsSetSize(r, c) {
+    DOTS.rows = Math.min(8, Math.max(2, r));
+    DOTS.cols = Math.min(8, Math.max(2, c));
+    try { localStorage.setItem("fg2_dots_size", JSON.stringify({ r: DOTS.rows, c: DOTS.cols })); } catch (e) { /* تجاهل */ }
+    dotsBuild();
+  }
+  document.querySelectorAll("#dots-presets .preset").forEach((b) => {
+    b.addEventListener("click", () => dotsSetSize(+b.dataset.r, +b.dataset.c));
+  });
+  $("dots-r-minus").addEventListener("click", () => dotsSetSize(DOTS.rows - 1, DOTS.cols));
+  $("dots-r-plus").addEventListener("click", () => dotsSetSize(DOTS.rows + 1, DOTS.cols));
+  $("dots-c-minus").addEventListener("click", () => dotsSetSize(DOTS.rows, DOTS.cols - 1));
+  $("dots-c-plus").addEventListener("click", () => dotsSetSize(DOTS.rows, DOTS.cols + 1));
+
   $("reset-dots").addEventListener("click", () => { DOTS.turn = DOTS.turn === 1 ? 2 : 1; dotsBuild(); });
 
   /* ---------- تحديث عام ---------- */
