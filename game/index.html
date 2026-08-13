@@ -495,6 +495,63 @@
   .db-box.b1 { background: var(--p1-soft); }
   .db-box.b2 { background: var(--p2-soft); }
 
+  /* ---------- أوثيلو ---------- */
+  .board-oth { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: var(--board); padding: 0.5rem; border-radius: 1rem; }
+  .oth-cell { aspect-ratio: 1; border: none; border-radius: 0.3rem; background: var(--cell); cursor: pointer; display: grid; place-items: center; padding: 0; position: relative; }
+  .oth-cell:focus-visible { outline: 2px solid var(--gold); }
+  .oth-disc { width: 78%; height: 78%; border-radius: 50%; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2); }
+  .oth-disc.d1 { background: var(--p1); }
+  .oth-disc.d2 { background: var(--p2); }
+  .oth-hint::after { content: ""; position: absolute; inset: 38%; border-radius: 50%; background: var(--gold); opacity: 0.65; }
+
+  /* ---------- الدامة ---------- */
+  .board-ck { display: grid; grid-template-columns: repeat(8, 1fr); background: var(--board); border-radius: 1rem; padding: 0.4rem; }
+  .ck-cell { aspect-ratio: 1; border: none; padding: 0; display: grid; place-items: center; background: transparent; border-radius: 0.25rem; position: relative; }
+  .ck-cell.dark { background: var(--cell); cursor: pointer; }
+  .ck-cell:focus-visible { outline: 2px solid var(--gold); }
+  .ck-cell.sel { outline: 3px solid var(--gold); outline-offset: -3px; }
+  .ck-cell.tgt::after { content: ""; position: absolute; inset: 36%; border-radius: 50%; background: var(--gold); opacity: 0.75; }
+  .ck-man { width: 74%; height: 74%; border-radius: 50%; display: grid; place-items: center; font-size: 0.95rem; color: rgba(255, 255, 255, 0.92); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25); }
+  .ck-man.m1 { background: var(--p1); }
+  .ck-man.m2 { background: var(--p2); }
+
+  /* ---------- أعواد نيم ---------- */
+  .nim-rows { display: flex; flex-direction: column; gap: 0.8rem; align-items: center; padding: 0.4rem 0; }
+  .nim-row { display: flex; gap: 0.5rem; min-height: 2.8rem; align-items: center; }
+  .nim-stick { width: 0.8rem; height: 2.8rem; border-radius: 0.4rem; border: none; background: var(--gold); cursor: pointer; padding: 0; transition: background 0.1s, transform 0.1s; }
+  .nim-stick:hover, .nim-stick:hover ~ .nim-stick { background: var(--p1); transform: translateY(-2px); }
+  .nim-stick:focus-visible { outline: 2px solid var(--ink); }
+  .nim-empty { color: var(--muted); font-weight: 800; }
+
+  /* ---------- اجمع ولا تطمع ---------- */
+  .pig-die { font-size: 5rem; line-height: 1; text-align: center; min-height: 5.2rem; color: var(--ink); }
+  .pig-pot { text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; margin: 0; }
+
+  /* ---------- خمن الرقم ---------- */
+  .guess-area { display: flex; flex-direction: column; gap: 0.7rem; }
+  .guess-input-row { display: flex; gap: 0.5rem; justify-content: center; }
+  .guess-input-row input { width: 9rem; text-align: center; font: inherit; font-size: 1.4rem; letter-spacing: 0.35rem; border: 2px solid var(--line); border-radius: 0.7rem; background: var(--cell); color: var(--ink); padding: 0.4rem; font-variant-numeric: tabular-nums; }
+  .guess-input-row input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .guess-log { display: flex; flex-direction: column; gap: 0.4rem; max-height: 13rem; overflow-y: auto; }
+  .guess-row { display: flex; justify-content: space-between; gap: 0.5rem; background: var(--cell); padding: 0.45rem 0.7rem; border-radius: 0.6rem; font-weight: 700; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  .guess-row .g1 { color: var(--p1); }
+  .guess-row .g2 { color: var(--p2); }
+
+  /* ---------- اللعب أونلاين ---------- */
+  .online-net { border: 2px solid var(--line); border-radius: 1.2rem; background: var(--surface); color: var(--ink); font: inherit; font-weight: 800; padding: 0.9rem 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: var(--shadow-sm); transition: transform 0.15s, border-color 0.15s; }
+  .online-net:hover { transform: translateY(-2px); border-color: var(--p2); }
+  .online-net:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .online-label { display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-weight: 700; }
+  .online-label input { border: 2px solid var(--line); border-radius: 0.7rem; background: var(--cell); color: var(--ink); font: inherit; font-weight: 700; padding: 0.4rem 0.7rem; width: 11rem; }
+  .online-join-row { display: flex; gap: 0.5rem; justify-content: center; }
+  .online-join-row input { width: 8rem; text-align: center; font: inherit; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.3rem; border: 2px solid var(--line); border-radius: 0.7rem; background: var(--cell); color: var(--ink); padding: 0.4rem; text-transform: uppercase; }
+  .online-status { text-align: center; color: var(--muted); font-weight: 700; min-height: 1.4em; margin: 0; }
+  .room-code { font-size: 2.4rem; letter-spacing: 0.6rem; text-align: center; font-weight: 800; background: var(--board); border-radius: 1rem; padding: 0.5rem; margin: 0; user-select: all; }
+  .online-pill { position: fixed; bottom: 0.8rem; right: 50%; transform: translateX(50%); background: var(--ink); color: var(--bg); border-radius: 2rem; padding: 0.45rem 1rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; box-shadow: var(--shadow); z-index: 5; white-space: nowrap; }
+  .online-pill[hidden] { display: none; }
+  .online-pill button { border: none; background: var(--danger); color: #FFFFFF; border-radius: 1rem; padding: 0.15rem 0.7rem; font: inherit; font-size: 0.8rem; cursor: pointer; }
+  #online-games .preset { font-size: 0.95rem; padding: 0.6rem 1rem; }
+
   /* ---------- سجل الدرجات ---------- */
   .records-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .rec {
@@ -588,7 +645,7 @@
         </svg>
       </span>
       <h1>ليلة اللعب العائلية</h1>
-      <p>ست ألعاب للاعبَين على جهاز واحد — مرّرا الجهاز بينكما</p>
+      <p>إحدى عشرة لعبة للاعبَين — على جهاز واحد أو أونلاين عبر الإنترنت</p>
     </header>
 
     <section class="scoreboard" aria-label="اللاعبان ومجموع الانتصارات">
@@ -679,7 +736,77 @@
         <strong>النقاط والمربعات</strong>
         <span>أغلق مربعات أكثر واكسب دورًا إضافيًا</span>
       </button>
+
+      <button class="card-game" data-open="oth">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="3" y="3" width="26" height="26" rx="5" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+            <circle cx="12" cy="12" r="4.5" fill="#E85C6E"/>
+            <circle cx="20" cy="20" r="4.5" fill="#1FA396"/>
+          </svg>
+        </span>
+        <strong>أوثيلو</strong>
+        <span>حاصر أقراص خصمك لقلبها إلى لونك</span>
+      </button>
+
+      <button class="card-game" data-open="ck">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="20" r="8" fill="#E85C6E"/>
+            <circle cx="16" cy="17" r="8" fill="#1FA396"/>
+            <path d="M11 12 L13 8 L16 11 L19 8 L21 12 Z" fill="#D9942A"/>
+          </svg>
+        </span>
+        <strong>الدامة</strong>
+        <span>اقفز فوق قطع خصمك وتوّج ملوكك</span>
+      </button>
+
+      <button class="card-game" data-open="nim">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="6" y="7" width="3.4" height="18" rx="1.6" fill="#D9942A"/>
+            <rect x="12" y="7" width="3.4" height="18" rx="1.6" fill="#D9942A"/>
+            <rect x="18" y="7" width="3.4" height="18" rx="1.6" fill="#E85C6E"/>
+            <rect x="24" y="7" width="3.4" height="18" rx="1.6" fill="#1FA396"/>
+          </svg>
+        </span>
+        <strong>أعواد نيم</strong>
+        <span>خذ ما تشاء من صف — لا تأخذ الأخير!</span>
+      </button>
+
+      <button class="card-game" data-open="pig">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="5" y="5" width="22" height="22" rx="5" fill="none" stroke="#D9942A" stroke-width="2.4"/>
+            <circle cx="11.5" cy="11.5" r="2.2" fill="#E85C6E"/>
+            <circle cx="20.5" cy="20.5" r="2.2" fill="#1FA396"/>
+            <circle cx="16" cy="16" r="2.2" fill="currentColor" opacity="0.6"/>
+          </svg>
+        </span>
+        <strong>اجمع ولا تطمع</strong>
+        <span>نرد وجرأة — أول من يحفظ ٥٠ نقطة</span>
+      </button>
+
+      <button class="card-game" data-open="guess">
+        <span class="icon">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="3" y="9" width="26" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+            <text x="10" y="20.5" text-anchor="middle" font-size="10" font-weight="bold" fill="#1FA396">٧</text>
+            <text x="22" y="20.5" text-anchor="middle" font-size="10" font-weight="bold" fill="#E85C6E">؟</text>
+          </svg>
+        </span>
+        <strong>خمن الرقم</strong>
+        <span>فك شفرة الرقم السري قبل خصمك</span>
+      </button>
     </nav>
+
+    <button class="online-net" id="open-online">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M2 10 H18 M10 2 C6.5 6 6.5 14 10 18 C13.5 14 13.5 6 10 2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      </svg>
+      اللعب أونلاين عبر الإنترنت
+    </button>
 
     <button class="records-link" id="open-records">
       <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
@@ -812,6 +939,118 @@
     </div>
   </section>
 
+  <!-- ============ أوثيلو ============ -->
+  <section class="screen" id="screen-oth">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>أوثيلو</h2>
+      <button class="icon-btn" id="reset-oth" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-oth"></p>
+      <p class="substatus"><span class="s1" id="oth-s1"></span><span class="s2" id="oth-s2"></span></p>
+      <div class="board-oth" id="board-oth" aria-label="لوحة أوثيلو"></div>
+      <p class="hint">ضع قرصك بحيث تحاصر أقراص الخصم بين قرصين لك فتنقلب للونك — النقاط الذهبية تدل على الحركات الممكنة، والأكثر أقراصًا في النهاية يفوز</p>
+    </div>
+  </section>
+
+  <!-- ============ الدامة ============ -->
+  <section class="screen" id="screen-ck">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>الدامة</h2>
+      <button class="icon-btn" id="reset-ck" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-ck"></p>
+      <p class="substatus"><span class="s1" id="ck-s1"></span><span class="s2" id="ck-s2"></span></p>
+      <div class="board-ck" id="board-ck" aria-label="لوحة الدامة"></div>
+      <p class="hint">اختر قطعتك ثم اضغط على الوجهة — القفز فوق قطعة الخصم يأسرها، وبلوغ آخر صف يتوّج قطعتك ملكًا ♛ يتحرك في كل الاتجاهات</p>
+    </div>
+  </section>
+
+  <!-- ============ أعواد نيم ============ -->
+  <section class="screen" id="screen-nim">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>أعواد نيم</h2>
+      <button class="icon-btn" id="reset-nim" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-nim"></p>
+      <div class="nim-rows" id="nim-rows"></div>
+      <p class="hint">اضغط على عود لتأخذه هو وكل ما بعده من صفّه (من صف واحد فقط في الدور) — من يأخذ العود الأخير يخسر!</p>
+    </div>
+  </section>
+
+  <!-- ============ اجمع ولا تطمع ============ -->
+  <section class="screen" id="screen-pig">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>اجمع ولا تطمع</h2>
+      <button class="icon-btn" id="reset-pig" aria-label="مباراة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-pig"></p>
+      <p class="substatus"><span class="s1" id="pig-s1"></span><span class="s2" id="pig-s2"></span></p>
+      <div class="pig-die" id="pig-die">🎲</div>
+      <p class="pig-pot" id="pig-pot"></p>
+      <div class="actions">
+        <button class="btn" id="pig-roll">ارمِ النرد</button>
+        <button class="btn ghost" id="pig-hold">احفظ النقاط</button>
+      </div>
+      <p class="hint">كل رمية تضيف نقاطها لجولتك، لكن إن ظهر ⚀ (واحد) ضاعت نقاط الجولة وانتقل الدور — «احفظ النقاط» يضمّها لرصيدك. أول من يبلغ ٥٠ يفوز</p>
+    </div>
+  </section>
+
+  <!-- ============ خمن الرقم ============ -->
+  <section class="screen" id="screen-guess">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>خمن الرقم</h2>
+      <button class="icon-btn" id="reset-guess" aria-label="جولة جديدة">↺</button>
+    </header>
+    <div class="stage">
+      <p class="status" id="status-guess"></p>
+      <div class="guess-area" id="guess-area"></div>
+      <div class="guess-log" id="guess-log"></div>
+      <p class="hint">كل لاعب يخفي رقمًا من ٤ أرقام مختلفة ويتبادلان التخمين — «بمكانه» رقم صحيح في موضعه الصحيح، و«خارج مكانه» رقم صحيح في موضع خطأ</p>
+    </div>
+  </section>
+
+  <!-- ============ اللعب أونلاين ============ -->
+  <section class="screen" id="screen-online">
+    <header class="topbar">
+      <button class="icon-btn" data-back aria-label="عودة إلى الرئيسية">→</button>
+      <h2>اللعب أونلاين</h2>
+      <span></span>
+    </header>
+    <div class="stage" id="online-setup">
+      <p class="hint">العبا من جهازين عبر الإنترنت برمز غرفة مشترك: أنشئ غرفة وأرسل الرمز لصديقك، أو أدخل الرمز الذي وصلك</p>
+      <label class="online-label">اسمك <input id="online-name" maxlength="14"></label>
+      <div class="actions"><button class="btn" id="online-create">إنشاء غرفة جديدة</button></div>
+      <div class="online-join-row">
+        <input id="online-join-code" maxlength="4" placeholder="الرمز" autocapitalize="characters" autocomplete="off">
+        <button class="btn ghost" id="online-join">انضمام</button>
+      </div>
+      <div id="online-code-box" hidden>
+        <p class="hint">أرسل هذا الرمز للطرف الآخر ليدخله في «انضمام»:</p>
+        <p class="room-code" id="online-room-code"></p>
+      </div>
+      <p class="online-status" id="online-status"></p>
+    </div>
+    <div class="stage" id="online-picker" hidden>
+      <p class="status" id="online-peer-line"></p>
+      <div class="size-row" id="online-games"></div>
+      <p class="hint" id="online-picker-hint"></p>
+    </div>
+  </section>
+
+  <div class="online-pill" id="online-pill" hidden>
+    <span id="online-pill-text"></span>
+    <button id="online-pill-leave">خروج</button>
+  </div>
+
   <!-- ============ نافذة نهاية الجولة ============ -->
   <div class="overlay" id="overlay" hidden>
     <div class="card-win" role="alertdialog" aria-labelledby="win-title">
@@ -838,7 +1077,13 @@
     rps: "حجرة ورقة مقص",
     react: "تحدي السرعة",
     dots: "النقاط والمربعات",
+    oth: "أوثيلو",
+    ck: "الدامة",
+    nim: "أعواد نيم",
+    pig: "اجمع ولا تطمع",
+    guess: "خمن الرقم",
   };
+  const ONLINE_GAMES = ["ttt", "c4", "oth", "ck", "dots", "nim", "pig", "guess"];
 
   /* ---------- الحفظ المحلي ---------- */
   const store = { names: "fg2_names", score: "fg2_score", history: "fg2_history" };
@@ -899,6 +1144,11 @@
   });
   document.querySelectorAll("[data-back]").forEach((b) => {
     b.addEventListener("click", () => {
+      if (ONLINE.active) {
+        if (!confirm("الخروج من اللعب الأونلاين؟")) return;
+        onlineLeave(true);
+        return;
+      }
       reactAbort();
       currentGame = null;
       showScreen("home");
@@ -993,7 +1243,9 @@
     }
     $("win-detail").textContent = detail || "";
     confetti(winner || 0);
-    overlayAction = restartFn;
+    overlayAction = ONLINE.active && ONLINE.game === game
+      ? (ONLINE.me === 1 ? () => onlineStart(game) : null)
+      : restartFn;
     $("overlay").hidden = false;
     $("win-again").focus();
   }
@@ -1003,6 +1255,10 @@
   });
   $("win-home").addEventListener("click", () => {
     $("overlay").hidden = true;
+    if (ONLINE.active) {
+      if (confirm("الخروج من اللعب الأونلاين؟")) onlineLeave(true);
+      return;
+    }
     if (overlayAction) overlayAction();
     currentGame = null;
     showScreen("home");
@@ -1022,8 +1278,10 @@
     b.addEventListener("click", () => tttPlay(i));
     tttBoard.appendChild(b);
   }
-  function tttPlay(i) {
+  function tttPlay(i, remote) {
     if (ttt.done || ttt.board[i]) return;
+    if (!remote && !canAct("ttt", ttt.turn)) return;
+    if (!remote) sendMove("ttt", { i });
     ttt.board[i] = ttt.turn;
     const cell = tttBoard.children[i];
     cell.textContent = ttt.turn === 1 ? "✕" : "◯";
@@ -1053,7 +1311,7 @@
     [...tttBoard.children].forEach((c) => { c.textContent = ""; c.className = ""; });
     tttStatus();
   }
-  $("reset-ttt").addEventListener("click", tttReset);
+  $("reset-ttt").addEventListener("click", () => { if (onlineResetIntercept("ttt")) return; tttReset(); });
 
   /* ============ 2) أربعة تربح ============ */
   const C4 = { rows: 6, cols: 7, board: [], turn: 1, done: false };
@@ -1076,13 +1334,15 @@
     }
     c4Status();
   }
-  function c4Drop(c) {
+  function c4Drop(c, remote) {
     if (C4.done) return;
+    if (!remote && !canAct("c4", C4.turn)) return;
     let r = -1;
     for (let i = C4.rows - 1; i >= 0; i--) {
       if (!C4.board[i][c]) { r = i; break; }
     }
     if (r < 0) return;
+    if (!remote) sendMove("c4", { c });
     C4.board[r][c] = C4.turn;
     const cell = c4Board.children[c].children[r];
     cell.classList.add("f" + C4.turn, "dropped");
@@ -1121,7 +1381,7 @@
   function c4Status() {
     $("status-c4").innerHTML = "دور " + nameSpan(C4.turn) + " — أسقط قرصك";
   }
-  $("reset-c4").addEventListener("click", () => { C4.turn = C4.turn === 1 ? 2 : 1; c4Build(); });
+  $("reset-c4").addEventListener("click", () => { if (onlineResetIntercept("c4")) return; C4.turn = C4.turn === 1 ? 2 : 1; c4Build(); });
 
   /* ============ 3) الذاكرة ============ */
   /* لاستخدام تصاميمك الخاصة: ضع 8 صور مربعة باسم 1.png حتى 8.png
@@ -1364,6 +1624,8 @@
     const R = DOTS.rows, C = DOTS.cols;
     DOTS.h = Array.from({ length: R + 1 }, () => Array(C).fill(0));
     DOTS.v = Array.from({ length: R }, () => Array(C + 1).fill(0));
+    DOTS.hEls = Array.from({ length: R + 1 }, () => Array(C).fill(null));
+    DOTS.vEls = Array.from({ length: R }, () => Array(C + 1).fill(null));
     DOTS.boxes = Array.from({ length: R }, () => Array(C).fill(0));
     DOTS.count = { 1: 0, 2: 0 };
     DOTS.done = false;
@@ -1387,12 +1649,14 @@
           const r = gr / 2, c = (gc - 1) / 2;
           el.setAttribute("aria-label", "خط أفقي " + (r + 1) + "،" + (c + 1));
           el.addEventListener("click", () => dotsPlay("h", r, c, el));
+          DOTS.hEls[r][c] = el;
         } else if (!rowEven && colEven) {
           el = document.createElement("button");
           el.className = "db-edge v";
           const r = (gr - 1) / 2, c = gc / 2;
           el.setAttribute("aria-label", "خط رأسي " + (r + 1) + "،" + (c + 1));
           el.addEventListener("click", () => dotsPlay("v", r, c, el));
+          DOTS.vEls[r][c] = el;
         } else {
           el = document.createElement("div");
           el.className = "db-box";
@@ -1408,10 +1672,13 @@
   function dotsBoxComplete(r, c) {
     return DOTS.h[r][c] && DOTS.h[r + 1][c] && DOTS.v[r][c] && DOTS.v[r][c + 1];
   }
-  function dotsPlay(kind, r, c, el) {
+  function dotsPlay(kind, r, c, el, remote) {
     if (DOTS.done || DOTS[kind][r][c]) return;
+    if (!remote && !canAct("dots", DOTS.turn)) return;
+    if (!remote) sendMove("dots", { k: kind, r, c });
+    el = el || (kind === "h" ? DOTS.hEls : DOTS.vEls)[r][c];
     DOTS[kind][r][c] = DOTS.turn;
-    el.classList.add("t" + DOTS.turn);
+    if (el) el.classList.add("t" + DOTS.turn);
     /* هل أُغلق مربع؟ */
     const candidates = [];
     if (kind === "h") {
@@ -1459,9 +1726,14 @@
     });
   }
   function dotsSetSize(r, c) {
+    if (ONLINE.active && ONLINE.game === "dots" && ONLINE.me !== 1) {
+      $("status-dots").textContent = "المضيف فقط يغيّر حجم اللوحة في الأونلاين";
+      return;
+    }
     DOTS.rows = Math.min(8, Math.max(2, r));
     DOTS.cols = Math.min(8, Math.max(2, c));
     try { localStorage.setItem("fg2_dots_size", JSON.stringify({ r: DOTS.rows, c: DOTS.cols })); } catch (e) { /* تجاهل */ }
+    if (ONLINE.active && ONLINE.game === "dots") { onlineStart("dots"); return; }
     dotsBuild();
   }
   document.querySelectorAll("#dots-presets .preset").forEach((b) => {
@@ -1472,7 +1744,672 @@
   $("dots-c-minus").addEventListener("click", () => dotsSetSize(DOTS.rows, DOTS.cols - 1));
   $("dots-c-plus").addEventListener("click", () => dotsSetSize(DOTS.rows, DOTS.cols + 1));
 
-  $("reset-dots").addEventListener("click", () => { DOTS.turn = DOTS.turn === 1 ? 2 : 1; dotsBuild(); });
+  $("reset-dots").addEventListener("click", () => { if (onlineResetIntercept("dots")) return; DOTS.turn = DOTS.turn === 1 ? 2 : 1; dotsBuild(); });
+
+  /* ============ 7) أوثيلو ============ */
+  const OTH = { b: [], turn: 1, done: false };
+  const OTH_DIRS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+  const othBoard = $("board-oth");
+  function othBuild() {
+    OTH.b = Array.from({ length: 8 }, () => Array(8).fill(0));
+    OTH.b[3][3] = 2; OTH.b[4][4] = 2; OTH.b[3][4] = 1; OTH.b[4][3] = 1;
+    OTH.turn = 1;
+    OTH.done = false;
+    if (!othBoard.children.length) {
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const cell = document.createElement("button");
+          cell.className = "oth-cell";
+          cell.setAttribute("aria-label", "خانة " + (r + 1) + "،" + (c + 1));
+          cell.addEventListener("click", () => othPlay(r, c));
+          othBoard.appendChild(cell);
+        }
+      }
+    }
+    othRender();
+  }
+  function othFlips(r, c, p) {
+    if (OTH.b[r][c]) return [];
+    const out = [];
+    for (const [dr, dc] of OTH_DIRS) {
+      const line = [];
+      let nr = r + dr, nc = c + dc;
+      while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && OTH.b[nr][nc] === 3 - p) {
+        line.push([nr, nc]);
+        nr += dr;
+        nc += dc;
+      }
+      if (line.length && nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && OTH.b[nr][nc] === p) out.push(...line);
+    }
+    return out;
+  }
+  function othHasMove(p) {
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      if (!OTH.b[r][c] && othFlips(r, c, p).length) return true;
+    }
+    return false;
+  }
+  function othCount(p) { return OTH.b.flat().filter((v) => v === p).length; }
+  function othPlay(r, c, remote) {
+    if (OTH.done) return;
+    if (!remote && !canAct("oth", OTH.turn)) return;
+    const flips = othFlips(r, c, OTH.turn);
+    if (!flips.length) return;
+    if (!remote) sendMove("oth", { r, c });
+    OTH.b[r][c] = OTH.turn;
+    flips.forEach(([fr, fc]) => { OTH.b[fr][fc] = OTH.turn; });
+    const other = 3 - OTH.turn;
+    let note = "";
+    if (othHasMove(other)) {
+      OTH.turn = other;
+    } else if (othHasMove(OTH.turn)) {
+      note = " — لا حركة للخصم، دور إضافي";
+    } else {
+      OTH.done = true;
+      othRender();
+      const n1 = othCount(1), n2 = othCount(2);
+      endRound("oth", n1 === n2 ? 0 : (n1 > n2 ? 1 : 2), n1 + " – " + n2 + " قرصًا", othBuild);
+      return;
+    }
+    othRender(note);
+  }
+  function othRender(note) {
+    const showHints = !ONLINE.active || ONLINE.game !== "oth" || OTH.turn === ONLINE.me;
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = othBoard.children[r * 8 + c];
+        const v = OTH.b[r][c];
+        cell.innerHTML = v ? '<span class="oth-disc d' + v + '"></span>' : "";
+        cell.classList.toggle("oth-hint", !OTH.done && !v && showHints && othFlips(r, c, OTH.turn).length > 0);
+      }
+    }
+    $("status-oth").innerHTML = OTH.done ? "" : "دور " + nameSpan(OTH.turn) + (note || "");
+    $("oth-s1").textContent = names[1] + ": " + othCount(1);
+    $("oth-s2").textContent = names[2] + ": " + othCount(2);
+  }
+  $("reset-oth").addEventListener("click", () => { if (onlineResetIntercept("oth")) return; othBuild(); });
+
+  /* ============ 8) الدامة ============ */
+  const CK = { b: [], turn: 1, sel: null, done: false };
+  const ckBoard = $("board-ck");
+  const ckOwn = (v) => (v === 1 || v === 3 ? 1 : v === 2 || v === 4 ? 2 : 0);
+  const ckKing = (v) => v > 2;
+  const ckIn = (r, c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+  function ckBuild() {
+    CK.b = Array.from({ length: 8 }, () => Array(8).fill(0));
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 === 1) CK.b[r][c] = 2;
+    for (let r = 5; r < 8; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 === 1) CK.b[r][c] = 1;
+    CK.turn = 1;
+    CK.sel = null;
+    CK.done = false;
+    if (!ckBoard.children.length) {
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const cell = document.createElement("button");
+          cell.className = "ck-cell" + ((r + c) % 2 === 1 ? " dark" : "");
+          cell.setAttribute("aria-label", "خانة " + (r + 1) + "،" + (c + 1));
+          cell.addEventListener("click", () => ckClick(r, c));
+          ckBoard.appendChild(cell);
+        }
+      }
+    }
+    ckRender();
+  }
+  function ckMoves(r, c) {
+    const v = CK.b[r][c];
+    if (!v) return [];
+    const p = ckOwn(v);
+    const dirs = ckKing(v)
+      ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+      : (p === 1 ? [[-1, -1], [-1, 1]] : [[1, -1], [1, 1]]);
+    const out = [];
+    for (const [dr, dc] of dirs) {
+      const r1 = r + dr, c1 = c + dc, r2 = r + 2 * dr, c2 = c + 2 * dc;
+      if (ckIn(r1, c1) && !CK.b[r1][c1]) out.push({ fr: r, fc: c, tr: r1, tc: c1 });
+      if (ckIn(r2, c2) && CK.b[r1][c1] && ckOwn(CK.b[r1][c1]) === 3 - p && !CK.b[r2][c2]) out.push({ fr: r, fc: c, tr: r2, tc: c2 });
+    }
+    return out;
+  }
+  function ckJumps(r, c) { return ckMoves(r, c).filter((m) => Math.abs(m.tr - m.fr) === 2); }
+  function ckAll(p) {
+    const out = [];
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      if (ckOwn(CK.b[r][c]) === p) out.push(...ckMoves(r, c));
+    }
+    return out;
+  }
+  function ckCount() {
+    const n = { 1: 0, 2: 0 };
+    CK.b.flat().forEach((v) => { const p = ckOwn(v); if (p) n[p]++; });
+    return n;
+  }
+  function ckClick(r, c) {
+    if (CK.done) return;
+    if (!canAct("ck", CK.turn)) return;
+    const v = CK.b[r][c];
+    if (v && ckOwn(v) === CK.turn) { CK.sel = [r, c]; ckRender(); return; }
+    if (CK.sel) {
+      const mv = ckMoves(CK.sel[0], CK.sel[1]).find((m) => m.tr === r && m.tc === c);
+      if (mv) ckApply(mv, false);
+    }
+  }
+  function ckApply(mv, remote) {
+    if (CK.done) return;
+    const v = CK.b[mv.fr][mv.fc];
+    if (!v || ckOwn(v) !== CK.turn) return;
+    if (!remote) sendMove("ck", { fr: mv.fr, fc: mv.fc, tr: mv.tr, tc: mv.tc });
+    const p = ckOwn(v);
+    CK.b[mv.fr][mv.fc] = 0;
+    let nv = v;
+    if ((p === 1 && mv.tr === 0) || (p === 2 && mv.tr === 7)) nv = p + 2;
+    CK.b[mv.tr][mv.tc] = nv;
+    const isCap = Math.abs(mv.tr - mv.fr) === 2;
+    if (isCap) CK.b[(mv.fr + mv.tr) / 2][(mv.fc + mv.tc) / 2] = 0;
+    CK.sel = null;
+    let note = "";
+    if (isCap && ckJumps(mv.tr, mv.tc).length) {
+      CK.sel = [mv.tr, mv.tc];
+      note = " — قفزة أخرى متاحة!";
+    } else {
+      CK.turn = 3 - CK.turn;
+    }
+    const counts = ckCount();
+    if (!counts[CK.turn] || !ckAll(CK.turn).length) {
+      CK.done = true;
+      ckRender();
+      endRound("ck", 3 - CK.turn, counts[1] + " – " + counts[2] + " قطعة", ckBuild);
+      return;
+    }
+    ckRender(note);
+  }
+  function ckRender(note) {
+    const targets = CK.sel && canAct("ck", CK.turn) ? ckMoves(CK.sel[0], CK.sel[1]) : [];
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = ckBoard.children[r * 8 + c];
+        const v = CK.b[r][c];
+        cell.innerHTML = v ? '<span class="ck-man m' + ckOwn(v) + '">' + (ckKing(v) ? "♛" : "") + "</span>" : "";
+        cell.classList.toggle("sel", !!CK.sel && CK.sel[0] === r && CK.sel[1] === c);
+        cell.classList.toggle("tgt", targets.some((m) => m.tr === r && m.tc === c));
+      }
+    }
+    const counts = ckCount();
+    $("status-ck").innerHTML = CK.done ? "" : "دور " + nameSpan(CK.turn) + (note || "");
+    $("ck-s1").textContent = names[1] + ": " + counts[1];
+    $("ck-s2").textContent = names[2] + ": " + counts[2];
+  }
+  $("reset-ck").addEventListener("click", () => { if (onlineResetIntercept("ck")) return; ckBuild(); });
+
+  /* ============ 9) أعواد نيم ============ */
+  const NIM = { rows: [], turn: 1, done: false };
+  function nimBuild() {
+    NIM.rows = [1, 3, 5, 7];
+    NIM.turn = 1;
+    NIM.done = false;
+    nimRender();
+  }
+  function nimRender() {
+    const wrap = $("nim-rows");
+    wrap.innerHTML = "";
+    NIM.rows.forEach((n, row) => {
+      const div = document.createElement("div");
+      div.className = "nim-row";
+      if (!n) {
+        div.innerHTML = '<span class="nim-empty">—</span>';
+      } else {
+        for (let i = 0; i < n; i++) {
+          const take = n - i;
+          const s = document.createElement("button");
+          s.className = "nim-stick";
+          s.setAttribute("aria-label", "الصف " + (row + 1) + " — خذ " + arNum(take) + (take === 1 ? " عودًا" : " أعواد"));
+          s.addEventListener("click", () => nimTake(row, take));
+          div.appendChild(s);
+        }
+      }
+      wrap.appendChild(div);
+    });
+    $("status-nim").innerHTML = NIM.done ? "" : "دور " + nameSpan(NIM.turn) + " — خذ أعوادًا من صف واحد";
+  }
+  function nimTake(row, take, remote) {
+    if (NIM.done) return;
+    if (!remote && !canAct("nim", NIM.turn)) return;
+    if (take < 1 || NIM.rows[row] < take) return;
+    if (!remote) sendMove("nim", { row, n: take });
+    NIM.rows[row] -= take;
+    if (NIM.rows.every((x) => !x)) {
+      NIM.done = true;
+      const loser = NIM.turn;
+      nimRender();
+      endRound("nim", 3 - loser, "أخذ " + names[loser] + " العود الأخير", nimBuild);
+      return;
+    }
+    NIM.turn = 3 - NIM.turn;
+    nimRender();
+  }
+  $("reset-nim").addEventListener("click", () => { if (onlineResetIntercept("nim")) return; nimBuild(); });
+
+  /* ============ 10) اجمع ولا تطمع ============ */
+  const PIG = { bank: { 1: 0, 2: 0 }, pot: 0, turn: 1, done: false, target: 50 };
+  const PIG_FACES = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+  function pigReset() {
+    PIG.bank = { 1: 0, 2: 0 };
+    PIG.pot = 0;
+    PIG.turn = 1;
+    PIG.done = false;
+    $("pig-die").textContent = "🎲";
+    pigRender();
+  }
+  function pigAction(a, v, remote) {
+    if (PIG.done) return;
+    if (!remote && !canAct("pig", PIG.turn)) return;
+    if (a === "roll") {
+      const die = remote ? v : 1 + Math.floor(Math.random() * 6);
+      if (!remote) sendMove("pig", { a: "roll", v: die });
+      $("pig-die").textContent = PIG_FACES[die];
+      if (die === 1) {
+        PIG.pot = 0;
+        PIG.turn = 3 - PIG.turn;
+        pigRender("ظهر ١ — ضاعت نقاط الجولة!");
+      } else {
+        PIG.pot += die;
+        pigRender();
+      }
+    } else {
+      if (!remote) sendMove("pig", { a: "hold" });
+      PIG.bank[PIG.turn] += PIG.pot;
+      PIG.pot = 0;
+      if (PIG.bank[PIG.turn] >= PIG.target) {
+        PIG.done = true;
+        pigRender();
+        endRound("pig", PIG.turn, PIG.bank[1] + " – " + PIG.bank[2] + " نقطة", pigReset);
+        return;
+      }
+      PIG.turn = 3 - PIG.turn;
+      pigRender("حُفظت النقاط");
+    }
+  }
+  function pigRender(note) {
+    $("status-pig").innerHTML = PIG.done ? "" : "دور " + nameSpan(PIG.turn) + (note ? " — " + escapeHtml(note) : "");
+    $("pig-pot").textContent = "نقاط الجولة الحالية: " + PIG.pot;
+    $("pig-s1").textContent = names[1] + ": " + PIG.bank[1];
+    $("pig-s2").textContent = names[2] + ": " + PIG.bank[2];
+    const locked = PIG.done || (ONLINE.active && ONLINE.game === "pig" && PIG.turn !== ONLINE.me);
+    $("pig-roll").disabled = locked;
+    $("pig-hold").disabled = locked;
+  }
+  $("pig-roll").addEventListener("click", () => pigAction("roll"));
+  $("pig-hold").addEventListener("click", () => pigAction("hold"));
+  $("reset-pig").addEventListener("click", () => { if (onlineResetIntercept("pig")) return; pigReset(); });
+
+  /* ============ 11) خمن الرقم ============ */
+  const GUESS = { phase: "enter1", secrets: { 1: "", 2: "" }, turn: 1, done: false, log: [] };
+  const guessArea = $("guess-area");
+  function guessValid(s) { return /^\d{4}$/.test(s) && new Set(s).size === 4; }
+  function guessFeedback(g, secret) {
+    let b = 0, c = 0;
+    for (let i = 0; i < 4; i++) {
+      if (g[i] === secret[i]) b++;
+      else if (secret.includes(g[i])) c++;
+    }
+    return { b, c };
+  }
+  function guessReset() {
+    GUESS.secrets = { 1: "", 2: "" };
+    GUESS.turn = 1;
+    GUESS.done = false;
+    GUESS.log = [];
+    GUESS.phase = ONLINE.active && ONLINE.game === "guess" ? "mine" : "enter1";
+    guessRender();
+  }
+  function guessSecretHtml() {
+    return '<div class="guess-input-row"><input id="guess-secret" type="password" inputmode="numeric" maxlength="4" placeholder="****" autocomplete="off" aria-label="الرقم السري"><button class="btn" id="guess-set">حفظ الرقم</button></div>';
+  }
+  function guessRender(msg) {
+    const online = ONLINE.active && ONLINE.game === "guess";
+    let html = "";
+    if (GUESS.phase === "enter1" || GUESS.phase === "enter2") {
+      const p = GUESS.phase === "enter1" ? 1 : 2;
+      $("status-guess").innerHTML = "الرقم السري لـ " + nameSpan(p) + " — لا يراه الآخر" + (msg ? "<br>" + escapeHtml(msg) : "");
+      html = guessSecretHtml();
+    } else if (GUESS.phase === "hand") {
+      $("status-guess").textContent = "تم الحفظ!";
+      html = '<button class="rps-handoff" id="guess-hand">مرّر الجهاز إلى ' + escapeHtml(names[2]) + "<br>ثم اضغط هنا</button>";
+    } else if (GUESS.phase === "mine") {
+      $("status-guess").innerHTML = "أدخل رقمك السري" + (msg ? "<br>" + escapeHtml(msg) : "");
+      html = guessSecretHtml();
+    } else if (GUESS.phase === "wait") {
+      $("status-guess").textContent = "بانتظار الرقم السري للطرف الآخر…";
+    } else {
+      $("status-guess").innerHTML = GUESS.done ? "" : "دور " + nameSpan(GUESS.turn) + " للتخمين" + (msg ? "<br>" + escapeHtml(msg) : "");
+      html = '<div class="guess-input-row"><input id="guess-try" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off" aria-label="تخمينك"><button class="btn" id="guess-go">خمّن</button></div>';
+    }
+    guessArea.innerHTML = html;
+    const sec = $("guess-secret");
+    if (sec) {
+      $("guess-set").addEventListener("click", () => {
+        const v = sec.value.trim();
+        if (!guessValid(v)) { guessRender("أدخل ٤ أرقام مختلفة، مثل 3720"); return; }
+        if (GUESS.phase === "enter1") { GUESS.secrets[1] = v; GUESS.phase = "hand"; }
+        else if (GUESS.phase === "enter2") { GUESS.secrets[2] = v; GUESS.phase = "play"; }
+        else {
+          GUESS.secrets[ONLINE.me] = v;
+          onlineSend({ t: "secret", v });
+          GUESS.phase = GUESS.secrets[3 - ONLINE.me] ? "play" : "wait";
+        }
+        guessRender();
+      });
+    }
+    const hand = $("guess-hand");
+    if (hand) hand.addEventListener("click", () => { GUESS.phase = "enter2"; guessRender(); });
+    const go = $("guess-go");
+    if (go) {
+      const tryIn = $("guess-try");
+      const submit = () => {
+        const v = tryIn.value.trim();
+        if (!guessValid(v)) { guessRender("أدخل ٤ أرقام مختلفة"); return; }
+        guessApply(v, false);
+      };
+      go.addEventListener("click", submit);
+      tryIn.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+      if (online && GUESS.turn !== ONLINE.me) { go.disabled = true; tryIn.disabled = true; }
+    }
+    $("guess-log").innerHTML = GUESS.log.map((x) =>
+      '<div class="guess-row"><span class="g' + x.p + '">' + escapeHtml(names[x.p]) + ": " + x.g + "</span><span>" + arNum(x.b) + " بمكانه · " + arNum(x.c) + " خارج مكانه</span></div>"
+    ).join("");
+  }
+  function guessApply(g, remote) {
+    if (GUESS.done || GUESS.phase !== "play") return;
+    if (!remote && !canAct("guess", GUESS.turn)) return;
+    if (!remote) sendMove("guess", { g });
+    const fb = guessFeedback(g, GUESS.secrets[3 - GUESS.turn]);
+    GUESS.log.unshift({ p: GUESS.turn, g, b: fb.b, c: fb.c });
+    if (fb.b === 4) {
+      GUESS.done = true;
+      const tries = GUESS.log.filter((x) => x.p === GUESS.turn).length;
+      guessRender();
+      endRound("guess", GUESS.turn, "فك الشفرة في " + arNum(tries) + (tries > 2 ? " محاولات" : " محاولة"), guessReset);
+      return;
+    }
+    GUESS.turn = 3 - GUESS.turn;
+    guessRender();
+  }
+  function guessPeerSecret(v) {
+    if (!ONLINE.active || ONLINE.game !== "guess") return;
+    GUESS.secrets[3 - ONLINE.me] = v;
+    if (GUESS.secrets[ONLINE.me]) GUESS.phase = "play";
+    guessRender();
+  }
+  $("reset-guess").addEventListener("click", () => { if (onlineResetIntercept("guess")) return; guessReset(); });
+
+  /* ============ اللعب أونلاين (غرف عبر MQTT/WebSocket) ============ */
+  const ONLINE = {
+    active: false, chan: null, code: "", me: 0,
+    myId: Math.random().toString(36).slice(2, 10),
+    myName: "", peerName: "", state: "idle", game: null, backup: null, pairT: null,
+  };
+  function canAct(gameId, turn) {
+    return !ONLINE.active || ONLINE.game !== gameId || turn === ONLINE.me;
+  }
+  function onlineSend(obj) {
+    if (ONLINE.chan) {
+      try { ONLINE.chan.publish(JSON.stringify({ from: ONLINE.myId, ...obj })); } catch (e) { /* تجاهل */ }
+    }
+  }
+  function sendMove(gameId, data) {
+    if (ONLINE.active && ONLINE.game === gameId) onlineSend({ t: "move", game: gameId, data });
+  }
+  function onlineResetIntercept(gameId) {
+    if (!ONLINE.active || ONLINE.game !== gameId) return false;
+    if (ONLINE.me === 1) onlineStart(gameId);
+    else {
+      const st = $("status-" + gameId);
+      if (st) st.textContent = "المضيف فقط يبدأ جولة جديدة في الأونلاين";
+    }
+    return true;
+  }
+  const ONLINE_RESETS = {
+    ttt: () => { ttt.turn = 2; tttReset(); },
+    c4: () => { C4.turn = 1; c4Build(); },
+    dots: () => { DOTS.turn = 1; dotsBuild(); },
+    oth: othBuild,
+    ck: ckBuild,
+    nim: nimBuild,
+    pig: pigReset,
+    guess: guessReset,
+  };
+  function onlineStart(game) {
+    const cfg = game === "dots" ? { r: DOTS.rows, c: DOTS.cols } : null;
+    onlineSend({ t: "start", game, cfg });
+    onlineApplyStart(game, cfg);
+  }
+  function onlineApplyStart(game, cfg) {
+    ONLINE.game = game;
+    if (game === "dots" && cfg && cfg.r) { DOTS.rows = cfg.r; DOTS.cols = cfg.c; }
+    ONLINE_RESETS[game]();
+    currentGame = game;
+    $("overlay").hidden = true;
+    showScreen(game);
+  }
+  function applyRemote(m) {
+    if (!m || m.game !== ONLINE.game || !m.data) return;
+    const d = m.data;
+    switch (m.game) {
+      case "ttt": tttPlay(d.i, true); break;
+      case "c4": c4Drop(d.c, true); break;
+      case "dots": dotsPlay(d.k, d.r, d.c, null, true); break;
+      case "oth": othPlay(d.r, d.c, true); break;
+      case "ck": ckApply({ fr: d.fr, fc: d.fc, tr: d.tr, tc: d.tc }, true); break;
+      case "nim": nimTake(d.row, d.n, true); break;
+      case "pig": pigAction(d.a, d.v, true); break;
+      case "guess": guessApply(d.g, true); break;
+    }
+  }
+
+  /* عميل MQTT مصغّر فوق WebSocket — نشر واشتراك QoS 0 فقط */
+  function mqttOpen(url, opts) {
+    return new Promise((resolve, reject) => {
+      let settled = false, pingT = null;
+      const ws = new WebSocket(url, "mqtt");
+      ws.binaryType = "arraybuffer";
+      const timeout = setTimeout(() => {
+        if (!settled) { settled = true; try { ws.close(); } catch (e) { /* تجاهل */ } reject(new Error("timeout")); }
+      }, 6000);
+      const enc = new TextEncoder(), dec = new TextDecoder();
+      const str = (s) => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
+      const remLen = (n) => { const out = []; do { let d = n % 128; n = Math.floor(n / 128); if (n) d |= 128; out.push(d); } while (n); return out; };
+      const pkt = (h, body) => ws.send(new Uint8Array([h, ...remLen(body.length), ...body]));
+      ws.onopen = () => pkt(0x10, [...str("MQTT"), 4, 2, 0, 60, ...str(opts.clientId)]);
+      ws.onmessage = (ev) => {
+        const b = new Uint8Array(ev.data);
+        let i = 0;
+        while (i < b.length) {
+          const type = b[i] >> 4;
+          let mul = 1, len = 0, j = i + 1;
+          while (true) { const d = b[j++]; len += (d & 127) * mul; mul *= 128; if (!(d & 128)) break; }
+          const body = b.slice(j, j + len);
+          if (type === 2) {
+            pkt(0x82, [0, 1, ...str(opts.topic), 0]);
+          } else if (type === 9 && !settled) {
+            settled = true;
+            clearTimeout(timeout);
+            pingT = setInterval(() => { try { ws.send(new Uint8Array([0xC0, 0])); } catch (e) { /* تجاهل */ } }, 25000);
+            resolve({
+              publish: (payload) => pkt(0x30, [...str(opts.topic), ...enc.encode(payload)]),
+              close: () => { clearInterval(pingT); try { ws.send(new Uint8Array([0xE0, 0])); ws.close(); } catch (e) { /* تجاهل */ } },
+            });
+          } else if (type === 3) {
+            const tl = (body[0] << 8) | body[1];
+            opts.onMessage(dec.decode(body.slice(2 + tl)));
+          }
+          i = j + len;
+        }
+      };
+      ws.onclose = () => {
+        clearInterval(pingT);
+        if (!settled) { settled = true; clearTimeout(timeout); reject(new Error("closed")); }
+        else if (opts.onClose) opts.onClose();
+      };
+      ws.onerror = () => { /* onclose يتكفل */ };
+    });
+  }
+  async function brokerConnect(topic) {
+    let custom = null;
+    try { custom = JSON.parse(localStorage.getItem("fg2_brokers") || "null"); } catch (e) { /* تجاهل */ }
+    const urls = Array.isArray(custom) && custom.length ? custom : [
+      "wss://broker.emqx.io:8084/mqtt",
+      "wss://broker.hivemq.com:8884/mqtt",
+      "wss://test.mosquitto.org:8081",
+    ];
+    let lastErr = null;
+    for (const url of urls) {
+      try {
+        return await mqttOpen(url, {
+          clientId: "fg2_" + ONLINE.myId,
+          topic,
+          onMessage: onlineMsg,
+          onClose: () => { if (ONLINE.active) onlineLeave(false, "انقطع الاتصال بخادم الغرف"); },
+        });
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error("no broker");
+  }
+  function onlineMsg(raw) {
+    let m;
+    try { m = JSON.parse(raw); } catch (e) { return; }
+    if (!m || m.from === ONLINE.myId) return;
+    if (m.t === "join" && ONLINE.me === 1) {
+      if (ONLINE.state !== "paired") {
+        ONLINE.peerName = (m.name || "الضيف").slice(0, 14);
+        ONLINE.state = "paired";
+        onlinePaired();
+      }
+      onlineSend({ t: "welcome", name: ONLINE.myName });
+    } else if (m.t === "welcome" && ONLINE.me === 2 && ONLINE.state !== "paired") {
+      ONLINE.peerName = (m.name || "المضيف").slice(0, 14);
+      ONLINE.state = "paired";
+      clearInterval(ONLINE.pairT);
+      onlinePaired();
+    } else if (m.t === "start") {
+      onlineApplyStart(m.game, m.cfg);
+    } else if (m.t === "move") {
+      applyRemote(m);
+    } else if (m.t === "secret") {
+      guessPeerSecret(String(m.v || ""));
+    } else if (m.t === "leave") {
+      onlineLeave(false, "غادر " + (ONLINE.peerName || "الطرف الآخر") + " الغرفة");
+    }
+  }
+  function onlinePaired() {
+    ONLINE.backup = { 1: names[1], 2: names[2] };
+    names[ONLINE.me] = ONLINE.myName;
+    names[3 - ONLINE.me] = ONLINE.peerName;
+    $("online-setup").hidden = true;
+    $("online-picker").hidden = false;
+    $("online-peer-line").innerHTML = "متصل مع " + nameSpan(3 - ONLINE.me) + " — غرفة " + ONLINE.code;
+    const grid = $("online-games");
+    grid.innerHTML = "";
+    if (ONLINE.me === 1) {
+      ONLINE_GAMES.forEach((g) => {
+        const b = document.createElement("button");
+        b.className = "preset";
+        b.textContent = GAME_NAMES[g];
+        b.addEventListener("click", () => onlineStart(g));
+        grid.appendChild(b);
+      });
+      $("online-picker-hint").textContent = "اختر لعبة لتبدأ — يمكنك تغييرها بعد أي جولة من زر ↺";
+    } else {
+      $("online-picker-hint").textContent = "بانتظار اختيار المضيف للعبة…";
+    }
+    $("online-pill-text").textContent = "🌐 غرفة " + ONLINE.code + " — ضد " + (ONLINE.peerName || "");
+    $("online-pill").hidden = false;
+    refreshStatuses();
+  }
+  function onlineLeave(notify, msg) {
+    if (notify) onlineSend({ t: "leave" });
+    if (ONLINE.chan) { ONLINE.chan.close(); ONLINE.chan = null; }
+    clearInterval(ONLINE.pairT);
+    ONLINE.active = false;
+    ONLINE.state = "idle";
+    ONLINE.game = null;
+    ONLINE.me = 0;
+    if (ONLINE.backup) {
+      names[1] = ONLINE.backup[1];
+      names[2] = ONLINE.backup[2];
+      ONLINE.backup = null;
+    }
+    $("online-pill").hidden = true;
+    $("online-picker").hidden = true;
+    $("online-setup").hidden = false;
+    $("online-code-box").hidden = true;
+    $("online-status").textContent = msg || "";
+    currentGame = null;
+    refreshStatuses();
+    showScreen(msg ? "online" : "home");
+  }
+  const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  function genCode() {
+    let s = "";
+    for (let i = 0; i < 4; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+    return s;
+  }
+  async function onlineCreate() {
+    if (ONLINE.active) return;
+    ONLINE.me = 1;
+    ONLINE.myName = ($("online-name").value.trim() || names[1]).slice(0, 14);
+    ONLINE.code = genCode();
+    $("online-status").textContent = "جارٍ الاتصال بخادم الغرف…";
+    try {
+      ONLINE.chan = await brokerConnect("fg2/" + ONLINE.code);
+      ONLINE.active = true;
+      ONLINE.state = "hosting";
+      $("online-room-code").textContent = ONLINE.code;
+      $("online-code-box").hidden = false;
+      $("online-status").textContent = "بانتظار انضمام الطرف الآخر…";
+    } catch (e) {
+      ONLINE.me = 0;
+      $("online-status").textContent = "تعذّر الاتصال بخادم الغرف — تحقق من اتصالك بالإنترنت وحاول مجددًا";
+    }
+  }
+  async function onlineJoin() {
+    if (ONLINE.active) return;
+    const code = $("online-join-code").value.trim().toUpperCase();
+    if (code.length !== 4) { $("online-status").textContent = "أدخل رمز الغرفة المكوّن من ٤ رموز"; return; }
+    ONLINE.me = 2;
+    ONLINE.myName = ($("online-name").value.trim() || names[1]).slice(0, 14);
+    ONLINE.code = code;
+    $("online-status").textContent = "جارٍ الاتصال بالغرفة…";
+    try {
+      ONLINE.chan = await brokerConnect("fg2/" + code);
+      ONLINE.active = true;
+      ONLINE.state = "joining";
+      let tries = 0;
+      const ping = () => {
+        if (ONLINE.state !== "joining") return;
+        if (++tries > 8) {
+          clearInterval(ONLINE.pairT);
+          onlineLeave(false, "لم نعثر على المضيف — تحقق من الرمز وأن المضيف ما زال منتظرًا");
+          return;
+        }
+        onlineSend({ t: "join", name: ONLINE.myName });
+      };
+      ping();
+      ONLINE.pairT = setInterval(ping, 2000);
+      $("online-status").textContent = "تم الاتصال — بانتظار رد المضيف…";
+    } catch (e) {
+      ONLINE.me = 0;
+      $("online-status").textContent = "تعذّر الاتصال بخادم الغرف — تحقق من اتصالك بالإنترنت وحاول مجددًا";
+    }
+  }
+  $("open-online").addEventListener("click", () => {
+    if (!ONLINE.active) $("online-name").value = names[1];
+    showScreen("online");
+  });
+  $("online-create").addEventListener("click", onlineCreate);
+  $("online-join").addEventListener("click", onlineJoin);
+  $("online-pill-leave").addEventListener("click", () => {
+    if (confirm("الخروج من اللعب الأونلاين؟")) onlineLeave(true);
+  });
+  window.addEventListener("beforeunload", () => { if (ONLINE.active) onlineSend({ t: "leave" }); });
 
   /* ---------- تحديث عام ---------- */
   function refreshStatuses() {
@@ -1482,6 +2419,11 @@
     rpsScores();
     reactScores();
     dotsStatus();
+    othRender();
+    ckRender();
+    nimRender();
+    pigRender();
+    guessRender();
     renderScore();
   }
 
@@ -1492,6 +2434,11 @@
   rpsReset();
   reactReset();
   dotsBuild();
+  othBuild();
+  ckBuild();
+  nimBuild();
+  pigReset();
+  guessReset();
 })();
 </script>
 <script>
