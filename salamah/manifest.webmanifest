@@ -1,0 +1,19 @@
+{
+  "name": "سلامة — مساعد ضبط جودة الغذاء",
+  "short_name": "سلامة",
+  "description": "سجل حرارة، جولة تفتيش بنقاط حرجة، متابعة صلاحية وملصقات، ومخالفات بإجراءات تصحيحية — يعمل دون اتصال على جهازك.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#116254",
+  "background_color": "#F4F6F4",
+  "categories": ["productivity", "business", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

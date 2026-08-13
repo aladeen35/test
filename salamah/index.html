@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>سلامة — مساعد ضبط جودة الغذاء</title>
+<meta name="description" content="تطبيق ويب يعمل دون اتصال لمساعدة موظف ضبط جودة الغذاء: سجل الحرارة، جولة التفتيش، متابعة الصلاحية، والمخالفات والإجراءات التصحيحية.">
+<meta name="theme-color" content="#116254">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سلامة">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+/* تطبيق السمة قبل الرسم الأول لتفادي وميض الوضع الفاتح */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('salamah:v1') || '{}');
+    var t = (s.settings && s.settings.theme) || 'auto';
+    if (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+
+<header>
+  <div class="logo">✅</div>
+  <div>
+    <h1>سلامة</h1>
+    <div class="sub" id="hdr-sub">مساعد ضبط جودة الغذاء</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="icon-btn" onclick="openSettings()" aria-label="الإعدادات" title="الإعدادات">⚙️</button>
+</header>
+
+<div id="toasts" aria-live="polite"></div>
+
+<main>
+
+  <!-- ═════════ اليوم ═════════ -->
+  <section class="view active" id="view-today">
+    <div class="view-head">
+      <h2 id="today-title">اليوم</h2>
+      <p id="today-date"></p>
+    </div>
+    <div class="kpis" id="today-kpis"></div>
+    <div id="today-alerts"></div>
+
+    <div class="card">
+      <h3>⚡ إجراء سريع</h3>
+      <div class="btn-grid">
+        <button class="btn primary" onclick="go('temp')">🌡️ تسجيل حرارة</button>
+        <button class="btn" onclick="go('round')">📋 بدء جولة</button>
+        <button class="btn" onclick="go('shelf')">🏷️ استلام / ملصق</button>
+        <button class="btn" onclick="openNcNew()">⚠️ رفع مخالفة</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📄 التقارير والتصدير</h3>
+      <div class="card-note">اختر المدة ثم اطبع تقريرًا موقّعًا أو صدّر البيانات.</div>
+      <div class="chips" id="rep-range" style="margin-bottom:.75rem"></div>
+      <div id="rep-summary"></div>
+      <div class="btn-row" style="margin-top:.75rem">
+        <button class="btn primary sm" onclick="printReport()">🖨️ طباعة / PDF</button>
+        <button class="btn sm" onclick="exportCsv()">📊 تصدير CSV</button>
+        <button class="btn sm" onclick="shareSummary()">💬 مشاركة الملخص</button>
+      </div>
+    </div>
+
+    <div class="card flat">
+      <h3>🕘 آخر النشاط</h3>
+      <div id="today-feed" class="list"></div>
+    </div>
+  </section>
+
+  <!-- ═════════ الحرارة ═════════ -->
+  <section class="view" id="view-temp">
+    <div class="view-head">
+      <h2>سجل الحرارة والتطهير</h2>
+      <p>اختر نقطة القياس، أدخل القراءة، والتطبيق يحكم عليها فورًا.</p>
+    </div>
+
+    <div class="card">
+      <h3>➕ قراءة جديدة</h3>
+      <div class="field"><span>نقطة القياس</span>
+        <div class="chips" id="temp-points"></div>
+      </div>
+      <div id="temp-form" hidden>
+        <div class="two">
+          <label class="field"><span id="temp-value-label">القراءة</span>
+            <input class="big-num mono" id="temp-value" type="number" step="0.1" inputmode="decimal" dir="ltr" placeholder="0.0">
+          </label>
+          <label class="field"><span>الوقت</span>
+            <input id="temp-time" type="time">
+          </label>
+        </div>
+        <div id="temp-verdict"></div>
+        <label class="field" id="temp-action-wrap" hidden><span>الإجراء التصحيحي (إلزامي عند الخروج عن الحد)</span>
+          <textarea id="temp-action" placeholder="مثال: نُقل المنتج لثلاجة سليمة، وأُبلغت الصيانة، وأُعيد القياس بعد ٣٠ دقيقة."></textarea>
+        </label>
+        <button class="btn primary block" onclick="saveReading()">حفظ القراءة</button>
+      </div>
+    </div>
+
+    <div class="card flat">
+      <h3>📆 قراءات اليوم</h3>
+      <div class="card-note" id="temp-today-note"></div>
+      <div class="list" id="temp-list"></div>
+    </div>
+  </section>
+
+  <!-- ═════════ الجولة ═════════ -->
+  <section class="view" id="view-round">
+    <div class="view-head">
+      <h2>جولة التفتيش</h2>
+      <p>قيّم كل بند: مطابق · ملاحظة · مخالف · لا ينطبق. البنود الحرجة معلّمة بـ ⚠️ ووزنها ثلاثة أضعاف.</p>
+    </div>
+
+    <div class="card" id="round-score-card">
+      <div class="score-big"><b id="round-score">—</b><span>%</span>
+        <span class="badge mute" id="round-grade" style="margin-inline-start:auto">لم تبدأ</span>
+      </div>
+      <div class="bar"><i id="round-bar" style="width:0%"></i></div>
+      <div class="card-note" id="round-progress" style="margin-top:.5rem"></div>
+      <div class="btn-row">
+        <button class="btn primary sm" onclick="saveRound()">✅ إنهاء الجولة وحفظها</button>
+        <button class="btn ghost sm" onclick="resetRound()">↺ تفريغ</button>
+      </div>
+    </div>
+
+    <div id="round-sections"></div>
+
+    <div class="card flat">
+      <h3>📚 الجولات السابقة</h3>
+      <div class="list" id="round-history"></div>
+    </div>
+  </section>
+
+  <!-- ═════════ الصلاحية ═════════ -->
+  <section class="view" id="view-shelf">
+    <div class="view-head">
+      <h2>الصلاحية والاستلام</h2>
+      <p>سجّل الأصناف المفتوحة أو المستلمة، وتابع أيام الصلاحية المتبقية، واطبع ملصق «يُستهلك قبل».</p>
+    </div>
+
+    <div class="card">
+      <h3>➕ صنف جديد</h3>
+      <label class="field"><span>الصنف</span>
+        <input id="it-name" placeholder="مثال: حليب طازج ٢ لتر">
+      </label>
+      <div class="two">
+        <label class="field"><span>الموقع</span>
+          <input id="it-loc" placeholder="ثلاجة الحليب">
+        </label>
+        <label class="field"><span>المورد / التشغيلة</span>
+          <input id="it-batch" placeholder="اختياري">
+        </label>
+      </div>
+      <div class="field"><span>مدة الصلاحية بعد الفتح / الاستلام</span>
+        <div class="chips" id="it-shelf-chips"></div>
+      </div>
+      <div class="two">
+        <label class="field"><span>تاريخ الفتح / الاستلام</span>
+          <input id="it-opened" type="date">
+        </label>
+        <label class="field"><span>يُستهلك قبل</span>
+          <input id="it-expiry" type="date">
+        </label>
+      </div>
+      <label class="field"><span>حرارة الاستلام (اختياري)</span>
+        <input id="it-temp" type="number" step="0.1" inputmode="decimal" dir="ltr" placeholder="°C — تُسجَّل كقراءة استلام">
+      </label>
+      <label class="field"><span>نوع نقطة القياس للاستلام</span>
+        <select id="it-temp-type">
+          <option value="chill">مبرّد (٠ إلى ٥)</option>
+          <option value="freeze">مجمّد (≤ −١٨)</option>
+          <option value="dry">جاف (١٠ إلى ٢٥)</option>
+        </select>
+      </label>
+      <button class="btn primary block" onclick="saveItem()">حفظ الصنف</button>
+    </div>
+
+    <div class="card flat">
+      <h3>⏳ الأصناف المتابَعة</h3>
+      <div class="card-note" id="shelf-note"></div>
+      <div class="list" id="shelf-list"></div>
+    </div>
+  </section>
+
+  <!-- ═════════ المخالفات ═════════ -->
+  <section class="view" id="view-nc">
+    <div class="view-head">
+      <h2>المخالفات والإجراءات التصحيحية</h2>
+      <p>كل خروج عن الحد أو بند مخالف يُنشئ مخالفة تلقائيًا — أغلقها بإجراء موثّق.</p>
+    </div>
+    <div class="btn-row" style="margin-bottom:.85rem">
+      <button class="btn primary sm" onclick="openNcNew()">➕ مخالفة جديدة</button>
+      <div class="chips" id="nc-filter"></div>
+    </div>
+    <div class="list" id="nc-list"></div>
+  </section>
+
+</main>
+
+<nav role="tablist" id="tabs">
+  <button role="tab" data-tab="today" aria-selected="true" onclick="go('today')"><span class="ico">🏠</span>اليوم</button>
+  <button role="tab" data-tab="temp"  aria-selected="false" onclick="go('temp')"><span class="ico">🌡️</span>الحرارة</button>
+  <button role="tab" data-tab="round" aria-selected="false" onclick="go('round')"><span class="ico">📋</span>الجولة</button>
+  <button role="tab" data-tab="shelf" aria-selected="false" onclick="go('shelf')"><span class="ico">🏷️</span>الصلاحية</button>
+  <button role="tab" data-tab="nc"    aria-selected="false" onclick="go('nc')"><span class="ico">⚠️</span>المخالفات</button>
+</nav>
+
+<!-- نافذة سفلية عامة -->
+<div class="modal" id="sheet">
+  <div class="backdrop" onclick="closeSheet()"></div>
+  <div class="sheet">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <b id="sheet-title"></b>
+      <button class="sheet-x" onclick="closeSheet()" aria-label="إغلاق">✕</button>
+    </div>
+    <div id="sheet-body"></div>
+  </div>
+</div>
+
+<!-- منطقة الطباعة -->
+<div id="print-area"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
