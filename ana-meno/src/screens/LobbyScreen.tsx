@@ -53,12 +53,12 @@ export function LobbyScreen() {
   return (
     <div className="screen gap-5">
       <header className="text-center pt-3">
-        <h1 className="text-3xl font-black text-navy">{full ? T.playersReady : T.waitingForPlayer2}</h1>
+        <h1 className="panel-royal inline-block px-8 py-2 text-2xl font-black">{full ? T.playersReady : T.waitingForPlayer2}</h1>
       </header>
 
-      <div className="card px-5 py-4 text-center">
-        <div className="font-bold text-navy/60 mb-1">{T.roomCode}</div>
-        <div className="ltr-num text-5xl font-black text-royal tracking-[0.3em] animate-pop-in select-all">
+      <div className="panel-royal px-5 py-4 text-center">
+        <div className="font-bold text-white/85 mb-1">{T.roomCode}</div>
+        <div className="ltr-num text-5xl font-black text-sun tracking-[0.3em] animate-pop-in select-all drop-shadow-[0_2px_0_rgba(23,59,108,0.9)]">
           {room.code}
         </div>
         <div className="flex gap-2 mt-4">

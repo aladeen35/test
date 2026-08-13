@@ -54,7 +54,7 @@ export function TutorialScreen() {
   return (
     <div className="screen gap-4">
       <header className="flex items-center justify-between pt-2">
-        <h1 className="text-2xl font-black text-navy">{T.tutorialTitle}</h1>
+        <h1 className="panel-royal px-6 py-1.5 text-xl font-black">{T.tutorialTitle}</h1>
         <button className="font-bold text-navy/50 underline px-2 py-1" onClick={() => { audio.play('click'); goto('home'); }}>
           {T.skip}
         </button>

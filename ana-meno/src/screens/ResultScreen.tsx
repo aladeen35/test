@@ -7,6 +7,21 @@ import { computeScore, formatDuration } from '../game/logic';
 import { T } from '../ui/text';
 import { audio } from '../audio/audioManager';
 
+function GoldStar({ delay, size = 64 }: { delay: number; size?: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
+      className="gold-star animate-pop-in" style={{ animationDelay: `${delay}s` }}
+    >
+      <path
+        d="M12 1.8 l3.1 6.3 6.9 1 -5 4.9 1.2 6.9 -6.2 -3.3 -6.2 3.3 1.2 -6.9 -5 -4.9 6.9 -1 Z"
+        fill="#FFC928" stroke="#DD9F00" strokeWidth="1.2" strokeLinejoin="round"
+      />
+      <path d="M12 5 l1.8 3.7 4 .6 -2.9 2.8" fill="none" stroke="#FFE68A" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function ResultScreen() {
   const { state, playerId, requestRematch, leaveToHome } = useApp();
   const [rematchSent, setRematchSent] = useState(false);
@@ -50,8 +65,16 @@ export function ResultScreen() {
   return (
     <div className="screen gap-4 text-center">
       {iWon && <Confetti />}
-      <header className="pt-6">
-        <div className="text-6xl mb-2 animate-pop-in" aria-hidden="true">{iWon ? '🏆' : '🤭'}</div>
+      <header className="pt-4">
+        {iWon ? (
+          <div className="flex items-end justify-center gap-1 mb-2" aria-hidden="true">
+            <GoldStar delay={0.15} size={56} />
+            <span className="-mb-2"><GoldStar delay={0.35} size={76} /></span>
+            <GoldStar delay={0.55} size={56} />
+          </div>
+        ) : (
+          <div className="text-6xl mb-2 animate-pop-in" aria-hidden="true">🤭</div>
+        )}
         <h1 className="text-3xl font-black text-navy">{iWon ? T.wellDone : T.badLuck}</h1>
         <p className="font-bold text-navy/60 mt-1">{T.winnerIs}</p>
         <p className="text-2xl font-black text-royal">{winner?.name}</p>

@@ -8,6 +8,7 @@ import { ResultScreen } from './screens/ResultScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { TutorialScreen } from './screens/TutorialScreen';
 import { ConnectionBanner, LandscapeHint, Toasts } from './components/StatusBars';
+import { SceneBackground } from './components/SceneBackground';
 
 function CurrentScreen() {
   const { state } = useApp();
@@ -27,9 +28,12 @@ function CurrentScreen() {
 export default function App() {
   return (
     <AppProvider>
-      <ConnectionBanner />
-      <LandscapeHint />
-      <CurrentScreen />
+      <SceneBackground />
+      <div className="relative z-10 flex-1 flex flex-col">
+        <ConnectionBanner />
+        <LandscapeHint />
+        <CurrentScreen />
+      </div>
       <Toasts />
     </AppProvider>
   );

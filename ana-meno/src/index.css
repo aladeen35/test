@@ -40,7 +40,8 @@ html, body {
 }
 
 body {
-  @apply font-cairo bg-sky-pale text-navy-deep antialiased;
+  @apply font-cairo text-navy-deep antialiased;
+  background: linear-gradient(#3D9BE9, #7CC4F2 50%, #C4E8FC);
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -64,19 +65,28 @@ body {
 .btn:disabled { @apply opacity-50 pointer-events-none; }
 
 .btn-primary {
-  @apply btn bg-sun text-navy-deep shadow-[0_5px_0_0_#D99C00];
+  @apply btn text-navy-deep;
+  background: linear-gradient(#FFD95A, #FFC928 55%, #F5A800);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 5px 0 0 #C98F00, 0 0 0 1px #C98F00;
 }
-.btn-primary:active { box-shadow: 0 1px 0 0 #d99c00; }
+.btn-primary:active { box-shadow: 0 1px 0 0 #c98f00, 0 0 0 1px #c98f00; }
 
 .btn-secondary {
-  @apply btn bg-royal text-white shadow-[0_5px_0_0_#14448C];
+  @apply btn text-white;
+  background: linear-gradient(#3B82E0, #1E63C8 55%, #164FA6);
+  border: 3px solid #FFC928;
+  box-shadow: 0 5px 0 0 #B98700, 0 0 0 1px #B98700;
 }
-.btn-secondary:active { box-shadow: 0 1px 0 0 #14448c; }
+.btn-secondary:active { box-shadow: 0 1px 0 0 #b98700, 0 0 0 1px #b98700; }
 
 .btn-soft {
-  @apply btn bg-white text-navy shadow-[0_4px_0_0_rgba(15,42,79,0.15)] border-2 border-sky-light;
+  @apply btn text-navy;
+  background: #FDF8EC;
+  border: 3px solid #3B82E0;
+  box-shadow: 0 4px 0 0 rgba(15, 42, 79, 0.28);
 }
-.btn-soft:active { box-shadow: 0 1px 0 0 rgba(15, 42, 79, 0.15); }
+.btn-soft:active { box-shadow: 0 1px 0 0 rgba(15, 42, 79, 0.28); }
 
 .btn-danger {
   @apply btn bg-coral text-white shadow-[0_5px_0_0_#B93E33];
@@ -91,7 +101,22 @@ body {
 }
 
 .card {
-  @apply bg-white rounded-blob shadow-pop;
+  @apply rounded-blob;
+  background: #FDF8EC;
+  border: 3px solid #2B6BE0;
+  box-shadow: 0 0 0 3px #FFC928, 0 8px 20px -6px rgba(15, 42, 79, 0.45);
+}
+
+/* Royal plaque: deep blue panel with a gold rim (titles, room code). */
+.panel-royal {
+  @apply rounded-blob text-white;
+  background: linear-gradient(#2B6BE0, #1B4FC0);
+  border: 4px solid #FFC928;
+  box-shadow: 0 0 0 2px #B98700, 0 6px 0 0 #B98700, inset 0 3px 8px rgba(255, 255, 255, 0.3);
+}
+
+.gold-star {
+  filter: drop-shadow(0 3px 2px rgba(120, 80, 0, 0.4));
 }
 
 .input {

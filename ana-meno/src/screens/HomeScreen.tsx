@@ -82,8 +82,10 @@ export function HomeScreen() {
         ) : (
           <>
             <FloatingCast />
-            <LogoTitle className="text-5xl mt-2" />
-            <p className="font-bold text-navy/70 text-lg mt-1">{T.tagline}</p>
+            <div className="panel-royal inline-block px-8 py-2 mt-3">
+              <LogoTitle className="text-4xl" light />
+              <p className="font-bold text-white/90 text-base mt-0.5">{T.tagline}</p>
+            </div>
           </>
         )}
       </header>

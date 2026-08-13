@@ -60,7 +60,7 @@ export function GameScreen() {
 
       <QuestionLog />
 
-      <div className="sticky bottom-0 -mx-4 px-4 pt-2 pb-1 bg-gradient-to-t from-sky-pale via-sky-pale to-transparent">
+      <div className="sticky bottom-0 -mx-4 px-4 pt-2 pb-1 backdrop-blur-[2px] bg-gradient-to-t from-white/60 via-white/40 to-transparent">
         <div className="flex gap-2">
           <button
             className="btn-secondary flex-[3] text-lg"

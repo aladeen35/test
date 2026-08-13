@@ -21,10 +21,12 @@ export function LogoMark({ size = 96 }: { size?: number }) {
   );
 }
 
-export function LogoTitle({ className = '' }: { className?: string }) {
+export function LogoTitle({ className = '', light = false }: { className?: string; light?: boolean }) {
   return (
     <h1
-      className={`font-cairo font-black text-navy drop-shadow-[0_2px_0_rgba(255,255,255,0.9)] ${className}`}
+      className={`font-cairo font-black ${light
+        ? 'text-sun drop-shadow-[0_2px_0_rgba(23,59,108,0.9)]'
+        : 'text-navy drop-shadow-[0_2px_0_rgba(255,255,255,0.9)]'} ${className}`}
       style={{ letterSpacing: '0.01em' }}
     >
       أنا مِنو <span aria-hidden="true">🤔</span>

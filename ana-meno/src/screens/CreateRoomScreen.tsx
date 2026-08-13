@@ -19,7 +19,7 @@ export function CreateRoomScreen() {
         <button className="btn-soft !min-h-11 !px-3" onClick={() => { audio.play('click'); goto('home'); }} aria-label={T.backToHome}>
           →
         </button>
-        <h1 className="text-2xl font-black text-navy">{T.createRoomTitle}</h1>
+        <h1 className="panel-royal flex-1 text-center px-4 py-1.5 text-xl font-black">{T.createRoomTitle}</h1>
       </header>
 
       <main className="flex flex-col gap-3 flex-1">
