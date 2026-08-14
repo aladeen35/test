@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F7B500">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>بيننا — صراحة وجرأة للمتزوجين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ نظام التصميم — أسلوب كرتوني دافئ: أصفر مشمس، وردي الزوج، أخضر الزوجة، ذهبي ═══════════ */
+:root{
+  --sun:#F7B500;          /* الأصفر الأساسي — خلفية الصورتين */
+  --sun-hi:#FFD34D;
+  --sun-deep:#E09E00;
+  --cream:#FFF8E8;        /* أسطح البطاقات */
+  --cream-2:#FFF3D6;
+  --ink:#4A2E14;          /* بني دافئ للنصوص */
+  --ink-soft:#8A6A3F;
+  --him:#E58B98;          /* وردي قميص الزوج */
+  --him-deep:#C9556A;
+  --him-soft:#FBDDE2;
+  --her:#1E8A55;          /* أخضر ثوب الزوجة */
+  --her-deep:#136B40;
+  --her-soft:#D8F0E2;
+  --gold:#C9922A;         /* ذهب الحُليّ والتطريز */
+  --gold-hi:#F2C94C;
+  --line:#F0DCA8;
+  --r:26px;
+  --shadow:0 12px 28px rgba(120,78,0,.22);
+  --shadow-lg:0 20px 48px rgba(120,78,0,.28);
+  /* ألوان الفئات */
+  --c-truth:#3E7BC0; --c-truth-soft:#E1ECF9;
+  --c-gesture:#E0708D; --c-gesture-soft:#FBE4EA;
+  --c-passion:#E8862E; --c-passion-soft:#FDEBD7;
+  --c-deep:#B23A48; --c-deep-soft:#F6DFE1;
+  --c-laugh:#2E9962; --c-laugh-soft:#DFF2E7;
+  --c-relax:#8A6FC5; --c-relax-soft:#ECE6F8;
+  --c-surprise:#C9922A; --c-surprise-soft:#FAEED2;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 50% -10%, var(--sun-hi), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, #FFC93A, transparent 55%),
+    var(--sun);
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+h1,h2,h3,.disp{font-family:"Baloo Bhaijaan 2","IBM Plex Sans Arabic",sans-serif}
+button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:1rem;color:var(--ink)}
+
+/* نقوش خلفية ناعمة (قلوب باهتة) */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M60 84 47 71c-8-8-8-19 0-26 6-6 15-6 13 0 -2-6 7-6 13 0 8 7 8 18 0 26z' fill='%234A2E14'/%3E%3C/svg%3E");
+  background-size:120px;
+}
+#app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 18px 110px}
+
+/* ═══ ترويسة ═══ */
+header.top{
+  display:flex;align-items:center;gap:12px;padding:18px 2px 8px;
+}
+header.top .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+header.top .brand b{font-family:"Baloo Bhaijaan 2";font-size:1.5rem;font-weight:800;letter-spacing:.5px}
+header.top .brand small{display:block;font-size:.72rem;color:var(--ink-soft);font-weight:600;margin-top:-4px}
+.hbtn{
+  width:44px;height:44px;border-radius:16px;background:var(--cream);box-shadow:var(--shadow);
+  display:grid;place-items:center;font-size:1.25rem;transition:transform .15s;flex:none;
+}
+.hbtn:active{transform:scale(.92)}
+
+/* ═══ خانات صور الزوجين — تُملأ بالصورتين الحقيقيتين ═══ */
+.pslot{
+  position:relative;border-radius:50%;overflow:hidden;flex:none;
+  background:linear-gradient(160deg,var(--sun-hi),var(--sun-deep));
+  display:grid;place-items:center;
+}
+.pslot img{width:100%;height:100%;object-fit:cover;object-position:top;display:none}
+.pslot.loaded img{display:block}
+.pslot .ph{font-size:calc(var(--ps,56px)*.5);line-height:1;filter:saturate(.9)}
+.pslot.loaded .ph{display:none}
+.pslot.him{border:3px solid var(--him);box-shadow:0 4px 14px rgba(201,85,106,.35)}
+.pslot.her{border:3px solid var(--her);box-shadow:0 4px 14px rgba(19,107,64,.35)}
+.pslot.sm{width:40px;height:40px;--ps:40px;border-width:2.5px}
+.pslot.md{width:56px;height:56px;--ps:56px}
+.pslot.lg{width:96px;height:96px;--ps:96px;border-width:4px}
+.pslot.xl{width:120px;height:120px;--ps:120px;border-width:5px}
+
+/* ═══ الشاشة الرئيسية ═══ */
+.hero{text-align:center;padding:26px 0 10px}
+.hero .duo{display:flex;justify-content:center;align-items:flex-end;margin-bottom:6px}
+.hero .duo .pslot:first-child{margin-inline-end:-22px;z-index:2;transform:rotate(-6deg)}
+.hero .duo .pslot:last-child{transform:rotate(6deg)}
+.hero h1{font-size:3.2rem;font-weight:800;line-height:1.1;text-shadow:0 3px 0 rgba(255,255,255,.45)}
+.hero .tag{
+  display:inline-block;background:var(--cream);border-radius:999px;padding:8px 20px;margin-top:8px;
+  font-weight:700;font-size:.95rem;color:var(--ink);box-shadow:var(--shadow);
+}
+.hero .sub{margin-top:12px;font-size:.85rem;color:var(--ink-soft);font-weight:600}
+
+.card{
+  background:var(--cream);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:20px;margin-top:16px;
+}
+.card h3{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.card p{font-size:.92rem;line-height:1.8;color:var(--ink-soft)}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  border-radius:20px;padding:16px;font-size:1.1rem;font-weight:800;font-family:"Baloo Bhaijaan 2";
+  transition:transform .15s, box-shadow .15s;box-shadow:var(--shadow);
+}
+.btn:active{transform:scale(.97)}
+.btn.gold{background:linear-gradient(160deg,var(--gold-hi),var(--gold));color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.15)}
+.btn.cream{background:var(--cream);color:var(--ink)}
+.btn.ghost{background:transparent;box-shadow:none;border:2.5px dashed var(--ink-soft);color:var(--ink-soft);font-size:.95rem;padding:12px}
+
+/* ═══ رموز الأمان ═══ */
+.safety{display:flex;gap:8px;margin-top:14px}
+.safety button{
+  flex:1;border-radius:18px;padding:11px 6px;font-weight:800;font-size:.85rem;
+  display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:var(--shadow);
+  transition:transform .15s;
+}
+.safety button:active{transform:scale(.94)}
+.safety .go{background:var(--her-soft);color:var(--her-deep)}
+.safety .slow{background:var(--c-surprise-soft);color:#8A6010}
+.safety .skip{background:var(--him-soft);color:var(--him-deep)}
+.safety button span{font-size:1.15rem}
+.safety button small{font-weight:600;font-size:.62rem;opacity:.75}
+
+/* ═══ اختيار المستوى ═══ */
+.lvls{display:grid;gap:12px;margin-top:14px}
+.lvl{
+  display:flex;align-items:center;gap:14px;background:var(--cream);border-radius:22px;
+  padding:16px;box-shadow:var(--shadow);border:3px solid transparent;transition:all .2s;text-align:start;
+}
+.lvl.on{border-color:var(--gold);background:var(--cream-2);transform:scale(1.02)}
+.lvl .ic{font-size:2rem;flex:none}
+.lvl b{font-family:"Baloo Bhaijaan 2";font-size:1.1rem;font-weight:800;display:block}
+.lvl small{font-size:.8rem;color:var(--ink-soft);line-height:1.6;display:block;margin-top:2px}
+.lvl .chk{margin-inline-start:auto;width:26px;height:26px;border-radius:50%;border:3px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;font-size:.8rem}
+.lvl.on .chk{background:var(--gold);border-color:var(--gold)}
+
+/* ═══ شبكة الأنماط ═══ */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.mode{
+  background:var(--cream);border-radius:22px;padding:18px 14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  transition:transform .15s;
+}
+.mode:active{transform:scale(.95)}
+.mode .ic{font-size:2.1rem}
+.mode b{font-family:"Baloo Bhaijaan 2";font-size:1rem;font-weight:800}
+.mode small{font-size:.72rem;color:var(--ink-soft);line-height:1.5}
+.mode.wide{grid-column:1/-1;flex-direction:row;text-align:start}
+.mode.wide .txt{flex:1}
+
+/* ═══ فئات البطاقات ═══ */
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.catb{
+  border-radius:20px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  box-shadow:var(--shadow);font-weight:800;transition:transform .15s;position:relative;
+  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.catb:active{transform:scale(.94)}
+.catb .ic{font-size:1.7rem;text-shadow:none}
+.catb b{font-family:"Baloo Bhaijaan 2";font-size:.95rem}
+.catb small{font-size:.65rem;opacity:.9;font-weight:600}
+.catb.off{opacity:.35;filter:grayscale(.7)}
+.catb .lock{position:absolute;top:8px;inset-inline-end:10px;font-size:.8rem}
+
+/* ═══ شاشة البطاقة ═══ */
+.playtop{display:flex;align-items:center;gap:10px;padding:14px 2px 4px}
+.playtop .back{width:42px;height:42px;border-radius:14px;background:var(--cream);box-shadow:var(--shadow);display:grid;place-items:center;font-size:1.1rem;flex:none}
+.turnchip{
+  display:flex;align-items:center;gap:9px;background:var(--cream);border-radius:999px;
+  padding:5px 16px 5px 5px;box-shadow:var(--shadow);margin-inline-start:auto;
+}
+.turnchip b{font-size:.9rem;font-weight:800}
+.turnchip small{display:block;font-size:.65rem;color:var(--ink-soft);font-weight:600}
+
+.stage{perspective:1200px;margin-top:18px}
+.flip{position:relative;width:100%;min-height:420px;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,.15,.25,1.1)}
+.flip.flipped{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:32px;box-shadow:var(--shadow-lg);overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+/* ظهر البطاقة: صورة الشريك صاحب الدور */
+.face.backside{
+  background:
+    radial-gradient(500px 300px at 50% 0%, var(--sun-hi), transparent 70%),
+    linear-gradient(170deg,#FFCB2E,var(--sun-deep));
+  gap:14px;padding:26px;cursor:pointer;
+}
+.face.backside .frame{
+  padding:8px;border-radius:50%;
+  background:linear-gradient(160deg,var(--gold-hi),var(--gold));
+  box-shadow:0 10px 26px rgba(120,78,0,.35);
+}
+.face.backside .who{font-family:"Baloo Bhaijaan 2";font-size:1.5rem;font-weight:800;color:var(--ink)}
+.face.backside .hint{
+  background:rgba(255,255,255,.75);border-radius:999px;padding:8px 22px;font-weight:700;font-size:.9rem;color:var(--ink);
+  animation:pulse 1.6s infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+/* وجه البطاقة */
+.face.front{transform:rotateY(180deg);background:var(--cream);padding:0;justify-content:flex-start}
+.face.front .chead{
+  width:100%;padding:16px 20px;display:flex;align-items:center;gap:10px;color:#fff;
+  font-family:"Baloo Bhaijaan 2";font-weight:800;font-size:1.05rem;text-shadow:0 1px 3px rgba(0,0,0,.15);
+}
+.face.front .chead .lvltag{margin-inline-start:auto;background:rgba(255,255,255,.25);border-radius:999px;padding:3px 12px;font-size:.72rem;font-family:"IBM Plex Sans Arabic";font-weight:700}
+.face.front .ctext{
+  flex:1;display:grid;place-items:center;padding:26px 24px;width:100%;
+  font-size:1.3rem;font-weight:700;line-height:2;text-align:center;
+}
+.face.front .calt{
+  width:calc(100% - 32px);margin:0 16px 8px;background:var(--cream-2);border:2px dashed var(--gold);
+  border-radius:18px;padding:12px 14px;font-size:.85rem;line-height:1.8;color:var(--ink-soft);
+}
+.face.front .calt b{color:var(--gold);font-size:.8rem}
+.face.front .cfoot{width:100%;padding:6px 16px 16px;display:flex;gap:8px}
+.face.front .cfoot .btn{padding:13px;font-size:.95rem;border-radius:16px}
+.optional{position:absolute;top:14px;inset-inline-start:16px;background:rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:2px 10px;font-size:.62rem;font-weight:700}
+
+/* ═══ المؤقت ═══ */
+.timerbox{text-align:center;padding:10px 0}
+.timerbox .ring{
+  width:170px;height:170px;border-radius:50%;margin:14px auto;position:relative;
+  display:grid;place-items:center;
+  background:conic-gradient(var(--gold) var(--pct,100%), var(--line) 0);
+}
+.timerbox .ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--cream)}
+.timerbox .ring b{position:relative;font-family:"Baloo Bhaijaan 2";font-size:2.6rem;font-weight:800}
+.timerbox .tstart{margin-top:6px}
+
+/* ═══ العجلة ═══ */
+.wheelwrap{position:relative;width:min(320px,82vw);margin:22px auto 8px}
+.wheelptr{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
+  border-top:26px solid var(--ink);filter:drop-shadow(0 3px 3px rgba(0,0,0,.25));
+}
+.wheel{
+  width:100%;aspect-ratio:1;border-radius:50%;position:relative;
+  border:10px solid var(--cream);box-shadow:var(--shadow-lg);
+  transition:transform 4.2s cubic-bezier(.12,.6,.08,1);
+}
+.wheel .seg{
+  position:absolute;top:50%;left:50%;transform-origin:0 0;
+  font-weight:800;color:#fff;font-size:.95rem;font-family:"Baloo Bhaijaan 2";
+  text-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.wheelhub{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
+  width:64px;height:64px;border-radius:50%;background:var(--cream);box-shadow:var(--shadow);
+  display:grid;place-items:center;font-size:1.6rem;
+}
+
+/* ═══ الأبواب ═══ */
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.door{
+  aspect-ratio:.72;border-radius:20px 20px 14px 14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:#fff;font-weight:800;transition:transform .2s;position:relative;overflow:hidden;
+}
+.door::before{content:"";position:absolute;inset:8px;border:2.5px solid rgba(255,255,255,.4);border-radius:14px 14px 10px 10px}
+.door:active{transform:scale(.94) rotate(-1deg)}
+.door .ic{font-size:2rem}
+.door b{font-family:"Baloo Bhaijaan 2";font-size:.9rem;position:relative}
+
+/* ═══ الدفتر والنجوم ═══ */
+.starbar{
+  display:flex;align-items:center;gap:4px;background:var(--cream);border-radius:999px;
+  padding:10px 18px;box-shadow:var(--shadow);justify-content:center;margin-top:14px;font-size:1.4rem;
+}
+.starbar .s{filter:grayscale(1);opacity:.35;transition:all .3s}
+.starbar .s.on{filter:none;opacity:1;transform:scale(1.1)}
+.entry{background:var(--cream);border-radius:20px;padding:16px;margin-top:12px;box-shadow:var(--shadow)}
+.entry time{font-size:.7rem;color:var(--ink-soft);font-weight:700}
+.entry .row{display:flex;gap:8px;margin-top:8px;font-size:.88rem;line-height:1.7}
+.entry .row .k{flex:none;font-size:1rem}
+.field{margin-top:12px}
+.field label{display:block;font-weight:800;font-size:.88rem;margin-bottom:6px}
+.field input,.field textarea{
+  width:100%;background:#fff;border:2.5px solid var(--line);border-radius:16px;padding:12px 14px;
+  font-size:.95rem;outline:none;transition:border-color .2s;resize:none;
+}
+.field input:focus,.field textarea:focus{border-color:var(--gold)}
+
+/* ═══ نافذة منبثقة ═══ */
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.modal .bg{position:absolute;inset:0;background:rgba(74,46,20,.45);backdrop-filter:blur(3px)}
+.modal .sheet{
+  position:relative;width:100%;max-width:560px;background:var(--cream);border-radius:30px 30px 0 0;
+  padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:86vh;overflow:auto;
+  animation:up .3s cubic-bezier(.2,.9,.3,1.1);
+}
+@keyframes up{from{transform:translateY(60px);opacity:0}}
+.modal .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+
+/* ═══ تنقل سفلي ═══ */
+nav.bottom{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:8px 14px calc(10px + env(safe-area-inset-bottom));
+  display:flex;justify-content:center;pointer-events:none;
+}
+nav.bottom .row{
+  pointer-events:auto;display:flex;gap:4px;background:var(--cream);border-radius:26px;
+  padding:8px;box-shadow:var(--shadow-lg);width:100%;max-width:420px;
+}
+nav.bottom button{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;
+  border-radius:18px;font-size:1.2rem;transition:background .2s;
+}
+nav.bottom button .lbl{font-size:.65rem;font-weight:800}
+nav.bottom button.active{background:linear-gradient(160deg,var(--gold-hi),var(--gold));color:#fff}
+
+.view{display:none;animation:fade .25s}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.note{
+  display:flex;gap:10px;background:var(--cream-2);border-radius:18px;padding:13px 15px;margin-top:12px;
+  font-size:.82rem;line-height:1.8;color:var(--ink-soft);
+}
+.note .ic{flex:none;font-size:1.1rem}
+.pill{display:inline-block;background:var(--cream-2);border-radius:999px;padding:4px 14px;font-size:.75rem;font-weight:700;color:var(--ink-soft);margin:3px 2px}
+.center{text-align:center}
+.toast{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-90px);z-index:99;
+  background:var(--ink);color:#FFF3D6;border-radius:999px;padding:11px 24px;font-weight:700;font-size:.9rem;
+  box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.2,.9,.3,1.2);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:98;overflow:hidden}
+.confetti i{position:absolute;top:-20px;font-size:1.3rem;animation:drop 2.6s linear forwards}
+@keyframes drop{to{transform:translateY(110vh) rotate(540deg);opacity:.4}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<nav class="bottom"><div class="row">
+  <button data-v="home" class="active"><span>🏠</span><span class="lbl">الرئيسية</span></button>
+  <button data-v="modes"><span>🎲</span><span class="lbl">الأنماط</span></button>
+  <button data-v="book"><span>📔</span><span class="lbl">دفترنا</span></button>
+  <button data-v="settings"><span>⚙️</span><span class="lbl">الإعدادات</span></button>
+</div></nav>
+
+<div class="modal" id="modal"><div class="bg" onclick="closeModal()"></div><div class="sheet" id="modal-body"></div></div>
+<div class="toast" id="toast"></div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+"use strict";
+/* ═══════════════ البيانات ═══════════════ */
+const CATS = {
+  truth:   {name:"صراحة",      icon:"💬", color:"var(--c-truth)",    soft:"var(--c-truth-soft)",    desc:"أسئلة عن الشعور والتفضيلات والذكريات", minLvl:1},
+  gesture: {name:"لفتة",       icon:"💌", color:"var(--c-gesture)",  soft:"var(--c-gesture-soft)",  desc:"كلمات تقدير ورسائل ومبادرات لطيفة",     minLvl:1},
+  passion: {name:"قرب وشغف",   icon:"🔥", color:"var(--c-passion)",  soft:"var(--c-passion-soft)",  desc:"قبلات ورقص وتدليك وانجذاب مباشر",       minLvl:2},
+  deep:    {name:"عمق خاص",    icon:"❤️‍🔥", color:"var(--c-deep)",   soft:"var(--c-deep-soft)",     desc:"تحديات أكثر جرأة وتعبيرًا عن الرغبات",   minLvl:3},
+  laugh:   {name:"نضحك سويًا", icon:"😄", color:"var(--c-laugh)",    soft:"var(--c-laugh-soft)",    desc:"عقوبات مرحة وتخمين وتمثيل",             minLvl:1},
+  relax:   {name:"استرخاء",    icon:"🌙", color:"var(--c-relax)",    soft:"var(--c-relax-soft)",    desc:"ختام هادئ وتنفس وامتنان",               minLvl:1},
+  surprise:{name:"مفاجأة",     icon:"✨", color:"var(--c-surprise)", soft:"var(--c-surprise-soft)", desc:"اختيارات وتبديل أدوار وتحديات مزدوجة",   minLvl:1},
+};
+
+const DECK = {
+truth:[
+ {t:"ما اللفتة التي تجعلك تشعر بأنك مرغوب ومحبوب مني؟",l:2},
+ {t:"متى تشعر بانجذاب أكبر نحوي؟ ما الذي أصنعه أو أقوله في تلك اللحظة؟",l:2},
+ {t:"ما تفصيل في مظهري أو حضوري يلفت انتباهك دائمًا؟",l:1},
+ {t:"ما نوع الأجواء التي تجعلك مرتاحًا للقرب: موسيقى، هدوء، إضاءة، أم وقت محدد؟",l:1},
+ {t:"ما ذكرى عاطفية بيننا تحب أن نعيد صنع شعورها؟",l:1},
+ {t:"أكمل العبارة: «أشعر برغبة أكبر في الاقتراب منك عندما…»",l:2},
+ {t:"ما كلمة أو عبارة رومانسية تحب أن تسمعها مني في وقت خاص؟",l:2},
+ {t:"ما اللفتة التي كنت تتردد في طلبها وتحب أن نتحدث عنها بصراحة؟",l:3},
+ {t:"كيف يمكنني أن أجعلك تشعر بثقة أكبر وجاذبية أكثر؟",l:2},
+ {t:"ماذا تحب أن يكون دورك في التخطيط لأمسية خاصة بيننا؟",l:1},
+ {t:"ما الذي يجعلك تعرف أنني حاضر معك في اللحظة، لا مجرد مشغول؟",l:1},
+ {t:"اختر شيئًا واحدًا سنجربه هذه الليلة ليكون أكثر قربًا من المعتاد.",l:3},
+ {t:"ما أول ما جذبك فيّ عندما التقينا، وهل ما زال يجذبك اليوم؟",l:1},
+ {t:"ما اللحظة التي شعرت فيها بأننا أقرب ما نكون في الفترة الأخيرة؟",l:1},
+ {t:"ما الشيء الذي أفعله من دون انتباه ويأسرك في كل مرة؟",l:2},
+ {t:"لو خططتَ لنا أمسية مثالية في البيت، كيف ستكون من البداية إلى النهاية؟",l:2},
+ {t:"ما الذي تتمنى أن أبادر به أكثر من دون أن تطلبه؟",l:3},
+ {t:"صف شعورك عندما أقترب منك فجأة من دون مناسبة.",l:2},
+],
+gesture:[
+ {t:"اكتب لشريكك رسالة قصيرة من ثلاث جمل تصف ما يعنيه لك، واقرأها بصوت هادئ.",l:1},
+ {t:"امدح ثلاث صفات في شخصية شريكك جعلتك تختاره شريكًا للحياة.",l:1},
+ {t:"اذكر موقفًا وقف فيه شريكك معك ولم تشكره بما يكفي، واشكره الآن.",l:1},
+ {t:"قدّم لشريكك وعدًا لطيفًا تنفذه خلال هذا الأسبوع، وسجلاه في دفتر بينكما.",l:1},
+ {t:"أحضر لشريكك مشروبه المفضل أو شيئًا يحبه الآن، وقدمه بطريقة مبالغ في رسميتها.",l:1},
+ {t:"أمسك يد شريكك وقل له ثلاثة أشياء تشكره عليها هذا الشهر.",l:1},
+ {t:"اهمس في أذن شريكك بعبارة إعجاب لم تقلها من قبل.",l:2},
+ {t:"رتب لشريكك مكان جلوس مريحًا الآن: وسادة، إضاءة، ومشروب، ثم اجلس بجانبه.",l:1},
+ {t:"اختر أغنية تذكرك بشريكك وشغلها الآن واحكِ له لماذا.",l:1},
+ {t:"قل لشريكك: «لو عاد بي الزمن لاخترتك مجددًا لأن…» وأكمل بصدق.",l:2},
+ {t:"صف يوم زفافكما أو خطوبتكما من وجهة نظرك: ماذا شعرت حين رأيت شريكك؟",l:1},
+ {t:"اكتب على ورقة صغيرة لفتة ستفاجئ بها شريكك خلال ثلاثة أيام ولا تخبره بها؛ ضعها في الدفتر.",l:2},
+ {t:"انظر في عيني شريكك وقل: «أكثر ما أطمئن له فيك…».",l:1},
+ {t:"قدّم اعتذارًا لطيفًا عن موقف صغير مضى، واختماه بعناق.",l:2},
+],
+passion:[
+ {t:"اجلسا متقابلين وامسكا اليدين، ثم انظرا في عيني بعضكما لمدة 45 ثانية.",l:2},
+ {t:"امنح شريكك عناقًا طويلًا، ثم اسأله: «هل تريد أن أستمر قليلًا؟»",l:2},
+ {t:"قبّل يد شريكك أو جبينه أو خده، ثم قل ما الذي تشعر به وأنت قريب منه.",l:2},
+ {t:"اختارا أغنية وارقصا قريبين لمدة دقيقة، مع ترك قيادة الحركة لمن يبدأ.",l:2,alt:"اختارا عناقًا طويلًا مع الأغنية بدل الرقص."},
+ {t:"قدّم تدليكًا لطيفًا للكتفين أو اليدين لمدة دقيقتين، واسأل إن كان الإيقاع مناسبًا.",l:2},
+ {t:"اختر تفصيلًا في مظهر شريكك اليوم وامدحه بلغة مباشرة ومحترمة.",l:2},
+ {t:"اهمس بعبارة رومانسية خاصة بكما، ثم انتظر رد شريكك.",l:2},
+ {t:"يغمض أحدكما عينيه ويطلب من الآخر لمسة متفقًا عليها على اليد أو الكتف أو الوجه لمدة 20 ثانية.",l:2},
+ {t:"تحدي النظرات: من يضحك أولًا يقدم للآخر قبلة أو عناقًا يختاره الطرف المتلقي.",l:2},
+ {t:"قدّم حركة رقص جذابة وأنيقة لمدة 20 ثانية، ثم يرد الطرف الآخر بمديح صريح.",l:2,alt:"استبدل الرقصة بمديح مباشر لمدة 30 ثانية وأنت ممسك بيد شريكك."},
+ {t:"خذ بيد شريكك وقده إلى مكان مريح تختارانه لإكمال السهرة، أو اطلب منه أن يقودك.",l:2},
+ {t:"قولا معًا: «نترك الليلة مساحة لقربنا»، ثم اختارا أول لفتة مشتركة.",l:2},
+ {t:"تبادلا قبلة دافئة أو اختارا لفتة جسدية رومانسية بديلة تناسبكما.",l:2},
+ {t:"اكتب «أحب عندما تقترب مني لأن…»، واقرأها وأنت قريب من شريكك.",l:2},
+ {t:"اختارا موسيقى هادئة، ثم يضع كل منكما يده على يد الآخر لدقيقتين بلا حديث.",l:2},
+ {t:"يختار أحدكما ما يريد تلقيه: رقصة أو تدليكًا أو قبلة أو عناقًا، ويستجيب الآخر بالطريقة التي يوافق عليها.",l:2},
+],
+deep:[
+ {t:"قل لشريكك بوضوح ما اللفتة الرومانسية أو الجسدية التي تتمنى تلقيها الليلة، ثم اتفقا على ما يناسبكما.",l:3},
+ {t:"اختارا أربع دقائق من قرب هادئ بلا هواتف؛ يقود أحدكما الإيقاع ويعبّر الآخر إن أراد الاستمرار أو التغيير.",l:3},
+ {t:"صف بجرأة وبكلمات محترمة ما أكثر ما يجذبك في حضور شريكك وشخصيته.",l:3},
+ {t:"أكمل: «أشعر أنني أكثر تقبلًا وقربًا منك عندما…»، ثم اختارا فعلًا صغيرًا يترجم الإجابة الآن.",l:3},
+ {t:"تقاسما الأدوار: أحدكما يختار الأجواء — موسيقى ومكانًا — والآخر يختار اللفتة الرومانسية التالية.",l:3},
+ {t:"اختارا كلمة «استمرار» وكلمة «إبطاء»، ثم طبقا تحديًا من قرب وشغف باستخدامهما بوضوح.",l:3},
+ {t:"اذكر ما الذي يجعلك أكثر ثقة للتعبير عن رغبتك، ثم قدّم لشريكك تأكيدًا بكلمة أو لمسة متفق عليها.",l:3},
+ {t:"اكتبا على بطاقة مغلقة فكرة رومانسية خاصة تريدان استكشافها لاحقًا، وحددا وقتًا مناسبًا للحديث عنها.",l:3},
+ {t:"امنح شريكك دقيقة مديح هادئ حول جاذبيته وحضوره، من دون مزاح أو تهرب.",l:3},
+ {t:"اختارا نهاية هذه الجولة: قبلة أطول، رقصة أقرب، عناق ممتد، أو استكمال الوقت الخاص بعيدًا عن البطاقات.",l:3},
+ {t:"يختار أحدكما عبارة يبدأ بها الوقت الخاص، ويختار الآخر طريقة الرد التي تجعله يشعر بالقرب.",l:3},
+ {t:"اسأل شريكك: «كيف تحب أن أبادر اليوم؟»، ثم اتفقا على مبادرة واحدة قابلة للتنفيذ الآن.",l:3},
+ {t:"تبادلا اعترافًا قصيرًا حول ما يجعلكما فخورين بجاذبية بعضكما في هذه المرحلة من الزواج.",l:3},
+ {t:"أطفئا الشاشات لخمس دقائق، واتركا لأنفسكما اختيار الطريقة التي ستقضيان بها هذا الوقت معًا.",l:3},
+ {t:"اختارا كلمة سر خاصة تعني «أرغب في وقت قريب معك»، ثم استخدماها قبل نهاية الليلة.",l:3},
+ {t:"أعطِ شريكك حرية اختيار اللفتة التالية من فئتي القرب أو العمق، مع حقك في طلب تعديلها.",l:3},
+ {t:"شاركا ذكرى ليلة أو موعد جعل أحدكما يشعر بالقرب الشديد، ثم اختارا عنصرًا واحدًا لإعادته الآن.",l:3},
+ {t:"اختارا شيئًا جديدًا بسيطًا في الأجواء أو الموسيقى أو أسلوب الموعد لتجربته معًا.",l:3},
+ {t:"قل: «أحب أن أراك مرتاحًا وواثقًا معي»، ثم اطلب من شريكك أن يخبرك ما الذي يساعده على ذلك.",l:3},
+ {t:"اختتما المستوى العميق بقبلة أو عناق أو وقت خاص يختاره كلاكما، ثم أزيلا البطاقات من أمامكما.",l:3},
+],
+laugh:[
+ {t:"مثّل عادة لطيفة عند شريكك؛ إن أخطأ في تخمينها، يقدم لك قبلة أو عناقًا يختاره هو وتقبله أنت.",l:2},
+ {t:"صف أول لقاء بينكما كأنه إعلان سينمائي مبالغ فيه؛ من يضحك أولًا يختار للآخر لفتة رومانسية.",l:1},
+ {t:"اخترعا عنوانًا مضحكًا لفصل من قصة زواجكما، ثم أبدعا مشهد النهاية بلقطة رومانسية.",l:1},
+ {t:"خمّن اللفتة التي تحسّن مزاج شريكك بعد يوم طويل؛ إن أخطأت، نفّذ لفتة بديلة من اختيار الطرف الآخر.",l:1},
+ {t:"قولا عبارة رومانسية بنبرات مختلفة حتى يضحك أحدكما؛ الخاسر يمدح جاذبية الفائز في ثلاث جمل.",l:1},
+ {t:"ابتكرا رقصة سرية قصيرة؛ من ينسى الحركة يؤدي رقصة جذابة منفردة لمدة 15 ثانية.",l:2},
+ {t:"قلّد طريقة شريكك في الرد على الهاتف عندما يتصل به رقم غريب.",l:1},
+ {t:"تحدث لمدة 20 ثانية بلهجة أخرى تمدح فيها طبخ شريكك أو ذوقه.",l:1},
+ {t:"اخترعا اسمًا سريًا مضحكًا لبعضكما لا يستخدم إلا في البيت.",l:1},
+ {t:"مثّل مشهد «أول مرة رأيتك فيها» بحركات صامتة، وعلى شريكك التخمين.",l:1},
+ {t:"من منكما يصمد أطول من دون ابتسامة والآخر يحاول إضحاكه؟ الخاسر ينفذ لفتة يختارها الفائز.",l:1},
+ {t:"غنِّ مقطعًا من أغنية رومانسية بطريقة مبالغ فيها؛ إن ضحك شريكك، يشاركك الغناء في الجولة نفسها.",l:1},
+],
+relax:[
+ {t:"تنفّسا ببطء وبالإيقاع نفسه لخمس دورات كاملة.",l:1},
+ {t:"قل لشريكك شيئًا أعجبك في تجاوبه أو صراحته خلال اللعب.",l:1},
+ {t:"اجلسا دقيقة كاملة من دون هواتف أو كلام، مع لمس اليد إن كان مناسبًا.",l:1},
+ {t:"اذكر لفتة واحدة ستقدمها لشريكك خلال الأسبوع المقبل.",l:1},
+ {t:"اختارا: هل ستكملان وقتًا خاصًا بعيدًا عن البطاقات أم ستختمان الليلة بنشاط مريح؟",l:1},
+ {t:"أنهِ الجلسة بعبارة: «أقدّر فيك اليوم…».",l:1},
+ {t:"شغّلا موسيقى هادئة وأغمضا أعينكما دقيقة، ثم تشاركا ما شعر به كل منكما.",l:1},
+ {t:"تبادلا تدليكًا خفيفًا للكتفين لمدة دقيقة لكل طرف، بالإيقاع الذي يطلبه المتلقي.",l:1},
+ {t:"اذكرا أجمل لحظة في هذه الجلسة وسجلاها في دفتر بينكما.",l:1},
+ {t:"اتكئا على بعضكما في صمت مريح حتى نهاية الأغنية.",l:1},
+ {t:"قولا معًا ثلاثة أشياء ممتنان لها في بيتكما هذا.",l:1},
+ {t:"اختما بعناق طويل من دون استعجال، وليكن آخر كلام الليلة كلمة شكر.",l:1},
+],
+surprise:[
+ {t:"تبديل أدوار: نفّذا التحدي الأخير نفسه لكن بعكس الأدوار.",l:2},
+ {t:"اختر لشريكك بطاقة من فئتي القرب أو العمق، وله حق طلب تعديلها.",l:3},
+ {t:"تحدٍّ مزدوج: اسحبا بطاقتين ونفذاهما بالترتيب الذي تتفقان عليه.",l:2},
+ {t:"يختار أحدكما الفعل ويختار الآخر مكانه أو مدته.",l:2},
+ {t:"أعيدا أفضل تحدٍّ في الجلسة بطريقة أطول أو أكثر قربًا.",l:3},
+ {t:"الطرف الآخر يختار لك: بطاقة صراحة تجيب عنها، أو لفتة تنفذها له.",l:1},
+ {t:"للجولتين القادمتين: كل بطاقة تنتهي بعناق أو قبلة تختارانها معًا.",l:2},
+ {t:"حرية كاملة: يطلب شريكك أي لفتة من مستوى الجلسة وتنفذها بطريقتك.",l:3},
+ {t:"بدّلا مقعديكما واجلسا أقرب مما كنتما، ثم أكملا اللعب.",l:1},
+ {t:"مؤقت مفاجئ: 60 ثانية من المديح المتبادل من دون توقف، تبدأ الآن.",l:1},
+ {t:"القرار للآخر: يقرر شريكك كيف تختمان هذه الجولة — رقصة أو قبلة أو همسة.",l:2},
+ {t:"كلمة السر: اختارا كلمة تعني «أرغب في وقت قريب معك» واستخدماها قبل نهاية الليلة.",l:3},
+],
+};
+
+/* تحديات الوقت والشرارة */
+const TIMERS = [
+ {t:"قل نكتة سخيفة",s:30,r:"إن لم تضحك الزوجة، يقبلها زوجها قبلة دافئة بالطريقة التي تناسبها."},
+ {t:"عبارة عميقة",s:30,r:"تقول الزوجة عبارة مؤثرة؛ إن لم يتأثر الزوج، تقدم رقصة مثيرة وأنيقة من دون لمسه لمدة 30 ثانية."},
+ {t:"تحدي النظرات",s:45,r:"أول من يضحك أو يدير عينيه يقدم للآخر قبلة أو عناقًا يختاره الطرف المتلقي."},
+ {t:"تخمين التفضيل",s:60,r:"من يخطئ يقدّم دقيقة مديح مباشر عن جاذبية شريكه."},
+ {t:"أغنية القرب",s:60,r:"من يخطئ باسم الأغنية يقود رقصة قريبة لمدة دقيقة."},
+ {t:"رسالة رغبة",s:120,r:"يكتب كل طرف لفتة رومانسية يرغب بها؛ يختاران واحدة لتطبيقها الليلة أو لاحقًا."},
+];
+
+/* السيناريوهات الجاهزة */
+const SCENARIOS = [
+ {id:"light", name:"ليلة خفيفة", time:"20 دقيقة", icon:"🌤️", lvl:2,
+  q:["laugh","laugh","truth","truth","passion","relax"]},
+ {id:"bold", name:"موعد منزلي جريء", time:"45 دقيقة", icon:"🌹", lvl:3,
+  q:["truth","truth","passion","passion","passion","passion","timer","timer","deep","deep","relax"]},
+ {id:"deepnight", name:"عمق وتقبّل", time:"60–90 دقيقة", icon:"🕯️", lvl:3,
+  q:["truth","deep","deep","deep","deep","deep","deep","surprise","surprise","surprise","surprise","relax"]},
+ {id:"tired", name:"بعد يوم متعب", time:"20–30 دقيقة", icon:"🛋️", lvl:1,
+  q:["relax","gesture","relax","gesture","relax"]},
+];
+
+const REWARDS = ["🍽️ موعد خارج المنزل","☕ إفطار هادئ معًا","📵 ليلة كاملة بلا هواتف","🎨 تجربة نشاط جديد معًا"];
+const LVLS = [
+ {n:1,name:"افتتاح دافئ",icon:"🕯️",desc:"ضحك وأسئلة ونظرات وإطراء مباشر — بداية هادئة"},
+ {n:2,name:"قرب وشغف",icon:"🌹",desc:"قبلات ورقص ولمس متفق عليه ومديح مباشر — جريء وممتع"},
+ {n:3,name:"عمق وجرأة",icon:"🔥",desc:"اعترافات رغبة ومبادرة وتحديات جريئة قابلة للتخصيص"},
+];
+const WHEEL_SEGS = [
+ {name:"اسأل",icon:"💬",cat:"truth",color:"#3E7BC0"},
+ {name:"أشِد",icon:"💌",cat:"gesture",color:"#E0708D"},
+ {name:"تحرّك",icon:"💃",cat:"laugh",color:"#2E9962"},
+ {name:"اقترب",icon:"🔥",cat:"passion",color:"#E8862E"},
+ {name:"فاجئ",icon:"✨",cat:"surprise",color:"#C9922A"},
+ {name:"أكمل",icon:"❤️‍🔥",cat:"deep",color:"#B23A48"},
+];
+
+/* ═══════════════ الحالة ═══════════════ */
+const store = (k,v)=> v===undefined ? JSON.parse(localStorage.getItem("by-"+k)||"null") : localStorage.setItem("by-"+k, JSON.stringify(v));
+let S = {
+  lvl: store("lvl") || 2,
+  stars: store("stars") || 0,
+  journal: store("journal") || [],
+  promises: store("promises") || [],
+  turn: "him",
+  mode: null,
+  queue: null, qi: 0,
+  used: {},
+  played: 0,
+  bestCard: null,
+  wheelRot: 0,
+};
+
+/* ═══════════════ أدوات ═══════════════ */
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
+function confetti(){
+  const c=$("#confetti");c.innerHTML="";
+  const em=["💛","💖","💚","⭐","✨"];
+  for(let i=0;i<26;i++){const s=document.createElement("i");s.textContent=em[i%em.length];
+    s.style.left=Math.random()*100+"%";s.style.animationDelay=(Math.random()*.9)+"s";c.appendChild(s);}
+  setTimeout(()=>c.innerHTML="",3400);
+}
+function openModal(html){$("#modal-body").innerHTML='<div class="grip"></div>'+html;$("#modal").classList.add("open");}
+function closeModal(){$("#modal").classList.remove("open");}
+
+/* خانة صورة الشريك: ملف img/ ← أو صورة مرفوعة من الإعدادات ← أو مكان محجوز أنيق */
+function pslot(who, size){
+  const up = store("img-"+who);
+  const src = up || ("img/"+(who==="him"?"husband":"wife")+".png");
+  const ph = who==="him" ? "🤵" : "👰";
+  return `<div class="pslot ${who} ${size}">
+    <img src="${src}" onload="this.parentElement.classList.add('loaded')" onerror="this.remove()" alt="">
+    <div class="ph">${ph}</div>
+  </div>`;
+}
+const whoName = w => w==="him" ? "الزوج" : "الزوجة";
+
+/* سحب بطاقة دون تكرار حتى تنفد الفئة */
+function draw(cat){
+  const pool = DECK[cat].map((c,i)=>({...c,i})).filter(c=>c.l<=S.lvl);
+  if(!pool.length) return null;
+  S.used[cat] = S.used[cat]||[];
+  let fresh = pool.filter(c=>!S.used[cat].includes(c.i));
+  if(!fresh.length){S.used[cat]=[];fresh=pool;}
+  const card = fresh[Math.floor(Math.random()*fresh.length)];
+  S.used[cat].push(card.i);
+  return card;
+}
+
+/* ═══════════════ العروض ═══════════════ */
+const views = {};
+
+views.home = () => `
+<header class="top">
+  <div class="brand">
+    ${pslot("him","sm")}${pslot("her","sm")}
+    <div><b>بيننا</b><small>صراحة وجرأة للمتزوجين</small></div>
+  </div>
+  <button class="hbtn" onclick="showRules()" title="قواعد اللعبة">📜</button>
+</header>
+<div class="hero">
+  <div class="duo">${pslot("him","xl")}${pslot("her","xl")}</div>
+  <h1>بيننا</h1>
+  <div class="tag">وقت خاص، قرب حقيقي، وجرأة بينكما 💛</div>
+  <div class="sub">زوج وزوجة فقط · من 20 إلى 90 دقيقة · لا رابح ولا خاسر</div>
+</div>
+
+<button class="btn gold" style="margin-top:20px" onclick="startSetup()">🌙 ابدأ الأمسية</button>
+<button class="btn cream" style="margin-top:12px" onclick="go('modes')">🎲 استكشفا أنماط اللعب</button>
+
+<div class="card">
+  <h3>⭐ نجوم القرب</h3>
+  <div class="starbar">${[0,1,2,3,4].map(i=>`<span class="s ${i < (S.stars%5===0&&S.stars>0?5:S.stars%5) ? "on":""}">⭐</span>`).join("")}</div>
+  <p class="center" style="margin-top:10px">جمعتما <b style="color:var(--gold)">${S.stars}</b> نجمة حتى الآن — كل 5 نجوم = مكافأة مشتركة 🎁</p>
+</div>
+
+<div class="note"><span class="ic">🔒</span><span><b>خصوصية تامة:</b> كل شيء يبقى على جهازكما فقط — لا حسابات، لا إنترنت، لا مشاركة. ما يقال في الجلسة يبقى بينكما.</span></div>
+<div class="note"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين، لا بصمت أحدهما أو تردده. الجرأة أجمل عندما تكون رغبة مشتركة.</span></div>
+`;
+
+views.modes = () => `
+<header class="top"><div class="brand"><b>🎲 أنماط اللعب</b><small style="margin:0"></small></div></header>
+<div class="modes">
+  <button class="mode wide" onclick="startSetup('cards')">
+    <span class="ic">🃏</span>
+    <span class="txt"><b>قلب البطاقات بالتناوب</b><br><small>النمط الأساسي — أحدكما يختار الفئة والبطاقة تُقلب لصاحب الدور</small></span>
+  </button>
+  <button class="mode" onclick="startSetup('wheel')"><span class="ic">🎡</span><b>عجلة المزاج الجريء</b><small>اسأل، أشِد، تحرّك، اقترب، فاجئ، أكمل</small></button>
+  <button class="mode" onclick="startSetup('timer')"><span class="ic">⏱️</span><b>تحدي الوقت والشرارة</b><small>مؤقت ونتائج مرحة رومانسية</small></button>
+  <button class="mode" onclick="startSetup('doors')"><span class="ic">🚪</span><b>ثلاثة أبواب</b><small>كلام، حركة، أم مفاجأة؟ 6 جولات وختام</small></button>
+  <button class="mode" onclick="showScenarios()"><span class="ic">📋</span><b>سيناريوهات جاهزة</b><small>أمسيات مرتبة من البداية للنهاية</small></button>
+  <button class="mode wide" onclick="showMessages()">
+    <span class="ic">💌</span>
+    <span class="txt"><b>صندوق الرسائل العميقة</b><br><small>يكتب كل طرف ثلاث أوراق ثم تُسحب رسالة كل جولة — الهدف أن يُسمع كل طلب من دون تهكم</small></span>
+  </button>
+  <button class="mode wide" onclick="startSetup('relaxnight')">
+    <span class="ic">🛋️</span>
+    <span class="txt"><b>أمسية الترويح عن النفس</b><br><small>النمط الهادئ — تنفس وموسيقى وامتنان، خيار مستقل لا تراجع</small></span>
+  </button>
+</div>`;
+
+/* ═══ إعداد الجلسة: درجة القرب ═══ */
+window.startSetup = (mode) => {
+  const m = mode || "cards";
+  openModal(`
+  <h3 class="disp" style="font-size:1.3rem;text-align:center">ما درجة قربكما الليلة؟ 💛</h3>
+  <p class="center" style="font-size:.82rem;color:var(--ink-soft);margin-top:4px">يحق لأي طرف تغيير النوع أو اختيار البديل أو إيقاف اللعبة في أي وقت</p>
+  <div class="lvls">
+    ${LVLS.map(L=>`
+    <button class="lvl ${S.lvl===L.n?"on":""}" onclick="pickLvl(${L.n},this)">
+      <span class="ic">${L.icon}</span>
+      <span><b>${L.name}</b><small>${L.desc}</small></span>
+      <span class="chk">✓</span>
+    </button>`).join("")}
+  </div>
+  <div class="safety" style="margin-top:18px">
+    <div class="go" style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--her-soft);color:var(--her-deep)"><span style="font-size:1.1rem">🟢</span><br>استمرار<br><small style="font-weight:600;font-size:.6rem">مناسب ويمكن رفعه</small></div>
+    <div style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--c-surprise-soft);color:#8A6010"><span style="font-size:1.1rem">🟡</span><br>أبطئ<br><small style="font-weight:600;font-size:.6rem">نسخة أخف</small></div>
+    <div style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--him-soft);color:var(--him-deep)"><span style="font-size:1.1rem">🔴</span><br>تجاوز<br><small style="font-weight:600;font-size:.6rem">بطاقة جديدة بلا سؤال</small></div>
+  </div>
+  <button class="btn gold" style="margin-top:18px" onclick="closeModal();beginMode('${m}')">لنبدأ ✨</button>
+  `);
+};
+window.pickLvl = (n,el)=>{S.lvl=n;store("lvl",n);document.querySelectorAll(".lvl").forEach(x=>x.classList.remove("on"));el.classList.add("on");};
+
+window.beginMode = (m) => {
+  S.mode=m; S.played=0; S.queue=null; S.qi=0;
+  if(m==="cards") return go("play");
+  if(m==="wheel") return go("wheel");
+  if(m==="timer") return go("timer");
+  if(m==="doors"){S.doorRound=0;return go("doors");}
+  if(m==="relaxnight"){S.queue=["relax","gesture","relax","relax"];S.qi=0;S.mode="scenario";return nextInQueue();}
+};
+
+/* ═══ نمط البطاقات: اختيار فئة ═══ */
+views.play = () => `
+${playTop("اختيار الفئة")}
+<div class="card" style="margin-top:14px">
+  <h3>${pslot(S.turn,"sm")} دور ${whoName(S.turn)} — اختر لون البطاقة</h3>
+  <p style="font-size:.8rem">${S.played>0 && (S.played+1)%3===0 ? "💡 اقتراح: كل ثالث بطاقة من «قرب وشغف» أو «عمق خاص» حتى لا تظل الجلسة كلامية!" : "أحدكما يختار اللون، والآخر له حق تعديل المستوى — ثم تُقلب البطاقة."}</p>
+</div>
+<div class="cats">
+  ${Object.entries(CATS).map(([k,c])=>{
+    const locked = c.minLvl > S.lvl;
+    return `<button class="catb ${locked?"off":""}" style="background:${c.color}" onclick="${locked?`toast('هذه الفئة تحتاج درجة ${LVLS[c.minLvl-1].name} — غيّراها من الإعدادات')`:`flipCard('${k}')`}">
+      ${locked?'<span class="lock">🔒</span>':""}
+      <span class="ic">${c.icon}</span><b>${c.name}</b><small>${c.desc}</small>
+    </button>`;
+  }).join("")}
+</div>
+<button class="btn ghost" style="margin-top:16px" onclick="endSession()">🌙 إنهاء الجلسة وتسجيلها في الدفتر</button>
+`;
+
+function playTop(sub){
+  return `<div class="playtop">
+    <button class="back" onclick="go('modes')">→</button>
+    <div><b class="disp" style="font-size:1.1rem">بيننا</b><small style="display:block;font-size:.68rem;color:var(--ink-soft);font-weight:600">${sub}</small></div>
+    <div class="turnchip">${pslot(S.turn,"sm")}<span><b>${whoName(S.turn)}</b><small>صاحب الدور</small></span></div>
+  </div>`;
+}
+
+/* ═══ عرض البطاقة (قلب ثلاثي الأبعاد) ═══ */
+window.flipCard = (cat, keepTurn) => {
+  const card = draw(cat);
+  if(!card) return toast("لا توجد بطاقات بهذا المستوى هنا");
+  S.currentCard = card; S.currentCat = cat;
+  const c = CATS[cat];
+  app.innerHTML = `
+  ${playTop(c.name)}
+  <div class="stage">
+    <div class="flip" id="flip" onclick="this.classList.add('flipped')">
+      <div class="face backside">
+        <div class="frame">${pslot(S.turn,"xl")}</div>
+        <div class="who">بطاقة ${whoName(S.turn)}</div>
+        <div class="hint">اضغط لقلب البطاقة 🃏</div>
+      </div>
+      <div class="face front">
+        ${card.l>=3?'<span class="optional">اختياري — الاختيار جزء من متعة اللعبة</span>':""}
+        <div class="chead" style="background:${c.color}">
+          <span>${c.icon}</span><span>${c.name}</span>
+          <span class="lvltag">${LVLS[card.l-1].icon} ${LVLS[card.l-1].name}</span>
+        </div>
+        <div class="ctext">${esc(card.t)}</div>
+        ${card.alt?`<div class="calt"><b>🌊 اللفتة البديلة:</b> ${esc(card.alt)}</div>`:""}
+        <div class="cfoot">
+          <button class="btn gold" style="flex:1" onclick="doneCard(true)">نفذناها بحماس ⭐</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="safety">
+    <button class="go" onclick="doneCard(false)"><span>🟢</span>استمرار<small>تم — التالي</small></button>
+    <button class="slow" onclick="slowCard()"><span>🟡</span>أبطئ<small>نسخة أخف</small></button>
+    <button class="skip" onclick="flipCard(pickSkipCat('${cat}'), true)"><span>🔴</span>تجاوز<small>بلا سؤال أو تبرير</small></button>
+  </div>
+  <p class="center" style="margin-top:12px;font-size:.72rem;color:var(--ink-soft);font-weight:600">التجاوز لا يُفقدك دورك ولا عقوبة عليه 💛</p>
+  `;
+  setTimeout(()=>{const f=$("#flip");if(f&&!f.classList.contains("flipped"))f.classList.add("flipped");},2600);
+  if(keepTurn===undefined||!keepTurn) {} // الدور يتبدل عند الإنهاء
+};
+window.pickSkipCat = c => c; // البطاقة الجديدة من الفئة نفسها
+
+window.slowCard = () => {
+  const card = S.currentCard;
+  if(card && card.alt){
+    const f=$("#flip .ctext"); if(f){f.textContent=card.alt;toast("🌊 نسخة أهدأ من المهمة نفسها");return;}
+  }
+  // بديل من مستوى أخف: لفتة أو استرخاء
+  const lvl=S.lvl; S.lvl=1;
+  const alt = draw(Math.random()<.5?"gesture":"relax");
+  S.lvl=lvl;
+  if(alt){const f=$("#flip .ctext"); if(f){f.textContent=alt.t;toast("🌊 غيّرنا الإيقاع — نسخة أخف");}}
+};
+
+window.doneCard = (withStar) => {
+  S.played++;
+  if(withStar){
+    S.stars++; store("stars",S.stars); confetti();
+    S.bestCard = S.currentCard ? S.currentCard.t : null;
+    if(S.stars%5===0) return rewardModal();
+    toast("⭐ نجمة قرب جديدة! المجموع: "+S.stars);
+  }
+  S.turn = S.turn==="him"?"her":"him";
+  if(S.mode==="scenario") return nextInQueue();
+  if(S.mode==="wheel") return go("wheel");
+  if(S.mode==="doors") return nextDoor();
+  go("play");
+};
+
+function rewardModal(){
+  confetti();
+  openModal(`
+  <h3 class="disp" style="font-size:1.4rem;text-align:center">🎁 خمس نجوم — مكافأة مشتركة!</h3>
+  <p class="center" style="font-size:.85rem;color:var(--ink-soft);margin-top:6px">اختارا مكافأتكما وحددا لها موعدًا هذا الأسبوع</p>
+  <div style="display:grid;gap:10px;margin-top:14px">
+    ${REWARDS.map(r=>`<button class="btn cream" style="font-size:.95rem" onclick="pickReward('${r}')">${r}</button>`).join("")}
+  </div>`);
+}
+window.pickReward = (r)=>{
+  S.promises.push({t:"مكافأة ٥ نجوم: "+r, d:new Date().toLocaleDateString("ar-SA")});
+  store("promises",S.promises); closeModal(); toast("سُجلت المكافأة في دفتركما 📔");
+  S.turn = S.turn==="him"?"her":"him";
+  if(S.mode==="scenario") return nextInQueue();
+  go(S.mode==="wheel"?"wheel":S.mode==="doors"?"doors":"play");
+};
+
+/* ═══ العجلة ═══ */
+views.wheel = () => {
+  const n=WHEEL_SEGS.length, seg=360/n;
+  const grad = WHEEL_SEGS.map((s,i)=>`${s.color} ${i*seg}deg ${(i+1)*seg}deg`).join(",");
+  return `
+  ${playTop("عجلة المزاج الجريء")}
+  <div class="wheelwrap">
+    <div class="wheelptr"></div>
+    <div class="wheel" id="wheel" style="background:conic-gradient(from 0deg,${grad});transform:rotate(${S.wheelRot}deg)">
+      ${WHEEL_SEGS.map((s,i)=>{
+        const a=(i+.5)*seg;
+        return `<div class="seg" style="transform:rotate(${a}deg) translateY(-118px) rotate(${-a}deg) translate(-50%,-50%)">${s.icon}<br>${s.name}</div>`;
+      }).join("")}
+    </div>
+    <div class="wheelhub">💛</div>
+  </div>
+  <button class="btn gold" style="max-width:240px;margin:14px auto 0" onclick="spin()">أديرا العجلة 🎡</button>
+  <p class="center" style="margin-top:10px;font-size:.75rem;color:var(--ink-soft);font-weight:600">«أكمل»: أعيدا التحدي الذي أعجبكما بطريقة أطول أو أكثر قربًا</p>
+  <button class="btn ghost" style="margin-top:14px" onclick="endSession()">🌙 إنهاء الجلسة</button>
+  `;
+};
+window.spin = () => {
+  const n=WHEEL_SEGS.length, seg=360/n;
+  const pick=Math.floor(Math.random()*n);
+  // المؤشر أعلى العجلة: نحسب دورانًا يجعل منتصف القطاع المختار تحت المؤشر
+  const target = 360*5 - (pick+.5)*seg;
+  S.wheelRot += 360*5 + ((target - (S.wheelRot%360)) % 360);
+  const w=$("#wheel"); w.style.transform=`rotate(${S.wheelRot}deg)`;
+  setTimeout(()=>{
+    const s=WHEEL_SEGS[pick];
+    toast(s.icon+" "+s.name+"!");
+    setTimeout(()=>flipCard(s.cat),500);
+  },4400);
+};
+
+/* ═══ تحدي الوقت ═══ */
+views.timer = () => `
+${playTop("تحدي الوقت والشرارة")}
+<div class="card"><p style="font-size:.85rem">مؤقت من 30 ثانية إلى دقيقتين — الفائز يختار البطاقة التالية أو الأغنية، لكن لا يُستخدم الفوز لفرض ما لا يريده الطرف الآخر 💛</p></div>
+<div style="display:grid;gap:10px;margin-top:14px">
+  ${TIMERS.map((t,i)=>`
+  <button class="mode wide" onclick="runTimer(${i})">
+    <span class="ic">⏱️</span>
+    <span class="txt"><b>${t.t}</b><br><small>${t.s>=60?(t.s/60)+" دقيقة":t.s+" ثانية"} — ${esc(t.r)}</small></span>
+  </button>`).join("")}
+</div>
+<button class="btn ghost" style="margin-top:16px" onclick="endSession()">🌙 إنهاء الجلسة</button>
+`;
+window.runTimer = (i) => {
+  const t=TIMERS[i]; let left=t.s, h=null;
+  app.innerHTML = `
+  ${playTop("تحدي الوقت")}
+  <div class="card timerbox">
+    <h3 class="disp" style="justify-content:center;font-size:1.3rem">⏱️ ${t.t}</h3>
+    <div class="ring" id="ring" style="--pct:100%"><b id="tleft">${fmt(left)}</b></div>
+    <p style="font-size:.9rem;line-height:1.9">${esc(t.r)}</p>
+    <button class="btn gold tstart" id="tbtn" style="max-width:220px;margin:10px auto 0">ابدأ ▶️</button>
+  </div>
+  <div class="safety">
+    <button class="go" onclick="doneCard(true)"><span>⭐</span>نفذناها<small>نجمة قرب</small></button>
+    <button class="skip" onclick="go('timer')"><span>🔴</span>تجاوز<small>تحدٍّ آخر</small></button>
+  </div>`;
+  $("#tbtn").onclick = function(){
+    if(h){clearInterval(h);h=null;this.textContent="ابدأ ▶️";return;}
+    this.textContent="إيقاف ⏸️";
+    h=setInterval(()=>{
+      left--;
+      $("#tleft").textContent=fmt(left);
+      $("#ring").style.setProperty("--pct",(left/t.s*100)+"%");
+      if(left<=0){clearInterval(h);h=null;$("#tleft").textContent="🎉";toast("انتهى الوقت! نفّذا النتيجة المرحة 😄");}
+    },1000);
+  };
+  S.mode="timer";
+};
+const fmt = s => s>=60 ? Math.floor(s/60)+":"+String(s%60).padStart(2,"0") : String(s);
+
+/* ═══ ثلاثة أبواب ═══ */
+views.doors = () => `
+${playTop("ثلاثة أبواب — الجولة "+((S.doorRound||0)+1)+" من 6")}
+<div class="card"><p style="font-size:.85rem">يختار أحدكما الباب، ويقرأ الآخر البطاقة. ست جولات ثم بطاقة النهاية 🚪</p></div>
+<div class="doors">
+  <button class="door" style="background:linear-gradient(170deg,#5A93D4,var(--c-truth))" onclick="openDoor('talk')"><span class="ic">💬</span><b>باب الكلام</b></button>
+  <button class="door" style="background:linear-gradient(170deg,#F0A050,var(--c-passion))" onclick="openDoor('move')"><span class="ic">💃</span><b>باب الحركة</b></button>
+  <button class="door" style="background:linear-gradient(170deg,#E2B549,var(--c-surprise))" onclick="openDoor('surp')"><span class="ic">🎁</span><b>باب المفاجأة</b></button>
+</div>
+<button class="btn ghost" style="margin-top:18px" onclick="endSession()">🌙 إنهاء الجلسة</button>
+`;
+window.openDoor = (d) => {
+  const map={talk:["truth","gesture"],move:["passion","laugh"],surp:["surprise","laugh"]};
+  const pool=map[d].filter(c=>CATS[c].minLvl<=S.lvl);
+  flipCard(pool[Math.floor(Math.random()*pool.length)]);
+  S.mode="doors";
+};
+window.nextDoor = () => {
+  S.doorRound=(S.doorRound||0)+1;
+  if(S.doorRound>=6){S.mode="cards";flipCard("relax");toast("بطاقة النهاية 🌙");S.mode="doors2end";return;}
+  go("doors");
+};
+
+/* ═══ السيناريوهات ═══ */
+window.showScenarios = () => openModal(`
+<h3 class="disp" style="font-size:1.3rem;text-align:center">📋 سيناريوهات جاهزة</h3>
+<div style="display:grid;gap:10px;margin-top:14px">
+${SCENARIOS.map(s=>`
+  <button class="mode wide" onclick="closeModal();startScenario('${s.id}')">
+    <span class="ic">${s.icon}</span>
+    <span class="txt"><b>${s.name}</b><br><small>${s.time} · ${s.q.length} خطوة · درجة ${LVLS[s.lvl-1].name} ${LVLS[s.lvl-1].icon}</small></span>
+  </button>`).join("")}
+</div>`);
+window.startScenario = (id) => {
+  const sc=SCENARIOS.find(x=>x.id===id);
+  S.lvl=sc.lvl; store("lvl",sc.lvl);
+  S.mode="scenario"; S.queue=[...sc.q]; S.qi=0; S.played=0;
+  if(id==="deepnight") toast("💌 اقتراح: ابدآ بكتابة أوراق صندوق الرسائل");
+  nextInQueue();
+};
+window.nextInQueue = () => {
+  if(!S.queue || S.qi>=S.queue.length){
+    toast("اكتمل السيناريو! 🎉"); confetti(); return endSession();
+  }
+  const step=S.queue[S.qi++];
+  if(step==="timer"){const i=Math.floor(Math.random()*TIMERS.length);runTimer(i);S.mode="scenario";return;}
+  flipCard(step); S.mode="scenario";
+};
+
+/* ═══ صندوق الرسائل العميقة ═══ */
+window.showMessages = () => openModal(`
+<h3 class="disp" style="font-size:1.3rem;text-align:center">💌 صندوق الرسائل العميقة</h3>
+<p style="font-size:.85rem;color:var(--ink-soft);line-height:1.9;margin-top:8px">قبل الجلسة، يكتب كل طرف ثلاث أوراق حقيقية بيده ويطويها في صندوق صغير:</p>
+<div class="note"><span class="ic">1️⃣</span><span><b>«شيء يجذبني فيك»</b> — صفة أو تفصيل أو عادة</span></div>
+<div class="note"><span class="ic">2️⃣</span><span><b>«لفتة أحب أن أتلقاها منك»</b> — واضحة وقابلة للتنفيذ</span></div>
+<div class="note"><span class="ic">3️⃣</span><span><b>«وقت خاص أتمنى أن نكرره أو نصنعه»</b> — ذكرى أو فكرة جديدة</span></div>
+<p style="font-size:.85rem;color:var(--ink-soft);line-height:1.9;margin-top:10px">تُسحب رسالة كل جولة، وعلى الطرف الآخر إما تنفيذ ما يناسبه منها أو اقتراح بديل قريب. <b>الهدف هو التقبل:</b> أن يُسمع كل طلب من دون تهكم أو دفاع.</p>
+<button class="btn gold" style="margin-top:14px" onclick="closeModal();toast('اكتبا الأوراق ثم اسحبا بالتناوب 💌')">فهمنا — لنكتب الأوراق ✍️</button>
+`);
+
+/* ═══ إنهاء الجلسة والدفتر ═══ */
+window.endSession = () => {
+  openModal(`
+  <h3 class="disp" style="font-size:1.3rem;text-align:center">🌙 ختام الجلسة — دفتر بيننا</h3>
+  <p class="center" style="font-size:.8rem;color:var(--ink-soft);margin-top:4px">لعبتما ${S.played} بطاقة هذه الجلسة</p>
+  <div class="field"><label>💛 أفضل لحظة الليلة</label><input id="j-best" placeholder="${S.bestCard?esc(S.bestCard).slice(0,60):"ما اللحظة التي ستذكرانها؟"}"></div>
+  <div class="field"><label>💡 شيء جديد عرفته عن شريكي</label><input id="j-new" placeholder="اكتشاف صغير أو كبير…"></div>
+  <div class="field"><label>🔁 فكرة نود تكرارها</label><input id="j-rep" placeholder="تحدٍّ أو لفتة أو أجواء…"></div>
+  <div class="field"><label>🤝 وعد الأسبوع (اختياري)</label><input id="j-prom" placeholder="لفتة سننفذها خلال الأسبوع = نجمة إضافية"></div>
+  <button class="btn gold" style="margin-top:16px" onclick="saveSession()">احفظا في الدفتر 📔</button>
+  <button class="btn ghost" style="margin-top:10px" onclick="closeModal();go('home')">تخطي الحفظ</button>
+  `);
+};
+window.saveSession = () => {
+  const g=id=>$(id).value.trim();
+  const e={d:new Date().toLocaleDateString("ar-SA",{weekday:"long",day:"numeric",month:"long"}),
+    best:g("#j-best"),nw:g("#j-new"),rep:g("#j-rep"),played:S.played};
+  S.journal.unshift(e); store("journal",S.journal);
+  const p=g("#j-prom");
+  if(p){S.promises.unshift({t:p,d:e.d,pending:true});store("promises",S.promises);}
+  closeModal(); confetti(); toast("حُفظت الجلسة في دفتركما 📔");
+  S.played=0; go("book");
+};
+
+views.book = () => `
+<header class="top"><div class="brand"><b>📔 دفتر بيننا</b></div></header>
+<div class="card">
+  <h3>⭐ نجوم القرب</h3>
+  <div class="starbar">${[0,1,2,3,4].map(i=>`<span class="s ${i<(S.stars%5||((S.stars>0&&S.stars%5===0)?5:0))?"on":""}">⭐</span>`).join("")}</div>
+  <p class="center" style="margin-top:8px">المجموع الكلي: <b style="color:var(--gold)">${S.stars}</b> ⭐ — عند كل 5 نجوم تختاران مكافأة مشتركة</p>
+</div>
+${S.promises.length?`
+<div class="card"><h3>🤝 وعودنا ومكافآتنا</h3>
+  ${S.promises.map((p,i)=>`
+  <div class="row" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px dashed var(--line);font-size:.88rem">
+    <button onclick="donePromise(${i})" style="font-size:1.2rem">${p.pending?"⬜":"✅"}</button>
+    <span style="flex:1;${p.pending?"":"text-decoration:line-through;opacity:.55"}">${esc(p.t)}</span>
+    <small style="color:var(--ink-soft);font-size:.65rem">${p.d||""}</small>
+  </div>`).join("")}
+  <p style="font-size:.72rem;margin-top:8px">تنفيذ وعد خارج وقت اللعب = نجمة إضافية ⭐</p>
+</div>`:""}
+${S.journal.length ? S.journal.map(e=>`
+<div class="entry">
+  <time>🗓️ ${e.d} · ${e.played||"؟"} بطاقة</time>
+  ${e.best?`<div class="row"><span class="k">💛</span><span><b>أفضل لحظة:</b> ${esc(e.best)}</span></div>`:""}
+  ${e.nw?`<div class="row"><span class="k">💡</span><span><b>عرفت جديدًا:</b> ${esc(e.nw)}</span></div>`:""}
+  ${e.rep?`<div class="row"><span class="k">🔁</span><span><b>نكررها:</b> ${esc(e.rep)}</span></div>`:""}
+</div>`).join("") : `
+<div class="card center"><p style="padding:14px 0">الدفتر فارغ بعد — العبا أول جلسة واحفظا ذكرياتها هنا 💛</p></div>`}
+<div class="note"><span class="ic">🔒</span><span>الدفتر محفوظ على هذا الجهاز فقط ولا يغادره أبدًا.</span></div>
+`;
+
+window.donePromise = (i)=>{
+  if(S.promises[i].pending){S.promises[i].pending=false;S.stars++;store("stars",S.stars);toast("وعد منفذ = نجمة إضافية ⭐");if(S.stars%5===0)rewardModal();}
+  else S.promises[i].pending=true;
+  store("promises",S.promises); go("book");
+};
+
+/* ═══ الإعدادات ═══ */
+views.settings = () => `
+<header class="top"><div class="brand"><b>⚙️ الإعدادات</b></div></header>
+<div class="card">
+  <h3>📸 صورتاكما</h3>
+  <p style="font-size:.82rem">أضيفا صورتيكما لتظهرا على ظهر البطاقات وفي الشعار. الصور تبقى على جهازكما فقط.</p>
+  <div style="display:flex;gap:14px;justify-content:center;margin-top:14px">
+    <div class="center">
+      ${pslot("him","lg")}
+      <button class="pill" style="margin-top:8px;border:none;cursor:pointer" onclick="$('#up-him').click()">صورة الزوج 🤵</button>
+      <input type="file" id="up-him" accept="image/*" hidden onchange="upImg(event,'him')">
+    </div>
+    <div class="center">
+      ${pslot("her","lg")}
+      <button class="pill" style="margin-top:8px;border:none;cursor:pointer" onclick="$('#up-her').click()">صورة الزوجة 👰</button>
+      <input type="file" id="up-her" accept="image/*" hidden onchange="upImg(event,'her')">
+    </div>
+  </div>
+  <p style="font-size:.72rem;margin-top:10px">أو ضعا الملفين <b>img/husband.png</b> و<b>img/wife.png</b> في مجلد التطبيق.</p>
+</div>
+<div class="card">
+  <h3>${LVLS[S.lvl-1].icon} درجة القرب الافتراضية</h3>
+  <div class="lvls">
+    ${LVLS.map(L=>`
+    <button class="lvl ${S.lvl===L.n?"on":""}" onclick="S.lvl=${L.n};store('lvl',${L.n});go('settings')">
+      <span class="ic">${L.icon}</span><span><b>${L.name}</b><small>${L.desc}</small></span><span class="chk">✓</span>
+    </button>`).join("")}
+  </div>
+</div>
+<div class="card">
+  <h3>📜 عن اللعبة</h3>
+  <p>«بيننا» أمسية خاصة للزوجين، لا منافسة ولا اختبار. 104 بطاقات في 7 فئات، و8 أنماط لعب، بقاعدة ذهبية واحدة: كل بطاقة تُنفذ بحماس الطرفين.</p>
+  <button class="btn cream" style="margin-top:12px" onclick="showRules()">قواعد اللعبة الكاملة 📜</button>
+</div>
+<div class="card">
+  <h3>🗑️ البيانات</h3>
+  <button class="btn ghost" onclick="if(confirm('حذف كل النجوم والدفتر والصور نهائيًا؟')){localStorage.clear();location.reload()}">مسح كل بيانات اللعبة من هذا الجهاز</button>
+</div>
+`;
+window.upImg = (ev,who) => {
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload = () => {
+    const img=new Image();
+    img.onload = () => {
+      const c=document.createElement("canvas"),m=Math.min(img.width,img.height),s=512;
+      c.width=c.height=s;
+      c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,s,s);
+      try{store("img-"+who,c.toDataURL("image/jpeg",.85));toast("حُفظت الصورة 📸");go("settings");}
+      catch(e){toast("الصورة كبيرة جدًا — جربا صورة أصغر");}
+    };
+    img.src=r.result;
+  };
+  r.readAsDataURL(f);
+};
+
+window.showRules = () => openModal(`
+<h3 class="disp" style="font-size:1.3rem;text-align:center">📜 قواعد «بيننا»</h3>
+<div class="note"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين، لا بصمت أحدهما أو تردده.</span></div>
+<div class="note"><span class="ic">🟢🟡🔴</span><span><b>رموز الأمان:</b> استمرار (مناسب ويمكن رفعه) · أبطئ (نسخة أخف من المهمة نفسها) · تجاوز (بطاقة جديدة فورًا بلا سؤال أو تبرير). لا تُستخدم لتخفيض جرأة اللعبة بل لضمان أن يكون التصعيد ممتعًا ومقبولًا.</span></div>
+<div class="note"><span class="ic">🔒</span><span><b>عهد الخصوصية:</b> ما يقال أو يحدث في الجلسة يبقى بينكما — لا تصوير ولا تسجيل ولا استخدام لاحق في اللوم.</span></div>
+<div class="note"><span class="ic">🤝</span><span><b>الموافقة متبادلة ومستمرة:</b> يحق لأي طرف تغيير التحدي أو اختيار البديل أو إيقاف اللعبة. الجرأة أجمل عندما تكون رغبة مشتركة لا عقوبة مفروضة.</span></div>
+<div class="note"><span class="ic">⭐</span><span><b>نجوم القرب:</b> نجمة عند تنفيذ تحدٍّ باتفاق وراحة، ونجمة إضافية عند تنفيذ وعد خارج اللعب. كل 5 نجوم = مكافأة مشتركة.</span></div>
+<div class="note"><span class="ic">⏭️</span><span><b>التجاوز لا يُفقد الدور</b> ولا عقوبة عليه — تُسحب بطاقة أخرى وحسب.</span></div>
+<button class="btn gold" style="margin-top:14px" onclick="closeModal()">فهمنا 💛</button>
+`);
+
+/* ═══════════════ التنقل ═══════════════ */
+window.go = (v) => {
+  if(views[v]) app.innerHTML = views[v]();
+  document.querySelectorAll("nav.bottom button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));
+  window.scrollTo({top:0});
+};
+document.querySelectorAll("nav.bottom button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+go("home");
+
+/* عامل الخدمة — عمل دون اتصال */
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
