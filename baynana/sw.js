@@ -1,4 +1,4 @@
-const CACHE = "baynana-v2";
+const CACHE = "baynana-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
   "./img/logo.png",
+  "./fonts/NotoKufiArabic-Regular.ttf",
 ];
 
 self.addEventListener("install", (e) => {
