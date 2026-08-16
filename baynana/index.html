@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0B1233">
+<meta name="theme-color" content="#3C0F20">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,386 +17,506 @@
   font-weight:100 900;
   font-display:swap;
 }
-/* ═══════════ نظام التصميم — ليل رومانسي مطابق للشعار: كحلي، وردي، برتقالي، كريمي ═══════════ */
+/* ═══════════ «دفتر المخمل» — نبيذي عميق، ورق عاجي، ذهب عتيق، وقصاصات مائلة ═══════════ */
 :root{
-  --navy:#0B1233;         /* الكحلي الأساسي — خلفية الشعار */
-  --navy-hi:#152052;
-  --cream:#1A2557;        /* أسطح اللوحات (كحلي أفتح) */
-  --cream-2:#22306B;
-  --ink:#F7EBD8;          /* الكريمي — لون عنوان الشعار */
-  --ink-soft:#A9B3D6;
-  --paper:#FFF6E6;        /* وجه البطاقة الورقي */
-  --paper-2:#F7E9CF;
-  --paper-ink:#42301B;
-  --pink:#E8365F;         /* وردي قلب الشعار */
-  --pink-deep:#B5224A;
-  --orange:#F29A38;       /* برتقالي قوس الشعار */
-  --him:#E58B98;          /* وردي قميص الزوج */
-  --him-deep:#C9556A;
-  --him-soft:#FBDDE2;
-  --her:#2E9962;          /* أخضر ثوب الزوجة */
-  --her-deep:#136B40;
-  --her-soft:#D8F0E2;
-  --gold:#C9922A;
-  --gold-hi:#F2C94C;
-  --line:#2E3C79;
-  --r:26px;
-  --shadow:0 12px 28px rgba(2,8,30,.45);
-  --shadow-lg:0 20px 48px rgba(2,8,30,.55);
-  /* ألوان الفئات — كما في بطاقات الشعار */
-  --c-truth:#3E7BC0; --c-truth-soft:#E1ECF9;
-  --c-gesture:#E0708D; --c-gesture-soft:#FBE4EA;
-  --c-passion:#E8862E; --c-passion-soft:#FDEBD7;
-  --c-deep:#B23A48; --c-deep-soft:#F6DFE1;
-  --c-laugh:#2E9962; --c-laugh-soft:#DFF2E7;
-  --c-relax:#8A6FC5; --c-relax-soft:#ECE6F8;
-  --c-surprise:#C9922A; --c-surprise-soft:#FAEED2;
+  --velvet:#3C0F20;
+  --velvet-2:#55152A;
+  --velvet-3:#2A0614;
+  --velvet-panel:rgba(42,4,18,.45);
+  --paper:#F7F0E4;
+  --paper-2:#EFE0C2;
+  --paper-ink:#482329;
+  --paper-soft:#8A6860;
+  --maroon:#6D2034;
+  --maroon-deep:#541526;
+  --gold:#E2B769;
+  --gold-hi:#F6D69A;
+  --gold-dim:#B98D59;
+  --gold-line:rgba(242,207,138,.25);
+  --ink:#F6EBD4;
+  --ink-soft:#DFBF82;
+  --him:#C9556A;  --him-soft:#F4DCE1;
+  --her:#4B7358;  --her-soft:#DCEADF;
+  /* فئات بدرجات عتيقة مطفأة — من عجلة التصميم */
+  --c-truth:#344C78;  --c-gesture:#A8546E; --c-passion:#B76F3A;
+  --c-deep:#6D2034;   --c-laugh:#4B7358;   --c-relax:#765E83;  --c-surprise:#9F7750;
+  --shadow:0 16px 32px rgba(18,1,7,.35);
+  --shadow-lg:0 30px 48px rgba(9,1,4,.45);
+  /* حواف ورق ممزق */
+  --torn:polygon(0 0,96% 0,100% 5%,99% 94%,94% 100%,2% 99%,0 95%);
+  --torn2:polygon(0 2%,100% 0,97% 97%,5% 100%,0 94%);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;background:var(--velvet)}
 body{
   font-family:"Noto Kufi Arabic",system-ui,sans-serif;
   color:var(--ink);
   background:
-    radial-gradient(900px 520px at 50% -8%, rgba(232,54,95,.22), transparent 60%),
-    radial-gradient(800px 480px at 100% 108%, rgba(242,154,56,.16), transparent 55%),
-    linear-gradient(180deg,#0E1740,var(--navy) 55%,#070C24);
+    radial-gradient(1000px 600px at 50% -10%, rgba(226,183,105,.10), transparent 60%),
+    radial-gradient(800px 520px at 8% 108%, rgba(109,32,52,.55), transparent 60%),
+    linear-gradient(165deg,#4A1226,var(--velvet) 45%,var(--velvet-3));
   background-attachment:fixed;
-  min-height:100vh;
-  min-height:100dvh;
-  overflow-x:hidden;
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;
 }
-h1,h2,h3,.disp{font-family:"Noto Kufi Arabic",system-ui,sans-serif}
 button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
-input,textarea,select{font-family:inherit;font-size:1rem;color:var(--ink)}
+input,textarea,select{font-family:inherit;font-size:1rem;color:var(--paper-ink)}
 
-/* نقوش خلفية ناعمة (قلوب ونجيمات باهتة كما في الشعار) */
+/* غبار ذهبي خافت كما في تصميم المخمل */
 body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cpath d='M60 84 47 71c-8-8-8-19 0-26 6-6 15-6 13 0 -2-6 7-6 13 0 8 7 8 18 0 26z' fill='%23F7EBD8'/%3E%3Cpath d='M112 28l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z' fill='%23F29A38'/%3E%3C/svg%3E");
-  background-size:140px;
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.38;
+  background-image:
+    radial-gradient(circle at 18% 16%, rgba(239,190,110,.13) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 78% 81%, rgba(255,236,191,.13) 0 1px, transparent 1.7px);
+  background-size:38px 42px,56px 64px;
 }
-#app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 18px 110px}
+#app{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:0 16px 116px}
+
+/* ═══ لوح ورقي بقصاصة ممزقة وشريط لاصق ═══ */
+.paper{
+  position:relative;color:var(--paper-ink);
+  background:
+    linear-gradient(140deg,rgba(253,246,231,.98),rgba(239,224,194,.94)),
+    repeating-linear-gradient(2deg,transparent 0 6px,rgba(126,63,45,.025) 6px 7px),
+    repeating-linear-gradient(88deg,transparent 0 9px,rgba(126,63,45,.02) 9px 10px);
+  background-color:var(--paper);
+  border:1px solid rgba(236,207,149,.82);
+  clip-path:var(--torn);
+  box-shadow:var(--shadow), inset 0 0 0 4px rgba(126,63,45,.035);
+  padding:18px 16px;margin-top:16px;
+}
+.paper::after{
+  content:"";position:absolute;top:0;inset-inline-end:22px;width:38px;height:6px;
+  background:rgba(178,127,63,.38);transform:rotate(1deg);
+}
+.paper.tilt-l{transform:rotate(-.5deg)}
+.paper.tilt-r{transform:rotate(.55deg)}
+.paper h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:9px;color:var(--maroon)}
+.paper p{font-size:.88rem;line-height:1.9;color:var(--paper-soft)}
+
+/* لوح مخملي شفاف */
+.velvetp{
+  background:var(--velvet-panel);backdrop-filter:blur(8px);
+  border:1px solid var(--gold-line);border-radius:6px;
+  padding:16px;margin-top:16px;
+}
 
 /* ═══ ترويسة ═══ */
-header.top{
-  display:flex;align-items:center;gap:12px;padding:18px 2px 8px;
-}
-header.top .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-header.top .brand b{font-family:"Noto Kufi Arabic";font-size:1.5rem;font-weight:800;letter-spacing:.5px}
-header.top .brand small{display:block;font-size:.72rem;color:var(--ink-soft);font-weight:600;margin-top:-4px}
-.hbtn{
-  width:44px;height:44px;border-radius:16px;background:var(--cream);box-shadow:var(--shadow);
-  border:2px solid var(--line);
-  display:grid;place-items:center;font-size:1.25rem;transition:transform .15s;flex:none;
-}
-.hbtn:active{transform:scale(.92)}
+header.top{display:flex;align-items:center;gap:12px;padding:18px 2px 6px}
+header.top .brand{flex:1;min-width:0}
+header.top .eyebrow{color:#EAC987;letter-spacing:.055em;font-size:.68rem;font-weight:600;margin-bottom:2px}
+header.top .brand b{font-size:1.35rem;font-weight:800;color:#FFF1D2}
+header.top .brand b span{color:#E3BE76;font-size:.6em;font-weight:400;margin-inline-start:6px}
+.private-pill{display:flex;align-items:center;gap:6px;color:#E7C777;font-size:.7rem;font-weight:600}
+.private-pill i{width:6px;height:6px;border-radius:50%;background:#D8B55E}
 
-/* ═══ خانات صور الزوجين — تُملأ بالصورتين الحقيقيتين ═══ */
+/* ═══ خانات صور الزوجين ═══ */
 .pslot{
   position:relative;border-radius:50%;overflow:hidden;flex:none;
-  background:linear-gradient(160deg,var(--navy-hi),#0A1030);
+  background:radial-gradient(circle at 40% 30%,var(--velvet-2),var(--velvet-3));
   display:grid;place-items:center;
 }
 .pslot img{width:100%;height:100%;object-fit:cover;object-position:top;display:none}
 .pslot.loaded img{display:block}
-.pslot .ph{font-size:calc(var(--ps,56px)*.5);line-height:1;filter:saturate(.9)}
+.pslot .ph{font-size:calc(var(--ps,56px)*.5);line-height:1}
 .pslot.loaded .ph{display:none}
-.pslot.him{border:3px solid var(--him);box-shadow:0 4px 14px rgba(201,85,106,.35)}
-.pslot.her{border:3px solid var(--her);box-shadow:0 4px 14px rgba(19,107,64,.35)}
+.pslot.him{border:3px solid var(--him);box-shadow:0 4px 14px rgba(201,85,106,.4)}
+.pslot.her{border:3px solid var(--her);box-shadow:0 4px 14px rgba(75,115,88,.4)}
 .pslot.sm{width:40px;height:40px;--ps:40px;border-width:2.5px}
 .pslot.md{width:56px;height:56px;--ps:56px}
 .pslot.lg{width:96px;height:96px;--ps:96px;border-width:4px}
 .pslot.xl{width:120px;height:120px;--ps:120px;border-width:5px}
 
-/* ═══ الشاشة الرئيسية — الشعار الرسمي كبيرًا كما في المرجع ═══ */
-.hero{text-align:center;padding:10px 0 6px}
+/* ═══ الرئيسية ═══ */
+.hero{text-align:center;padding:14px 0 4px}
 .hero .logo-img{
-  width:min(88%,380px);display:block;margin:0 auto;border-radius:28px;
-  filter:drop-shadow(0 16px 34px rgba(2,8,30,.6));
+  width:min(84%,360px);display:block;margin:0 auto;border-radius:22px;
+  border:1px solid var(--gold-line);
+  filter:drop-shadow(0 18px 36px rgba(9,1,4,.6));
 }
 .hero .duo{display:none;justify-content:center;align-items:flex-end;margin-bottom:6px}
 .hero .duo .pslot:first-child{margin-inline-end:-22px;z-index:2;transform:rotate(-6deg)}
 .hero .duo .pslot:last-child{transform:rotate(6deg)}
-.hero h1{display:none;font-size:3.2rem;font-weight:800;line-height:1.1;text-shadow:0 4px 14px rgba(232,54,95,.4)}
+.hero h1{display:none;font-size:3rem;font-weight:800;color:#FFF1D2;text-shadow:0 4px 14px rgba(226,183,105,.35)}
 .hero.nologo .duo{display:flex}
 .hero.nologo h1{display:block}
 .hero.nologo .logo-img{display:none}
 .hero .tag{
-  display:inline-block;background:var(--cream);border-radius:999px;padding:8px 20px;margin-top:14px;
-  font-weight:700;font-size:.92rem;color:var(--ink);box-shadow:var(--shadow);border:2px solid var(--line);
+  display:inline-block;background:rgba(42,4,18,.4);border:1px solid var(--gold-line);
+  border-radius:3px;padding:8px 20px;margin-top:14px;
+  font-weight:600;font-size:.85rem;color:var(--gold-hi);
 }
-.hero .sub{margin-top:10px;font-size:.82rem;color:var(--ink-soft);font-weight:600}
+.hero .sub{margin-top:10px;font-size:.75rem;color:var(--ink-soft);font-weight:500;line-height:1.9}
 
-.card{
-  background:var(--cream);border-radius:var(--r);box-shadow:var(--shadow);
-  border:2px solid var(--line);
-  padding:20px;margin-top:16px;
-}
-.card h3{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.card p{font-size:.92rem;line-height:1.8;color:var(--ink-soft)}
-
-/* أزرار ضخمة بحافة سفلية ثلاثية الأبعاد — أسلوب المرجع */
+/* ═══ أزرار ═══ */
 .btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
-  border-radius:24px;padding:16px;font-size:1.15rem;font-weight:800;font-family:"Noto Kufi Arabic";
-  transition:transform .1s, box-shadow .1s;
-  border:3px solid rgba(255,255,255,.16);
-  box-shadow:0 6px 0 rgba(2,8,30,.55), var(--shadow);
+  display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  min-height:48px;padding:13px 16px;font-size:1rem;font-weight:800;
+  border:1px solid transparent;transition:transform .18s, box-shadow .18s;
 }
-.btn:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(2,8,30,.55)}
-.btn.gold{background:linear-gradient(180deg,var(--gold-hi),var(--gold));color:#3A2405;border-color:#8A6010;text-shadow:0 1px 0 rgba(255,255,255,.3);box-shadow:0 6px 0 #7A5208, var(--shadow)}
-.btn.gold:active{box-shadow:0 1px 0 #7A5208}
-.btn.pink{background:linear-gradient(180deg,#F04E75,var(--pink));color:#fff;border-color:var(--pink-deep);text-shadow:0 1px 2px rgba(0,0,0,.25);box-shadow:0 6px 0 #8A1A38, var(--shadow)}
-.btn.pink:active{box-shadow:0 1px 0 #8A1A38}
-.btn.cream{background:linear-gradient(180deg,var(--cream-2),var(--cream));color:var(--ink);border-color:var(--line);box-shadow:0 6px 0 #0A1030, var(--shadow)}
-.btn.cream:active{box-shadow:0 1px 0 #0A1030}
-.btn.ghost{background:transparent;box-shadow:none;border:2.5px dashed var(--ink-soft);color:var(--ink-soft);font-size:.95rem;padding:12px}
-.btn.ghost:active{transform:scale(.97)}
-.btnrow{display:flex;gap:12px;margin-top:12px}
-.btnrow .btn{font-size:.98rem;padding:13px}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{
+  color:#FFF2D4;background:var(--maroon);border-color:rgba(255,242,212,.14);
+  box-shadow:0 7px 14px rgba(90,23,39,.35), 5px 6px 0 rgba(20,2,9,.28);
+}
+.btn.gold{
+  color:#541526;background:linear-gradient(145deg,#F7ECD5,#E9D4A8);border-color:#E4BF79;
+  box-shadow:0 7px 14px rgba(20,2,9,.3), 5px 6px 0 rgba(64,10,27,.3);
+}
+.btn.sec{
+  color:#60343A;background:rgba(255,250,238,.9);border-color:var(--gold-dim);
+}
+.btn.quiet{
+  color:#FFEDC8;background:rgba(42,4,18,.25);border-color:rgba(249,225,177,.24);font-size:.85rem;
+}
+.btn.ghost{background:transparent;border:1px dashed rgba(245,214,151,.4);color:var(--ink-soft);font-size:.85rem;min-height:42px}
+.btnrow{display:flex;gap:10px;margin-top:10px}
 
 /* ═══ رموز الأمان ═══ */
-.safety{display:flex;gap:8px;margin-top:14px}
+.safety{display:flex;gap:6px;margin-top:14px}
 .safety button{
-  flex:1;border-radius:18px;padding:11px 6px;font-weight:800;font-size:.85rem;
-  display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:var(--shadow);
-  transition:transform .15s;
+  flex:1;padding:10px 4px;font-weight:800;font-size:.8rem;
+  display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s;
 }
-.safety button:active{transform:scale(.94)}
-.safety .go{background:var(--her-soft);color:var(--her-deep)}
-.safety .slow{background:var(--c-surprise-soft);color:#8A6010}
-.safety .skip{background:var(--him-soft);color:var(--him-deep)}
-.safety button span{font-size:1.15rem}
-.safety button small{font-weight:600;font-size:.62rem;opacity:.75}
+.safety button:active{transform:scale(.95)}
+.safety .go{background:rgba(255,255,255,.07);border:1px dashed rgba(75,115,88,.65);color:#9CC7A9}
+.safety .slow{background:rgba(255,255,255,.05);border:1px dashed rgba(183,111,58,.65);color:#E8B77E}
+.safety .skip{background:rgba(255,255,255,.05);border:1px dashed rgba(201,85,106,.65);color:#E89AA8}
+.safety button span{font-size:1.05rem}
+.safety button small{font-weight:500;font-size:.58rem;opacity:.75}
 
 /* ═══ اختيار المستوى ═══ */
-.lvls{display:grid;gap:12px;margin-top:14px}
+.lvls{display:grid;gap:6px;margin-top:12px}
 .lvl{
-  display:flex;align-items:center;gap:14px;background:var(--cream);border-radius:22px;
-  padding:16px;box-shadow:0 5px 0 #0A1030, var(--shadow);border:3px solid var(--line);transition:all .2s;text-align:start;
+  display:flex;align-items:center;gap:12px;background:transparent;
+  border:1px solid transparent;padding:12px 10px;transition:.18s;text-align:start;color:#60383A;
 }
-.lvl.on{border-color:var(--pink);background:var(--cream-2);transform:scale(1.02);box-shadow:0 5px 0 var(--pink-deep), var(--shadow)}
-.lvl .ic{font-size:2rem;flex:none}
-.lvl b{font-family:"Noto Kufi Arabic";font-size:1.1rem;font-weight:800;display:block}
-.lvl small{font-size:.8rem;color:var(--ink-soft);line-height:1.6;display:block;margin-top:2px}
-.lvl .chk{margin-inline-start:auto;width:26px;height:26px;border-radius:50%;border:3px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;font-size:.8rem}
-.lvl.on .chk{background:var(--pink);border-color:var(--pink)}
+.lvl.on{background:rgba(109,32,52,.09);border-color:rgba(109,32,52,.25);color:var(--maroon)}
+.lvl .ic{font-size:1.6rem;flex:none}
+.lvl b{font-size:.98rem;font-weight:800;display:block}
+.lvl small{font-size:.74rem;color:var(--paper-soft);line-height:1.6;display:block;margin-top:2px}
+.lvl .chk{
+  margin-inline-start:auto;width:22px;height:22px;border-radius:50%;flex:none;
+  border:1px solid var(--gold-dim);display:grid;place-items:center;color:transparent;font-size:.7rem;
+}
+.lvl.on .chk{background:var(--maroon);border-color:var(--maroon);color:#FFF0D3}
 
 /* ═══ شبكة الأنماط ═══ */
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
 .mode{
-  background:var(--cream);border-radius:22px;padding:18px 14px;
-  border:2.5px solid var(--line);box-shadow:0 5px 0 #0A1030, var(--shadow);
-  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
-  transition:transform .1s, box-shadow .1s;
+  position:relative;color:var(--paper-ink);text-align:center;
+  background:linear-gradient(140deg,rgba(253,246,231,.97),rgba(239,224,194,.93));
+  border:1px solid rgba(236,207,149,.82);clip-path:var(--torn);
+  box-shadow:var(--shadow);padding:18px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  transition:transform .18s;
 }
-.mode:active{transform:translateY(4px);box-shadow:0 1px 0 #0A1030}
-.mode .ic{font-size:2.1rem}
-.mode b{font-family:"Noto Kufi Arabic";font-size:1rem;font-weight:800}
-.mode small{font-size:.72rem;color:var(--ink-soft);line-height:1.5}
+.mode:nth-child(odd){transform:rotate(-.6deg)}
+.mode:nth-child(even){transform:rotate(.5deg)}
+.mode:hover{transform:translateY(-3px) rotate(0)}
+.mode .ic{font-size:1.9rem}
+.mode b{font-size:.95rem;font-weight:800;color:var(--maroon)}
+.mode small{font-size:.7rem;color:var(--paper-soft);line-height:1.6}
 .mode.wide{grid-column:1/-1;flex-direction:row;text-align:start}
 .mode.wide .txt{flex:1}
 
 /* ═══ فئات البطاقات ═══ */
 .cats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .catb{
-  border-radius:20px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;
-  border:2.5px solid rgba(255,255,255,.22);
-  box-shadow:0 5px 0 rgba(2,8,30,.5), var(--shadow);font-weight:800;
-  transition:transform .1s, box-shadow .1s;position:relative;
-  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.2);
+  position:relative;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:#FFF5E0;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.25);
+  border:1px solid rgba(255,245,224,.22);clip-path:var(--torn2);
+  box-shadow:6px 8px 0 rgba(20,2,9,.25);
+  transition:transform .15s;
 }
-.catb:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(2,8,30,.5)}
-.catb .ic{font-size:1.7rem;text-shadow:none}
-.catb b{font-family:"Noto Kufi Arabic";font-size:.95rem}
-.catb small{font-size:.65rem;opacity:.9;font-weight:600}
+.catb:nth-child(odd){transform:rotate(-.7deg)}
+.catb:nth-child(even){transform:rotate(.6deg)}
+.catb:active{transform:scale(.95)}
+.catb .ic{font-size:1.6rem;text-shadow:none}
+.catb b{font-size:.92rem}
+.catb small{font-size:.62rem;opacity:.85;font-weight:500}
 .catb.off{opacity:.35;filter:grayscale(.7)}
-.catb .lock{position:absolute;top:8px;inset-inline-end:10px;font-size:.8rem}
+.catb .lock{position:absolute;top:8px;inset-inline-end:12px;font-size:.8rem}
 
-/* ═══ شاشة البطاقة ═══ */
+/* ═══ شاشة اللعب ═══ */
 .playtop{display:flex;align-items:center;gap:10px;padding:14px 2px 4px}
-.playtop .back{width:42px;height:42px;border-radius:14px;background:var(--cream);border:2px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;font-size:1.1rem;flex:none}
-.turnchip{
-  display:flex;align-items:center;gap:9px;background:var(--cream);border-radius:999px;
-  border:2px solid var(--line);
-  padding:5px 16px 5px 5px;box-shadow:var(--shadow);margin-inline-start:auto;
+.playtop .back{
+  width:42px;height:42px;border:1px solid var(--gold-line);background:rgba(42,4,18,.3);
+  display:grid;place-items:center;font-size:1.1rem;flex:none;color:var(--gold-hi);border-radius:3px;
 }
-.turnchip b{font-size:.9rem;font-weight:800}
-.turnchip small{display:block;font-size:.65rem;color:var(--ink-soft);font-weight:600}
+.playtop .tt b{font-size:1.05rem;color:#FFF1D2;font-weight:800}
+.playtop .tt small{display:block;font-size:.65rem;color:var(--ink-soft);font-weight:500}
+.turnchip{
+  display:flex;align-items:center;gap:9px;background:rgba(42,4,18,.35);border:1px solid var(--gold-line);
+  border-radius:999px;padding:5px 14px 5px 5px;margin-inline-start:auto;
+}
+.turnchip b{font-size:.85rem;font-weight:800;color:var(--gold-hi)}
+.turnchip small{display:block;font-size:.6rem;color:var(--ink-soft)}
 
-.stage{perspective:1200px;margin-top:18px}
-.flip{position:relative;width:100%;min-height:420px;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,.15,.25,1.1)}
+/* البطاقة الرئيسية — ورق عاجي بإطار ذهبي مزدوج وظل قصاصات مكدسة */
+.stage{perspective:1500px;margin-top:16px}
+.flip{position:relative;width:100%;min-height:500px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,.15,.25,1.08)}
 .flip.flipped{transform:rotateY(180deg)}
 .face{
   position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  border-radius:32px;box-shadow:var(--shadow-lg);overflow:hidden;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;
 }
-/* ظهر البطاقة: صورة الشريك صاحب الدور — ليل الشعار بتوهج القلب */
+/* ظهر البطاقة: مخمل + إطار صورة الشريك */
 .face.backside{
-  background:
-    radial-gradient(420px 280px at 50% 30%, rgba(232,54,95,.4), transparent 70%),
-    radial-gradient(360px 240px at 80% 90%, rgba(242,154,56,.22), transparent 70%),
-    linear-gradient(170deg,#1A2658,var(--navy));
-  border:3px solid var(--line);
-  gap:14px;padding:26px;cursor:pointer;
+  justify-content:center;gap:14px;padding:26px;cursor:pointer;
+  background:linear-gradient(135deg,rgba(76,16,34,.96),rgba(47,4,18,.92));
+  border:1px solid rgba(244,216,160,.3);
+  box-shadow:var(--shadow-lg);
+}
+.face.backside::before{
+  content:"";position:absolute;inset:11px;pointer-events:none;
+  border:1px dashed rgba(242,207,138,.35);
 }
 .face.backside .frame{
-  padding:8px;border-radius:50%;
-  background:linear-gradient(160deg,var(--pink),var(--orange));
-  box-shadow:0 10px 26px rgba(232,54,95,.4);
+  padding:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#8A2B44,var(--maroon-deep));
+  border:1px solid var(--gold);
+  box-shadow:0 10px 26px rgba(9,1,4,.5), inset 0 0 0 3px rgba(226,183,105,.25);
 }
-.face.backside .who{font-family:"Noto Kufi Arabic";font-size:1.5rem;font-weight:800;color:var(--ink)}
+.face.backside .who{font-size:1.35rem;font-weight:800;color:#FFF1D2}
 .face.backside .hint{
-  background:rgba(247,235,216,.92);border-radius:999px;padding:8px 22px;font-weight:700;font-size:.9rem;color:#42301B;
-  animation:pulse 1.6s infinite;
+  background:rgba(247,240,228,.95);border-radius:2px;padding:8px 22px;font-weight:700;font-size:.85rem;color:#482329;
+  transform:rotate(-.8deg);box-shadow:3px 4px 0 rgba(20,2,9,.3);
+  animation:pulse 1.7s infinite;
 }
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-/* وجه البطاقة — ورقي كريمي كبطاقات الشعار */
-.face.front{transform:rotateY(180deg);background:var(--paper);color:var(--paper-ink);padding:0;justify-content:flex-start}
+@keyframes pulse{0%,100%{transform:rotate(-.8deg) scale(1)}50%{transform:rotate(-.8deg) scale(1.05)}}
+/* وجه البطاقة الورقي */
+.face.front{
+  transform:rotateY(180deg);color:var(--paper-ink);text-align:center;
+  background:
+    linear-gradient(rgba(249,243,231,.9),rgba(247,240,228,.95)),
+    repeating-linear-gradient(3deg,transparent 0 7px,rgba(126,63,45,.03) 7px 8px);
+  background-color:var(--paper);
+  border:1px solid #D8B56C;
+  box-shadow:0 30px 48px rgba(9,1,4,.4), 14px 16px 0 rgba(20,2,9,.22), 7px 9px 0 #EAD9B8;
+}
+.face.front::before{
+  content:"";position:absolute;inset:10px;pointer-events:none;
+  border:1px solid rgba(226,183,105,.75);box-shadow:inset 0 0 0 4px rgba(255,255,255,.25);opacity:.7;
+}
 .face.front .chead{
-  width:100%;padding:16px 20px;display:flex;align-items:center;gap:10px;color:#fff;
-  font-family:"Noto Kufi Arabic";font-weight:800;font-size:1.05rem;text-shadow:0 1px 3px rgba(0,0,0,.15);
+  width:100%;padding:14px 18px 0;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  position:relative;z-index:1;
 }
-.face.front .chead .lvltag{margin-inline-start:auto;background:rgba(255,255,255,.25);border-radius:999px;padding:3px 12px;font-size:.72rem;font-family:"Noto Kufi Arabic";font-weight:700}
+.face.front .seal{
+  color:#FFF5E0;background:var(--accent,var(--maroon));padding:6px 13px;border-radius:999px;
+  font-weight:700;font-size:.75rem;box-shadow:0 3px 7px rgba(53,15,17,.25);
+  display:flex;align-items:center;gap:6px;
+}
+.face.front .lvltag{color:#875C51;font-size:.66rem;font-weight:600}
+.face.front .divider{
+  width:150px;height:1px;margin:10px auto 0;
+  background:linear-gradient(90deg,transparent,var(--accent,var(--gold)),transparent);
+}
 .face.front .ctext{
-  flex:1;display:grid;place-items:center;padding:26px 24px;width:100%;
-  font-size:1.3rem;font-weight:700;line-height:2;text-align:center;
+  flex:1;display:grid;place-items:center;padding:16px 26px;width:100%;
+  font-size:1.16rem;font-weight:700;line-height:2.05;position:relative;z-index:1;
 }
 .face.front .calt{
-  width:calc(100% - 32px);margin:0 16px 8px;background:var(--paper-2);border:2px dashed var(--gold);
-  border-radius:18px;padding:12px 14px;font-size:.85rem;line-height:1.8;color:#6E5636;
+  width:calc(100% - 44px);margin:0 22px 6px;padding:10px 14px;text-align:start;
+  border-inline-start:3px solid var(--accent,var(--gold-dim));background:rgba(218,186,123,.18);
+  transform:rotate(-.5deg);position:relative;z-index:1;
 }
-.face.front .calt b{color:var(--gold);font-size:.8rem}
-.face.front .cfoot{width:100%;padding:6px 16px 16px;display:flex;gap:8px}
-.face.front .cfoot .btn{padding:13px;font-size:.95rem;border-radius:16px}
-.optional{position:absolute;top:14px;inset-inline-start:16px;background:rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:2px 10px;font-size:.62rem;font-weight:700}
+.face.front .calt b{color:#7B5550;font-size:.68rem;font-weight:700;display:block}
+.face.front .calt p{color:#543239;font-size:.85rem;line-height:1.7;margin-top:2px}
+
+/* ═══ حكم الشريك + العقوبة ═══ */
+.judge{
+  width:calc(100% - 32px);margin:4px 16px 14px;position:relative;z-index:1;
+  border-top:1px dashed rgba(156,91,54,.4);padding-top:11px;
+}
+.judge .jhead{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  color:#7A4F47;font-weight:700;font-size:.78rem;margin-bottom:9px;
+}
+.judge .jbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.judge .jbtns button{
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-weight:800;font-size:.8rem;border:1px solid transparent;transition:transform .15s;padding:4px 8px;
+}
+.judge .jbtns button:active{transform:scale(.96)}
+.judge .ok{color:#FFF2D4;background:var(--maroon);box-shadow:0 6px 12px rgba(90,23,39,.3)}
+.judge .oops{color:#60343A;border-color:var(--gold-dim);background:rgba(255,250,238,.62)}
+
+/* قصاصة العقوبة */
+.penalty{
+  position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:26px 22px;text-align:center;color:var(--paper-ink);
+  background:
+    linear-gradient(150deg,rgba(252,242,222,.99),rgba(240,222,186,.97)),
+    repeating-linear-gradient(-3deg,transparent 0 8px,rgba(126,63,45,.04) 8px 9px);
+  border:1px solid #D8B56C;clip-path:var(--torn2);
+  box-shadow:var(--shadow-lg);
+  transform:rotate(-1deg) scale(.6);opacity:0;pointer-events:none;
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.25), opacity .25s;
+}
+.penalty.show{transform:rotate(-1deg) scale(1);opacity:1;pointer-events:auto}
+.penalty .ptag{
+  color:#FFF5E0;background:var(--c-passion);padding:6px 16px;border-radius:999px;
+  font-weight:800;font-size:.8rem;box-shadow:0 3px 7px rgba(53,15,17,.25);transform:rotate(1.5deg);
+}
+.penalty h4{font-size:.72rem;color:#966D5B;font-weight:600;letter-spacing:.02em}
+.penalty .ptext{font-size:1.1rem;font-weight:800;line-height:2;max-width:400px;color:#543239}
+.penalty .pbtns{display:grid;grid-template-columns:1fr auto;gap:8px;width:100%;max-width:380px;margin-top:6px}
+.penalty .pbtns .done{
+  min-height:46px;color:#FFF2D4;background:var(--maroon);font-weight:800;font-size:.88rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  box-shadow:0 6px 12px rgba(90,23,39,.3);
+}
+.penalty .pbtns .redo{
+  min-height:46px;padding:0 16px;color:#60343A;border:1px dashed var(--gold-dim);
+  background:rgba(255,255,255,.4);font-weight:700;font-size:.82rem;
+}
+.penalty small{color:#8A6860;font-size:.66rem;line-height:1.7}
 
 /* ═══ المؤقت ═══ */
-.timerbox{text-align:center;padding:10px 0}
+.timerbox{text-align:center;padding:6px 0}
 .timerbox .ring{
-  width:170px;height:170px;border-radius:50%;margin:14px auto;position:relative;
+  width:158px;height:158px;border-radius:50%;margin:14px auto;position:relative;
   display:grid;place-items:center;
-  background:conic-gradient(var(--pink) var(--pct,100%), var(--line) 0);
+  background:conic-gradient(var(--gold) var(--pct,100%), rgba(109,32,52,.25) 0);
+  box-shadow:0 10px 24px rgba(9,1,4,.35);
 }
-.timerbox .ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--navy-hi)}
-.timerbox .ring b{position:relative;font-family:"Noto Kufi Arabic";font-size:2.6rem;font-weight:800}
-.timerbox .tstart{margin-top:6px}
+.timerbox .ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#631B31;border:1px solid rgba(242,207,138,.5)}
+.timerbox .ring b{position:relative;font-size:2.3rem;font-weight:800;color:#FBE9C0;direction:ltr}
 
 /* ═══ العجلة ═══ */
-.wheelwrap{position:relative;width:min(320px,82vw);margin:22px auto 8px}
+.wheelwrap{position:relative;width:min(310px,80vw);margin:22px auto 8px}
 .wheelptr{
-  position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:3;
-  width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
-  border-top:26px solid var(--ink);filter:drop-shadow(0 3px 3px rgba(0,0,0,.25));
+  position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:3;
+  width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+  border-top:24px solid var(--gold-hi);filter:drop-shadow(0 3px 3px rgba(0,0,0,.35));
 }
 .wheel{
   width:100%;aspect-ratio:1;border-radius:50%;position:relative;
-  border:10px solid var(--paper);box-shadow:0 0 0 4px var(--pink-deep), var(--shadow-lg);
+  border:6px dashed rgba(241,210,141,.55);
+  box-shadow:inset 0 0 0 6px rgba(59,10,25,.8), var(--shadow-lg);
   transition:transform 4.2s cubic-bezier(.12,.6,.08,1);
 }
 .wheel .seg{
   position:absolute;top:50%;left:50%;transform-origin:0 0;
-  font-weight:800;color:#fff;font-size:.95rem;font-family:"Noto Kufi Arabic";
-  text-shadow:0 1px 3px rgba(0,0,0,.3);
+  font-weight:700;color:#FFF0CC;font-size:.88rem;text-shadow:0 1px 3px rgba(0,0,0,.35);
 }
 .wheelhub{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
-  width:64px;height:64px;border-radius:50%;background:var(--cream);box-shadow:var(--shadow);
-  display:grid;place-items:center;font-size:1.6rem;
+  width:62px;height:62px;border-radius:50%;background:#4D1023;
+  border:1px solid rgba(242,207,138,.6);box-shadow:var(--shadow);
+  display:grid;place-items:center;font-size:1.4rem;
 }
 
 /* ═══ الأبواب ═══ */
-.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
 .door{
-  aspect-ratio:.72;border-radius:20px 20px 14px 14px;
-  border:2.5px solid rgba(255,255,255,.22);box-shadow:0 5px 0 rgba(2,8,30,.5), var(--shadow);
+  aspect-ratio:.7;border:1px solid rgba(245,218,165,.28);
+  background:rgba(255,255,255,.045);color:#FEECCA;font-weight:800;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-  color:#fff;font-weight:800;transition:transform .2s;position:relative;overflow:hidden;
+  transition:.2s;position:relative;
 }
-.door::before{content:"";position:absolute;inset:8px;border:2.5px solid rgba(255,255,255,.4);border-radius:14px 14px 10px 10px}
-.door:active{transform:scale(.94) rotate(-1deg)}
-.door .ic{font-size:2rem}
-.door b{font-family:"Noto Kufi Arabic";font-size:.9rem;position:relative}
+.door::before{content:"";position:absolute;inset:7px;border:1px dashed rgba(245,218,165,.3)}
+.door:hover{background:rgba(239,196,112,.15);transform:translateY(-3px)}
+.door .ic{font-size:1.9rem}
+.door b{font-size:.85rem;position:relative}
 
 /* ═══ الدفتر والنجوم ═══ */
 .starbar{
-  display:flex;align-items:center;gap:4px;background:var(--cream);border-radius:999px;
-  padding:10px 18px;box-shadow:var(--shadow);justify-content:center;margin-top:14px;font-size:1.4rem;
+  display:flex;align-items:center;gap:5px;justify-content:center;margin-top:12px;font-size:1.35rem;
 }
-.starbar .s{filter:grayscale(1);opacity:.35;transition:all .3s}
+.starbar .s{filter:grayscale(1);opacity:.3;transition:all .3s}
 .starbar .s.on{filter:none;opacity:1;transform:scale(1.1)}
-.entry{background:var(--cream);border-radius:20px;padding:16px;margin-top:12px;box-shadow:var(--shadow)}
-.entry time{font-size:.7rem;color:var(--ink-soft);font-weight:700}
-.entry .row{display:flex;gap:8px;margin-top:8px;font-size:.88rem;line-height:1.7}
-.entry .row .k{flex:none;font-size:1rem}
-.field{margin-top:12px}
-.field label{display:block;font-weight:800;font-size:.88rem;margin-bottom:6px}
-.field input,.field textarea{
-  width:100%;background:#0E1738;border:2.5px solid var(--line);border-radius:16px;padding:12px 14px;
-  font-size:.95rem;outline:none;transition:border-color .2s;resize:none;
+.entry{position:relative;color:var(--paper-ink);
+  background:linear-gradient(140deg,rgba(253,246,231,.97),rgba(239,224,194,.93));
+  border:1px solid rgba(236,207,149,.82);clip-path:var(--torn);
+  box-shadow:var(--shadow);padding:15px 16px;margin-top:12px;
 }
-.field input::placeholder,.field textarea::placeholder{color:#6B77A8}
-.field input:focus,.field textarea:focus{border-color:var(--pink)}
+.entry:nth-child(odd){transform:rotate(-.4deg)}
+.entry time{font-size:.66rem;color:var(--paper-soft);font-weight:700}
+.entry .row{display:flex;gap:8px;margin-top:7px;font-size:.85rem;line-height:1.8}
+.entry .row .k{flex:none}
+.field{margin-top:12px;text-align:start}
+.field label{display:block;font-weight:800;font-size:.84rem;margin-bottom:6px;color:var(--maroon)}
+.field input,.field textarea{
+  width:100%;background:rgba(255,255,255,.55);border:1px solid var(--gold-dim);
+  padding:11px 13px;font-size:.92rem;outline:none;resize:none;border-radius:2px;
+}
+.field input:focus,.field textarea:focus{border-color:var(--maroon)}
+.field input::placeholder{color:#B09A85}
 
-/* ═══ نافذة منبثقة ═══ */
-.modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center}
+/* ═══ نافذة (ورقة فوق المخمل) ═══ */
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px}
 .modal.open{display:flex}
-.modal .bg{position:absolute;inset:0;background:rgba(3,7,24,.65);backdrop-filter:blur(3px)}
+.modal .bg{position:absolute;inset:0;background:rgba(27,2,10,.75);backdrop-filter:blur(8px)}
 .modal .sheet{
-  position:relative;width:100%;max-width:560px;background:var(--cream);border-radius:30px 30px 0 0;
-  padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:86vh;overflow:auto;
+  position:relative;width:100%;max-width:520px;max-height:88vh;overflow:auto;
+  color:var(--paper-ink);text-align:center;
+  background:linear-gradient(150deg,rgba(252,244,228,.98),rgba(240,224,192,.96));
+  border:1px solid #D8B56C;
+  box-shadow:0 28px 65px rgba(0,0,0,.5), 10px 12px 0 rgba(20,2,9,.25);
+  padding:26px 22px;transform:rotate(-.35deg);
   animation:up .3s cubic-bezier(.2,.9,.3,1.1);
 }
-@keyframes up{from{transform:translateY(60px);opacity:0}}
-.modal .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+@keyframes up{from{transform:rotate(-.35deg) translateY(50px);opacity:0}}
+.modal .sheet h3{color:var(--maroon)}
 
-/* ═══ تنقل سفلي ═══ */
+/* ═══ تنقل سفلي — ألسنة ورقية ═══ */
 nav.bottom{
   position:fixed;bottom:0;left:0;right:0;z-index:40;
   padding:8px 14px calc(10px + env(safe-area-inset-bottom));
   display:flex;justify-content:center;pointer-events:none;
 }
 nav.bottom .row{
-  pointer-events:auto;display:flex;gap:4px;background:var(--cream);border-radius:26px;
-  border:2px solid var(--line);
-  padding:8px;box-shadow:var(--shadow-lg);width:100%;max-width:420px;
+  pointer-events:auto;display:flex;gap:4px;width:100%;max-width:430px;
+  background:rgba(34,6,16,.88);backdrop-filter:blur(10px);
+  border:1px solid var(--gold-line);padding:7px;
+  box-shadow:var(--shadow-lg);
 }
 nav.bottom button{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;
-  border-radius:18px;font-size:1.2rem;transition:background .2s;
+  font-size:1.1rem;color:rgba(255,238,204,.6);border-bottom:2px dashed rgba(245,214,151,.25);
+  transition:.18s;
 }
-nav.bottom button .lbl{font-size:.65rem;font-weight:800}
-nav.bottom button.active{background:linear-gradient(180deg,#F04E75,var(--pink));color:#fff}
+nav.bottom button .lbl{font-size:.62rem;font-weight:800}
+nav.bottom button.active{
+  color:#4B1625;background:linear-gradient(145deg,#F7ECD5,#E9D4A8);
+  border:1px solid #E4BF79;border-bottom:0;transform:rotate(-.45deg);
+  box-shadow:3px -4px 0 rgba(64,10,27,.25);
+}
 
 .view{display:none;animation:fade .25s}
 .view.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}}
 .note{
-  display:flex;gap:10px;background:var(--cream-2);border-radius:18px;padding:13px 15px;margin-top:12px;
-  font-size:.82rem;line-height:1.8;color:var(--ink-soft);
+  display:flex;gap:10px;background:rgba(42,4,18,.35);border:1px solid var(--gold-line);
+  padding:12px 14px;margin-top:12px;font-size:.78rem;line-height:1.9;color:var(--ink-soft);text-align:start;
 }
-.note .ic{flex:none;font-size:1.1rem}
-.pill{display:inline-block;background:var(--cream-2);border-radius:999px;padding:4px 14px;font-size:.75rem;font-weight:700;color:var(--ink-soft);margin:3px 2px}
+.note .ic{flex:none;font-size:1.05rem}
+.note.onpaper{background:rgba(218,186,123,.16);border:1px dashed rgba(156,91,54,.35);color:var(--paper-soft)}
+.pill{display:inline-block;background:rgba(218,186,123,.2);border-radius:2px;padding:4px 13px;font-size:.72rem;font-weight:700;color:#7A5550;margin:3px 2px;border:1px dashed rgba(156,91,54,.3)}
 .center{text-align:center}
 .toast{
   position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-90px);z-index:99;
-  background:var(--paper);color:#42301B;border-radius:999px;padding:11px 24px;font-weight:700;font-size:.9rem;
-  box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.2,.9,.3,1.2);white-space:nowrap;
+  background:var(--paper);color:#482329;padding:11px 24px;font-weight:700;font-size:.85rem;
+  border:1px solid #D8B56C;box-shadow:4px 5px 0 rgba(20,2,9,.3);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.2);white-space:nowrap;
 }
-.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.show{transform:translateX(-50%) translateY(0) rotate(-.5deg)}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:98;overflow:hidden}
-.confetti i{position:absolute;top:-20px;font-size:1.3rem;animation:drop 2.6s linear forwards}
+.confetti i{position:absolute;top:-20px;font-size:1.25rem;animation:drop 2.6s linear forwards}
 @keyframes drop{to{transform:translateY(110vh) rotate(540deg);opacity:.4}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media (min-width:640px){.flip{min-height:540px}.face.front .ctext{font-size:1.3rem}}
 </style>
 </head>
 <body>
 <div id="app"></div>
 
 <nav class="bottom"><div class="row">
-  <button data-v="home" class="active"><span>🏠</span><span class="lbl">الرئيسية</span></button>
-  <button data-v="modes"><span>🎲</span><span class="lbl">الأنماط</span></button>
+  <button data-v="home" class="active"><span>🕯️</span><span class="lbl">الرئيسية</span></button>
+  <button data-v="modes"><span>🃏</span><span class="lbl">الأنماط</span></button>
   <button data-v="book"><span>📔</span><span class="lbl">دفترنا</span></button>
   <button data-v="settings"><span>⚙️</span><span class="lbl">الإعدادات</span></button>
 </div></nav>
@@ -409,13 +529,13 @@ nav.bottom button.active{background:linear-gradient(180deg,#F04E75,var(--pink));
 "use strict";
 /* ═══════════════ البيانات ═══════════════ */
 const CATS = {
-  truth:   {name:"صراحة",      icon:"💬", color:"var(--c-truth)",    soft:"var(--c-truth-soft)",    desc:"أسئلة عن الشعور والتفضيلات والذكريات", minLvl:1},
-  gesture: {name:"لفتة",       icon:"💌", color:"var(--c-gesture)",  soft:"var(--c-gesture-soft)",  desc:"كلمات تقدير ورسائل ومبادرات لطيفة",     minLvl:1},
-  passion: {name:"قرب وشغف",   icon:"🔥", color:"var(--c-passion)",  soft:"var(--c-passion-soft)",  desc:"قبلات ورقص وتدليك وانجذاب مباشر",       minLvl:2},
-  deep:    {name:"عمق خاص",    icon:"❤️‍🔥", color:"var(--c-deep)",   soft:"var(--c-deep-soft)",     desc:"تحديات أكثر جرأة وتعبيرًا عن الرغبات",   minLvl:3},
-  laugh:   {name:"نضحك سويًا", icon:"😄", color:"var(--c-laugh)",    soft:"var(--c-laugh-soft)",    desc:"عقوبات مرحة وتخمين وتمثيل",             minLvl:1},
-  relax:   {name:"استرخاء",    icon:"🌙", color:"var(--c-relax)",    soft:"var(--c-relax-soft)",    desc:"ختام هادئ وتنفس وامتنان",               minLvl:1},
-  surprise:{name:"مفاجأة",     icon:"✨", color:"var(--c-surprise)", soft:"var(--c-surprise-soft)", desc:"اختيارات وتبديل أدوار وتحديات مزدوجة",   minLvl:1},
+  truth:   {name:"صراحة",      icon:"💬", color:"var(--c-truth)",    desc:"أسئلة عن الشعور والتفضيلات والذكريات", minLvl:1},
+  gesture: {name:"لفتة",       icon:"💌", color:"var(--c-gesture)",  desc:"كلمات تقدير ورسائل ومبادرات لطيفة",     minLvl:1},
+  passion: {name:"قرب وشغف",   icon:"🔥", color:"var(--c-passion)",  desc:"قبلات ورقص وتدليك وانجذاب مباشر",       minLvl:2},
+  deep:    {name:"عمق خاص",    icon:"❤️‍🔥", color:"var(--c-deep)",   desc:"تحديات أكثر جرأة وتعبيرًا عن الرغبات",   minLvl:3},
+  laugh:   {name:"نضحك سويًا", icon:"😄", color:"var(--c-laugh)",    desc:"عقوبات مرحة وتخمين وتمثيل",             minLvl:1},
+  relax:   {name:"استرخاء",    icon:"🌙", color:"var(--c-relax)",    desc:"ختام هادئ وتنفس وامتنان",               minLvl:1},
+  surprise:{name:"مفاجأة",     icon:"✨", color:"var(--c-surprise)", desc:"اختيارات وتبديل أدوار وتحديات مزدوجة",   minLvl:1},
 };
 
 const DECK = {
@@ -539,6 +659,32 @@ surprise:[
 ],
 };
 
+/* العقوبات المرحة الخفيفة — تُسحب عند حكم الشريك بعدم إكمال البطاقة */
+const PENALTIES = [
+ "غنِّ أغنية من الطفولة بأسلوب أمريكي مبالغ فيه 🎤",
+ "ارقص رقصة القرد لمدة 5 دقائق 🐒",
+ "تحدث وكأنك دجاجة لمدة 3 دقائق 🐔",
+ "قلّد مذيع الأخبار وهو يقرأ بجدية تامة خبر: «شريكي رفض تنفيذ البطاقة» 📺",
+ "تكلم لمدة دقيقة كاملة بصوت طفل عمره ثلاث سنوات 👶",
+ "مثّل مشهد بكاء درامي هندي لمدة 30 ثانية 🎬",
+ "غنِّ اسم شريكك بلحن أوبرالي لمدة 20 ثانية 🎭",
+ "امشِ مشية البطريق من طرف الغرفة إلى طرفها ثلاث مرات 🐧",
+ "تحدث كإنسان آلي حتى نهاية الجولة القادمة 🤖",
+ "قلّد أصوات ثلاثة حيوانات يختارها شريكك 🦁",
+ "اصنع أسخف وجه تستطيعه واثبت عليه 15 ثانية أمام شريكك 🤪",
+ "ارقص من دون أي موسيقى لمدة 30 ثانية بكامل الجدية 🕺",
+ "ألقِ خطابًا بالفصحى المبالغ فيها عن «أهمية تنفيذ البطاقات» لمدة 30 ثانية 🎙️",
+ "قل «أنا الخاسر الظريف» بخمس نبرات مختلفة 😅",
+ "حاول لمس أنفك بلسانك لمدة 20 ثانية أمام شريكك 👅",
+ "قلّد طريقة شريكك في الغضب بطريقة كوميدية — وبلطف! 😤",
+ "غنِّ أغنية أطفال مشهورة كأنها أغنية راب 🎧",
+ "اجلس بوضعية الدجاجة وقل «كوكو» خمس مرات بثقة تامة 🐥",
+ "عبّر عن حبك لشريكك بالإيماءات فقط من دون أي كلمة لمدة دقيقة 🙊",
+ "قلّد مدرب لياقة متحمسًا يشجع شريكك على شرب كوب ماء 💪",
+ "تظاهر أنك تقدم وصلة طقس عن «حالة الرومانسية في البيت» لمدة 30 ثانية 🌦️",
+ "امدح نفسك بصوت عالٍ أمام المرآة أو الكاميرا الأمامية لمدة 20 ثانية 🪞",
+];
+
 /* تحديات الوقت والشرارة */
 const TIMERS = [
  {t:"قل نكتة سخيفة",s:30,r:"إن لم تضحك الزوجة، يقبلها زوجها قبلة دافئة بالطريقة التي تناسبها."},
@@ -549,7 +695,6 @@ const TIMERS = [
  {t:"رسالة رغبة",s:120,r:"يكتب كل طرف لفتة رومانسية يرغب بها؛ يختاران واحدة لتطبيقها الليلة أو لاحقًا."},
 ];
 
-/* السيناريوهات الجاهزة */
 const SCENARIOS = [
  {id:"light", name:"ليلة خفيفة", time:"20 دقيقة", icon:"🌤️", lvl:2,
   q:["laugh","laugh","truth","truth","passion","relax"]},
@@ -568,12 +713,12 @@ const LVLS = [
  {n:3,name:"عمق وجرأة",icon:"🔥",desc:"اعترافات رغبة ومبادرة وتحديات جريئة قابلة للتخصيص"},
 ];
 const WHEEL_SEGS = [
- {name:"اسأل",icon:"💬",cat:"truth",color:"#3E7BC0"},
- {name:"أشِد",icon:"💌",cat:"gesture",color:"#E0708D"},
- {name:"تحرّك",icon:"💃",cat:"laugh",color:"#2E9962"},
- {name:"اقترب",icon:"🔥",cat:"passion",color:"#E8862E"},
- {name:"فاجئ",icon:"✨",cat:"surprise",color:"#C9922A"},
- {name:"أكمل",icon:"❤️‍🔥",cat:"deep",color:"#B23A48"},
+ {name:"اسأل",icon:"💬",cat:"truth",color:"#344C78"},
+ {name:"أشِد",icon:"💌",cat:"gesture",color:"#A8546E"},
+ {name:"تحرّك",icon:"💃",cat:"laugh",color:"#4B7358"},
+ {name:"اقترب",icon:"🔥",cat:"passion",color:"#B76F3A"},
+ {name:"فاجئ",icon:"✨",cat:"surprise",color:"#9F7750"},
+ {name:"أكمل",icon:"❤️‍🔥",cat:"deep",color:"#6D2034"},
 ];
 
 /* ═══════════════ الحالة ═══════════════ */
@@ -581,12 +726,13 @@ const store = (k,v)=> v===undefined ? JSON.parse(localStorage.getItem("by-"+k)||
 let S = {
   lvl: store("lvl") || 2,
   stars: store("stars") || 0,
+  penalties: store("pen") || 0,
   journal: store("journal") || [],
   promises: store("promises") || [],
   turn: "him",
   mode: null,
   queue: null, qi: 0,
-  used: {},
+  used: {}, usedPen: [],
   played: 0,
   bestCard: null,
   wheelRot: 0,
@@ -599,15 +745,15 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
 function confetti(){
   const c=$("#confetti");c.innerHTML="";
-  const em=["💛","💖","💚","⭐","✨"];
+  const em=["🌹","💛","✨","⭐","🕯️"];
   for(let i=0;i<26;i++){const s=document.createElement("i");s.textContent=em[i%em.length];
     s.style.left=Math.random()*100+"%";s.style.animationDelay=(Math.random()*.9)+"s";c.appendChild(s);}
   setTimeout(()=>c.innerHTML="",3400);
 }
-function openModal(html){$("#modal-body").innerHTML='<div class="grip"></div>'+html;$("#modal").classList.add("open");}
+function openModal(html){$("#modal-body").innerHTML=html;$("#modal").classList.add("open");}
 function closeModal(){$("#modal").classList.remove("open");}
 
-/* خانة صورة الشريك: ملف img/ ← أو صورة مرفوعة من الإعدادات ← أو مكان محجوز أنيق */
+/* خانة صورة الشريك */
 function pslot(who, size){
   const up = store("img-"+who);
   const src = up || ("img/"+(who==="him"?"husband":"wife")+".png");
@@ -618,6 +764,7 @@ function pslot(who, size){
   </div>`;
 }
 const whoName = w => w==="him" ? "الزوج" : "الزوجة";
+const other = () => S.turn==="him" ? "her" : "him";
 
 /* سحب بطاقة دون تكرار حتى تنفد الفئة */
 function draw(cat){
@@ -630,44 +777,59 @@ function draw(cat){
   S.used[cat].push(card.i);
   return card;
 }
+/* سحب عقوبة دون تكرار */
+function drawPenalty(){
+  let fresh = PENALTIES.map((p,i)=>i).filter(i=>!S.usedPen.includes(i));
+  if(!fresh.length){S.usedPen=[];fresh=PENALTIES.map((p,i)=>i);}
+  const i = fresh[Math.floor(Math.random()*fresh.length)];
+  S.usedPen.push(i);
+  return PENALTIES[i];
+}
 
 /* ═══════════════ العروض ═══════════════ */
 const views = {};
 
 views.home = () => `
-<div class="hero" style="padding-top:22px">
+<header class="top">
+  <div class="brand">
+    <p class="eyebrow">أمسية خاصة للزوجين</p>
+    <b>بيننا <span>· دفتر المخمل</span></b>
+  </div>
+  <div class="private-pill"><i></i> جلسة خاصة</div>
+</header>
+<div class="hero">
   <img class="logo-img" src="img/logo.png" alt="بيننا — لعبة للزوجين"
        onerror="this.closest('.hero').classList.add('nologo')">
   <div class="duo">${pslot("him","xl")}${pslot("her","xl")}</div>
   <h1>بيننا</h1>
-  <div class="tag">وقت خاص، قرب حقيقي، وجرأة بينكما 💗</div>
-  <div class="sub">زوج وزوجة فقط · من 20 إلى 90 دقيقة · لا رابح ولا خاسر</div>
+  <div class="tag">وقت خاص، قرب حقيقي، وجرأة بينكما 🌹</div>
+  <div class="sub">زوج وزوجة فقط · من 20 إلى 90 دقيقة · لا رابح ولا خاسر… لكن هناك عقوبات ضاحكة 😅</div>
 </div>
 
-<button class="btn gold" style="margin-top:22px" onclick="startSetup()">🌙 ابدأ الأمسية</button>
-<button class="btn pink" style="margin-top:14px" onclick="go('modes')">🎲 أنماط اللعب</button>
+<button class="btn gold" style="margin-top:20px" onclick="startSetup()">🕯️ ابدأ الأمسية</button>
+<button class="btn primary" style="margin-top:11px" onclick="go('modes')">🃏 أنماط اللعب</button>
 <div class="btnrow">
-  <button class="btn cream" onclick="showRules()">📖 طريقة اللعب</button>
-  <button class="btn cream" onclick="go('settings')">⚙️ الإعدادات</button>
+  <button class="btn quiet" onclick="showRules()">📜 طريقة اللعب</button>
+  <button class="btn quiet" onclick="go('settings')">⚙️ الإعدادات</button>
 </div>
 
-<div class="card">
+<div class="paper tilt-l">
   <h3>⭐ نجوم القرب</h3>
   <div class="starbar">${[0,1,2,3,4].map(i=>`<span class="s ${i < (S.stars%5===0&&S.stars>0?5:S.stars%5) ? "on":""}">⭐</span>`).join("")}</div>
-  <p class="center" style="margin-top:10px">جمعتما <b style="color:var(--gold-hi)">${S.stars}</b> نجمة حتى الآن — كل 5 نجوم = مكافأة مشتركة 🎁</p>
+  <p class="center" style="margin-top:8px">جمعتما <b style="color:var(--maroon)">${S.stars}</b> نجمة — كل 5 نجوم مكافأة مشتركة 🎁${S.penalties?` · ونُفذت <b style="color:var(--c-passion)">${S.penalties}</b> عقوبة ضاحكة 😅`:""}</p>
 </div>
 
 <div class="note"><span class="ic">🔒</span><span><b>خصوصية تامة:</b> كل شيء يبقى على جهازكما فقط — لا حسابات، لا إنترنت، لا مشاركة. ما يقال في الجلسة يبقى بينكما.</span></div>
-<div class="note"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين، لا بصمت أحدهما أو تردده. الجرأة أجمل عندما تكون رغبة مشتركة.</span></div>
-<p class="center" style="margin-top:18px;font-size:.78rem;color:var(--ink-soft);font-weight:700">لعبة للزوجين · نفتح القلوب ونقرّب المسافات 💗</p>
+<div class="note"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين. «تجاوز» قبل البدء مجاني دائمًا — أما من يقبل التحدي ثم لا يكمله فيحكم عليه شريكه بعقوبة ضاحكة!</span></div>
+<p class="center" style="margin-top:18px;font-size:.72rem;color:var(--ink-soft)">لعبة للزوجين · نفتح القلوب ونقرّب المسافات 🌹</p>
 `;
 
 views.modes = () => `
-<header class="top"><div class="brand"><b>🎲 أنماط اللعب</b><small style="margin:0"></small></div></header>
+<header class="top"><div class="brand"><p class="eyebrow">اختارا طريقة الأمسية</p><b>🃏 أنماط اللعب</b></div></header>
 <div class="modes">
   <button class="mode wide" onclick="startSetup('cards')">
     <span class="ic">🃏</span>
-    <span class="txt"><b>قلب البطاقات بالتناوب</b><br><small>النمط الأساسي — أحدكما يختار الفئة والبطاقة تُقلب لصاحب الدور</small></span>
+    <span class="txt"><b>قلب البطاقات بالتناوب</b><br><small>النمط الأساسي — أحدكما يختار الفئة والبطاقة تُقلب لصاحب الدور، وشريكه يحكم عليها</small></span>
   </button>
   <button class="mode" onclick="startSetup('wheel')"><span class="ic">🎡</span><b>عجلة المزاج الجريء</b><small>اسأل، أشِد، تحرّك، اقترب، فاجئ، أكمل</small></button>
   <button class="mode" onclick="startSetup('timer')"><span class="ic">⏱️</span><b>تحدي الوقت والشرارة</b><small>مؤقت ونتائج مرحة رومانسية</small></button>
@@ -679,16 +841,17 @@ views.modes = () => `
   </button>
   <button class="mode wide" onclick="startSetup('relaxnight')">
     <span class="ic">🛋️</span>
-    <span class="txt"><b>أمسية الترويح عن النفس</b><br><small>النمط الهادئ — تنفس وموسيقى وامتنان، خيار مستقل لا تراجع</small></span>
+    <span class="txt"><b>أمسية الترويح عن النفس</b><br><small>النمط الهادئ — تنفس وموسيقى وامتنان، خيار مستقل لا تراجع (بلا عقوبات)</small></span>
   </button>
 </div>`;
 
-/* ═══ إعداد الجلسة: درجة القرب ═══ */
+/* ═══ إعداد الجلسة ═══ */
 window.startSetup = (mode) => {
   const m = mode || "cards";
   openModal(`
-  <h3 class="disp" style="font-size:1.3rem;text-align:center">ما درجة قربكما الليلة؟ 💛</h3>
-  <p class="center" style="font-size:.82rem;color:var(--ink-soft);margin-top:4px">يحق لأي طرف تغيير النوع أو اختيار البديل أو إيقاف اللعبة في أي وقت</p>
+  <p style="color:#966D5B;font-size:.7rem;font-weight:600">قبل أن تبدآ</p>
+  <h3 style="font-size:1.25rem;margin:4px 0 2px">ما درجة قربكما الليلة؟ 🌹</h3>
+  <p style="font-size:.78rem;color:var(--paper-soft);margin-top:4px">يحق لأي طرف تغيير النوع أو اختيار البديل أو إيقاف اللعبة في أي وقت</p>
   <div class="lvls">
     ${LVLS.map(L=>`
     <button class="lvl ${S.lvl===L.n?"on":""}" onclick="pickLvl(${L.n},this)">
@@ -697,12 +860,13 @@ window.startSetup = (mode) => {
       <span class="chk">✓</span>
     </button>`).join("")}
   </div>
-  <div class="safety" style="margin-top:18px">
-    <div class="go" style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--her-soft);color:var(--her-deep)"><span style="font-size:1.1rem">🟢</span><br>استمرار<br><small style="font-weight:600;font-size:.6rem">مناسب ويمكن رفعه</small></div>
-    <div style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--c-surprise-soft);color:#8A6010"><span style="font-size:1.1rem">🟡</span><br>أبطئ<br><small style="font-weight:600;font-size:.6rem">نسخة أخف</small></div>
-    <div style="flex:1;border-radius:18px;padding:11px 6px;text-align:center;font-weight:800;font-size:.8rem;background:var(--him-soft);color:var(--him-deep)"><span style="font-size:1.1rem">🔴</span><br>تجاوز<br><small style="font-weight:600;font-size:.6rem">بطاقة جديدة بلا سؤال</small></div>
+  <div style="display:flex;gap:6px;margin-top:16px">
+    <div style="flex:1;padding:10px 4px;text-align:center;font-weight:800;font-size:.72rem;border:1px dashed rgba(75,115,88,.5);color:#38684A;background:rgba(255,255,255,.35)"><span style="font-size:1rem">🟢</span><br>استمرار<br><small style="font-weight:500;font-size:.56rem">مناسب ويمكن رفعه</small></div>
+    <div style="flex:1;padding:10px 4px;text-align:center;font-weight:800;font-size:.72rem;border:1px dashed rgba(183,111,58,.5);color:#8A5A22;background:rgba(255,255,255,.3)"><span style="font-size:1rem">🟡</span><br>أبطئ<br><small style="font-weight:500;font-size:.56rem">نسخة أخف</small></div>
+    <div style="flex:1;padding:10px 4px;text-align:center;font-weight:800;font-size:.72rem;border:1px dashed rgba(201,85,106,.5);color:#96354A;background:rgba(255,255,255,.3)"><span style="font-size:1rem">🔴</span><br>تجاوز<br><small style="font-weight:500;font-size:.56rem">قبل البدء — بلا عقوبة</small></div>
   </div>
-  <button class="btn gold" style="margin-top:18px" onclick="closeModal();beginMode('${m}')">لنبدأ ✨</button>
+  <div class="note onpaper"><span class="ic">😅</span><span><b>قانون العقوبة:</b> من يقبل البطاقة ثم لا يكملها، يحكم عليه شريكه بعقوبة ضاحكة خفيفة — الحكم دائمًا للطرف الآخر!</span></div>
+  <button class="btn primary" style="margin-top:14px" onclick="closeModal();beginMode('${m}')">لنبدأ ✨</button>
   `);
 };
 window.pickLvl = (n,el)=>{S.lvl=n;store("lvl",n);document.querySelectorAll(".lvl").forEach(x=>x.classList.remove("on"));el.classList.add("on");};
@@ -719,9 +883,9 @@ window.beginMode = (m) => {
 /* ═══ نمط البطاقات: اختيار فئة ═══ */
 views.play = () => `
 ${playTop("اختيار الفئة")}
-<div class="card" style="margin-top:14px">
+<div class="paper tilt-r">
   <h3>${pslot(S.turn,"sm")} دور ${whoName(S.turn)} — اختر لون البطاقة</h3>
-  <p style="font-size:.8rem">${S.played>0 && (S.played+1)%3===0 ? "💡 اقتراح: كل ثالث بطاقة من «قرب وشغف» أو «عمق خاص» حتى لا تظل الجلسة كلامية!" : "أحدكما يختار اللون، والآخر له حق تعديل المستوى — ثم تُقلب البطاقة."}</p>
+  <p style="font-size:.78rem">${S.played>0 && (S.played+1)%3===0 ? "💡 اقتراح: كل ثالث بطاقة من «قرب وشغف» أو «عمق خاص» حتى لا تظل الجلسة كلامية!" : "أحدكما يختار اللون، والآخر له حق تعديل المستوى — والحكم على التنفيذ لشريكك 😉"}</p>
 </div>
 <div class="cats">
   ${Object.entries(CATS).map(([k,c])=>{
@@ -738,17 +902,18 @@ ${playTop("اختيار الفئة")}
 function playTop(sub){
   return `<div class="playtop">
     <button class="back" onclick="go('modes')">→</button>
-    <div><b class="disp" style="font-size:1.1rem">بيننا</b><small style="display:block;font-size:.68rem;color:var(--ink-soft);font-weight:600">${sub}</small></div>
+    <div class="tt"><b>بيننا</b><small>${sub}</small></div>
     <div class="turnchip">${pslot(S.turn,"sm")}<span><b>${whoName(S.turn)}</b><small>صاحب الدور</small></span></div>
   </div>`;
 }
 
-/* ═══ عرض البطاقة (قلب ثلاثي الأبعاد) ═══ */
-window.flipCard = (cat, keepTurn) => {
+/* ═══ عرض البطاقة ═══ */
+window.flipCard = (cat) => {
   const card = draw(cat);
   if(!card) return toast("لا توجد بطاقات بهذا المستوى هنا");
   S.currentCard = card; S.currentCat = cat;
   const c = CATS[cat];
+  const j = other();
   app.innerHTML = `
   ${playTop(c.name)}
   <div class="stage">
@@ -758,38 +923,63 @@ window.flipCard = (cat, keepTurn) => {
         <div class="who">بطاقة ${whoName(S.turn)}</div>
         <div class="hint">اضغط لقلب البطاقة 🃏</div>
       </div>
-      <div class="face front">
-        ${card.l>=3?'<span class="optional">اختياري — الاختيار جزء من متعة اللعبة</span>':""}
-        <div class="chead" style="background:${c.color}">
-          <span>${c.icon}</span><span>${c.name}</span>
-          <span class="lvltag">${LVLS[card.l-1].icon} ${LVLS[card.l-1].name}</span>
+      <div class="face front" style="--accent:${c.color}">
+        <div class="chead">
+          <span class="seal">${c.icon} ${c.name}</span>
+          <span class="lvltag">${LVLS[card.l-1].icon} ${LVLS[card.l-1].name}${card.l>=3?" · اختياري":""}</span>
         </div>
+        <div class="divider"></div>
         <div class="ctext">${esc(card.t)}</div>
-        ${card.alt?`<div class="calt"><b>🌊 اللفتة البديلة:</b> ${esc(card.alt)}</div>`:""}
-        <div class="cfoot">
-          <button class="btn gold" style="flex:1" onclick="doneCard(true)">نفذناها بحماس ⭐</button>
+        ${card.alt?`<div class="calt"><b>🌊 اللفتة البديلة</b><p>${esc(card.alt)}</p></div>`:""}
+        <div class="judge">
+          <div class="jhead">${pslot(j,"sm")} حكم ${whoName(j)}: هل ${j==="her"?"أكمل الزوج":"أكملت الزوجة"} البطاقة؟</div>
+          <div class="jbtns">
+            <button class="ok" onclick="event.stopPropagation();doneCard(true)">✓ أكملها — نجمة</button>
+            <button class="oops" onclick="event.stopPropagation();showPenalty()">✗ لم يكملها.. عقوبة! 😅</button>
+          </div>
         </div>
+        <div class="penalty" id="penalty"></div>
       </div>
     </div>
   </div>
   <div class="safety">
     <button class="go" onclick="doneCard(false)"><span>🟢</span>استمرار<small>تم — التالي</small></button>
     <button class="slow" onclick="slowCard()"><span>🟡</span>أبطئ<small>نسخة أخف</small></button>
-    <button class="skip" onclick="flipCard(pickSkipCat('${cat}'), true)"><span>🔴</span>تجاوز<small>بلا سؤال أو تبرير</small></button>
+    <button class="skip" onclick="flipCard('${cat}')"><span>🔴</span>تجاوز<small>قبل البدء — بلا عقوبة</small></button>
   </div>
-  <p class="center" style="margin-top:12px;font-size:.72rem;color:var(--ink-soft);font-weight:600">التجاوز لا يُفقدك دورك ولا عقوبة عليه 💛</p>
+  <p class="center" style="margin-top:12px;font-size:.68rem;color:var(--ink-soft)">التجاوز قبل قبول البطاقة مجاني دائمًا — العقوبة فقط لمن قَبِل ثم لم يكمل 😉</p>
   `;
   setTimeout(()=>{const f=$("#flip");if(f&&!f.classList.contains("flipped"))f.classList.add("flipped");},2600);
-  if(keepTurn===undefined||!keepTurn) {} // الدور يتبدل عند الإنهاء
 };
-window.pickSkipCat = c => c; // البطاقة الجديدة من الفئة نفسها
+
+/* قصاصة العقوبة الضاحكة */
+window.showPenalty = () => {
+  const box = $("#penalty");
+  if(!box) return;
+  const p = drawPenalty();
+  box.innerHTML = `
+    <span class="ptag">😅 عقوبة ${whoName(S.turn)}!</span>
+    <h4>بحكم ${whoName(other())} — البطاقة لم تكتمل، والقصاص ضاحك:</h4>
+    <div class="ptext">${esc(p)}</div>
+    <div class="pbtns">
+      <button class="done" onclick="event.stopPropagation();penaltyDone()">✔ نُفذت العقوبة — التالي</button>
+      <button class="redo" onclick="event.stopPropagation();showPenalty()">🎲 غيّرها</button>
+    </div>
+    <small>عقوبة خفيفة للضحك لا للإحراج — وللحكم استبدالها بزر 🎲</small>
+  `;
+  box.classList.add("show");
+};
+window.penaltyDone = () => {
+  S.penalties++; store("pen",S.penalties);
+  toast("😂 قصاص عادل! نكمل الأمسية");
+  doneCard(false);
+};
 
 window.slowCard = () => {
   const card = S.currentCard;
   if(card && card.alt){
     const f=$("#flip .ctext"); if(f){f.textContent=card.alt;toast("🌊 نسخة أهدأ من المهمة نفسها");return;}
   }
-  // بديل من مستوى أخف: لفتة أو استرخاء
   const lvl=S.lvl; S.lvl=1;
   const alt = draw(Math.random()<.5?"gesture":"relax");
   S.lvl=lvl;
@@ -805,27 +995,31 @@ window.doneCard = (withStar) => {
     toast("⭐ نجمة قرب جديدة! المجموع: "+S.stars);
   }
   S.turn = S.turn==="him"?"her":"him";
+  routeNext();
+};
+function routeNext(){
   if(S.mode==="scenario") return nextInQueue();
   if(S.mode==="wheel") return go("wheel");
   if(S.mode==="doors") return nextDoor();
+  if(S.mode==="doors2end"){S.mode="cards";return go("modes");}
+  if(S.mode==="timer") return go("timer");
   go("play");
-};
+}
 
 function rewardModal(){
   confetti();
   openModal(`
-  <h3 class="disp" style="font-size:1.4rem;text-align:center">🎁 خمس نجوم — مكافأة مشتركة!</h3>
-  <p class="center" style="font-size:.85rem;color:var(--ink-soft);margin-top:6px">اختارا مكافأتكما وحددا لها موعدًا هذا الأسبوع</p>
-  <div style="display:grid;gap:10px;margin-top:14px">
-    ${REWARDS.map(r=>`<button class="btn cream" style="font-size:.95rem" onclick="pickReward('${r}')">${r}</button>`).join("")}
+  <h3 style="font-size:1.3rem">🎁 خمس نجوم — مكافأة مشتركة!</h3>
+  <p style="font-size:.8rem;color:var(--paper-soft);margin-top:6px">اختارا مكافأتكما وحددا لها موعدًا هذا الأسبوع</p>
+  <div style="display:grid;gap:9px;margin-top:14px">
+    ${REWARDS.map(r=>`<button class="btn sec" style="font-size:.9rem" onclick="pickReward('${r}')">${r}</button>`).join("")}
   </div>`);
 }
 window.pickReward = (r)=>{
   S.promises.push({t:"مكافأة ٥ نجوم: "+r, d:new Date().toLocaleDateString("ar-SA")});
   store("promises",S.promises); closeModal(); toast("سُجلت المكافأة في دفتركما 📔");
   S.turn = S.turn==="him"?"her":"him";
-  if(S.mode==="scenario") return nextInQueue();
-  go(S.mode==="wheel"?"wheel":S.mode==="doors"?"doors":"play");
+  routeNext();
 };
 
 /* ═══ العجلة ═══ */
@@ -839,37 +1033,36 @@ views.wheel = () => {
     <div class="wheel" id="wheel" style="background:conic-gradient(from 0deg,${grad});transform:rotate(${S.wheelRot}deg)">
       ${WHEEL_SEGS.map((s,i)=>{
         const a=(i+.5)*seg;
-        return `<div class="seg" style="transform:rotate(${a}deg) translateY(-118px) rotate(${-a}deg) translate(-50%,-50%)">${s.icon}<br>${s.name}</div>`;
+        return `<div class="seg" style="transform:rotate(${a}deg) translateY(-112px) rotate(${-a}deg) translate(-50%,-50%)">${s.icon}<br>${s.name}</div>`;
       }).join("")}
     </div>
-    <div class="wheelhub">💛</div>
+    <div class="wheelhub">🌹</div>
   </div>
-  <button class="btn gold" style="max-width:240px;margin:14px auto 0" onclick="spin()">أديرا العجلة 🎡</button>
-  <p class="center" style="margin-top:10px;font-size:.75rem;color:var(--ink-soft);font-weight:600">«أكمل»: أعيدا التحدي الذي أعجبكما بطريقة أطول أو أكثر قربًا</p>
+  <button class="btn gold" style="max-width:230px;margin:14px auto 0" onclick="spin()">أديرا العجلة 🎡</button>
+  <p class="center" style="margin-top:10px;font-size:.7rem;color:var(--ink-soft)">«أكمل»: أعيدا التحدي الذي أعجبكما بطريقة أطول أو أكثر قربًا</p>
   <button class="btn ghost" style="margin-top:14px" onclick="endSession()">🌙 إنهاء الجلسة</button>
   `;
 };
 window.spin = () => {
   const n=WHEEL_SEGS.length, seg=360/n;
   const pick=Math.floor(Math.random()*n);
-  // المؤشر أعلى العجلة: نحسب دورانًا يجعل منتصف القطاع المختار تحت المؤشر
   const target = 360*5 - (pick+.5)*seg;
   S.wheelRot += 360*5 + ((target - (S.wheelRot%360)) % 360);
   const w=$("#wheel"); w.style.transform=`rotate(${S.wheelRot}deg)`;
   setTimeout(()=>{
     const s=WHEEL_SEGS[pick];
     toast(s.icon+" "+s.name+"!");
-    setTimeout(()=>flipCard(s.cat),500);
+    setTimeout(()=>{flipCard(s.cat);S.mode="wheel";},500);
   },4400);
 };
 
 /* ═══ تحدي الوقت ═══ */
 views.timer = () => `
 ${playTop("تحدي الوقت والشرارة")}
-<div class="card"><p style="font-size:.85rem">مؤقت من 30 ثانية إلى دقيقتين — الفائز يختار البطاقة التالية أو الأغنية، لكن لا يُستخدم الفوز لفرض ما لا يريده الطرف الآخر 💛</p></div>
+<div class="paper tilt-l"><p style="font-size:.8rem">مؤقت من 30 ثانية إلى دقيقتين — الفائز يختار البطاقة التالية أو الأغنية، ومن ينسحب من تحدٍّ قَبِله فحكمه العقوبة الضاحكة 😅</p></div>
 <div style="display:grid;gap:10px;margin-top:14px">
   ${TIMERS.map((t,i)=>`
-  <button class="mode wide" onclick="runTimer(${i})">
+  <button class="mode wide" style="margin:0" onclick="runTimer(${i})">
     <span class="ic">⏱️</span>
     <span class="txt"><b>${t.t}</b><br><small>${t.s>=60?(t.s/60)+" دقيقة":t.s+" ثانية"} — ${esc(t.r)}</small></span>
   </button>`).join("")}
@@ -878,17 +1071,27 @@ ${playTop("تحدي الوقت والشرارة")}
 `;
 window.runTimer = (i) => {
   const t=TIMERS[i]; let left=t.s, h=null;
+  const wasScenario = S.mode==="scenario";
+  S.currentCard = {t:t.t}; if(!wasScenario) S.mode="timer";
+  const j = other();
   app.innerHTML = `
   ${playTop("تحدي الوقت")}
-  <div class="card timerbox">
-    <h3 class="disp" style="justify-content:center;font-size:1.3rem">⏱️ ${t.t}</h3>
+  <div class="paper tilt-r timerbox" style="position:relative">
+    <h3 style="justify-content:center;font-size:1.15rem">⏱️ ${t.t}</h3>
     <div class="ring" id="ring" style="--pct:100%"><b id="tleft">${fmt(left)}</b></div>
-    <p style="font-size:.9rem;line-height:1.9">${esc(t.r)}</p>
-    <button class="btn gold tstart" id="tbtn" style="max-width:220px;margin:10px auto 0">ابدأ ▶️</button>
+    <p style="font-size:.85rem;line-height:1.9">${esc(t.r)}</p>
+    <button class="btn primary" id="tbtn" style="max-width:210px;margin:12px auto 4px">ابدأ ▶️</button>
+    <div class="judge" style="width:100%;margin:10px 0 0">
+      <div class="jhead">${pslot(j,"sm")} حكم ${whoName(j)}</div>
+      <div class="jbtns">
+        <button class="ok" onclick="doneCard(true)">✓ أكملها — نجمة</button>
+        <button class="oops" onclick="showPenalty()">✗ انسحب.. عقوبة! 😅</button>
+      </div>
+    </div>
+    <div class="penalty" id="penalty"></div>
   </div>
   <div class="safety">
-    <button class="go" onclick="doneCard(true)"><span>⭐</span>نفذناها<small>نجمة قرب</small></button>
-    <button class="skip" onclick="go('timer')"><span>🔴</span>تجاوز<small>تحدٍّ آخر</small></button>
+    <button class="skip" style="flex:1" onclick="${wasScenario?"doneCard(false)":"go('timer')"}"><span>🔴</span>تجاوز<small>قبل البدء — بلا عقوبة</small></button>
   </div>`;
   $("#tbtn").onclick = function(){
     if(h){clearInterval(h);h=null;this.textContent="ابدأ ▶️";return;}
@@ -900,18 +1103,19 @@ window.runTimer = (i) => {
       if(left<=0){clearInterval(h);h=null;$("#tleft").textContent="🎉";toast("انتهى الوقت! نفّذا النتيجة المرحة 😄");}
     },1000);
   };
-  S.mode="timer";
 };
 const fmt = s => s>=60 ? Math.floor(s/60)+":"+String(s%60).padStart(2,"0") : String(s);
 
 /* ═══ ثلاثة أبواب ═══ */
 views.doors = () => `
 ${playTop("ثلاثة أبواب — الجولة "+((S.doorRound||0)+1)+" من 6")}
-<div class="card"><p style="font-size:.85rem">يختار أحدكما الباب، ويقرأ الآخر البطاقة. ست جولات ثم بطاقة النهاية 🚪</p></div>
-<div class="doors">
-  <button class="door" style="background:linear-gradient(170deg,#5A93D4,var(--c-truth))" onclick="openDoor('talk')"><span class="ic">💬</span><b>باب الكلام</b></button>
-  <button class="door" style="background:linear-gradient(170deg,#F0A050,var(--c-passion))" onclick="openDoor('move')"><span class="ic">💃</span><b>باب الحركة</b></button>
-  <button class="door" style="background:linear-gradient(170deg,#E2B549,var(--c-surprise))" onclick="openDoor('surp')"><span class="ic">🎁</span><b>باب المفاجأة</b></button>
+<div class="velvetp" style="text-align:center">
+  <p style="font-size:.82rem;color:var(--ink-soft)">يختار أحدكما الباب، ويقرأ الآخر البطاقة. ست جولات ثم بطاقة النهاية 🚪</p>
+  <div class="doors">
+    <button class="door" onclick="openDoor('talk')"><span class="ic">💬</span><b>باب الكلام</b></button>
+    <button class="door" onclick="openDoor('move')"><span class="ic">💃</span><b>باب الحركة</b></button>
+    <button class="door" onclick="openDoor('surp')"><span class="ic">🎁</span><b>باب المفاجأة</b></button>
+  </div>
 </div>
 <button class="btn ghost" style="margin-top:18px" onclick="endSession()">🌙 إنهاء الجلسة</button>
 `;
@@ -923,16 +1127,16 @@ window.openDoor = (d) => {
 };
 window.nextDoor = () => {
   S.doorRound=(S.doorRound||0)+1;
-  if(S.doorRound>=6){S.mode="cards";flipCard("relax");toast("بطاقة النهاية 🌙");S.mode="doors2end";return;}
+  if(S.doorRound>=6){flipCard("relax");toast("بطاقة النهاية 🌙");S.mode="doors2end";return;}
   go("doors");
 };
 
 /* ═══ السيناريوهات ═══ */
 window.showScenarios = () => openModal(`
-<h3 class="disp" style="font-size:1.3rem;text-align:center">📋 سيناريوهات جاهزة</h3>
+<h3 style="font-size:1.25rem">📋 سيناريوهات جاهزة</h3>
 <div style="display:grid;gap:10px;margin-top:14px">
 ${SCENARIOS.map(s=>`
-  <button class="mode wide" onclick="closeModal();startScenario('${s.id}')">
+  <button class="mode wide" style="margin:0" onclick="closeModal();startScenario('${s.id}')">
     <span class="ic">${s.icon}</span>
     <span class="txt"><b>${s.name}</b><br><small>${s.time} · ${s.q.length} خطوة · درجة ${LVLS[s.lvl-1].name} ${LVLS[s.lvl-1].icon}</small></span>
   </button>`).join("")}
@@ -949,32 +1153,32 @@ window.nextInQueue = () => {
     toast("اكتمل السيناريو! 🎉"); confetti(); return endSession();
   }
   const step=S.queue[S.qi++];
-  if(step==="timer"){const i=Math.floor(Math.random()*TIMERS.length);runTimer(i);S.mode="scenario";return;}
+  if(step==="timer"){const i=Math.floor(Math.random()*TIMERS.length);runTimer(i);return;}
   flipCard(step); S.mode="scenario";
 };
 
 /* ═══ صندوق الرسائل العميقة ═══ */
 window.showMessages = () => openModal(`
-<h3 class="disp" style="font-size:1.3rem;text-align:center">💌 صندوق الرسائل العميقة</h3>
-<p style="font-size:.85rem;color:var(--ink-soft);line-height:1.9;margin-top:8px">قبل الجلسة، يكتب كل طرف ثلاث أوراق حقيقية بيده ويطويها في صندوق صغير:</p>
-<div class="note"><span class="ic">1️⃣</span><span><b>«شيء يجذبني فيك»</b> — صفة أو تفصيل أو عادة</span></div>
-<div class="note"><span class="ic">2️⃣</span><span><b>«لفتة أحب أن أتلقاها منك»</b> — واضحة وقابلة للتنفيذ</span></div>
-<div class="note"><span class="ic">3️⃣</span><span><b>«وقت خاص أتمنى أن نكرره أو نصنعه»</b> — ذكرى أو فكرة جديدة</span></div>
-<p style="font-size:.85rem;color:var(--ink-soft);line-height:1.9;margin-top:10px">تُسحب رسالة كل جولة، وعلى الطرف الآخر إما تنفيذ ما يناسبه منها أو اقتراح بديل قريب. <b>الهدف هو التقبل:</b> أن يُسمع كل طلب من دون تهكم أو دفاع.</p>
-<button class="btn gold" style="margin-top:14px" onclick="closeModal();toast('اكتبا الأوراق ثم اسحبا بالتناوب 💌')">فهمنا — لنكتب الأوراق ✍️</button>
+<h3 style="font-size:1.25rem">💌 صندوق الرسائل العميقة</h3>
+<p style="font-size:.82rem;color:var(--paper-soft);line-height:1.9;margin-top:8px;text-align:start">قبل الجلسة، يكتب كل طرف ثلاث أوراق حقيقية بيده ويطويها في صندوق صغير:</p>
+<div class="note onpaper"><span class="ic">1️⃣</span><span><b>«شيء يجذبني فيك»</b> — صفة أو تفصيل أو عادة</span></div>
+<div class="note onpaper"><span class="ic">2️⃣</span><span><b>«لفتة أحب أن أتلقاها منك»</b> — واضحة وقابلة للتنفيذ</span></div>
+<div class="note onpaper"><span class="ic">3️⃣</span><span><b>«وقت خاص أتمنى أن نكرره أو نصنعه»</b> — ذكرى أو فكرة جديدة</span></div>
+<p style="font-size:.82rem;color:var(--paper-soft);line-height:1.9;margin-top:10px;text-align:start">تُسحب رسالة كل جولة، وعلى الطرف الآخر إما تنفيذ ما يناسبه منها أو اقتراح بديل قريب. <b>الهدف هو التقبل:</b> أن يُسمع كل طلب من دون تهكم أو دفاع.</p>
+<button class="btn primary" style="margin-top:14px" onclick="closeModal();toast('اكتبا الأوراق ثم اسحبا بالتناوب 💌')">فهمنا — لنكتب الأوراق ✍️</button>
 `);
 
 /* ═══ إنهاء الجلسة والدفتر ═══ */
 window.endSession = () => {
   openModal(`
-  <h3 class="disp" style="font-size:1.3rem;text-align:center">🌙 ختام الجلسة — دفتر بيننا</h3>
-  <p class="center" style="font-size:.8rem;color:var(--ink-soft);margin-top:4px">لعبتما ${S.played} بطاقة هذه الجلسة</p>
+  <h3 style="font-size:1.25rem">🌙 ختام الجلسة — دفتر بيننا</h3>
+  <p style="font-size:.75rem;color:var(--paper-soft);margin-top:4px">لعبتما ${S.played} بطاقة هذه الجلسة</p>
   <div class="field"><label>💛 أفضل لحظة الليلة</label><input id="j-best" placeholder="${S.bestCard?esc(S.bestCard).slice(0,60):"ما اللحظة التي ستذكرانها؟"}"></div>
   <div class="field"><label>💡 شيء جديد عرفته عن شريكي</label><input id="j-new" placeholder="اكتشاف صغير أو كبير…"></div>
   <div class="field"><label>🔁 فكرة نود تكرارها</label><input id="j-rep" placeholder="تحدٍّ أو لفتة أو أجواء…"></div>
   <div class="field"><label>🤝 وعد الأسبوع (اختياري)</label><input id="j-prom" placeholder="لفتة سننفذها خلال الأسبوع = نجمة إضافية"></div>
-  <button class="btn gold" style="margin-top:16px" onclick="saveSession()">احفظا في الدفتر 📔</button>
-  <button class="btn ghost" style="margin-top:10px" onclick="closeModal();go('home')">تخطي الحفظ</button>
+  <button class="btn primary" style="margin-top:16px" onclick="saveSession()">احفظا في الدفتر 📔</button>
+  <button class="btn ghost" style="margin-top:10px;border-color:rgba(156,91,54,.4);color:var(--paper-soft)" onclick="closeModal();go('home')">تخطي الحفظ</button>
   `);
 };
 window.saveSession = () => {
@@ -989,21 +1193,21 @@ window.saveSession = () => {
 };
 
 views.book = () => `
-<header class="top"><div class="brand"><b>📔 دفتر بيننا</b></div></header>
-<div class="card">
+<header class="top"><div class="brand"><p class="eyebrow">ذكرياتكما ووعودكما</p><b>📔 دفتر بيننا</b></div></header>
+<div class="paper tilt-l">
   <h3>⭐ نجوم القرب</h3>
   <div class="starbar">${[0,1,2,3,4].map(i=>`<span class="s ${i<(S.stars%5||((S.stars>0&&S.stars%5===0)?5:0))?"on":""}">⭐</span>`).join("")}</div>
-  <p class="center" style="margin-top:8px">المجموع الكلي: <b style="color:var(--gold)">${S.stars}</b> ⭐ — عند كل 5 نجوم تختاران مكافأة مشتركة</p>
+  <p class="center" style="margin-top:8px">المجموع: <b style="color:var(--maroon)">${S.stars}</b> ⭐ · عقوبات ضاحكة نُفذت: <b style="color:var(--c-passion)">${S.penalties}</b> 😅</p>
 </div>
 ${S.promises.length?`
-<div class="card"><h3>🤝 وعودنا ومكافآتنا</h3>
+<div class="paper tilt-r"><h3>🤝 وعودنا ومكافآتنا</h3>
   ${S.promises.map((p,i)=>`
-  <div class="row" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px dashed var(--line);font-size:.88rem">
-    <button onclick="donePromise(${i})" style="font-size:1.2rem">${p.pending?"⬜":"✅"}</button>
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed rgba(156,91,54,.3);font-size:.85rem">
+    <button onclick="donePromise(${i})" style="font-size:1.15rem">${p.pending?"⬜":"✅"}</button>
     <span style="flex:1;${p.pending?"":"text-decoration:line-through;opacity:.55"}">${esc(p.t)}</span>
-    <small style="color:var(--ink-soft);font-size:.65rem">${p.d||""}</small>
+    <small style="color:var(--paper-soft);font-size:.62rem">${p.d||""}</small>
   </div>`).join("")}
-  <p style="font-size:.72rem;margin-top:8px">تنفيذ وعد خارج وقت اللعب = نجمة إضافية ⭐</p>
+  <p style="font-size:.7rem;margin-top:8px">تنفيذ وعد خارج وقت اللعب = نجمة إضافية ⭐</p>
 </div>`:""}
 ${S.journal.length ? S.journal.map(e=>`
 <div class="entry">
@@ -1012,7 +1216,7 @@ ${S.journal.length ? S.journal.map(e=>`
   ${e.nw?`<div class="row"><span class="k">💡</span><span><b>عرفت جديدًا:</b> ${esc(e.nw)}</span></div>`:""}
   ${e.rep?`<div class="row"><span class="k">🔁</span><span><b>نكررها:</b> ${esc(e.rep)}</span></div>`:""}
 </div>`).join("") : `
-<div class="card center"><p style="padding:14px 0">الدفتر فارغ بعد — العبا أول جلسة واحفظا ذكرياتها هنا 💛</p></div>`}
+<div class="paper center"><p style="padding:12px 0">الدفتر فارغ بعد — العبا أول جلسة واحفظا ذكرياتها هنا 🌹</p></div>`}
 <div class="note"><span class="ic">🔒</span><span>الدفتر محفوظ على هذا الجهاز فقط ولا يغادره أبدًا.</span></div>
 `;
 
@@ -1024,25 +1228,25 @@ window.donePromise = (i)=>{
 
 /* ═══ الإعدادات ═══ */
 views.settings = () => `
-<header class="top"><div class="brand"><b>⚙️ الإعدادات</b></div></header>
-<div class="card">
+<header class="top"><div class="brand"><p class="eyebrow">خصّصا أمسيتكما</p><b>⚙️ الإعدادات</b></div></header>
+<div class="paper tilt-l">
   <h3>📸 صورتاكما</h3>
-  <p style="font-size:.82rem">أضيفا صورتيكما لتظهرا على ظهر البطاقات وفي الشعار. الصور تبقى على جهازكما فقط.</p>
+  <p style="font-size:.78rem">أضيفا صورتيكما لتظهرا على ظهر البطاقات وفي مؤشر الدور. الصور تبقى على جهازكما فقط.</p>
   <div style="display:flex;gap:14px;justify-content:center;margin-top:14px">
     <div class="center">
       ${pslot("him","lg")}
-      <button class="pill" style="margin-top:8px;border:none;cursor:pointer" onclick="$('#up-him').click()">صورة الزوج 🤵</button>
+      <button class="pill" style="margin-top:8px;cursor:pointer" onclick="$('#up-him').click()">صورة الزوج 🤵</button>
       <input type="file" id="up-him" accept="image/*" hidden onchange="upImg(event,'him')">
     </div>
     <div class="center">
       ${pslot("her","lg")}
-      <button class="pill" style="margin-top:8px;border:none;cursor:pointer" onclick="$('#up-her').click()">صورة الزوجة 👰</button>
+      <button class="pill" style="margin-top:8px;cursor:pointer" onclick="$('#up-her').click()">صورة الزوجة 👰</button>
       <input type="file" id="up-her" accept="image/*" hidden onchange="upImg(event,'her')">
     </div>
   </div>
-  <p style="font-size:.72rem;margin-top:10px">أو ضعا الملفين <b>img/husband.png</b> و<b>img/wife.png</b> في مجلد التطبيق.</p>
+  <p style="font-size:.68rem;margin-top:10px">أو ضعا الملفين <b>img/husband.png</b> و<b>img/wife.png</b> في مجلد التطبيق.</p>
 </div>
-<div class="card">
+<div class="paper tilt-r">
   <h3>${LVLS[S.lvl-1].icon} درجة القرب الافتراضية</h3>
   <div class="lvls">
     ${LVLS.map(L=>`
@@ -1051,14 +1255,14 @@ views.settings = () => `
     </button>`).join("")}
   </div>
 </div>
-<div class="card">
+<div class="paper tilt-l">
   <h3>📜 عن اللعبة</h3>
-  <p>«بيننا» أمسية خاصة للزوجين، لا منافسة ولا اختبار. 104 بطاقات في 7 فئات، و8 أنماط لعب، بقاعدة ذهبية واحدة: كل بطاقة تُنفذ بحماس الطرفين.</p>
-  <button class="btn cream" style="margin-top:12px" onclick="showRules()">قواعد اللعبة الكاملة 📜</button>
+  <p>«بيننا» أمسية خاصة للزوجين بتصميم «دفتر المخمل». 104 بطاقات في 7 فئات، 8 أنماط لعب، ${PENALTIES.length} عقوبة ضاحكة بحكم الشريك، وقاعدة ذهبية واحدة: كل بطاقة تُنفذ بحماس الطرفين.</p>
+  <button class="btn sec" style="margin-top:12px" onclick="showRules()">قواعد اللعبة الكاملة 📜</button>
 </div>
-<div class="card">
+<div class="paper tilt-r">
   <h3>🗑️ البيانات</h3>
-  <button class="btn ghost" onclick="if(confirm('حذف كل النجوم والدفتر والصور نهائيًا؟')){localStorage.clear();location.reload()}">مسح كل بيانات اللعبة من هذا الجهاز</button>
+  <button class="btn ghost" style="border-color:rgba(156,91,54,.4);color:var(--paper-soft)" onclick="if(confirm('حذف كل النجوم والدفتر والصور نهائيًا؟')){localStorage.clear();location.reload()}">مسح كل بيانات اللعبة من هذا الجهاز</button>
 </div>
 `;
 window.upImg = (ev,who) => {
@@ -1079,14 +1283,14 @@ window.upImg = (ev,who) => {
 };
 
 window.showRules = () => openModal(`
-<h3 class="disp" style="font-size:1.3rem;text-align:center">📜 قواعد «بيننا»</h3>
-<div class="note"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين، لا بصمت أحدهما أو تردده.</span></div>
-<div class="note"><span class="ic">🟢🟡🔴</span><span><b>رموز الأمان:</b> استمرار (مناسب ويمكن رفعه) · أبطئ (نسخة أخف من المهمة نفسها) · تجاوز (بطاقة جديدة فورًا بلا سؤال أو تبرير). لا تُستخدم لتخفيض جرأة اللعبة بل لضمان أن يكون التصعيد ممتعًا ومقبولًا.</span></div>
-<div class="note"><span class="ic">🔒</span><span><b>عهد الخصوصية:</b> ما يقال أو يحدث في الجلسة يبقى بينكما — لا تصوير ولا تسجيل ولا استخدام لاحق في اللوم.</span></div>
-<div class="note"><span class="ic">🤝</span><span><b>الموافقة متبادلة ومستمرة:</b> يحق لأي طرف تغيير التحدي أو اختيار البديل أو إيقاف اللعبة. الجرأة أجمل عندما تكون رغبة مشتركة لا عقوبة مفروضة.</span></div>
-<div class="note"><span class="ic">⭐</span><span><b>نجوم القرب:</b> نجمة عند تنفيذ تحدٍّ باتفاق وراحة، ونجمة إضافية عند تنفيذ وعد خارج اللعب. كل 5 نجوم = مكافأة مشتركة.</span></div>
-<div class="note"><span class="ic">⏭️</span><span><b>التجاوز لا يُفقد الدور</b> ولا عقوبة عليه — تُسحب بطاقة أخرى وحسب.</span></div>
-<button class="btn gold" style="margin-top:14px" onclick="closeModal()">فهمنا 💛</button>
+<h3 style="font-size:1.25rem">📜 قواعد «بيننا»</h3>
+<div class="note onpaper"><span class="ic">✨</span><span><b>القاعدة الذهبية:</b> كل بطاقة تُنفذ بحماس الطرفين، لا بصمت أحدهما أو تردده.</span></div>
+<div class="note onpaper"><span class="ic">🟢🟡🔴</span><span><b>رموز الأمان:</b> استمرار (مناسب ويمكن رفعه) · أبطئ (نسخة أخف من المهمة نفسها) · تجاوز (بطاقة جديدة فورًا بلا سؤال — قبل قبول البطاقة، ومجاني دائمًا).</span></div>
+<div class="note onpaper"><span class="ic">😅</span><span><b>العقوبة الضاحكة:</b> من يقبل البطاقة ثم لا يكملها، يحكم عليه <b>شريكه</b> بضغطة زر: «أكملها — نجمة» أو «لم يكملها — عقوبة!». العقوبات خفيفة مرحة (غناء طفولي بأسلوب أمريكي، رقصة القرد، تقليد دجاجة…) هدفها الضحك لا الإحراج، وللحكم تغييرها بزر 🎲.</span></div>
+<div class="note onpaper"><span class="ic">🔒</span><span><b>عهد الخصوصية:</b> ما يقال أو يحدث في الجلسة يبقى بينكما — لا تصوير ولا تسجيل ولا استخدام لاحق في اللوم.</span></div>
+<div class="note onpaper"><span class="ic">🤝</span><span><b>الموافقة متبادلة ومستمرة:</b> يحق لأي طرف تغيير التحدي أو اختيار البديل أو إيقاف اللعبة.</span></div>
+<div class="note onpaper"><span class="ic">⭐</span><span><b>نجوم القرب:</b> نجمة عند تنفيذ تحدٍّ باتفاق وحماس، ونجمة إضافية عند تنفيذ وعد خارج اللعب. كل 5 نجوم = مكافأة مشتركة.</span></div>
+<button class="btn primary" style="margin-top:14px" onclick="closeModal()">فهمنا 🌹</button>
 `);
 
 /* ═══════════════ التنقل ═══════════════ */
@@ -1098,7 +1302,6 @@ window.go = (v) => {
 document.querySelectorAll("nav.bottom button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 go("home");
 
-/* عامل الخدمة — عمل دون اتصال */
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
