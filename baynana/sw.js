@@ -1,10 +1,11 @@
-const CACHE = "baynana-v1";
+const CACHE = "baynana-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
+  "./img/logo.png",
 ];
 
 self.addEventListener("install", (e) => {
