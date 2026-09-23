@@ -84,13 +84,20 @@
   }
 
   /* ---------- بلوتوث (إضافة أصلية داخل APK) ---------- */
-  function bt(){ return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FMBluetooth; }
+  let btProxy = null;
+  function bt(){
+    const C = window.Capacitor;
+    if(!C || !C.isNativePlatform || !C.isNativePlatform()) return null;
+    if(!btProxy) btProxy = (C.Plugins && C.Plugins.FMBluetooth) || (C.registerPlugin && C.registerPlugin('FMBluetooth')) || null;
+    return btProxy;
+  }
   let btSubs = [];
   let btBuf = '';
-  async function btWire(){
+  /* المستمعون يُسجَّلون قبل الاتصال حتى لا تضيع أول رسالة */
+  async function btListeners(){
     const B = bt();
     btSubs.forEach(s=>{ try{ s.remove(); }catch(e){} });
-    btSubs = [];
+    btSubs = []; btBuf = '';
     btSubs.push(await B.addListener('data', e=>{
       btBuf += e.data;
       let i;
@@ -100,7 +107,10 @@
         try{ emit('message', JSON.parse(line)); }catch(err){ /* سطر تالف */ }
       }
     }));
-    btSubs.push(await B.addListener('disconnected', ()=>{ active=null; emit('close'); }));
+    btSubs.push(await B.addListener('disconnected', ()=>{ if(active){ active=null; emit('close'); } }));
+  }
+  function btActivate(){
+    const B = bt();
     active = {
       send(obj){ B.send({data: JSON.stringify(obj) + '\n'}).catch(()=>{}); },
       close(){ B.disconnect().catch(()=>{}); },
@@ -115,12 +125,14 @@
   async function hostBt(h){
     handlers = h;
     await btEnsure();
+    await btListeners();
     const B = bt();
-    const sub = await B.addListener('connected', async e=>{
+    const sub = await B.addListener('connected', e=>{
       sub.remove();
-      await btWire();
+      btActivate();
       emit('open', e && e.name);
     });
+    btSubs.push(sub);
     await B.listen();
   }
   async function listBt(){
@@ -131,8 +143,9 @@
   async function joinBt(address, h){
     handlers = h;
     await btEnsure();
+    await btListeners();
     await bt().connect({address});
-    await btWire();
+    btActivate();
     emit('open');
   }
 

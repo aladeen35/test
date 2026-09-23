@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+fullmark-apk/node_modules/
+fullmark-apk/www/

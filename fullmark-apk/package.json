@@ -1,0 +1,15 @@
+{
+  "name": "fullmark-apk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full Mark (فول مارك) Android app — Capacitor wrapper around ../fullmark",
+  "scripts": {
+    "copy-web": "rm -rf www && cp -r ../fullmark www",
+    "sync": "npm run copy-web && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  }
+}
