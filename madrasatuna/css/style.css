@@ -1,0 +1,349 @@
+/* ═══════════════════════════════════════════════
+   مدرستنا — الهوية البصرية (ريترو مدرسي دافئ)
+   خطوط: Marhey (عناوين/طباشير) + Baloo Bhaijaan 2 (نصوص)
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* لوحة الألوان */
+  --curtain-1: #1B2F7A;        /* ستارة المسرح - أزرق ملكي */
+  --curtain-2: #14245E;
+  --board-green: #2F5D50;      /* السبورة الخضراء */
+  --board-dark: #24483E;
+  --wood-1: #A9743F;           /* خشب المكتب */
+  --wood-2: #7C531F;
+  --chalk: #FDFDF4;            /* الطبشور */
+  --paper: #FBF6E9;            /* ورق الكراسة */
+  --paper-line: #B8D4E8;
+  --margin-red: #E8A0A8;
+  --red-ink: #E63946;          /* قلم التصحيح */
+  --sun: #FFC93C;
+  --orange: #F77F00;
+  --sky-blue: #2E86DE;
+  --correct: #06A77D;
+  --wrong: #E5405E;
+  --gold: #FFD166;
+  --shadow: 0 6px 0 rgba(0,0,0,.25);
+  --radius: 18px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Baloo Bhaijaan 2', 'Marhey', system-ui, sans-serif;
+  background: var(--curtain-2);
+  color: var(--chalk);
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, .btn, .logo-word, .q-text, .taboo-word, .board-title, .intro-title, .winner-title {
+  font-family: 'Marhey', 'Baloo Bhaijaan 2', sans-serif;
+}
+
+/* ─────────── الشاشات ─────────── */
+.screen {
+  display: none;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  position: relative;
+  animation: screenIn .35s ease both;
+}
+.screen.active { display: flex; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hidden { display: none !important; }
+
+/* ─────────── خلفية الستارة ─────────── */
+.curtain-bg {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--curtain-1) 0 42px,
+      var(--curtain-2) 42px 84px);
+}
+.curtain-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.45) 100%);
+}
+
+/* خلفية خشبية للشاشات الداخلية */
+#screen-setup, #screen-round-intro, #screen-scoreboard,
+#screen-question, #screen-buzzer, #screen-taboo, #screen-howto {
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 3px, transparent 3px 90px),
+    linear-gradient(160deg, var(--wood-1), var(--wood-2));
+}
+
+/* ─────────── الشعار ─────────── */
+.home-content {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 18px; width: 100%; max-width: 430px; text-align: center;
+}
+.logo-svg { width: min(88vw, 380px); filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+.logo-word {
+  font-size: 64px; font-weight: 700; fill: #fff;
+  stroke: var(--curtain-2); stroke-width: 3px;
+  paint-order: stroke fill;
+}
+.logo-ribbon { font-family: 'Baloo Bhaijaan 2', sans-serif; font-size: 15px; font-weight: 700; fill: #fff; }
+.logo-sun { animation: sunRise 2.2s ease both; transform-origin: 180px 190px; }
+@keyframes sunRise { from { transform: translateY(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+.logo-rainbow { animation: fadeIn 1.4s .5s ease both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.home-tagline { font-size: 17px; font-weight: 600; color: var(--gold); text-shadow: 0 2px 4px rgba(0,0,0,.5); }
+
+.home-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+
+/* ─────────── الأزرار ─────────── */
+.btn {
+  border: none; cursor: pointer; font-weight: 700;
+  font-size: 18px; padding: 13px 26px; border-radius: var(--radius);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s;
+  touch-action: manipulation;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,.25); }
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--sun), var(--orange));
+  color: #4A2A00; box-shadow: var(--shadow), inset 0 2px 0 rgba(255,255,255,.5);
+}
+.btn-big { font-size: 22px; padding: 16px 30px; }
+
+.btn-chalk {
+  background: var(--board-green); color: var(--chalk);
+  border: 3px dashed rgba(253,253,244,.55);
+  box-shadow: var(--shadow);
+}
+
+.btn-correct { background: var(--correct); color: #fff; box-shadow: 0 5px 0 #04745700 , var(--shadow); flex: 1; }
+.btn-wrong   { background: var(--wrong); color: #fff; box-shadow: var(--shadow); flex: 1; }
+.btn-skip    { background: #6B7A99; color: #fff; box-shadow: var(--shadow); flex: .8; }
+
+.btn-reveal {
+  background: transparent; color: #6B5B3E;
+  border: 2px dashed #B9A87F; font-size: 15px; margin-top: 10px;
+}
+
+/* ─────────── إطار السبورة ─────────── */
+.board-frame {
+  width: 100%; max-width: 520px;
+  background: linear-gradient(180deg, var(--board-green), var(--board-dark));
+  border: 12px solid;
+  border-image: linear-gradient(160deg, #C08A4E, #8A5D28) 1;
+  border-radius: 6px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.45), inset 0 0 60px rgba(0,0,0,.35);
+  padding: 26px 22px;
+  display: flex; flex-direction: column; gap: 16px;
+  position: relative;
+}
+.board-frame::after {   /* غبار طباشير أسفل السبورة */
+  content: ''; position: absolute; bottom: 6px; left: 10%; right: 10%; height: 5px;
+  background: linear-gradient(90deg, transparent, rgba(253,253,244,.28), transparent);
+  border-radius: 50%;
+}
+.board-title {
+  text-align: center; font-size: 26px; color: var(--chalk);
+  text-shadow: 0 0 6px rgba(253,253,244,.35);
+  border-bottom: 3px dashed rgba(253,253,244,.35); padding-bottom: 12px;
+}
+
+/* ─────────── ورقة الكراسة ─────────── */
+.paper-sheet {
+  width: 100%; max-width: 520px;
+  background:
+    linear-gradient(90deg, transparent 0 46px, var(--margin-red) 46px 48px, transparent 48px),
+    repeating-linear-gradient(0deg, var(--paper) 0 34px, var(--paper-line) 34px 35px);
+  background-color: var(--paper);
+  color: #2A2A33;
+  border-radius: 8px 8px 12px 12px;
+  box-shadow: 0 12px 26px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.08);
+  padding: 26px 24px 22px 56px;
+  position: relative;
+}
+.paper-sheet::before {   /* ثقوب الكراسة */
+  content: ''; position: absolute; top: 0; bottom: 0; right: 14px; width: 10px;
+  background-image: radial-gradient(circle 5px, #d9d2be 55%, transparent 60%);
+  background-size: 10px 60px; background-repeat: repeat-y; background-position: center 24px;
+}
+.paper-title { font-size: 24px; color: var(--red-ink); margin-bottom: 14px; font-family: 'Marhey'; }
+
+/* طريقة اللعب */
+.howto-list { padding-right: 20px; display: flex; flex-direction: column; gap: 9px; font-size: 16px; line-height: 1.9; }
+.howto-list b { color: var(--red-ink); }
+#screen-howto .btn { margin-top: 18px; }
+
+/* ─────────── إعداد اللعبة ─────────── */
+.setup-board label { font-size: 16px; font-weight: 700; color: var(--gold); display: block; margin-bottom: 6px; }
+.setup-field input, .setup-team input {
+  width: 100%; padding: 11px 14px; font-size: 17px; font-weight: 600;
+  font-family: inherit; color: var(--chalk);
+  background: rgba(0,0,0,.25); border: 2px dashed rgba(253,253,244,.4);
+  border-radius: 12px; outline: none;
+}
+.setup-field input:focus, .setup-team input:focus { border-color: var(--sun); }
+.setup-field input::placeholder, .setup-team input::placeholder { color: rgba(253,253,244,.45); }
+
+.setup-teams { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 460px) { .setup-teams { grid-template-columns: 1fr; } }
+
+.mascot-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.mascot {
+  border: 2px solid rgba(253,253,244,.35); background: rgba(0,0,0,.2);
+  color: var(--chalk); border-radius: 999px; padding: 5px 11px;
+  font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: all .15s;
+}
+.mascot.active { background: var(--sun); color: #4A2A00; border-color: var(--sun); transform: scale(1.05); }
+
+.rounds-choice { display: flex; gap: 10px; }
+.chip {
+  border: 2px dashed rgba(253,253,244,.4); background: transparent; color: var(--chalk);
+  padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.chip.active { background: var(--chalk); color: var(--board-dark); border-style: solid; }
+
+.setup-actions { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+
+/* ─────────── مقدمة الحصة ─────────── */
+.intro-board { text-align: center; align-items: center; }
+.intro-chip {
+  background: var(--red-ink); color: #fff; font-weight: 800;
+  padding: 6px 22px; border-radius: 999px; font-size: 15px;
+  transform: rotate(-2deg); box-shadow: var(--shadow);
+}
+.intro-title { font-size: 34px; color: var(--chalk); text-shadow: 0 0 8px rgba(253,253,244,.3); }
+.intro-desc { font-size: 17px; line-height: 1.9; color: rgba(253,253,244,.9); }
+.intro-points { font-size: 15px; font-weight: 800; color: var(--gold); border: 2px dashed var(--gold); border-radius: 12px; padding: 8px 16px; }
+
+/* ─────────── رأس اللعبة والنتيجة ─────────── */
+.game-header {
+  display: flex; gap: 8px; width: 100%; max-width: 560px;
+  align-items: stretch; margin-bottom: 12px;
+}
+.score-tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: var(--board-green); border-radius: 14px; padding: 8px 6px;
+  box-shadow: var(--shadow); border: 3px solid rgba(0,0,0,.18);
+  min-width: 0;
+}
+.score-tab .score-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.score-tab .score-mascot { font-size: 18px; }
+.score-tab .score-value { font-size: 24px; color: var(--gold); font-family: 'Marhey'; line-height: 1; }
+.score-tab.turn-glow { outline: 3px solid var(--sun); outline-offset: 2px; animation: glowPulse 1.4s infinite; }
+@keyframes glowPulse { 50% { outline-color: rgba(255,201,60,.35); } }
+
+.round-label {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 14px; font-weight: 800; color: #4A2A00; padding: 4px 12px;
+  background: linear-gradient(180deg, var(--sun), var(--orange));
+  border-radius: 14px; box-shadow: var(--shadow); white-space: nowrap;
+}
+
+.turn-banner {
+  width: 100%; max-width: 560px; text-align: center;
+  font-size: 16px; font-weight: 800; color: var(--chalk);
+  background: rgba(0,0,0,.3); border-radius: 12px; padding: 7px;
+  margin-bottom: 12px; border: 2px dashed rgba(253,253,244,.35);
+}
+
+/* ─────────── ورقة السؤال ─────────── */
+.question-paper, .buzzer-paper, .taboo-paper { max-width: 560px; min-height: 240px; display: flex; flex-direction: column; }
+.q-meta { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 800; color: #7A6A4A; margin-bottom: 8px; }
+.timer {
+  font-family: 'Marhey'; font-size: 26px; color: var(--sky-blue);
+  background: #EAF3FA; border: 3px solid var(--sky-blue); border-radius: 50%;
+  width: 56px; height: 56px; display: grid; place-items: center; line-height: 1;
+}
+.timer.danger { color: var(--red-ink); border-color: var(--red-ink); background: #FDECEA; animation: tickShake .5s infinite; }
+@keyframes tickShake { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+
+.q-text { font-size: 24px; line-height: 1.8; color: #21213A; flex: 1; }
+.q-answer {
+  font-size: 20px; font-weight: 800; color: var(--red-ink);
+  border-top: 2px dashed var(--margin-red); padding-top: 10px; margin-top: 10px;
+  transform: rotate(-.5deg);
+}
+.q-answer::before { content: '✏️ الإجابة: '; }
+
+/* ─────────── أزرار الأستاذ ─────────── */
+.host-controls {
+  display: flex; gap: 10px; width: 100%; max-width: 560px; margin-top: 16px;
+}
+
+/* ─────────── الجرس ─────────── */
+.buzz-status {
+  text-align: center; font-weight: 800; font-size: 16px; color: #7A6A4A;
+  border-top: 2px dashed var(--margin-red); padding-top: 10px; margin-top: 10px;
+}
+.buzzer-pads { display: flex; gap: 14px; width: 100%; max-width: 560px; margin-top: 16px; }
+.buzz-pad {
+  flex: 1; border: none; border-radius: 22px; cursor: pointer;
+  font-family: inherit; font-size: 44px; padding: 22px 10px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: #fff; font-weight: 800; box-shadow: 0 8px 0 rgba(0,0,0,.3);
+  transition: transform .1s;
+}
+.buzz-pad span { font-size: 16px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.buzz-pad:active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,.3); }
+.buzz-0 { background: linear-gradient(180deg, #3D9BE9, #1B6FB8); }
+.buzz-1 { background: linear-gradient(180deg, #F2647F, #C42348); }
+.buzz-pad:disabled { filter: grayscale(.7) brightness(.7); cursor: not-allowed; }
+.buzz-pad.buzzed { animation: buzzWin .45s ease; outline: 4px solid var(--gold); }
+@keyframes buzzWin { 30% { transform: scale(1.06); } }
+
+/* ─────────── قول ولا تقولش ─────────── */
+.taboo-word {
+  font-size: 42px; text-align: center; color: #21213A; margin: 14px 0 6px;
+  text-shadow: 2px 2px 0 rgba(46,134,222,.15);
+}
+.taboo-forbidden { text-align: center; font-size: 17px; font-weight: 700; color: var(--red-ink); }
+#tb-start { margin-top: 16px; }
+
+/* ─────────── لوحة النتائج ─────────── */
+.score-board { text-align: center; }
+.sb-rows { display: flex; flex-direction: column; gap: 12px; }
+.sb-row {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(0,0,0,.22); border-radius: 14px; padding: 12px 18px;
+  font-size: 18px; font-weight: 800; border: 2px solid transparent;
+}
+.sb-row .sb-name { flex: 1; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-row .sb-score { font-family: 'Marhey'; font-size: 28px; color: var(--gold); }
+.sb-row.leader { border-color: var(--gold); background: rgba(255,209,102,.12); }
+.sb-row.leader .sb-name::after { content: ' 👑'; }
+.sb-comment { font-size: 16px; color: rgba(253,253,244,.85); font-weight: 600; }
+
+/* ─────────── شاشة الفائز ─────────── */
+#confetti { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.winner-content {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  text-align: center; max-width: 430px; width: 100%;
+}
+.winner-cup { font-size: 90px; animation: cupBounce 1.1s ease infinite alternate; filter: drop-shadow(0 8px 14px rgba(0,0,0,.4)); }
+@keyframes cupBounce { to { transform: translateY(-14px) rotate(4deg); } }
+.winner-title { font-size: 30px; color: var(--gold); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+.winner-team {
+  font-family: 'Marhey'; font-size: 40px; color: var(--sun);
+  text-shadow: 0 3px 0 rgba(0,0,0,.45), 0 0 24px rgba(255,201,60,.35);
+}
+.winner-cheer { font-size: 19px; font-weight: 700; color: var(--chalk); }
+.winner-scores { font-size: 17px; font-weight: 700; color: rgba(253,253,244,.85); background: rgba(0,0,0,.3); padding: 10px 22px; border-radius: 14px; }
+
+/* ─────────── تجاوب صغير ─────────── */
+@media (max-width: 400px) {
+  .q-text { font-size: 20px; }
+  .taboo-word { font-size: 34px; }
+  .logo-word { font-size: 58px; }
+  .host-controls { flex-wrap: wrap; }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "مدرستنا — لعبة العائلة مع أستاذ عدوي",
+  "short_name": "مدرستنا",
+  "description": "لعبة ذكاء وذكريات ومنافسة عائلية بروح المدرسة الكلاسيكية: مضيف يدير الأسئلة وفريقان يتنافسان في حصص متتالية.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#14245E",
+  "background_color": "#14245E",
+  "categories": ["games", "entertainment", "education"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
