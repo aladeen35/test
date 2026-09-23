@@ -1,9 +1,13 @@
 /* فول مارك — Service Worker: عمل كامل بدون إنترنت بعد أول زيارة */
-const CACHE = 'fullmark-v3';
+const CACHE = 'fullmark-v4';
 const ASSETS = [
   './',
   './index.html',
   './logo.webp',
+  './questions.js',
+  './net.js',
+  './remote.js',
+  './peerjs.min.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
