@@ -1,9 +1,9 @@
 /* نظام البشرى لإدارة الشركة — Service Worker
    يخزن واجهة التطبيق للعمل دون اتصال؛ ملفات مكتبة المستندات تُخزن عند أول تنزيل فقط */
-const CACHE = "bushra-os-v3";
+const CACHE = "bushra-os-v4";
 const ASSETS = [
   "./", "./index.html", "./css/app.css", "./manifest.webmanifest",
-  "./js/data.js", "./js/store.js", "./js/ops.js", "./js/hr.js", "./js/setup.js", "./js/ui.js", "./js/views.js", "./js/views-ops.js", "./js/views-hr.js",
+  "./js/data.js", "./js/store.js", "./js/ops.js", "./js/hr.js", "./js/sec.js", "./js/setup.js", "./js/ui.js", "./js/views.js", "./js/views-ops.js", "./js/views-hr.js", "./js/views-sec.js",
   "./assets/logo.png", "./assets/icon-192.png", "./assets/icon-512.png", "./assets/stamp.png", "./assets/banner.jpg"
 ];
 self.addEventListener("install", e => {

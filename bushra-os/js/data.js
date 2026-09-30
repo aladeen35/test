@@ -18,6 +18,8 @@ const MODULES = [
   {key:"support",    name:"خدمة العملاء والدعم الفني", icon:"🎧", core:false},
   {key:"training",   name:"التدريب والتطوير",         icon:"🎓", core:false},
   {key:"content",    name:"العلاقات العامة والمحتوى", icon:"📣", core:false},
+  {key:"privacy",    name:"الخصوصية وحماية البيانات", icon:"🔏", core:false},
+  {key:"security",   name:"الأمن والنسخ الاحتياطي",   icon:"🛡", core:false},
   {key:"policies",   name:"مسارات الموافقة",          icon:"🔀", core:true},
   {key:"audit",      name:"سجل التدقيق",              icon:"🛡️", core:true},
   {key:"settings",   name:"إعدادات الشركة",           icon:"⚙️", core:true}
@@ -119,11 +121,22 @@ const PERMS4 = {
   cfo:       {training:V}
 };
 const P4_MODULES = ["training","content"];
+/* صلاحيات المرحلة الخامسة (الخصوصية، الأمن والنسخ الاحتياطي) */
+const PERMS5 = {
+  secops:  {security:ALL, privacy:VA},
+  cto:     {security:["view","comment","export"], privacy:V},
+  legal:   {privacy:["view","comment","approve","reject","print","export"]},
+  hr:      {privacy:VE},
+  cs:      {privacy:["create","view","comment"]},
+  records: {privacy:V},
+  qm:      {privacy:V}
+};
+const P5_MODULES = ["privacy","security"];
 for(const p of POSITIONS){ if(!["gm","owner"].includes(p.key)) p.perms.training = ["view"]; }
-for(const p of POSITIONS){ for(const x of [PERMS3[p.key], PERMS4[p.key]]) if(x) for(const k in x) p.perms[k] = Array.from(new Set([...(p.perms[k]||[]), ...x[k]])); }
+for(const p of POSITIONS){ for(const x of [PERMS3[p.key], PERMS4[p.key], PERMS5[p.key]]) if(x) for(const k in x) p.perms[k] = Array.from(new Set([...(p.perms[k]||[]), ...x[k]])); }
 /* كل الوحدات المضافة بعد الإصدار الأول وصلاحياتها — تستخدمها ترقية البيانات */
-const ADDED_MODULES = P3_MODULES.concat(P4_MODULES);
-const ADDED_PERMS = key => { const o = {training:["view"]}; for(const x of [PERMS3[key], PERMS4[key]]) if(x) for(const k in x) o[k] = Array.from(new Set([...(o[k]||[]), ...x[k]])); return o; };
+const ADDED_MODULES = P3_MODULES.concat(P4_MODULES, P5_MODULES);
+const ADDED_PERMS = key => { const o = {training:["view"]}; for(const x of [PERMS3[key], PERMS4[key], PERMS5[key]]) if(x) for(const k in x) o[k] = Array.from(new Set([...(o[k]||[]), ...x[k]])); return o; };
 
 /* أنواع المعاملات ونماذجها (القسم 6 و7)
    fields.k = مفتاح، amount = الحقل الذي يمثل القيمة المالية */
@@ -308,5 +321,5 @@ const DEMO_TEAM = [
   ["procurement","بكري موسى"],["accountant","سلمى عباس"],["records","ياسر كمال"],["staff","منتصر جعفر"]
 ];
 
-window.BOS_DATA = {MODULES, ACTIONS, SCOPES, CLEARANCE, DEPARTMENTS, POSITIONS, TYPES, STAGES, POLICIES, MASTER_DOCS, TYPE_TEMPLATES, DEMO_TEAM, PERMS3, P3_MODULES, PERMS4, P4_MODULES, ADDED_MODULES, ADDED_PERMS};
+window.BOS_DATA = {MODULES, ACTIONS, SCOPES, CLEARANCE, DEPARTMENTS, POSITIONS, TYPES, STAGES, POLICIES, MASTER_DOCS, TYPE_TEMPLATES, DEMO_TEAM, PERMS3, P3_MODULES, PERMS4, P4_MODULES, PERMS5, P5_MODULES, ADDED_MODULES, ADDED_PERMS};
 })();

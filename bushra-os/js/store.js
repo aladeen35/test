@@ -29,6 +29,7 @@ function blank(){
     attendance:[], goals:[], evaluations:[], assets:[], hrNotes:[], onboarding:[],
     skills:[], skillReq:{}, empSkills:{}, programs:[], providers:[],
     content:[], interactions:[], surveys:[],
+    ropa:[], dsr:[], incidentPlans:{}, backups:[], accessReviews:[], outbox:[], signatures:[],
     notifications:[], audit:[], counters:{}, session:null
   };
 }
@@ -57,6 +58,7 @@ function migrate(){
   if(!S.settings.sla) S.settings.sla = {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]};
   if(!S.settings.work) S.settings.work = {start:"08:00", end:"16:00", grace:15, weekend:[5,6]};
   if(window.BOS_HR) BOS_HR.migrate();
+  if(window.BOS_SEC) BOS_SEC.migrate();
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -99,8 +101,10 @@ function verifyAudit(){
 /* ---------- الإشعارات ---------- */
 function notify(userId, text, link, kind){
   if(!userId) return;
-  S.notifications.unshift({id:uid("n"), userId, text, link:link||"", kind:kind||"info", read:false, at:now()});
+  const n = {id:uid("n"), userId, text, link:link||"", kind:kind||"info", read:false, at:now()};
+  S.notifications.unshift(n);
   if(S.notifications.length > 600) S.notifications.length = 600;
+  if(window.BOS_SEC) BOS_SEC.onNotify(n);
 }
 
 /* ---------- استعلامات ---------- */
@@ -360,6 +364,7 @@ function act(r, action, o){
     case "approve":
     case "conditional":
       if(action==="conditional" && !o.comment) fail("اكتب الشرط");
+      if(window.BOS_SEC){ const blk = BOS_SEC.beforeComplete(r, st); if(blk) fail(blk); }
       mark("approved"); if(action==="conditional") st.conditional = true;
       audit(action==="conditional" ? "اعتماد مشروط" : (st.stage==="execute"||st.stage==="close" ? "إتمام مرحلة" : "اعتماد"),
         "request", r.id, r.no + " — " + label + (override?" (تدخل المدير العام)":"") + (o.comment?" — "+o.comment:"") + " — بصمة البيانات " + snap);

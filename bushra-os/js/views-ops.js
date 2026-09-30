@@ -361,13 +361,15 @@ function paperHead(title, no, date, status){
 }
 function delivery(id){
   const p = O.project(id); if(!p || !O.canSeeProject(me(),p) || !p.delivery) throw new Error("غير متاح"); const d = p.delivery;
-  return {title:"محضر التسليم", html:`<div class="row no-print" style="margin-bottom:12px"><a class="btn" href="#/project/${p.id}/delivery">→ رجوع</a><button class="btn primary" onclick="print()">🖨 طباعة / PDF</button><a class="btn" href="library/11-05.docx" download>⬇ النموذج الرسمي</a></div>
+  return {title:"محضر التسليم", html:`<div class="row no-print" style="margin-bottom:12px"><a class="btn" href="#/project/${p.id}/delivery">→ رجوع</a><button class="btn primary" onclick="print()">🖨 طباعة / PDF</button><a class="btn" href="library/11-05.docx" download>⬇ النموذج الرسمي</a>${window.BOS_VIEWS_SEC?'<button class="btn" id="sign">✍ توقيع المحضر</button>':""}</div>
     <div class="paper">${paperHead("محضر تسليم مشروع", d.no, d.date, d.accepted?"مقبول":"بتحفظات")}
       <dl class="kv" style="margin-top:14px"><dt>المشروع</dt><dd>${esc(p.name)} (${esc(p.no)})</dd><dt>العميل</dt><dd>${custName(p.customerId)}</dd><dt>ممثل العميل</dt><dd>${esc(d.customerRep)}</dd><dt>الإصدار المسلم</dt><dd class="mono">${esc(d.version)}</dd><dt>مرجع العقد</dt><dd>${esc(p.contractRef||"—")}</dd></dl>
       <h2>المخرجات المسلمة</h2><p style="white-space:pre-wrap">${esc(d.deliverables)}</p>${d.reservations?`<h2>التحفظات</h2><p style="white-space:pre-wrap">${esc(d.reservations)}</p>`:""}
       <h2>بوابة الجودة</h2><p>${O.latestGate(p)?esc(O.latestGate(p).no) + " — " + (O.gatePassed(p)?"مجتازة":"غير مجتازة") + " — " + fmtDate(O.latestGate(p).at):"—"}</p>
       <div class="foot"><div>عن الشركة: <b>${empName(d.by)}</b> — مدير المشروع<br><br>عن العميل: <b>${esc(d.customerRep)}</b> ............................</div>${d.accepted?'<img class="stamp" src="assets/stamp.png" alt="الختم">':""}</div>
-      <p class="small" style="color:#7A89A8">الختم الإلكتروني عنصر هوية داخلي ولا يغني عن توقيع ممثلي الطرفين.</p></div>`};
+      ${window.BOS_VIEWS_SEC ? BOS_VIEWS_SEC.signaturesHtml("delivery", p.id, d.no) : ""}
+      <p class="small" style="color:#7A89A8">الختم الإلكتروني عنصر هوية داخلي ولا يغني عن توقيع ممثلي الطرفين.</p></div>`,
+    bind: root => { const b = $("#sign",root); if(b) b.onclick = () => BOS_VIEWS_SEC.signatureModal("delivery", p.id, d.no, JSON.stringify(d), "محضر " + d.no); }};
 }
 function readiness(id){
   const p = O.project(id); if(!p || !O.canSeeProject(me(),p)) throw new Error("غير متاح");

@@ -101,6 +101,8 @@ const NAV = [
   {h:"training", ic:"🎓", t:"التدريب والتطوير", mod:"training", act:"view"},
   {h:"content", ic:"📣", t:"العلاقات العامة والمحتوى", mod:"content", act:"view"},
   {g:"الحوكمة"},
+  {h:"privacy", ic:"🔏", t:"الخصوصية", mod:"privacy", act:"view"},
+  {h:"security", ic:"🛡", t:"الأمن والنسخ الاحتياطي", mod:"security", act:"view"},
   {h:"audit", ic:"🛡️", t:"سجل التدقيق", mod:"audit", act:"view"},
   {h:"settings", ic:"⚙️", t:"الإعدادات", mod:"settings", act:"view"}
 ];
@@ -137,15 +139,28 @@ function shell(){
       </header>
       <main class="page" id="page"></main>
     </div>
-  </div>`;
+  </div>
+  <nav class="bottom-nav" aria-label="التنقل السريع">
+    <a href="#/home" data-h="home"><span>🏠</span>الرئيسية</a>
+    <a href="#/approvals" data-h="approvals"><span>✅</span>موافقاتي${myQueue().length?`<i>${myQueue().length}</i>`:""}</a>
+    <a href="#/requests" data-h="requests"><span>📨</span>الطلبات</a>
+    <a href="#/notifications" data-h="notifications"><span>🔔</span>الإشعارات${unread().length?`<i>${unread().length}</i>`:""}</a>
+    <button type="button" id="bn-menu"><span>☰</span>القائمة</button>
+  </nav>`;
   $("#menu").onclick = () => document.body.classList.toggle("nav-open");
+  $("#bn-menu").onclick = () => document.body.classList.toggle("nav-open");
   $("#theme").onclick = toggleTheme;
   $("#user-chip").onclick = () => modal("الحساب", `
     <div class="row">${avatar(u)}<div><b>${esc(u.name)}</b><div class="muted small">${esc(BOS.posTitle(u.positionId))} · ${esc((BOS.dept(u.deptId)||{}).name||"")}</div></div></div>
     <dl class="kv" style="margin-top:14px"><dt>نطاق الرؤية</dt><dd>${esc(D.SCOPES[BOS.scopeOf(u)])}</dd><dt>مستوى السرية</dt><dd>${esc(D.CLEARANCE[BOS.clearance(u)])}</dd>
     <dt>انتهاء الجلسة</dt><dd>بعد ${esc(S.settings.sessionMinutes)} دقيقة من عدم النشاط</dd></dl>`,
-    [{label:"تسجيل الخروج / تبديل المستخدم", cls:"primary", onClick:()=>{ BOS.logout(); render(); }}]);
+    [...(installEvt ? [{label:"📲 تثبيت التطبيق على الجهاز", onClick:()=>{ installEvt.prompt(); installEvt = null; }}] : []),
+     {label:"تسجيل الخروج / تبديل المستخدم", cls:"primary", onClick:()=>{ BOS.logout(); render(); }}]);
 }
+
+/* تثبيت التطبيق (PWA) عندما يتيحه المتصفح */
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); installEvt = e; });
 
 /* ---------- الموجه ---------- */
 function route(){
@@ -159,7 +174,8 @@ function route(){
   const parts = (location.hash.replace(/^#\/?/,"") || "home").split("/");
   const name = parts[0], arg = parts[1], arg2 = parts[2];
   document.body.classList.remove("nav-open");
-  $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name || (name==="request"&&a.dataset.h==="requests") || (name==="doc"&&a.dataset.h==="documents") || (name==="person"&&a.dataset.h==="people") || (["quote","invoice"].includes(name)&&a.dataset.h==="finance") || (["project","delivery","readiness"].includes(name)&&a.dataset.h==="projects") || (name==="bug"&&a.dataset.h==="testing") || (["ncr","quality-report"].includes(name)&&a.dataset.h==="quality") || (name==="ticket"&&a.dataset.h==="support") || (name==="program"&&a.dataset.h==="training") || (name==="customer"&&a.dataset.h==="customers")));
+  $$(".bottom-nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name));
+  $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name || (name==="request"&&a.dataset.h==="requests") || (name==="doc"&&a.dataset.h==="documents") || (name==="person"&&a.dataset.h==="people") || (["quote","invoice"].includes(name)&&a.dataset.h==="finance") || (["project","delivery","readiness"].includes(name)&&a.dataset.h==="projects") || (name==="bug"&&a.dataset.h==="testing") || (["ncr","quality-report"].includes(name)&&a.dataset.h==="quality") || (name==="ticket"&&a.dataset.h==="support") || (name==="program"&&a.dataset.h==="training") || (name==="customer"&&a.dataset.h==="customers") || (name==="dsr"&&a.dataset.h==="privacy")));
   const V = window.BOS_VIEWS;
   const view = V[name] || V.home;
   const page = $("#page");
@@ -205,6 +221,32 @@ function loginView(app){
   $("#q").oninput = e => { const q = e.target.value.trim(); $$("#pick button").forEach(b=>b.classList.toggle("hidden", q && !b.textContent.includes(q))); };
   $$("#pick button").forEach(b=>b.onclick = () => {
     const e = BOS.byId(b.dataset.id);
+    const SEC = window.BOS_SEC;
+    if(SEC && SEC.needsPassword(e)) return passwordStep(e, () => mfaStep(e));
+    mfaStep(e);
+  });
+}
+/* كلمة المرور المحلية: تُعيَّن عند أول دخول وتُحفظ بصمتها فقط (PBKDF2) */
+function passwordStep(e, next){
+  const SEC = window.BOS_SEC;
+  const first = !SEC.hasPassword(e);
+  const locked = SEC.lockedFor(e);
+  if(locked) return toast("الحساب مقفل مؤقتاً — حاول بعد " + locked + " دقيقة","bad");
+  const bg = modal(first ? "تعيين كلمة المرور" : "كلمة المرور — " + e.name, first
+    ? `<p class="small">أول دخول لك. اختر كلمة مرور من 8 أحرف على الأقل تجمع أرقاماً وحروفاً. لا يطّلع عليها أحد، ولا تُرسل بالبريد.</p>
+       <div class="field"><label class="f">كلمة المرور</label><input class="input" type="password" name="p1" autocomplete="new-password" dir="ltr"></div>
+       <div class="field"><label class="f">تأكيدها</label><input class="input" type="password" name="p2" autocomplete="new-password" dir="ltr"></div>`
+    : `<div class="field"><label class="f">كلمة المرور</label><input class="input" type="password" name="p1" autocomplete="current-password" dir="ltr"></div>`,
+    [{label: first ? "حفظ ومتابعة" : "متابعة", cls:"primary", onClick:bg=>{
+      const p1 = $("[name=p1]",bg).value, p2 = first ? $("[name=p2]",bg).value : null;
+      if(first && p1 !== p2) throw new Error("كلمتا المرور غير متطابقتين");
+      const btn = $(".modal-f .btn.primary",bg); btn.disabled = true;
+      (first ? SEC.setPassword(e,p1) : SEC.checkPassword(e,p1)).then(()=>{ bg.remove(); next(); }).catch(err=>{ btn.disabled = false; toast(err.message,"bad"); });
+      return false;
+    }}]);
+  const f = $("[name=p1]",bg); f.addEventListener("keydown", ev=>{ if(ev.key==="Enter" && !first) $(".modal-f .btn.primary",bg).click(); });
+}
+function mfaStep(e){
     if(!needsMfa(e)) { BOS.login(e.id); location.hash = "#/home"; render(); return; }
     const code = String(Math.floor(100000 + Math.random()*900000));
     toast("رمز التحقق (محاكاة إرسال إلى " + (e.email||e.phone||"جهاز المستخدم") + "): " + code, "gold");
@@ -214,7 +256,6 @@ function loginView(app){
         if($("[name=code]",bg).value.trim() !== code){ BOS.audit("فشل التحقق الثنائي","session",e.id,"",e.id); BOS.save(); throw new Error("رمز غير صحيح"); }
         BOS.login(e.id); location.hash = "#/home"; render();
       }}]);
-  });
 }
 function needsMfa(e){ return BOS.S.settings.mfa && (BOS.pos(e.positionId)||{}).mfa; }
 
@@ -312,7 +353,7 @@ if(EMBEDDED) document.addEventListener("click", e=>{
 }, true);
 document.addEventListener("DOMContentLoaded", ()=>{
   BOS.load();
-  if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } }
+  if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } if(window.BOS_SEC){ BOS_SEC.dsrSweep(); BOS_SEC.backupSweep(); } }
   render();
   if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
 });

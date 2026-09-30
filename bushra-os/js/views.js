@@ -127,7 +127,7 @@ function dashboard(){
     </div>
     <div class="card" style="margin-top:14px"><h2 style="margin-bottom:10px">الطلبات حسب النوع</h2>
       <div class="grid g4">${Object.entries(byType).map(([t,n])=>`<div class="row small">${typeIcon(t)} ${esc(typeName(t))}<span class="spacer"></span><b>${n}</b></div>`).join("") || empty("لا توجد بيانات بعد")}</div></div>
-    ${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.dashExtra() : ""}${window.BOS_VIEWS_HR ? BOS_VIEWS_HR.dashExtra() : ""}`,
+    ${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.dashExtra() : ""}${window.BOS_VIEWS_HR ? BOS_VIEWS_HR.dashExtra() : ""}${window.BOS_VIEWS_SEC ? BOS_VIEWS_SEC.dashExtra() : ""}`,
     bind: bindRows};
 }
 
@@ -441,6 +441,7 @@ function request(id){
   if(creator && r.status==="info_requested") creatorBox = `<div class="card" style="border-color:var(--warn)"><h2 style="margin-bottom:10px">المعلومات المطلوبة</h2><div class="small">${esc((st.notes.filter(n=>n.startsWith("طلب معلومات")).pop())||"")}</div><textarea class="input" id="ans" style="margin-top:8px"></textarea><button class="btn primary" id="answer" style="margin-top:8px">إرسال الرد</button></div>`;
   const link = r.link && r.link.kind==="document" ? `<a href="#/doc/${r.link.id}">فتح المستند</a>` : r.link && r.link.kind==="invoice" ? `<a href="#/invoice/${r.link.id}">فتح الفاتورة</a>` : "";
   const tpl = D.TYPE_TEMPLATES[r.type];
+  const secx = window.BOS_VIEWS_SEC ? BOS_VIEWS_SEC.requestExtra(r) : {html:"", bind:null};
   return {title:r.no, html: `
     ${head(T.icon + " " + r.title, `<span class="mono">${esc(r.no)}</span> · ${statusBadge(r.status)} ${overdue(r)?'<span class="badge bad">متأخر</span>':""} ${T.confidential?'<span class="badge bad">🔒 وصول مقيد</span>':""} · الإصدار ${r.version}`,
       `<button class="btn" onclick="print()">🖨 طباعة</button>${tpl?`<a class="btn" href="library/${tpl}" download>⬇ النموذج الرسمي</a>`:""}${(creator||gm)&&open(r)?'<button class="btn danger" id="cancel">إلغاء الطلب</button>':""}`)}
@@ -462,8 +463,9 @@ function request(id){
         <div class="row" style="margin-top:10px"><input class="input" id="cmt" placeholder="أضف تعليقاً…" style="flex:1"><button class="btn" id="addc">إرسال</button></div></div>
       <div class="card"><h2 style="margin-bottom:10px">إصدارات البيانات</h2>${r.history.map(h=>`<div class="list-item"><span class="badge">إ${h.v}</span><div class="grow small">${empName(h.by)} · ${fmtDT(h.at)} <span class="mono muted">#${esc(h.hash)}</span></div></div>`).join("")}
         <div class="muted small">كل اعتماد مرتبط ببصمة نسخة البيانات؛ أي تعديل بعد الإعادة ينشئ إصداراً جديداً ويُعاد المسار.</div></div>
-    </div>`,
+    </div>${secx.html}`,
     bind: root => {
+      secx.bind && secx.bind(root);
       const doAct = (a, o) => { try{ BOS.act(r, a, o); toast("تم تسجيل الإجراء","ok"); U.refresh(); }catch(e){ toast(e.message,"bad"); } };
       $$("[data-a]",root).forEach(b=>b.onclick=()=>{
         const a = b.dataset.a, comment = $("#cm",root).value.trim();
@@ -541,7 +543,8 @@ function doc(id){
   const canEdit = BOS.can(u,"documents","edit") || d.ownerId===u.id;
   return {title:d.no, html: `
     ${head("📄 " + d.title, `<span class="mono">${esc(d.no)}</span> · ${clsBadge(d.classification)} · ${esc(d.category)} · الإصدار الحالي ${cur.v}`,
-      `${cur.file?`<a class="btn" href="${esc(cur.file)}" download id="dl">⬇ تنزيل الملف</a>`:""}<a class="btn" href="#/print-doc/${d.id}">🖨 نسخة صادرة</a>${canEdit?'<button class="btn" id="edit">✎ تعديل</button>':""}${canEdit && cur.status==="draft"?'<button class="btn primary" id="submit">إرسال للاعتماد</button>':""}`)}
+      `${cur.file?`<a class="btn" href="${esc(cur.file)}" download id="dl">⬇ تنزيل الملف</a>`:""}<a class="btn" href="#/print-doc/${d.id}">🖨 نسخة صادرة</a>${canEdit?'<button class="btn" id="edit">✎ تعديل</button>':""}${canEdit && cur.status==="draft"?'<button class="btn primary" id="submit">إرسال للاعتماد</button>':""}${window.BOS_VIEWS_SEC && approved?'<button class="btn" id="sign">✍ توقيع إ' + approved.v + '</button>':""}`)}
+    ${window.BOS_VIEWS_SEC && approved ? `<div class="card" style="margin-bottom:14px">${BOS_VIEWS_SEC.signaturesHtml("document", d.id, approved.v) || '<div class="small muted">لا توقيعات على الإصدار المعتمد بعد</div>'}</div>` : ""}
     ${cur.status!=="approved" && approved?`<div class="note warn" style="margin-bottom:14px">يوجد إصدار أحدث (إ${cur.v}) بحالة «${docStatus(d)[0]}». النسخة المعتمدة السارية هي إ${approved.v}.</div>`:""}
     <div class="grid g2">
       <div class="card"><h2 style="margin-bottom:10px">المحتوى — إ${cur.v}</h2><div style="white-space:pre-wrap">${esc(cur.content)||'<span class="muted">—</span>'}</div>
@@ -552,6 +555,7 @@ function doc(id){
     </div>`,
     bind: root => {
       if($("#dl",root)) $("#dl",root).addEventListener("click",()=>logDownload(d));
+      if($("#sign",root)) $("#sign",root).onclick = () => BOS_VIEWS_SEC.signatureModal("document", d.id, approved.v, approved.content + "|" + (approved.file||""), d.title);
       if($("#edit",root)) $("#edit",root).onclick = () => modal("تعديل " + d.title, `${cur.status!=="draft"||cur.createdBy!==u.id?`<div class="note small" style="margin-bottom:10px">سيُنشأ الإصدار ${cur.v+1} كمسودة؛ الإصدار ${cur.v} يبقى محفوظاً دون تغيير.</div>`:""}
         <div class="field"><label class="f">ملاحظة التغيير</label><input class="input" name="note"></div><div class="field"><label class="f">المحتوى</label><textarea class="input" name="content" style="min-height:220px">${esc(cur.content)}</textarea></div>`,
         [{label:"حفظ", cls:"primary", onClick:bg=>{ const f = formData(bg); BOS.editDoc(d, f.content, f.note); U.route(); }}], true);
@@ -580,7 +584,7 @@ function printDoc(id){
   BOS.audit("طباعة / إصدار نسخة","document",d.id,d.no + " إ" + v.v); BOS.save();
   return {title:"نسخة صادرة", html:`<div class="row no-print" style="margin-bottom:12px"><a class="btn" href="#/doc/${d.id}">→ رجوع</a><button class="btn primary" onclick="print()">🖨 طباعة / PDF</button></div>` +
     paper({title:d.title, no:d.no + " / إ" + v.v, date:v.approvedAt||v.createdAt, status:v.status==="approved"?"معتمد":"مسودة — غير معتمد", createdBy:(BOS.byId(v.createdBy)||{}).name, approvedBy:(BOS.byId(v.approvedBy)||{}).name, stamped:v.status==="approved",
-      body:`<h2>${esc(d.title)}</h2><p>التصنيف: ${esc(d.category)} · السرية: ${esc(D.CLEARANCE[d.classification])}</p><div style="white-space:pre-wrap">${esc(v.content)}</div>${v.file?`<p class="small">الملف المرجعي: ${esc(v.file)}</p>`:""}`})};
+      body:`<h2>${esc(d.title)}</h2><p>التصنيف: ${esc(d.category)} · السرية: ${esc(D.CLEARANCE[d.classification])}</p><div style="white-space:pre-wrap">${esc(v.content)}</div>${v.file?`<p class="small">الملف المرجعي: ${esc(v.file)}</p>`:""}${window.BOS_VIEWS_SEC ? BOS_VIEWS_SEC.signaturesHtml("document", d.id, v.v) : ""}`})};
 }
 
 /* =================== العملاء (القسم 6.3) =================== */
@@ -710,7 +714,7 @@ function invoice(id){
       ${["draft","pending","sent"].includes(i.status) && !paid ? b("cancel","إلغاء","danger") : ""}<button class="btn" onclick="print()">🖨 طباعة / PDF</button></div>
     ${i.status==="pending"?'<div class="note no-print" style="margin-bottom:12px">الفاتورة بانتظار اكتمال مسار الاعتماد: تأكيد الإنجاز من مدير المشروع ← مراجعة المدير المالي ← المدير العام للاستثناءات ← الإرسال.</div>':""}` +
     paper({title:"فاتورة تجارية", no:i.no, date:i.createdAt, status:INV_STATUS[st][0], createdBy:(BOS.byId(i.createdBy)||{}).name, approvedBy:(BOS.byId(i.approvedBy)||{}).name, stamped:!!i.approvedBy,
-      body:`<dl class="kv" style="margin-top:14px"><dt>العميل</dt><dd>${esc(c.name)}</dd><dt>تاريخ الاستحقاق</dt><dd>${fmtDate(i.due)}</dd>${i.ref?`<dt>رقم العقد/أمر الشراء</dt><dd>${esc(i.ref)}</dd>`:""}${i.quoteId?`<dt>عرض السعر</dt><dd>${esc((s.quotes.find(q=>q.id===i.quoteId)||{}).no)}</dd>`:""}<dt>العملة</dt><dd>${esc(i.currency)}</dd></dl>
+      body:`<dl class="kv" style="margin-top:14px"><dt>العميل</dt><dd>${esc(c.name)}</dd><dt>تاريخ الاستحقاق</dt><dd>${fmtDate(i.due)}</dd>${i.ref?`<dt>رقم العقد/أمر الشراء</dt><dd>${esc(i.ref)}</dd>`:""}${i.quoteId?`<dt>عرض السعر</dt><dd>${esc((s.quotes.find(q=>q.id===i.quoteId)||{}).no)}</dd>`:""}<dt>العملة</dt><dd>${esc(i.currency)}</dd>${window.BOS_SEC && i.status!=="draft" ? `<dt>مرجع الدفع</dt><dd class="mono">${esc(BOS_SEC.paymentRef(i))}</dd>${(s.settings.payment||{}).account?`<dt>الحساب</dt><dd>${esc(s.settings.payment.bank)} — <span class="mono">${esc(s.settings.payment.account)}</span></dd>`:""}${(s.settings.payment||{}).instructions?`<dt>تعليمات</dt><dd>${esc(s.settings.payment.instructions)}</dd>`:""}` : ""}</dl>
         ${itemsTable(i)}
         ${(i.payments||[]).length?`<h2>التحصيلات</h2><table><thead><tr><th>الإيصال</th><th>التاريخ</th><th>الطريقة</th><th>المبلغ</th></tr></thead><tbody>${i.payments.map(p=>`<tr><td class="mono">${esc(p.receipt)}</td><td>${fmtDate(p.date)}</td><td>${esc(p.method)}</td><td>${money(p.amount,i.currency)}</td></tr>`).join("")}<tr><td colspan="3" style="text-align:end"><b>الرصيد المتبقي</b></td><td><b>${money(t.total-paid,i.currency)}</b></td></tr></tbody></table>`:""}
         ${i.terms?`<h2>الشروط</h2><p style="white-space:pre-wrap">${esc(i.terms)}</p>`:""}${i.cancelReason?`<p><b>سبب الإلغاء:</b> ${esc(i.cancelReason)}</p>`:""}`}),
