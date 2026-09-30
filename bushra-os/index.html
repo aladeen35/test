@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>نظام البشرى لإدارة الشركة</title>
+<meta name="description" content="AI-Bushra Company OS — نظام تشغيل إداري لشركة البشرى للتكنولوجيا: الهيكل التنظيمي، الصلاحيات، محرك الموافقات، المستندات، المالية، وسجل التدقيق.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#0B1B3A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Montserrat:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<script>
+(function(){ try{ var t = localStorage.getItem("bos-theme") || "auto";
+  var dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light"; }catch(e){} })();
+</script>
+</head>
+<body>
+<div id="app"></div>
+<div id="toasts" aria-live="polite"></div>
+<noscript>يتطلب النظام تفعيل JavaScript.</noscript>
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/setup.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/views.js"></script>
+</body>
+</html>
