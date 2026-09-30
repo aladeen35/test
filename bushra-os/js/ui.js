@@ -83,6 +83,11 @@ const NAV = [
   {h:"documents", ic:"📁", t:"المستندات", mod:"documents", act:"view"},
   {h:"customers", ic:"🤝", t:"العملاء", mod:"customers", act:"view"},
   {h:"finance", ic:"💳", t:"العروض والفواتير", mod:"finance", act:"view"},
+  {g:"الإنتاج والجودة"},
+  {h:"projects", ic:"🗂️", t:"المشاريع", mod:"projects", act:"view"},
+  {h:"testing", ic:"🧪", t:"الاختبار والعيوب", mod:"testing", act:"view"},
+  {h:"quality", ic:"🏅", t:"الجودة", mod:"quality", act:"view"},
+  {h:"support", ic:"🎧", t:"خدمة العملاء والدعم", mod:"support", act:"view", badge:()=>{ const u = BOS.me(); return window.BOS_OPS ? BOS.S.tickets.filter(t=>t.status!=="closed" && (t.ownerId===u.id||t.referredTo===u.id)).length : 0; }},
   {g:"الحوكمة"},
   {h:"audit", ic:"🛡️", t:"سجل التدقيق", mod:"audit", act:"view"},
   {h:"settings", ic:"⚙️", t:"الإعدادات", mod:"settings", act:"view"}
@@ -140,14 +145,14 @@ function route(){
   BOS.touch(); BOS.save();
   if(!$(".shell")) shell();
   const parts = (location.hash.replace(/^#\/?/,"") || "home").split("/");
-  const name = parts[0], arg = parts[1];
+  const name = parts[0], arg = parts[1], arg2 = parts[2];
   document.body.classList.remove("nav-open");
-  $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name || (name==="request"&&a.dataset.h==="requests") || (name==="doc"&&a.dataset.h==="documents") || (name==="person"&&a.dataset.h==="people") || (["quote","invoice"].includes(name)&&a.dataset.h==="finance")));
+  $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name || (name==="request"&&a.dataset.h==="requests") || (name==="doc"&&a.dataset.h==="documents") || (name==="person"&&a.dataset.h==="people") || (["quote","invoice"].includes(name)&&a.dataset.h==="finance") || (["project","delivery","readiness"].includes(name)&&a.dataset.h==="projects") || (name==="bug"&&a.dataset.h==="testing") || (["ncr","quality-report"].includes(name)&&a.dataset.h==="quality") || (name==="ticket"&&a.dataset.h==="support")));
   const V = window.BOS_VIEWS;
   const view = V[name] || V.home;
   const page = $("#page");
   try{
-    const out = view(arg);
+    const out = view(arg, arg2);
     $("#page-title").textContent = out.title;
     page.innerHTML = out.html;
     out.bind && out.bind(page);
@@ -287,7 +292,7 @@ window.addEventListener("hashchange", route);
 setInterval(()=>{ if(BOS.S.session && BOS.sessionExpired()){ BOS.logout("انتهاء الجلسة"); toast("انتهت الجلسة لعدم النشاط","warn"); render(); } }, 30000);
 document.addEventListener("DOMContentLoaded", ()=>{
   BOS.load();
-  if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); }
+  if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); }
   render();
   if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
 });

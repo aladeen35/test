@@ -17,7 +17,8 @@ function initCompany(cfg){
     gmThreshold: Number(cfg.gmThreshold||0), taxRate: 0, sessionMinutes: Number(cfg.sessionMinutes||30),
     mfa: cfg.mfa !== false, autoEscalate: cfg.autoEscalate !== false,
     modules: Object.fromEntries(D.MODULES.map(m=>[m.key, cfg.modules ? cfg.modules[m.key] !== false : true])),
-    recovery: cfg.recovery||"", leaveDays: 30
+    recovery: cfg.recovery||"", leaveDays: 30, passRate: 95,
+    sla: {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]}
   };
 
   /* الأقسام المختارة — مع الحفاظ على التسلسل */
@@ -56,6 +57,7 @@ function initCompany(cfg){
 
   if(cfg.demo) seedDemo(gm);
   if(cfg.masterDocs !== false) seedDocs(gm);
+  if(cfg.demo && window.BOS_OPS){ try{ BOS_OPS.seedOps(); }catch(e){ console.warn(e); } }
 
   S.setupDone = true;
   BOS.save();

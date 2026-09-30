@@ -54,7 +54,7 @@ function home(){
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><div class="card-head"><h2>إنشاء طلب سريع</h2></div><div class="pick-grid">${types.map(([k,t])=>`<a class="btn" href="#/new/${k}" style="justify-content:flex-start">${t.icon} ${esc(t.name)}</a>`).join("")}</div></div>
       <div class="card"><div class="card-head"><h2>إشعاراتي</h2><a href="#/notifications" class="small">الكل</a></div>${notes.length ? notes.map(noteItem).join("") : empty("لا توجد إشعارات")}</div>
-    </div>`,
+    </div>${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.homeExtra() : ""}`,
     bind: root => { bindRows(root); const b=$("[data-new]",root); if(b) b.onclick = newRequestPicker; bindNotes(root); }};
 }
 function noteItem(n){ return `<div class="list-item ${n.read?"":"unread"}" data-note="${n.id}" style="cursor:pointer"><span>${n.kind==="task"?"📌":n.kind==="ok"?"✅":n.kind==="bad"?"⛔":n.kind==="warn"?"↩️":"🔔"}</span><div class="grow"><div style="${n.read?"":"font-weight:700"}">${esc(n.text)}</div><div class="muted small">${fmtDT(n.at)}</div></div></div>`; }
@@ -126,7 +126,8 @@ function dashboard(){
       <div class="card"><h2 style="margin-bottom:10px">العقود والمستندات المنتهية قريباً</h2>${expiring.length+contracts.length ? expiring.map(d=>`<div class="small">📄 <a href="#/doc/${d.id}">${esc(d.title)}</a> — ${fmtDate(d.expires)}</div>`).join("") + contracts.map(r=>`<div class="small">📜 <a href="#/request/${r.id}">${esc(r.data.subject)}</a> — ${fmtDate(r.data.end)}</div>`).join("") : empty("لا شيء خلال 45 يوماً")}</div>
     </div>
     <div class="card" style="margin-top:14px"><h2 style="margin-bottom:10px">الطلبات حسب النوع</h2>
-      <div class="grid g4">${Object.entries(byType).map(([t,n])=>`<div class="row small">${typeIcon(t)} ${esc(typeName(t))}<span class="spacer"></span><b>${n}</b></div>`).join("") || empty("لا توجد بيانات بعد")}</div></div>`,
+      <div class="grid g4">${Object.entries(byType).map(([t,n])=>`<div class="row small">${typeIcon(t)} ${esc(typeName(t))}<span class="spacer"></span><b>${n}</b></div>`).join("") || empty("لا توجد بيانات بعد")}</div></div>
+    ${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.dashExtra() : ""}`,
     bind: bindRows};
 }
 

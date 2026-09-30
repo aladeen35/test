@@ -25,13 +25,33 @@ function blank(){
     v:1, setupDone:false, company:{}, settings:{},
     departments:[], positions:[], employees:[], policies:{},
     requests:[], documents:[], customers:[], quotes:[], invoices:[],
+    projects:[], tasks:[], testCases:[], bugs:[], reviews:[], ncrs:[], tickets:[], kb:[],
     notifications:[], audit:[], counters:{}, session:null
   };
 }
 function load(){
   try{ const raw = localStorage.getItem(KEY); S = raw ? JSON.parse(raw) : blank(); }
   catch(e){ S = blank(); }
+  migrate();
   return S;
+}
+/* ترقية بيانات الإصدارات السابقة: إضافة وحدات المرحلة الثالثة دون المساس بما أنشأه المستخدم */
+function migrate(){
+  const b = blank();
+  for(const k in b) if(S[k] === undefined) S[k] = b[k];
+  if(!S.setupDone) return;
+  S.settings.modules = S.settings.modules || {};
+  for(const m of D.P3_MODULES){
+    if(S.settings.modules[m] === undefined) S.settings.modules[m] = true;
+    for(const p of S.positions){
+      const x = D.PERMS3[p.key];
+      if(x && x[m] && !(p.perms[m]||[]).length) p.perms[m] = x[m].slice();
+      if((p.key==="gm"||p.key==="owner") && !(p.perms[m]||[]).length) p.perms[m] = D.ACTIONS.map(a=>a[0]);
+    }
+  }
+  for(const t in D.POLICIES) if(!S.policies[t]) S.policies[t] = clone(D.POLICIES[t]);
+  if(S.settings.passRate === undefined) S.settings.passRate = 95;
+  if(!S.settings.sla) S.settings.sla = {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]};
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -250,6 +270,7 @@ function onClosed(r){
     if(inv && inv.status==="pending"){ inv.status="sent"; inv.approvedBy=lastApprover(r); inv.approvedAt=now();
       audit("اعتماد وإرسال فاتورة", "invoice", inv.id, inv.no); }
   }
+  if(window.BOS_OPS) BOS_OPS.onClosed(r);
 }
 /* عند الرفض أو الإلغاء: يعود الكيان المرتبط إلى مسودة */
 function onAborted(r){
@@ -261,6 +282,7 @@ function onAborted(r){
     const inv = S.invoices.find(x=>x.id===r.link.id);
     if(inv && inv.status==="pending") inv.status = "draft";
   }
+  if(window.BOS_OPS) BOS_OPS.onAborted(r);
 }
 function lastApprover(r){ const a = r.steps.filter(s=>s.status==="approved" && (s.stage==="approve"||s.stage==="review")).pop(); return a ? a.actedBy : null; }
 
@@ -468,7 +490,7 @@ function sessionExpired(){
 }
 
 window.BOS = {
-  get S(){ return S; }, load, save, reset, uid, now, clone, hash, stable,
+  get S(){ return S; }, load, save, reset, migrate, lastApprover, uid, now, clone, hash, stable,
   nextNo, audit, verifyAudit, notify,
   byId, pos, posByKey, dept, posTitle, me, active, holderOf, managerOf, isTop,
   can, clearance, scopeOf, canSeeRequest, canSeeDoc,

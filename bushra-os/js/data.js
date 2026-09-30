@@ -12,6 +12,10 @@ const MODULES = [
   {key:"documents",  name:"المستندات والإصدارات",     icon:"📁", core:true},
   {key:"customers",  name:"العملاء والعلاقات العامة", icon:"🤝", core:false},
   {key:"finance",    name:"المالية والفواتير",        icon:"💳", core:false},
+  {key:"projects",   name:"المشاريع والإنتاج",        icon:"🗂️", core:false},
+  {key:"testing",    name:"الاختبار والعيوب",         icon:"🧪", core:false},
+  {key:"quality",    name:"الجودة وضمان الجودة",      icon:"🏅", core:false},
+  {key:"support",    name:"خدمة العملاء والدعم الفني", icon:"🎧", core:false},
   {key:"policies",   name:"مسارات الموافقة",          icon:"🔀", core:true},
   {key:"audit",      name:"سجل التدقيق",              icon:"🛡️", core:true},
   {key:"settings",   name:"إعدادات الشركة",           icon:"⚙️", core:true}
@@ -77,6 +81,29 @@ const POSITIONS = [
   {key:"staff",   title:"موظف / متعاون / مستشار خارجي",     dept:"projects", reportsTo:"pm",     level:5, scope:"record",  clearance:1, mfa:false, perms:P({})}
 ];
 
+/* صلاحيات المرحلة الثالثة (المشاريع، الاختبار، الجودة، الدعم) — تدمج مع صلاحيات المنصب */
+const V = ["view","comment"], VE = ["create","view","edit","comment"], VA = ["create","view","edit","comment","approve","reject","print","export"];
+const PERMS3 = {
+  coo:       {projects:VA, testing:V, quality:V, support:VE},
+  cto:       {projects:["view","comment","approve"], testing:V, quality:V, support:V},
+  cfo:       {projects:V},
+  pm:        {projects:VA, testing:VE, quality:V, support:VE},
+  qm:        {projects:V, testing:["view","comment","approve"], quality:ALL, support:VA},
+  testlead:  {projects:V, testing:ALL, quality:V, support:V},
+  devlead:   {projects:VE, testing:VE, support:V},
+  dev:       {projects:VE, testing:VE, support:V},
+  designer:  {projects:VE, testing:VE},
+  secops:    {projects:V, support:V},
+  pr:        {projects:V, support:V},
+  sales:     {projects:V, support:VE},
+  cs:        {projects:V, testing:["view","create"], quality:V, support:ALL},
+  training:  {quality:V},
+  accountant:{projects:V},
+  staff:     {projects:VE, testing:VE}
+};
+const P3_MODULES = ["projects","testing","quality","support"];
+for(const p of POSITIONS){ const x = PERMS3[p.key]; if(x) for(const k in x) p.perms[k] = Array.from(new Set([...(p.perms[k]||[]), ...x[k]])); }
+
 /* أنواع المعاملات ونماذجها (القسم 6 و7)
    fields.k = مفتاح، amount = الحقل الذي يمثل القيمة المالية */
 const TYPES = {
@@ -113,6 +140,9 @@ const TYPES = {
   document:{name:"اعتماد مستند", icon:"📄", days:3, system:true,
     docs:[],
     fields:[{k:"docNo",l:"رقم المستند",t:"text"},{k:"title",l:"العنوان",t:"text"},{k:"version",l:"الإصدار",t:"text"}]},
+  change:{name:"طلب تغيير نطاق", icon:"🔁", days:4, amount:"amount",
+    docs:["وصف التغيير وأثره"],
+    fields:[{k:"project",l:"المشروع",t:"text",req:1},{k:"change",l:"التغيير المطلوب",t:"textarea",req:1},{k:"days",l:"الأثر على المدة (يوم)",t:"number"},{k:"amount",l:"الأثر المالي",t:"number"},{k:"clientRequested",l:"بطلب من العميل",t:"check"}]},
   general:{name:"طلب إداري عام", icon:"📝", days:3,
     docs:[],
     fields:[{k:"subject",l:"الموضوع",t:"text",req:1},{k:"details",l:"التفاصيل",t:"textarea",req:1}]}
@@ -192,6 +222,13 @@ const POLICIES = {
     {label:"المدير العام (بيانات شخصية)", who:"gm",      stage:"approve", when:{flag:"sensitive"}},
     {label:"الاحتواء والإغلاق",        who:"secops",     stage:"close"}
   ],
+  change:[
+    {label:"مراجعة مدير المشروع",      who:"pm",         stage:"review"},
+    {label:"تقييم الأثر التقني",       who:"cto",        stage:"review"},
+    {label:"الأثر المالي",             who:"cfo",        stage:"approve", when:{min:1}},
+    {label:"المدير العام (تجاوز الحد)",who:"gm",         stage:"approve", when:{min:"gm"}},
+    {label:"تحديث النطاق والخطة",      who:"pm",         stage:"execute"}
+  ],
   document:[
     {label:"مراجعة المدير المباشر",    who:"manager",    stage:"approve"},
     {label:"حفظ النسخة الرئيسية",      who:"records",    stage:"close"}
@@ -239,7 +276,7 @@ const MASTER_DOCS = [
 ];
 /* النموذج الرسمي المرتبط بكل نوع معاملة */
 const TYPE_TEMPLATES = {leave:"12-03.docx", expense:"12-04.docx", purchase:"11-03.docx", invoice:"11-02.docx",
-  incident:"10-02.docx", contract:"02-01.docx", complaint:"10-01.docx"};
+  incident:"10-02.docx", contract:"02-01.docx", complaint:"10-01.docx", change:"06-02.docx", release:"11-05.docx"};
 
 /* فريق تجريبي لتجربة المسارات فوراً */
 const DEMO_TEAM = [
@@ -250,5 +287,5 @@ const DEMO_TEAM = [
   ["procurement","بكري موسى"],["accountant","سلمى عباس"],["records","ياسر كمال"],["staff","منتصر جعفر"]
 ];
 
-window.BOS_DATA = {MODULES, ACTIONS, SCOPES, CLEARANCE, DEPARTMENTS, POSITIONS, TYPES, STAGES, POLICIES, MASTER_DOCS, TYPE_TEMPLATES, DEMO_TEAM};
+window.BOS_DATA = {MODULES, ACTIONS, SCOPES, CLEARANCE, DEPARTMENTS, POSITIONS, TYPES, STAGES, POLICIES, MASTER_DOCS, TYPE_TEMPLATES, DEMO_TEAM, PERMS3, P3_MODULES};
 })();
