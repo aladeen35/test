@@ -285,7 +285,7 @@ function person(id){
   const reports = s.employees.filter(x=>x.managerId===e.id);
   const pending = s.requests.filter(r=>{ const st = BOS.currentStep(r); return st && st.assigneeId===e.id && open(r); });
   return {title:e.name, html: `
-    ${head(e.name, esc(p.title) + " · " + esc((BOS.dept(e.deptId)||{}).name||""), (hr?`<button class="btn" id="edit">تعديل</button>`:"") + (hr?`<button class="btn" id="leave">${e.onLeave?"إنهاء الإجازة":"تسجيل في إجازة"}</button>`:"") + (hr && !self && BOS.active(e)?`<button class="btn danger" id="disable">إيقاف الحساب وإنهاء الخدمة</button>`:"") + (hr && !BOS.active(e)?`<button class="btn ok" id="enable">إعادة التفعيل</button>`:""))}
+    ${head(e.name, esc(p.title) + " · " + esc((BOS.dept(e.deptId)||{}).name||""), (hr?`<button class="btn" id="edit">تعديل</button>`:"") + (hr?`<button class="btn" id="leave">${e.onLeave?"إنهاء الإجازة":"تسجيل في إجازة"}</button>`:"") + (hr && !self && BOS.active(e)?`<button class="btn danger" id="disable">إيقاف الحساب وإنهاء الخدمة</button>`:"") + (hr && !BOS.active(e)?`<button class="btn ok" id="enable">إعادة التفعيل</button>`:"") + (window.BOS_SYNC && BOS_SYNC.shared && BOS_SYNC.boundTo(e.id) && (BOS.isTop(u)||BOS.can(u,"people","manage")) && !self ? `<button class="btn" id="unbind">فك ربط الحساب</button>` : ""))}
     ${BOS.active(e)?"":`<div class="note bad" style="margin-bottom:14px">الحساب موقوف منذ ${fmtDate(e.disabledAt)} — ${esc(e.disableReason||"")}. لا يمكنه تسجيل الدخول أو استلام مراحل الموافقة.</div>`}
     <div class="grid g2">
       <div class="card"><h2 style="margin-bottom:10px">الملف الوظيفي</h2><dl class="kv">
@@ -305,6 +305,7 @@ function person(id){
     </div>${hrx.html}`,
     bind: root => {
       bindRows(root); hrx.bind && hrx.bind(root);
+      if($("#unbind",root)) $("#unbind",root).onclick = () => U.ask("فك ربط الحساب", "يستطيع " + e.name + " بعدها ربط حسابه من جديد عند الدخول.", ()=>{ BOS_SYNC.unbind(e.id); U.route(); }, {confirmOnly:true});
       if($("#msg",root)) $("#msg",root).onclick = () => BOS_VIEWS_MAIL.compose({to:[e.mailAddr]});
       if($("#addr",root)) $("#addr",root).onclick = () => U.ask("عنوان البريد الداخلي — " + e.name, "العنوان (المقترح: " + BOS_MAIL.suggestAddress(e.name, e.id) + ")", v=>{ BOS_MAIL.setAddress(e, v); U.route(); }, {value:e.mailAddr||""});
       if($("#edit",root)) $("#edit",root).onclick = () => employeeEditor(e);

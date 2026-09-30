@@ -134,6 +134,7 @@ function shell(){
       <header class="top">
         <button class="menu-btn" id="menu" aria-label="القائمة">☰</button>
         <div class="title" id="page-title"></div>
+        ${window.BOS_SYNC && BOS_SYNC.shared ? `<span class="badge ${BOS_SYNC.readOnly?"warn":"ok"}" id="sync-pill" title="البيانات مشتركة مع زملائك وتتحدث مباشرة">${BOS_SYNC.readOnly?"👁 عرض فقط":"● مشترك"}</span>` : ""}
         <button class="icon-btn" id="theme" title="الوضع الليلي">◐</button>
         <a class="icon-btn" href="#/notifications" title="الإشعارات">🔔${unread().length?`<span class="dot">${unread().length}</span>`:""}</a>
         <button class="user-chip" id="user-chip">${avatar(u)}<span class="who"><b>${esc(u.name)}</b><span>${esc(BOS.posTitle(u.positionId))}</span></span></button>
@@ -149,6 +150,8 @@ function shell(){
     <button type="button" id="bn-menu"><span>☰</span>القائمة</button>
   </nav>`;
   $("#menu").onclick = () => document.body.classList.toggle("nav-open");
+  if(window.BOS_SYNC && BOS_SYNC.shared){ const pill = $("#sync-pill"); const lbl = {live:"● مشترك", saving:"⟳ يحفظ…", connecting:"⟳ اتصال…", error:"⚠ تعذر الحفظ — إعادة المحاولة", readonly:"👁 عرض فقط"};
+    BOS_SYNC.onStatus(st=>{ const p = document.getElementById("sync-pill"); if(p){ p.textContent = lbl[st]||st; p.className = "badge " + (st==="live"?"ok":st==="error"||st==="readonly"?"warn":"info"); } }); }
   $("#bn-menu").onclick = () => document.body.classList.toggle("nav-open");
   $("#theme").onclick = toggleTheme;
   $("#user-chip").onclick = () => modal("الحساب", `
@@ -170,6 +173,7 @@ function route(){
   if(BOS.sessionExpired()){ BOS.logout("انتهاء الجلسة"); toast("انتهت الجلسة لعدم النشاط — سجل الدخول مجدداً","warn"); return render(); }
   const u = BOS.me();
   if(!u || !BOS.active(u)){ BOS.logout("إيقاف وصول مستخدم غير نشط"); toast("هذا الحساب موقوف","bad"); return render(); }
+  if(window.BOS_SYNC && BOS_SYNC.shared && BOS_SYNC.boundEmployee() && BOS_SYNC.boundEmployee() !== u.id){ BOS.S.session = null; BOS.save(); return render(); }
   BOS.touch(); BOS.save();
   if(!$(".shell")) shell();
   const parts = (location.hash.replace(/^#\/?/,"") || "home").split("/");
@@ -197,6 +201,9 @@ function refresh(){ const s = $(".shell"); if(s) s.remove(); route(); }
 function render(){
   applyTheme();
   const app = document.getElementById("app");
+  const SY = window.BOS_SYNC;
+  if(!BOS.S.setupDone && SY && SY.shared && !SY.owner) return waitingView(app);
+  if(!BOS.S.setupDone && SY && SY.shared && BOS.S._localCandidate) return adoptView(app);
   if(!BOS.S.setupDone) return wizard(app);
   if(!BOS.S.session) return loginView(app);
   app.innerHTML = ""; route();
@@ -220,9 +227,21 @@ function loginView(app){
     <div class="auth-hero"></div>
   </div>`;
   $("#q").oninput = e => { const q = e.target.value.trim(); $$("#pick button").forEach(b=>b.classList.toggle("hidden", q && !b.textContent.includes(q))); };
+  const SY = window.BOS_SYNC;
+  if(SY && SY.shared){
+    const mine = SY.boundEmployee();
+    $$("#pick button").forEach(b=>{ const t = SY.boundTo(b.dataset.id);
+      if(mine && b.dataset.id!==mine) b.classList.add("hidden");
+      else if(!mine && t){ b.disabled = true; b.insertAdjacentHTML("beforeend",'<span class="badge">مرتبط بزميل</span>'); } });
+    $("#q").classList.toggle("hidden", !!mine);
+    $(".auth-panel p.muted").innerHTML = mine ? "حسابك مرتبط بهذا الموظف. اضغط للدخول." : "اختر اسمك من القائمة لربط حسابك به مرة واحدة. بعد الربط لا يستطيع غيرك الدخول باسمك. إن اخترت اسماً خاطئاً اطلب من المدير العام أو الموارد البشرية فك الربط.";
+  }
   $$("#pick button").forEach(b=>b.onclick = () => {
     const e = BOS.byId(b.dataset.id);
     const SEC = window.BOS_SEC;
+    if(SY && SY.shared && !SY.boundEmployee()){
+      return ask("ربط حسابك بـ " + e.name, "سيرتبط حسابك بهذا الموظف (" + BOS.posTitle(e.positionId) + ") ولن يستطيع غيرك الدخول باسمه.", ()=>{ SY.bind(e.id); BOS.save(); if(SEC && SEC.needsPassword(e)) return passwordStep(e, () => mfaStep(e)); mfaStep(e); }, {confirmOnly:true, okLabel:"ربط والدخول"});
+    }
     if(SEC && SEC.needsPassword(e)) return passwordStep(e, () => mfaStep(e));
     mfaStep(e);
   });
@@ -324,6 +343,7 @@ function wizard(app){
     if(s===2 && !c.gmName) return toast("اسم المدير العام إلزامي","bad");
     if(s < WZ_STEPS.length-1){ WZ.step++; return wizard(app); }
     BOS_SETUP.initCompany(c);
+    if(window.BOS_SYNC && BOS_SYNC.shared){ delete BOS.S._localCandidate; BOS_SYNC.bind(BOS.S.session.userId); BOS.save(); }
     toast("تم إنشاء حساب الشركة — أهلاً " + c.gmName, "ok");
     location.hash = "#/dashboard"; render();
   };
@@ -352,10 +372,33 @@ if(EMBEDDED) document.addEventListener("click", e=>{
   e.preventDefault(); e.stopPropagation();
   toast(el.hasAttribute("download") ? "تنزيل الملفات غير متاح في رابط التجربة — الملف متوفر في مجلد library بالمستودع" : "الطباعة غير متاحة في رابط التجربة — شغّل التطبيق من المستودع للطباعة وحفظ PDF", "gold");
 }, true);
-document.addEventListener("DOMContentLoaded", ()=>{
+function sweeps(){
+  if(!BOS.S.setupDone) return;
+  // في الوضع المشترك يشغّل المالك وحده المهام الدورية حتى لا تتكرر السجلات
+  if(window.BOS_SYNC && BOS_SYNC.shared && !BOS_SYNC.owner) return;
+  const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } if(window.BOS_SEC){ BOS_SEC.dsrSweep(); BOS_SEC.backupSweep(); }
+}
+function waitingView(app){
+  app.innerHTML = `<div class="auth"><div class="auth-panel"><img class="logo" src="assets/logo.png" alt=""><h1>نظام البشرى لإدارة الشركة</h1>
+    <p>لم يُنشئ مالك الرابط حساب الشركة بعد. عندما ينتهي من الإعداد تظهر لك الشاشة تلقائياً دون إعادة تحميل.</p><p class="muted small">البيانات هنا مشتركة بين كل من شورك معه الرابط.</p></div><div class="auth-hero"></div></div>`;
+}
+function adoptView(app){
+  const c = BOS.S._localCandidate;
+  app.innerHTML = `<div class="wiz"><div class="wiz-head"><img src="assets/logo.png" alt=""><div><h1>بدء التجربة المشتركة</h1><div class="muted">كل ما تُدخله من الآن يراه زملاؤك الذين تشاركهم الرابط</div></div></div>
+    <div class="card"><p>وجدنا في هذا المتصفح بيانات تجربة سابقة لـ <b>${esc(c.company.tradeName)}</b>: ${c.employees.length} موظفاً و${(c.requests||[]).length} طلباً. هل تريد مشاركتها مع زملائك أم البدء بحساب شركة جديد؟</p>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="adopt">مشاركة بياناتي الحالية</button><button class="btn" id="fresh">البدء من جديد</button></div>
+    <p class="small muted" style="margin-top:10px">عند المشاركة يُعاد تسجيل الدخول، ويربط كل زميل حسابه بموظف مرة واحدة.</p></div></div>`;
+  $("#adopt").onclick = () => { BOS_SYNC.adoptLocal(); toast("شُوركت البيانات","ok"); render(); };
+  $("#fresh").onclick = () => { delete BOS.S._localCandidate; render(); };
+}
+document.addEventListener("DOMContentLoaded", async ()=>{
   BOS.load();
-  if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } if(window.BOS_SEC){ BOS_SEC.dsrSweep(); BOS_SEC.backupSweep(); } }
+  if(window.BOS_SYNC && BOS_SYNC.embedded()){
+    document.getElementById("app").innerHTML = `<div class="auth"><div class="auth-panel"><img class="logo" src="assets/logo.png" alt=""><h1>نظام البشرى لإدارة الشركة</h1><p class="tag">جارٍ الاتصال بالبيانات المشتركة…</p></div><div class="auth-hero"></div></div>`;
+    try{ await BOS_SYNC.init(); }catch(e){ console.warn("sync init", e); }
+  }
+  sweeps();
   render();
-  if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  if("serviceWorker" in navigator && location.protocol.startsWith("http") && !(window.BOS_SYNC && BOS_SYNC.shared)) navigator.serviceWorker.register("sw.js").catch(()=>{});
 });
 })();

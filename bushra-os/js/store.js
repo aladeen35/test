@@ -63,10 +63,13 @@ function migrate(){
   if(window.BOS_MAIL) BOS_MAIL.migrate();
 }
 function save(){
+  // في الوضع المشترك تذهب البيانات لقاعدة البيانات المشتركة، ولا تُكتب فوق بيانات هذا المتصفح المحلية
+  if(window.BOS_SYNC && BOS_SYNC.shared){ BOS_SYNC.changed(); return; }
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }
   catch(e){ window.BOS_UI && BOS_UI.toast("تعذر الحفظ على الجهاز: " + e.message, "bad"); }
 }
-function reset(){ localStorage.removeItem(KEY); S = blank(); }
+function reset(){ if(!(window.BOS_SYNC && BOS_SYNC.shared)) localStorage.removeItem(KEY); S = blank(); }
+function replace(o){ S = o; migrate(); }
 
 /* ---------- الترقيم (لا يعاد استخدام أي رقم) ---------- */
 function nextNo(prefix){
@@ -504,7 +507,7 @@ function sessionExpired(){
 }
 
 window.BOS = {
-  get S(){ return S; }, load, save, reset, migrate, lastApprover, uid, now, clone, hash, stable,
+  get S(){ return S; }, load, save, reset, replace, blank, migrate, lastApprover, uid, now, clone, hash, stable,
   nextNo, audit, verifyAudit, notify,
   byId, pos, posByKey, dept, posTitle, me, active, holderOf, managerOf, isTop,
   can, clearance, scopeOf, canSeeRequest, canSeeDoc,
