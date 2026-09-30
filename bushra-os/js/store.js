@@ -26,6 +26,9 @@ function blank(){
     departments:[], positions:[], employees:[], policies:{},
     requests:[], documents:[], customers:[], quotes:[], invoices:[],
     projects:[], tasks:[], testCases:[], bugs:[], reviews:[], ncrs:[], tickets:[], kb:[],
+    attendance:[], goals:[], evaluations:[], assets:[], hrNotes:[], onboarding:[],
+    skills:[], skillReq:{}, empSkills:{}, programs:[], providers:[],
+    content:[], interactions:[], surveys:[],
     notifications:[], audit:[], counters:{}, session:null
   };
 }
@@ -41,17 +44,19 @@ function migrate(){
   for(const k in b) if(S[k] === undefined) S[k] = b[k];
   if(!S.setupDone) return;
   S.settings.modules = S.settings.modules || {};
-  for(const m of D.P3_MODULES){
+  for(const m of D.ADDED_MODULES){
     if(S.settings.modules[m] === undefined) S.settings.modules[m] = true;
     for(const p of S.positions){
-      const x = D.PERMS3[p.key];
-      if(x && x[m] && !(p.perms[m]||[]).length) p.perms[m] = x[m].slice();
+      const x = D.ADDED_PERMS(p.key);
+      if(x[m] && !(p.perms[m]||[]).length) p.perms[m] = x[m].slice();
       if((p.key==="gm"||p.key==="owner") && !(p.perms[m]||[]).length) p.perms[m] = D.ACTIONS.map(a=>a[0]);
     }
   }
   for(const t in D.POLICIES) if(!S.policies[t]) S.policies[t] = clone(D.POLICIES[t]);
   if(S.settings.passRate === undefined) S.settings.passRate = 95;
   if(!S.settings.sla) S.settings.sla = {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]};
+  if(!S.settings.work) S.settings.work = {start:"08:00", end:"16:00", grace:15, weekend:[5,6]};
+  if(window.BOS_HR) BOS_HR.migrate();
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -271,6 +276,7 @@ function onClosed(r){
       audit("اعتماد وإرسال فاتورة", "invoice", inv.id, inv.no); }
   }
   if(window.BOS_OPS) BOS_OPS.onClosed(r);
+  if(window.BOS_HR) BOS_HR.onClosed(r);
 }
 /* عند الرفض أو الإلغاء: يعود الكيان المرتبط إلى مسودة */
 function onAborted(r){
@@ -283,6 +289,7 @@ function onAborted(r){
     if(inv && inv.status==="pending") inv.status = "draft";
   }
   if(window.BOS_OPS) BOS_OPS.onAborted(r);
+  if(window.BOS_HR) BOS_HR.onAborted(r);
 }
 function lastApprover(r){ const a = r.steps.filter(s=>s.status==="approved" && (s.stage==="approve"||s.stage==="review")).pop(); return a ? a.actedBy : null; }
 

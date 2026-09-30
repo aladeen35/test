@@ -46,7 +46,7 @@ function home(){
       ${kpi("طلباتي المفتوحة", mine.filter(open).length, mine.filter(r=>r.status==="returned"||r.status==="info_requested").length + " تحتاج إجراءً مني")}
       ${kpi("الملفات المتاحة لي", docs, "حسب المنصب ومستوى السرية")}
       ${kpi("رصيد الإجازات", leaveLeft + " يوم", "المستخدم: " + (e.leaveUsed||0))}
-    </div>
+    </div>${window.BOS_VIEWS_HR ? BOS_VIEWS_HR.homeTop() : ""}
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><div class="card-head"><h2>مهامي اليوم — ينتظر موافقتي</h2><a href="#/approvals" class="small">الكل</a></div>${reqTable(q.slice(0,6),"لا توجد مهام بانتظارك 🎉")}</div>
       <div class="card"><div class="card-head"><h2>طلباتي</h2><a href="#/requests" class="small">الكل</a></div>${reqTable(mine.slice(0,6),"لم تنشئ طلبات بعد")}</div>
@@ -54,8 +54,8 @@ function home(){
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><div class="card-head"><h2>إنشاء طلب سريع</h2></div><div class="pick-grid">${types.map(([k,t])=>`<a class="btn" href="#/new/${k}" style="justify-content:flex-start">${t.icon} ${esc(t.name)}</a>`).join("")}</div></div>
       <div class="card"><div class="card-head"><h2>إشعاراتي</h2><a href="#/notifications" class="small">الكل</a></div>${notes.length ? notes.map(noteItem).join("") : empty("لا توجد إشعارات")}</div>
-    </div>${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.homeExtra() : ""}`,
-    bind: root => { bindRows(root); const b=$("[data-new]",root); if(b) b.onclick = newRequestPicker; bindNotes(root); }};
+    </div>${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.homeExtra() : ""}${window.BOS_VIEWS_HR ? BOS_VIEWS_HR.homeExtra() : ""}`,
+    bind: root => { bindRows(root); const b=$("[data-new]",root); if(b) b.onclick = newRequestPicker; bindNotes(root); if(window.BOS_VIEWS_HR) BOS_VIEWS_HR.bindHome(root); }};
 }
 function noteItem(n){ return `<div class="list-item ${n.read?"":"unread"}" data-note="${n.id}" style="cursor:pointer"><span>${n.kind==="task"?"📌":n.kind==="ok"?"✅":n.kind==="bad"?"⛔":n.kind==="warn"?"↩️":"🔔"}</span><div class="grow"><div style="${n.read?"":"font-weight:700"}">${esc(n.text)}</div><div class="muted small">${fmtDT(n.at)}</div></div></div>`; }
 function bindNotes(root){ $$("[data-note]",root).forEach(el=>el.onclick=()=>{ const n = S().notifications.find(x=>x.id===el.dataset.note); if(n){ n.read=true; BOS.save(); if(n.link){ U.refresh(); go(n.link); } else U.refresh(); } }); }
@@ -127,7 +127,7 @@ function dashboard(){
     </div>
     <div class="card" style="margin-top:14px"><h2 style="margin-bottom:10px">الطلبات حسب النوع</h2>
       <div class="grid g4">${Object.entries(byType).map(([t,n])=>`<div class="row small">${typeIcon(t)} ${esc(typeName(t))}<span class="spacer"></span><b>${n}</b></div>`).join("") || empty("لا توجد بيانات بعد")}</div></div>
-    ${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.dashExtra() : ""}`,
+    ${window.BOS_VIEWS_OPS ? BOS_VIEWS_OPS.dashExtra() : ""}${window.BOS_VIEWS_HR ? BOS_VIEWS_HR.dashExtra() : ""}`,
     bind: bindRows};
 }
 
@@ -263,6 +263,7 @@ function employeeEditor(e){
       if(isNew){ Object.assign(e, {id:BOS.uid("e"), status:"active", leaveUsed:0}); s.employees.push(e);
         BOS.audit("دعوة موظف","employee",e.id, e.name + " — " + p.title);
         BOS.notify(e.id, "مرحباً بك في " + s.company.tradeName + " — منصبك: " + p.title, "#/home");
+        if(window.BOS_HR) BOS_HR.onEmployeeCreated(e);
         toast("تم إنشاء الحساب. (في التشغيل الفعلي تُرسل دعوة آمنة بالبريد — لا تُرسل كلمات المرور بالبريد)","ok");
       } else { BOS.audit("تعديل بيانات موظف","employee",e.id, e.name + (changes.length?" — تغيير صلاحية: "+changes.join("، "):"")); toast("تم الحفظ","ok"); }
       BOS.save(); U.route();
@@ -275,7 +276,9 @@ function employeeEditor(e){
 function person(id){
   const s = S(); const e = BOS.byId(id); if(!e) throw new Error("الموظف غير موجود");
   const u = me(); const self = u.id===e.id;
-  if(!self && !BOS.can(u,"people","view")) throw new Error("لا تملك صلاحية عرض ملفات الموظفين");
+  const mgr = window.BOS_HR && BOS_HR.isManagerOf(u,e);
+  if(!self && !mgr && !BOS.can(u,"people","view")) throw new Error("لا تملك صلاحية عرض ملفات الموظفين");
+  const hrx = window.BOS_VIEWS_HR ? BOS_VIEWS_HR.personExtra(e) : {html:"", bind:null};
   const hr = BOS.can(u,"people","edit");
   const p = BOS.pos(e.positionId);
   const reqs = s.requests.filter(r=>r.creatorId===e.id && BOS.canSeeRequest(u,r));
@@ -298,20 +301,21 @@ function person(id){
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><h2 style="margin-bottom:10px">طلباته</h2>${reqTable(reqs.slice(0,8))}</div>
       <div class="card"><h2 style="margin-bottom:10px">مراحل مسندة إليه حالياً</h2>${reqTable(pending,"لا يوجد")}</div>
-    </div>`,
+    </div>${hrx.html}`,
     bind: root => {
-      bindRows(root);
+      bindRows(root); hrx.bind && hrx.bind(root);
       if($("#edit",root)) $("#edit",root).onclick = () => employeeEditor(e);
       if($("#leave",root)) $("#leave",root).onclick = () => { e.onLeave = !e.onLeave; BOS.audit(e.onLeave?"بدء إجازة":"انتهاء إجازة","employee",e.id,e.name + (e.onLeave && e.delegateId?" — البديل: "+BOS.byId(e.delegateId).name:"")); BOS.save(); U.route(); };
       if($("#enable",root)) $("#enable",root).onclick = () => { e.status="active"; e.validTo=""; BOS.audit("إعادة تفعيل حساب","employee",e.id,e.name); BOS.save(); U.route(); };
       if($("#disable",root)) $("#disable",root).onclick = () => modal("إيقاف حساب " + e.name, `<p class="small">يتوقف وصوله فوراً، وتُحال المراحل المسندة إليه (${pending.length}) إلى مديره المباشر.</p><div class="field"><label class="f">السبب *</label><input class="input" name="reason" placeholder="انتهاء العقد / استقالة / ..."></div>
-        <label class="check"><input type="checkbox" name="handover" checked> فتح طلب تسليم العهد والأجهزة</label>`,
+        <label class="check"><input type="checkbox" name="handover" checked> ${window.BOS_HR ? "بدء قائمة إنهاء الخدمة وتسليم العهد (" + BOS_HR.custodyOf(e.id).length + " عهدة مسجلة)" : "فتح طلب تسليم العهد والأجهزة"}</label>`,
         [{label:"إيقاف", cls:"danger solid", onClick:bg=>{ const f = formData(bg); if(!f.reason) throw new Error("السبب إلزامي");
           e.status = "disabled"; e.disabledAt = BOS.now(); e.disableReason = f.reason;
           const up = BOS.managerOf(e) || BOS.byId((BOS.holderOf("gm")||{}).id);
           pending.forEach(r=>{ const st = BOS.currentStep(r); st.notes.push("أعيد الإسناد بسبب إيقاف " + e.name); st.assigneeId = up ? up.id : null; if(up) BOS.notify(up.id,"أحيلت إليك مرحلة في "+r.no+" بسبب إيقاف "+e.name,"#/request/"+r.id,"task"); });
           BOS.audit("إيقاف حساب وإنهاء وصول","employee",e.id,e.name + " — " + f.reason + " — أعيد إسناد " + pending.length + " مرحلة");
-          if(f.handover) BOS.createRequest("general",{subject:"تسليم العهد والأجهزة — " + e.name, details:"إنهاء خدمة: " + f.reason + ". يُرجى حصر العهد والأجهزة واستلامها وإغلاق الحسابات."},{title:"تسليم عهد — " + e.name});
+          if(f.handover && window.BOS_HR) BOS_HR.onEmployeeDisabled(e, f.reason);
+          else if(f.handover) BOS.createRequest("general",{subject:"تسليم العهد والأجهزة — " + e.name, details:"إنهاء خدمة: " + f.reason + ". يُرجى حصر العهد والأجهزة واستلامها وإغلاق الحسابات."},{title:"تسليم عهد — " + e.name});
           BOS.save(); toast("تم إيقاف الحساب","ok"); U.refresh(); }}]);
     }};
 }
@@ -589,7 +593,7 @@ function customers(){
     ${list.map(c=>{ const inv = S().invoices.filter(i=>i.customerId===c.id); return `<tr class="link" data-c="${c.id}"><td><b>${esc(c.name)}</b></td><td class="small">${esc(c.kind)}</td><td class="small">${esc(c.contact)} ${esc(c.phone||"")}</td><td><span class="badge info">${esc(c.stage)}</span></td>
       <td>${c.publishConsent?'<span class="badge ok">موثقة</span>':'<span class="badge bad">غير مسموح</span>'}</td><td>${inv.length}</td></tr>`; }).join("")}</tbody></table></div>`:empty("لا يوجد عملاء")}</div>
     <p class="muted small">لا يجوز نشر شعار أو اسم عميل أو مشروع دون سجل موافقة واضح.</p>`,
-    bind: root => { if($("#new",root)) $("#new",root).onclick = () => customerEditor(null); $$("[data-c]",root).forEach(r=>r.onclick=()=>customerEditor(S().customers.find(x=>x.id===r.dataset.c))); }};
+    bind: root => { if($("#new",root)) $("#new",root).onclick = () => customerEditor(null); $$("[data-c]",root).forEach(r=>r.onclick=()=>{ if(window.BOS_VIEWS.customer) go("#/customer/" + r.dataset.c); else customerEditor(S().customers.find(x=>x.id===r.dataset.c)); }); }};
 }
 function customerEditor(c){
   const isNew = !c; c = c || {name:"",kind:"قطاع خاص",contact:"",phone:"",email:"",stage:"فرصة",publishConsent:false,notes:""};
@@ -832,5 +836,6 @@ function settings(){
     }};
 }
 
+window.BOS_VIEWS_CORE = {customerEditor, paper, reqTable, bindRows, clsBadge};
 window.BOS_VIEWS = {home, dashboard, org, people, person, requests, new:newReq, request, approvals, notifications, documents, doc, "print-doc":printDoc, customers, finance, quote, invoice, policies, audit:auditView, settings};
 })();

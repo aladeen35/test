@@ -18,7 +18,7 @@ function initCompany(cfg){
     mfa: cfg.mfa !== false, autoEscalate: cfg.autoEscalate !== false,
     modules: Object.fromEntries(D.MODULES.map(m=>[m.key, cfg.modules ? cfg.modules[m.key] !== false : true])),
     recovery: cfg.recovery||"", leaveDays: 30, passRate: 95,
-    sla: {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]}
+    sla: {P1:[1,8], P2:[4,24], P3:[8,72], P4:[24,120]}, work: {start:"08:00", end:"16:00", grace:15, weekend:[5,6]}
   };
 
   /* الأقسام المختارة — مع الحفاظ على التسلسل */
@@ -58,6 +58,8 @@ function initCompany(cfg){
   if(cfg.demo) seedDemo(gm);
   if(cfg.masterDocs !== false) seedDocs(gm);
   if(cfg.demo && window.BOS_OPS){ try{ BOS_OPS.seedOps(); }catch(e){ console.warn(e); } }
+  if(window.BOS_HR) BOS_HR.migrate();
+  if(cfg.demo && window.BOS_HR){ try{ BOS_HR.seedHr(); }catch(e){ console.warn(e); } }
 
   S.setupDone = true;
   BOS.save();
