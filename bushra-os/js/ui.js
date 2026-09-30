@@ -41,6 +41,14 @@ function modal(title, body, buttons, wide){
   const first = $("input,select,textarea", bg); if(first) setTimeout(()=>first.focus(), 30);
   return bg;
 }
+/* نافذة سؤال داخل الصفحة بدل prompt/confirm (المتصفحات المدمجة تحجبهما) */
+function ask(title, label, onOk, o){
+  o = o || {};
+  const field = o.confirmOnly ? "" : `<div class="field"><label class="f">${esc(label)}${o.optional?"":" *"}</label>${o.type==="number" ? `<input class="input" type="number" name="v" value="${esc(o.value||"")}">` : `<textarea class="input" name="v">${esc(o.value||"")}</textarea>`}</div>`;
+  modal(title, (o.confirmOnly ? `<p>${esc(label)}</p>` : "") + field,
+    [{label:o.okLabel||"تأكيد", cls:o.cls||"primary", onClick:bg=>{ const el = $("[name=v]",bg); const v = el ? el.value.trim() : true;
+      if(!o.confirmOnly && !o.optional && !v) throw new Error("هذا الحقل إلزامي"); return onOk(v); }}]);
+}
 function formData(root){
   const o = {};
   $$("[name]", root).forEach(el=>{
@@ -288,12 +296,20 @@ function importBackup(){
   i.click();
 }
 
-window.BOS_UI = {$, $$, esc, fmtDate, fmtDT, money, avatar, empName, statusBadge, REQ_STATUS, toast, modal, formData, userOptions, myQueue, unread, route, refresh, render, importBackup, initials};
+window.BOS_UI = {ask, $, $$, esc, fmtDate, fmtDT, money, avatar, empName, statusBadge, REQ_STATUS, toast, modal, formData, userOptions, myQueue, unread, route, refresh, render, importBackup, initials};
 
 /* ---------- التشغيل ---------- */
 window.addEventListener("hashchange", route);
 ["click","keydown"].forEach(ev=>document.addEventListener(ev, ()=>{ if(BOS.S && BOS.S.session){ BOS.touch(); } }, {passive:true}));
 setInterval(()=>{ if(BOS.S.session && BOS.sessionExpired()){ BOS.logout("انتهاء الجلسة"); toast("انتهت الجلسة لعدم النشاط","warn"); render(); } }, 30000);
+/* داخل إطار مدمج (رابط تجربة): الطباعة والتنزيل محجوبان — نوضح ذلك بدل أن يفشل الزر بصمت */
+let EMBEDDED = false; try{ EMBEDDED = window.self !== window.top; }catch(e){ EMBEDDED = true; }
+if(EMBEDDED) document.addEventListener("click", e=>{
+  const el = e.target.closest('[onclick="print()"], a[download]');
+  if(!el) return;
+  e.preventDefault(); e.stopPropagation();
+  toast(el.hasAttribute("download") ? "تنزيل الملفات غير متاح في رابط التجربة — الملف متوفر في مجلد library بالمستودع" : "الطباعة غير متاحة في رابط التجربة — شغّل التطبيق من المستودع للطباعة وحفظ PDF", "gold");
+}, true);
 document.addEventListener("DOMContentLoaded", ()=>{
   BOS.load();
   if(BOS.S.setupDone){ const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } }

@@ -196,10 +196,10 @@ function pTasks(p, pm){
             [{label:"إقفال المهمة", cls:"ok solid", onClick:bg=>{ O.moveTask(t,"done",formData(bg)); U.refresh(); }}]);
           if(to==="doing" && t.status==="review") return modal("إعادة المهمة للمنفذ", `<div class="field"><label class="f">ما الذي لم يتحقق؟ *</label><textarea class="input" name="comment"></textarea></div>`,
             [{label:"إعادة", cls:"primary", onClick:bg=>{ O.moveTask(t,"doing",formData(bg)); U.refresh(); }}]);
-          if(to==="doing" && t.status==="done") { const c = prompt("سبب إعادة فتح المهمة:"); if(!c) return; return act(()=>O.moveTask(t,"doing",{comment:c})); }
+          if(to==="doing" && t.status==="done") return U.ask("إعادة فتح " + t.no, "سبب إعادة فتح المهمة", c=>act(()=>O.moveTask(t,"doing",{comment:c})));
           act(()=>O.moveTask(t,to,{}));
         });
-        const th = $("[data-th]",card); if(th) th.onclick = () => { const h = prompt("عدد الساعات:"); if(h) act(()=>O.logHours(t,h)); };
+        const th = $("[data-th]",card); if(th) th.onclick = () => U.ask("تسجيل وقت — " + t.no, "عدد الساعات", h=>act(()=>O.logHours(t,h),"سُجل الوقت"), {type:"number"});
         const te = $("[data-te]",card); if(te) te.onclick = () => taskEditor(p, t);
       });
     }};
@@ -405,9 +405,8 @@ function bug(id){
     bind: root => {
       $$("[data-b]",root).forEach(btn=>btn.onclick=()=>{ const to = btn.dataset.b;
         const needNote = ["closed","deferred","reopened"].includes(to);
-        const c = needNote ? prompt(to==="closed"?"سبب الإغلاق اليدوي:":to==="deferred"?"سبب التأجيل:":"سبب إعادة الفتح:") : "";
-        if(needNote && !c) return;
-        act(()=>O.moveBug(b,to,{comment:c||""})); });
+        if(!needNote) return act(()=>O.moveBug(b,to,{}));
+        U.ask(b.no, to==="closed"?"سبب الإغلاق اليدوي":to==="deferred"?"سبب التأجيل":"سبب إعادة الفتح", c=>act(()=>O.moveBug(b,to,{comment:c}))); });
       if($("#retest",root)) $("#retest",root).onclick = () => runModal(tc, p);
     }};
 }
@@ -573,7 +572,7 @@ function ticket(id){
       if($("#to-bug",root)) $("#to-bug",root).onclick = () => act(()=>{ const b = O.ticketToBug(t, t.priority==="P1"?"critical":t.priority==="P2"?"high":"medium"); toast("أنشئ العيب " + b.no,"ok"); });
       if($("#to-cmp",root)) $("#to-cmp",root).onclick = () => act(()=>{ const r = O.ticketToComplaint(t); toast("بدأ مسار الشكوى " + r.no,"ok"); });
       if($("#ncr",root)) $("#ncr",root).onclick = () => ncrEditor({projectId:t.projectId, ticketId:t.id, source:"تذكرة " + t.no, description:t.subject + " — " + t.details});
-      $$("[data-csat]",root).forEach(b=>b.onclick=()=>{ const c = Number(b.dataset.csat) <= 2 ? (prompt("سبب عدم الرضا:")||"") : ""; act(()=>O.recordCsat(t, b.dataset.csat, c),"سُجل التقييم"); });
+      $$("[data-csat]",root).forEach(b=>b.onclick=()=>{ if(Number(b.dataset.csat) > 2) return act(()=>O.recordCsat(t, b.dataset.csat, ""),"سُجل التقييم"); U.ask("رضا منخفض (" + b.dataset.csat + "/5)", "سبب عدم رضا العميل", c=>act(()=>O.recordCsat(t, b.dataset.csat, c),"سُجل التقييم"), {optional:true}); });
     }};
 }
 

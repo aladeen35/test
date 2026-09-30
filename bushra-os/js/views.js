@@ -471,10 +471,10 @@ function request(id){
           modal("تفويض المرحلة", `<div class="field"><label class="f">فوّض إلى</label><select class="input" name="to">${userOptions("", x=>x.id!==u.id)}</select></div>`, [{label:"تفويض",cls:"primary",onClick:bg=>doAct("delegate",{toId:$("[name=to]",bg).value, comment})}]);
           return;
         }
-        if(a==="reject" && !confirm("تأكيد رفض الطلب؟")) return;
+        if(a==="reject") return U.ask("رفض الطلب", "سيُرفض الطلب نهائياً ويُبلَّغ المنشئ بالسبب: " + (comment||"(اكتب السبب في خانة التعليق أولاً)"), ()=>doAct("reject",{comment}), {confirmOnly:true, okLabel:"رفض", cls:"danger solid"});
         doAct(a, {comment});
       });
-      if($("#cancel",root)) $("#cancel",root).onclick = () => { const c = prompt("سبب الإلغاء (إلزامي):"); if(c!==null) doAct("cancel",{comment:c.trim()}); };
+      if($("#cancel",root)) $("#cancel",root).onclick = () => U.ask("إلغاء الطلب " + r.no, "سبب الإلغاء", c=>doAct("cancel",{comment:c}), {okLabel:"إلغاء الطلب", cls:"danger solid"});
       if($("#resubmit",root)) $("#resubmit",root).onclick = () => { try{ const d = formData($("#rform",root)); validate(r.type,d); BOS.act(r,"resubmit",{data:d}); toast("أعيد الإرسال","ok"); U.refresh(); }catch(e){ toast(e.message,"bad"); } };
       if($("#answer",root)) $("#answer",root).onclick = () => doAct("answer",{comment:$("#ans",root).value.trim()});
       $("#addc",root).onclick = () => doAct("comment",{comment:$("#cmt",root).value.trim()});
@@ -727,8 +727,8 @@ function invoice(id){
           [{label:"تسجيل وإصدار إيصال", cls:"primary", onClick:bg=>{ const f = formData(bg); if(!(f.amount>0)) throw new Error("مبلغ غير صالح"); if(f.amount > t.total-paid+0.001) throw new Error("المبلغ يتجاوز الرصيد");
             const p = {receipt:BOS.nextNo("RCPT"), amount:f.amount, date:f.date, method:f.method, by:u.id, at:BOS.now()}; i.payments.push(p);
             BOS.audit("تسجيل تحصيل وإصدار إيصال","invoice",i.id,i.no + " — " + p.receipt + " — " + f.amount + " " + i.currency); BOS.save(); U.route(); }}]);
-        if(a==="cancel"){ const rsn = prompt("سبب الإلغاء (إلزامي) — الرقم لا يعاد استخدامه:"); if(!rsn) return; i.status="cancelled"; i.cancelReason=rsn; if(req && ["in_review","executing"].includes(req.status)) BOS.act(req,"cancel",{comment:"إلغاء الفاتورة: "+rsn}); BOS.audit("إلغاء فاتورة","invoice",i.id,i.no+" — "+rsn); }
-        if(a==="dispute"){ const rsn = prompt("وصف النزاع:"); if(!rsn) return; i.status="disputed"; i.disputeNote=rsn; BOS.audit("تسجيل نزاع على فاتورة","invoice",i.id,i.no+" — "+rsn); }
+        if(a==="cancel") return U.ask("إلغاء الفاتورة " + i.no, "سبب الإلغاء (الرقم لا يعاد استخدامه)", rsn=>{ i.status="cancelled"; i.cancelReason=rsn; if(req && ["in_review","executing"].includes(req.status)) BOS.act(req,"cancel",{comment:"إلغاء الفاتورة: "+rsn}); BOS.audit("إلغاء فاتورة","invoice",i.id,i.no+" — "+rsn); BOS.save(); U.route(); }, {okLabel:"إلغاء الفاتورة", cls:"danger solid"});
+        if(a==="dispute") return U.ask("نزاع على الفاتورة " + i.no, "وصف النزاع", rsn=>{ i.status="disputed"; i.disputeNote=rsn; BOS.audit("تسجيل نزاع على فاتورة","invoice",i.id,i.no+" — "+rsn); BOS.save(); U.route(); });
         if(a==="resolve"){ i.status="sent"; BOS.audit("إنهاء نزاع","invoice",i.id,i.no); }
         BOS.save(); U.route();
       }catch(e){ toast(e.message,"bad"); }
@@ -832,7 +832,7 @@ function settings(){
       };
       if($("#backup",root)) $("#backup",root).onclick = () => { BOS.audit("تصدير نسخة احتياطية","settings",null,""); BOS.save(); download(JSON.stringify(Object.assign({}, s, {session:null}), null, 1), "bushra-os-backup-" + BOS.now().slice(0,10) + ".json", "application/json"); };
       if($("#restore",root)) $("#restore",root).onclick = U.importBackup;
-      if($("#wipe",root)) $("#wipe",root).onclick = () => { const n = prompt("لحذف كل بيانات الشركة من هذا الجهاز نهائياً اكتب اسم الشركة:"); if(n===c.tradeName){ BOS.reset(); location.hash=""; U.render(); } else if(n!==null) toast("الاسم غير مطابق","bad"); };
+      if($("#wipe",root)) $("#wipe",root).onclick = () => U.ask("حذف كل البيانات", "للتأكيد اكتب اسم الشركة: " + c.tradeName, n=>{ if(n!==c.tradeName) throw new Error("الاسم غير مطابق"); BOS.reset(); location.hash=""; U.render(); }, {okLabel:"حذف نهائي", cls:"danger solid"});
     }};
 }
 
