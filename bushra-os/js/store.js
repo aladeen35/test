@@ -30,6 +30,7 @@ function blank(){
     skills:[], skillReq:{}, empSkills:{}, programs:[], providers:[],
     content:[], interactions:[], surveys:[],
     ropa:[], dsr:[], incidentPlans:{}, backups:[], accessReviews:[], outbox:[], signatures:[],
+    mail:[], bindings:{},
     notifications:[], audit:[], counters:{}, session:null
   };
 }
@@ -59,6 +60,7 @@ function migrate(){
   if(!S.settings.work) S.settings.work = {start:"08:00", end:"16:00", grace:15, weekend:[5,6]};
   if(window.BOS_HR) BOS_HR.migrate();
   if(window.BOS_SEC) BOS_SEC.migrate();
+  if(window.BOS_MAIL) BOS_MAIL.migrate();
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }

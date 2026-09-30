@@ -80,6 +80,7 @@ const NAV = [
   {g:"مساحتي"},
   {h:"home", ic:"🏠", t:"الرئيسية"},
   {h:"approvals", ic:"✅", t:"ينتظر موافقتي", badge:()=>myQueue().length},
+  {h:"mail", ic:"✉️", t:"البريد الداخلي", mod:"mail", act:"view", badge:()=>window.BOS_MAIL ? BOS_MAIL.unreadCount(BOS.me()) : 0},
   {h:"requests", ic:"📨", t:"الطلبات", mod:"requests"},
   {h:"notifications", ic:"🔔", t:"الإشعارات", badge:()=>unread().length},
   {g:"الإدارة"},
@@ -143,7 +144,7 @@ function shell(){
   <nav class="bottom-nav" aria-label="التنقل السريع">
     <a href="#/home" data-h="home"><span>🏠</span>الرئيسية</a>
     <a href="#/approvals" data-h="approvals"><span>✅</span>موافقاتي${myQueue().length?`<i>${myQueue().length}</i>`:""}</a>
-    <a href="#/requests" data-h="requests"><span>📨</span>الطلبات</a>
+    <a href="#/mail" data-h="mail"><span>✉️</span>البريد${window.BOS_MAIL && BOS_MAIL.unreadCount(u)?`<i>${BOS_MAIL.unreadCount(u)}</i>`:""}</a>
     <a href="#/notifications" data-h="notifications"><span>🔔</span>الإشعارات${unread().length?`<i>${unread().length}</i>`:""}</a>
     <button type="button" id="bn-menu"><span>☰</span>القائمة</button>
   </nav>`;

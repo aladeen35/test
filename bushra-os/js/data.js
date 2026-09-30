@@ -7,6 +7,7 @@
 const MODULES = [
   {key:"dashboard",  name:"لوحة المدير العام",        icon:"📊", core:false},
   {key:"org",        name:"الهيكل التنظيمي",          icon:"🏢", core:true},
+  {key:"mail",       name:"البريد الداخلي",            icon:"✉️", core:true},
   {key:"people",     name:"الموظفون والموارد البشرية", icon:"👥", core:true},
   {key:"requests",   name:"الطلبات والمعاملات",       icon:"📨", core:true},
   {key:"documents",  name:"المستندات والإصدارات",     icon:"📁", core:true},
@@ -55,7 +56,7 @@ const DEPARTMENTS = [
 
 /* صلاحيات مختصرة: all = كل الأفعال */
 const ALL = ACTIONS.map(a=>a[0]);
-const BASE = {requests:["create","view","comment"], documents:["view","comment"], org:["view"]};
+const BASE = {requests:["create","view","comment"], documents:["view","comment"], org:["view"], mail:["create","view","comment"]};
 function P(extra){ const o = JSON.parse(JSON.stringify(BASE)); for(const k in extra){ o[k] = extra[k]==="all" ? ALL.slice() : Array.from(new Set([...(o[k]||[]), ...extra[k]])); } return o; }
 const EVERY = Object.fromEntries(MODULES.map(m=>[m.key,"all"]));
 
@@ -135,8 +136,8 @@ const P5_MODULES = ["privacy","security"];
 for(const p of POSITIONS){ if(!["gm","owner"].includes(p.key)) p.perms.training = ["view"]; }
 for(const p of POSITIONS){ for(const x of [PERMS3[p.key], PERMS4[p.key], PERMS5[p.key]]) if(x) for(const k in x) p.perms[k] = Array.from(new Set([...(p.perms[k]||[]), ...x[k]])); }
 /* كل الوحدات المضافة بعد الإصدار الأول وصلاحياتها — تستخدمها ترقية البيانات */
-const ADDED_MODULES = P3_MODULES.concat(P4_MODULES, P5_MODULES);
-const ADDED_PERMS = key => { const o = {training:["view"]}; for(const x of [PERMS3[key], PERMS4[key], PERMS5[key]]) if(x) for(const k in x) o[k] = Array.from(new Set([...(o[k]||[]), ...x[k]])); return o; };
+const ADDED_MODULES = P3_MODULES.concat(P4_MODULES, P5_MODULES, ["mail"]);
+const ADDED_PERMS = key => { const o = {training:["view"], mail:["create","view","comment"]}; for(const x of [PERMS3[key], PERMS4[key], PERMS5[key]]) if(x) for(const k in x) o[k] = Array.from(new Set([...(o[k]||[]), ...x[k]])); return o; };
 
 /* أنواع المعاملات ونماذجها (القسم 6 و7)
    fields.k = مفتاح، amount = الحقل الذي يمثل القيمة المالية */

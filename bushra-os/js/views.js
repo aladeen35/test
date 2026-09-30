@@ -228,7 +228,7 @@ function people(){
     ${head("الموظفون والموارد البشرية", list.filter(BOS.active).length + " نشط · " + (list.length-list.filter(BOS.active).length) + " موقوف", manage?'<button class="btn primary" id="add">＋ دعوة / إنشاء موظف</button>':"")}
     <div class="card"><div class="row" style="margin-bottom:12px"><input class="input" id="q" placeholder="بحث بالاسم أو المنصب أو القسم" style="max-width:340px"></div>
     <div class="table-wrap"><table><thead><tr><th>الموظف</th><th>المنصب</th><th>القسم</th><th>المدير المباشر</th><th>النطاق</th><th>الحالة</th></tr></thead><tbody>
-    ${list.map(e=>`<tr class="link" data-go="#/person/${e.id}" data-s="${esc(e.name+" "+BOS.posTitle(e.positionId)+" "+((BOS.dept(e.deptId)||{}).name||""))}"><td><div class="row">${avatar(e)}<span><b>${esc(e.name)}</b><div class="muted small">${esc(e.email||"")}</div></span></div></td>
+    ${list.map(e=>`<tr class="link" data-go="#/person/${e.id}" data-s="${esc(e.name+" "+BOS.posTitle(e.positionId)+" "+((BOS.dept(e.deptId)||{}).name||""))}"><td><div class="row">${avatar(e)}<span><b>${esc(e.name)}</b><div class="muted small mono" dir="ltr" style="text-align:end">${esc(e.mailAddr||e.email||"")}</div></span></div></td>
       <td>${esc(BOS.posTitle(e.positionId))}</td><td>${esc((BOS.dept(e.deptId)||{}).name||"")}</td><td>${e.managerId?empName(e.managerId):"—"}</td><td class="small">${esc(D.SCOPES[BOS.scopeOf(e)])}</td>
       <td>${BOS.active(e) ? (e.onLeave?'<span class="badge warn">في إجازة</span>':'<span class="badge ok">نشط</span>') : '<span class="badge bad">موقوف</span>'}</td></tr>`).join("")}
     </tbody></table></div></div>`,
@@ -260,7 +260,7 @@ function employeeEditor(e){
       if(!isNew){ if(e.positionId!==f.positionId) changes.push("المنصب"); if(e.scope!==f.scope) changes.push("النطاق"); if((e.validTo||"")!==f.validTo) changes.push("انتهاء الصلاحية"); }
       Object.assign(e, f, {deptId: f.deptId || p.deptId});
       if(!e.managerId){ e.managerId = null; const m = BOS.managerOf(e); e.managerId = m ? m.id : null; }
-      if(isNew){ Object.assign(e, {id:BOS.uid("e"), status:"active", leaveUsed:0}); s.employees.push(e);
+      if(isNew){ Object.assign(e, {id:BOS.uid("e"), status:"active", leaveUsed:0}); if(window.BOS_MAIL) e.mailAddr = BOS_MAIL.suggestAddress(e.name, e.id); s.employees.push(e);
         BOS.audit("دعوة موظف","employee",e.id, e.name + " — " + p.title);
         BOS.notify(e.id, "مرحباً بك في " + s.company.tradeName + " — منصبك: " + p.title, "#/home");
         if(window.BOS_HR) BOS_HR.onEmployeeCreated(e);
@@ -289,7 +289,8 @@ function person(id){
     ${BOS.active(e)?"":`<div class="note bad" style="margin-bottom:14px">الحساب موقوف منذ ${fmtDate(e.disabledAt)} — ${esc(e.disableReason||"")}. لا يمكنه تسجيل الدخول أو استلام مراحل الموافقة.</div>`}
     <div class="grid g2">
       <div class="card"><h2 style="margin-bottom:10px">الملف الوظيفي</h2><dl class="kv">
-        <dt>البريد</dt><dd dir="ltr" style="text-align:end">${esc(e.email||"—")}</dd><dt>الهاتف</dt><dd>${esc(e.phone||"—")}</dd>
+        <dt>البريد الداخلي</dt><dd><span class="mono" dir="ltr">${esc(e.mailAddr||"—")}</span> ${window.BOS_MAIL && !self && BOS.active(e)?`<button class="btn sm" id="msg">✉️ مراسلة</button>`:""} ${window.BOS_MAIL && (BOS.can(u,"people","edit")||BOS.isTop(u))?`<button class="btn sm" id="addr">تعديل العنوان</button>`:""}</dd>
+        <dt>البريد الخارجي</dt><dd dir="ltr" style="text-align:end">${esc(e.email||"—")}</dd><dt>الهاتف</dt><dd>${esc(e.phone||"—")}</dd>
         <dt>المدير المباشر</dt><dd>${e.managerId?empName(e.managerId):"—"}</dd><dt>البديل أثناء الإجازة</dt><dd>${e.delegateId?empName(e.delegateId):"—"}</dd>
         <dt>المرؤوسون</dt><dd>${reports.map(r=>esc(r.name)).join("، ")||"—"}</dd>
         <dt>نطاق الرؤية</dt><dd>${esc(D.SCOPES[BOS.scopeOf(e)])}</dd><dt>مستوى السرية</dt><dd>${clsBadge(BOS.clearance(e))}</dd>
@@ -304,6 +305,8 @@ function person(id){
     </div>${hrx.html}`,
     bind: root => {
       bindRows(root); hrx.bind && hrx.bind(root);
+      if($("#msg",root)) $("#msg",root).onclick = () => BOS_VIEWS_MAIL.compose({to:[e.mailAddr]});
+      if($("#addr",root)) $("#addr",root).onclick = () => U.ask("عنوان البريد الداخلي — " + e.name, "العنوان (المقترح: " + BOS_MAIL.suggestAddress(e.name, e.id) + ")", v=>{ BOS_MAIL.setAddress(e, v); U.route(); }, {value:e.mailAddr||""});
       if($("#edit",root)) $("#edit",root).onclick = () => employeeEditor(e);
       if($("#leave",root)) $("#leave",root).onclick = () => { e.onLeave = !e.onLeave; BOS.audit(e.onLeave?"بدء إجازة":"انتهاء إجازة","employee",e.id,e.name + (e.onLeave && e.delegateId?" — البديل: "+BOS.byId(e.delegateId).name:"")); BOS.save(); U.route(); };
       if($("#enable",root)) $("#enable",root).onclick = () => { e.status="active"; e.validTo=""; BOS.audit("إعادة تفعيل حساب","employee",e.id,e.name); BOS.save(); U.route(); };

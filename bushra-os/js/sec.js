@@ -408,7 +408,7 @@ function anomalies(){
 
 /* ---------- التكاملات: البريد (صندوق صادر)، الدفع، التوقيع ---------- */
 /* لا ترسل البيانات السرية كاملة في البريد — رابط آمن مع ملخص محدود (القسم 10) */
-const CONFIDENTIAL_LINK = /#\/(dsr|security)|#\/person\//;
+const CONFIDENTIAL_LINK = /#\/(dsr|security|mail)|#\/person\//;
 function onNotify(n){
   const s = S(); if(!s.settings.email || !s.settings.email.enabled) return;
   const e = BOS.byId(n.userId); if(!e || !e.email) return;

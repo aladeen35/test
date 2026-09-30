@@ -62,6 +62,8 @@ function initCompany(cfg){
   if(cfg.demo && window.BOS_HR){ try{ BOS_HR.seedHr(); }catch(e){ console.warn(e); } }
   if(window.BOS_SEC) BOS_SEC.migrate();
   if(cfg.demo && window.BOS_SEC){ try{ BOS_SEC.seedSec(); }catch(e){ console.warn(e); } }
+  if(window.BOS_MAIL) BOS_MAIL.migrate();
+  if(cfg.demo && window.BOS_MAIL){ try{ BOS_MAIL.seedMail(); }catch(e){ console.warn(e); } }
 
   S.setupDone = true;
   BOS.save();
