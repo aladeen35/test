@@ -9,7 +9,7 @@
   let active = null;       // {send(obj), close()}
   let handlers = {};
 
-  function emit(name, arg){ try{ handlers[name] && handlers[name](arg); }catch(e){ console.error(e); } }
+  function emit(name, arg, arg2){ try{ handlers[name] && handlers[name](arg, arg2); }catch(e){ console.error(e); } }
 
   function loadScript(src){
     return new Promise((res, rej)=>{
@@ -81,6 +81,49 @@
         });
       });
     });
+  }
+
+  /* ---------- غرفة متعددة اللاعبين (أونلاين فقط) ---------- */
+  const room = new Map();   // id → conn
+  let roomSeq = 0;
+  async function hostRoom(h){
+    handlers = h;
+    room.clear();
+    await loadScript('peerjs.min.js');
+    const tryCode = ()=>new Promise((res, rej)=>{
+      const code = String(10000 + Math.floor(Math.random()*90000));
+      destroyPeer();
+      peer = new window.Peer(PEER_PREFIX + code, {debug:0});
+      peer.on('open', ()=>res(code));
+      peer.on('error', err=>{ if(err && err.type==='unavailable-id') res(null); else rej(err); });
+    });
+    let code = null;
+    for(let i=0;i<4 && !code;i++) code = await tryCode();
+    if(!code) throw new Error('تعذر إنشاء غرفة');
+    peer.on('connection', conn=>{
+      conn.on('open', ()=>{
+        if(room.size >= 8){ conn.send({t:'busy'}); setTimeout(()=>conn.close(), 300); return; }
+        const id = 'p' + (++roomSeq);
+        room.set(id, conn);
+        conn.on('data', d=>{ if(d && typeof d==='object') emit('message', d, id); });
+        conn.on('close', ()=>{ if(room.delete(id)) emit('leave', id); });
+        emit('join', id);
+      });
+    });
+    peer.on('disconnected', ()=>{ try{ peer.reconnect(); }catch(e){} });
+    active = {
+      send(obj){ room.forEach(c=>{ if(c.open) c.send(obj); }); },
+      close(){ room.forEach(c=>{ try{ c.close(); }catch(e){} }); room.clear(); },
+    };
+    return code;
+  }
+  function sendTo(id, obj){ const c = room.get(id); if(c && c.open) c.send(obj); }
+  /* للاختبارات: لاعب وهمي داخل الغرفة */
+  function roomAttach(id, t){
+    room.set(id, {open:true, send:o=>t.send(o), close(){}});
+    t.onMessage = m => emit('message', m, id);
+    if(!active) active = {send(obj){ room.forEach(c=>c.send(obj)); }, close(){ room.clear(); }};
+    emit('join', id);
   }
 
   /* ---------- بلوتوث (إضافة أصلية داخل APK) ---------- */
@@ -160,12 +203,14 @@
 
   window.Net = {
     btAvailable: ()=>!!bt(),
-    hostOnline, joinOnline, hostBt, listBt, joinBt, useTransport,
+    hostOnline, joinOnline, hostBt, listBt, joinBt, useTransport, hostRoom, sendTo, roomAttach,
+    roomSize: ()=>room.size,
     send(obj){ if(active) active.send(obj); },
     connected: ()=>!!active,
     close(){
       const a=active; active=null; handlers={};
       if(a) a.close();
+      room.clear();
       destroyPeer();
       const B=bt(); if(B){ B.disconnect().catch(()=>{}); btSubs.forEach(s=>{ try{s.remove();}catch(e){} }); btSubs=[]; }
     },

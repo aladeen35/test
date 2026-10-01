@@ -8,10 +8,12 @@ const remote = {kind:null, role:null, syncIid:null, lastSnap:'', lastSent:0, sav
 /* ================= الردهة ================= */
 function openLobby(kind){
   remote.kind = kind; remote.role = null;
-  $('lobbyTitle').textContent = kind==='bt' ? 'اللعب عبر البلوتوث' : 'اللعب أونلاين';
+  $('lobbyTitle').textContent = kind==='bt' ? 'اللعب عبر البلوتوث' : kind==='room' ? 'غرفة العائلة' : 'اللعب أونلاين';
   $('lobbySub').textContent = kind==='bt'
     ? 'جهازان قريبان بدون إنترنت — أقرِن الجهازين من إعدادات البلوتوث أولاً'
+    : kind==='room' ? 'المضيف يعرض الأسئلة ويتحكم بالمؤقت، وكل فرد يجيب من جواله في نفس اللحظة — حتى 8 لاعبين'
     : 'جهاز للمضيف (الأسئلة والإجابات والمؤقت) وجهاز للاعب (يختار الإجابة) — من أي مكان';
+  $('joinedList').innerHTML='';
   $('lobbyName').value = profile.player.name || profile.host.name || '';
   $('lobbyChoose').style.display='block';
   $('lobbyHostPanel').style.display='none';
@@ -41,6 +43,7 @@ $('lobbyHostBtn').addEventListener('click', async ()=>{
   $('lobbyStartBtn').disabled=true;
   $('roomCode').textContent='';
   lobbyStatus('lobbyHostStatus','جاري التجهيز…');
+  if(remote.kind==='room'){ $('lobbyStartBtn').disabled=true; Party.hostStart(name); return; }
   const h = hostHandlers();
   try{
     if(remote.kind==='bt'){
@@ -177,6 +180,7 @@ function playerHandlers(){
     },
     message(m){
       if(m.t==='snap') renderRemote(m.s);
+      else if(m.t==='psnap') Party.render(m.s);
       else if(m.t==='busy'){ toast('الغرفة مشغولة بلاعب آخر'); goHome(); }
     },
     close(){ toast('انقطع الاتصال بالمضيف'); goHome(); },
@@ -325,17 +329,14 @@ function renderRemote(s){
     const v=$('rmVerdict');
     if(s.verdict){ v.className=s.verdict.cls; v.textContent=s.verdict.text; }
     else { v.className='verdict'; v.textContent=''; }
-    // التلميح
-    $('rmHint').style.display = s.hint ? 'block' : 'none';
-    if(s.hint){
-      $('rmHintText').textContent=s.hint;
-      if(!$('rmHintDone')){
-        const b=document.createElement('button');
-        b.id='rmHintDone'; b.type='button'; b.className='btn btn-primary btn-block'; b.style.marginTop='12px';
-        b.textContent='فهمت — استئناف المؤقت';
-        b.addEventListener('click', ()=>Net.send({t:'aiDone'}));
-        $('rmHint').appendChild(b);
-      }
+    // المساعد الذكي: المحادثة تجري على جهاز اللاعب
+    $('rmHint').style.display='none';
+    if(s.hint && rmState.aiKey!==key){
+      rmState.aiKey=key;
+      openAiChat({q:s.text, choices:s.choices.filter((_,i)=>!s.elim.includes(i)), hint:s.hint}, true);
+    }
+    if(!s.hint && rmState.aiKey===key && $('aiModal').classList.contains('show') && aiChat.remote){
+      $('aiModal').classList.remove('show'); aiChat.remote=false; FMAI.stopSpeaking();
     }
     // وسائل المساعدة
     $('rmLifelinesWrap').style.display = s.ll.length ? 'block' : 'none';
@@ -383,7 +384,7 @@ function renderRemote(s){
       remote.savedGame=s.gid;
       addRecord({t:Date.now(), player:s.player||remote.myName, host:s.host, mode:'remotePlayer',
         easy:s.scores.easy, medium:s.scores.medium, bonus:s.scores.bonus, hard:s.scores.hard, total:s.total});
-      sfx.fanfare();
+      celebrate('final');
     }
   }
 }
@@ -395,3 +396,4 @@ if(!Net.btAvailable()){
   $('btModeNote').textContent='متاح في تطبيق APK';
 }
 selectMode(chosenMode);
+paintMascots($('screen-start'));

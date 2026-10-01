@@ -59,17 +59,43 @@ jobs:
           npm ci
           npm run sync
 
-      - name: Build APK
+      - name: Decode Play upload key (if the secrets are configured)
+        env:
+          FM_KEYSTORE_B64: ${{ secrets.FM_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$FM_KEYSTORE_B64" ]; then
+            echo "$FM_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "FM_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+            echo "Signing with the upload key"
+          else
+            echo "No signing secrets — building an unsigned release AAB and a debug APK"
+          fi
+
+      - name: Build AAB (Google Play) and APK
         working-directory: fullmark-apk/android
+        env:
+          FM_VERSION_CODE: ${{ github.run_number }}
+          FM_KEYSTORE_PASSWORD: ${{ secrets.FM_KEYSTORE_PASSWORD }}
+          FM_KEY_ALIAS: ${{ secrets.FM_KEY_ALIAS }}
+          FM_KEY_PASSWORD: ${{ secrets.FM_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
-          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/FullMark.apk"
+          ./gradlew bundleRelease assembleRelease assembleDebug --no-daemon --stacktrace
+          OUT=app/build/outputs
+          cp $OUT/bundle/release/app-release.aab "$GITHUB_WORKSPACE/FullMark.aab"
+          if [ -n "$FM_KEYSTORE_FILE" ]; then
+            cp $OUT/apk/release/app-release.apk "$GITHUB_WORKSPACE/FullMark.apk"
+          else
+            cp $OUT/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/FullMark.apk"
+          fi
+          ls -la "$GITHUB_WORKSPACE"/FullMark.*
 
       - uses: actions/upload-artifact@v4
         with:
-          name: FullMark-apk
-          path: FullMark.apk
+          name: FullMark-android
+          path: |
+            FullMark.apk
+            FullMark.aab
 
       - name: Publish downloadable release
         uses: softprops/action-gh-release@v2
@@ -79,6 +105,9 @@ jobs:
           body: |
             تطبيق «فول مارك» لأندرويد — افتح هذه الصفحة من الجوال وحمّل FullMark.apk ثم ثبّته
             (قد يطلب الجوال السماح بتثبيت التطبيقات من مصادر غير معروفة).
-            Build: ${{ github.sha }}
+            FullMark.aab مخصص للرفع على Google Play Console.
+            Build: ${{ github.run_number }} — ${{ github.sha }}
           prerelease: false
-          files: FullMark.apk
+          files: |
+            FullMark.apk
+            FullMark.aab
