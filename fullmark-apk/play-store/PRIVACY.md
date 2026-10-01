@@ -3,7 +3,7 @@
 **التطبيق:** فول مارك (Full Mark) — `com.albushra.fullmark`
 **الناشر:** البشرى للتكنولوجيا (Al-Bushra Technology)
 **تاريخ السريان:** 1 أكتوبر 2026
-**للتواصل:** CONTACT_EMAIL
+**للتواصل:** Aladeen35@gmail.com
 
 > [English version below](#privacy-policy--full-mark)
 
@@ -43,7 +43,7 @@
 
 **نصيحة:** لا تكتب في رسالتك للمساعد أي معلومات شخصية (اسمك الكامل، رقمك، عنوانك…)؛ فهو يحتاج فقط إلى سؤالك عن المسابقة.
 
-**الإبلاغ عن الردود:** يمكنك الإبلاغ عن أي رد غير مناسب من المساعد بزر «الإبلاغ عن الرد» داخل التطبيق. يفتح الزر تطبيق البريد في جهازك برسالة جاهزة إلى CONTACT_EMAIL تتضمن الرد المُبلَّغ عنه، ولا تُرسل إلا إذا ضغطت أنت «إرسال». نستخدم البلاغات فقط لتحسين المساعد، ولا نستخدم عنوان بريدك لأي غرض آخر.
+**الإبلاغ عن الردود:** يمكنك الإبلاغ عن أي رد غير مناسب من المساعد بزر «الإبلاغ عن الرد» داخل التطبيق. يفتح الزر تطبيق البريد في جهازك برسالة جاهزة إلى Aladeen35@gmail.com تتضمن الرد المُبلَّغ عنه، ولا تُرسل إلا إذا ضغطت أنت «إرسال». نستخدم البلاغات فقط لتحسين المساعد، ولا نستخدم عنوان بريدك لأي غرض آخر.
 
 **الإدخال الصوتي:** عند الضغط على زر الميكروفون، يستخدم التطبيق **خدمة التعرّف على الكلام الموجودة في نظام جهازك** لتحويل كلامك إلى نص. التطبيق لا يسجّل ملفات صوتية ولا يحفظ صوتك ولا يرسله إلينا؛ يستلم النص فقط ويرسله إلى المساعد كما في الرسالة المكتوبة. معالجة الصوت داخل خدمة النظام تخضع لسياسة مزوّد تلك الخدمة (مثل Google). لا يُستخدم الميكروفون إلا عندما تضغط على زر الميكروفون.
 
@@ -86,7 +86,7 @@
 - بياناتك على جهازك تبقى حتى تحذفها أنت.
 - **لحذفها:** استخدم زر «مسح السجلات» داخل التطبيق، أو احذف التطبيق من جهازك (يؤدي ذلك لحذف كل بياناته).
 - نحن لا نحتفظ بأي بيانات عنك على خوادمنا، فلا يوجد ما نحذفه من جهتنا. أما ما يُرسل إلى Puter أو Anthropic عبر المساعد الذكي فيخضع لسياسات الاحتفاظ لديهما.
-- لأي طلب أو استفسار عن بياناتك راسلنا على: CONTACT_EMAIL
+- لأي طلب أو استفسار عن بياناتك راسلنا على: Aladeen35@gmail.com
 
 ## 8. الأمان
 
@@ -94,7 +94,7 @@
 
 ## 9. الأطفال
 
-التطبيق موجّه لمن هم في **13 سنة فأكثر**، ويمكن للعائلة أن تلعب معًا على جهاز أحد الوالدين. لا نجمع عن قصد أي بيانات شخصية من الأطفال دون 13 سنة. ننصح الوالدين بالإشراف على استخدام الأطفال لميزتي المساعد الذكي واللعب أونلاين. إذا علمت أن طفلًا أرسل معلومات شخصية عبر المساعد الذكي، فراسلنا على CONTACT_EMAIL وسنساعدك في التواصل مع الجهة المعنية.
+التطبيق موجّه لمن هم في **13 سنة فأكثر**، ويمكن للعائلة أن تلعب معًا على جهاز أحد الوالدين. لا نجمع عن قصد أي بيانات شخصية من الأطفال دون 13 سنة. ننصح الوالدين بالإشراف على استخدام الأطفال لميزتي المساعد الذكي واللعب أونلاين. إذا علمت أن طفلًا أرسل معلومات شخصية عبر المساعد الذكي، فراسلنا على Aladeen35@gmail.com وسنساعدك في التواصل مع الجهة المعنية.
 
 ## 10. التغييرات على هذه السياسة
 
@@ -102,7 +102,7 @@
 
 ## 11. تواصل معنا
 
-البشرى للتكنولوجيا — CONTACT_EMAIL
+البشرى للتكنولوجيا — Aladeen35@gmail.com
 
 ---
 ---
@@ -112,7 +112,7 @@
 **App:** Full Mark (فول مارك) — `com.albushra.fullmark`
 **Publisher:** Al-Bushra Technology (البشرى للتكنولوجيا)
 **Effective date:** October 1, 2026
-**Contact:** CONTACT_EMAIL
+**Contact:** Aladeen35@gmail.com
 
 ---
 
@@ -148,7 +148,7 @@ On the hard level you can use the "AI assistant" lifeline to get a hint, by typi
 
 **Tip:** do not include personal information (full name, phone number, address…) in your message; the assistant only needs your question about the quiz.
 
-**Reporting replies:** you can report any inappropriate AI reply with the in-app "Report reply" button. It opens your device's email app with a pre-filled message to CONTACT_EMAIL containing the reported reply; nothing is sent unless you tap "Send" yourself. We use reports only to improve the assistant and do not use your email address for anything else.
+**Reporting replies:** you can report any inappropriate AI reply with the in-app "Report reply" button. It opens your device's email app with a pre-filled message to Aladeen35@gmail.com containing the reported reply; nothing is sent unless you tap "Send" yourself. We use reports only to improve the assistant and do not use your email address for anything else.
 
 **Voice input:** when you tap the microphone button, the app uses **your device's built-in speech recognition service** to turn your speech into text. The app does not record audio files, does not store your voice and does not send it to us; it receives only the text and sends it to the assistant like a typed message. Audio processing inside the system service is governed by that service provider's policy (for example, Google). The microphone is used only when you tap the microphone button.
 
@@ -191,7 +191,7 @@ You can deny the microphone or Bluetooth permission and the rest of the game wor
 - Data on your device stays there until you delete it.
 - **To delete it:** use the in-app "Clear records" button, or uninstall the app (which deletes all of its data).
 - We keep no data about you on our servers, so there is nothing to delete on our side. Data sent to Puter or Anthropic through the AI assistant is subject to their retention policies.
-- For any request or question about your data, email: CONTACT_EMAIL
+- For any request or question about your data, email: Aladeen35@gmail.com
 
 ## 8. Security
 
@@ -199,7 +199,7 @@ All connections leaving the app are encrypted: AI services over HTTPS, online pl
 
 ## 9. Children
 
-The app is intended for users **aged 13 and over**, and families can play together on a parent's device. We do not knowingly collect personal data from children under 13. We recommend that parents supervise children's use of the AI assistant and online play. If you learn that a child sent personal information through the AI assistant, contact us at CONTACT_EMAIL and we will help you reach the relevant service.
+The app is intended for users **aged 13 and over**, and families can play together on a parent's device. We do not knowingly collect personal data from children under 13. We recommend that parents supervise children's use of the AI assistant and online play. If you learn that a child sent personal information through the AI assistant, contact us at Aladeen35@gmail.com and we will help you reach the relevant service.
 
 ## 10. Changes to this policy
 
@@ -207,7 +207,7 @@ We may update this policy when the app's features change. The new version will b
 
 ## 11. Contact us
 
-Al-Bushra Technology — CONTACT_EMAIL
+Al-Bushra Technology — Aladeen35@gmail.com
 
 ---
 

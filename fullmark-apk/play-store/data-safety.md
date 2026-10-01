@@ -40,7 +40,7 @@
 | **Does your app collect or share any of the required user data types?** | **Yes** | رسالة اللاعب للمساعد الذكي تُرسل إلى خدمة ذكاء اصطناعي خارجية، والاسم المستعار والإجابات تُرسل لجهاز لاعب آخر في اللعب أونلاين/بلوتوث. |
 | **Is all of the user data collected by your app encrypted in transit?** | **Yes** | Puter عبر HTTPS؛ الوسيط عبر HTTPS (**يجب** أن يكون رابطه `https://`)؛ خادم إشارة PeerJS عبر WSS/HTTPS؛ قنوات بيانات WebRTC مشفّرة إلزاميًا (DTLS)؛ اتصال البلوتوث يتم بعد اقتران مشفّر بين الجهازين. ⚠️ تأكّد أن رابط الوسيط في الإصدار النهائي يبدأ بـ `https://`، وإلا فالإجابة تصبح No. |
 | **Which of the following methods of account creation does your app support?** | **My app does not allow users to create an account** | لا حسابات ولا تسجيل دخول. لذلك لا يُطلب «رابط حذف الحساب». |
-| **Do you provide a way for users to request that their data is deleted?** | **Yes** (مُوصى به) | كل ما يحفظه التطبيق موجود على الجهاز ويُحذف بزر «مسح السجلات» داخل التطبيق أو بحذف التطبيق، ويمكن للمستخدم مراسلة `CONTACT_EMAIL`. المطوّر لا يحتفظ بأي بيانات على خوادمه. ⚠️ قرار للمالك: يمكن أيضًا اختيار No بحجة أن المطوّر لا يحتفظ بشيء، لكن Yes أوضح للمستخدم ومطابق لسياسة الخصوصية، بشرط أن ترد فعلًا على طلبات البريد. |
+| **Do you provide a way for users to request that their data is deleted?** | **Yes** (مُوصى به) | كل ما يحفظه التطبيق موجود على الجهاز ويُحذف بزر «مسح السجلات» داخل التطبيق أو بحذف التطبيق، ويمكن للمستخدم مراسلة `Aladeen35@gmail.com`. المطوّر لا يحتفظ بأي بيانات على خوادمه. ⚠️ قرار للمالك: يمكن أيضًا اختيار No بحجة أن المطوّر لا يحتفظ بشيء، لكن Yes أوضح للمستخدم ومطابق لسياسة الخصوصية، بشرط أن ترد فعلًا على طلبات البريد. |
 
 ---
 

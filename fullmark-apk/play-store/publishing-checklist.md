@@ -11,7 +11,7 @@
 | المطوّر | البشرى للتكنولوجيا — Al-Bushra Technology |
 | الفئة | Game → Trivia |
 | السعر | مجاني (لا يمكن تحويله إلى مدفوع لاحقًا) |
-| البريد | `CONTACT_EMAIL` |
+| البريد | `Aladeen35@gmail.com` |
 | رابط سياسة الخصوصية | https://github.com/aladeen35/test/blob/claude/ui-ux-pro-max-skill-n9hipq/fullmark-apk/play-store/PRIVACY.md |
 
 **ملفات هذا المجلد:**
@@ -21,7 +21,7 @@
 
 ## الخطوة 0 — قبل أي شيء: جهّز البناء
 
-- [ ] استبدل `CONTACT_EMAIL` ببريد حقيقي في: `fullmark/config.js`، و`PRIVACY.md`، و`fullmark/privacy.html` (وفي ملفات هذا المجلد عند النسخ إلى Console). زر «الإبلاغ عن الرد» يعتمد عليه.
+- [ ] استبدل `Aladeen35@gmail.com` ببريد حقيقي في: `fullmark/config.js`، و`PRIVACY.md`، و`fullmark/privacy.html` (وفي ملفات هذا المجلد عند النسخ إلى Console). زر «الإبلاغ عن الرد» يعتمد عليه.
 - [ ] تأكّد أن `AndroidManifest.xml` يحتوي الصلاحيات المذكورة فقط: `INTERNET`، `BLUETOOTH_CONNECT`، `BLUETOOTH` و`BLUETOOTH_ADMIN` (بـ `maxSdkVersion="30"`)، `RECORD_AUDIO`، `VIBRATE`. أي صلاحية إضافية يجب أن تُذكر في سياسة الخصوصية و`data-safety.md`.
 - [ ] تأكّد أن **مستوى API المستهدف (targetSdk)** يطابق متطلب Google الحالي للتطبيقات الجديدة (Capacitor 8 يستهدف API 36). ⚠️ تحقّق من المتطلب الحالي في صفحة «Target API level requirements».
 - [ ] إذا استخدمت الخادم الوسيط للذكاء الاصطناعي، فرابطه في `config.js` يبدأ بـ `https://` ولا يسجّل الطلبات.
@@ -91,7 +91,7 @@
 - [ ] **Feature graphic:** صورة **1024 × 500** بصيغة JPEG أو PNG 24-bit (بلا شفافية). اسم التطبيق والشعار بوضوح، وتجنّب النصوص الصغيرة على الأطراف.
 - [ ] **Phone screenshots:** من مجلد `play-store/screenshots/` — من **2 إلى 8** صور، PNG أو JPEG، كل ضلع بين 320 و3840 بكسل، والضلع الأطول لا يتجاوز ضعف الأقصر (مثلًا 1080 × 1920). اقتراح ترتيب: شاشة البداية مع المقدّم، سؤال في المستوى السهل، جولة السرعة، وسائل المساعدة في الصعب، المساعد الذكي، غرفة العائلة أونلاين، منصّة التتويج، سجل النتائج والمنحنيات.
 - [ ] (اختياري) لقطات للأجهزة اللوحية 7 و10 بوصة، وفيديو يوتيوب.
-- [ ] **Store settings:** Category = **Trivia**، Tags حسب `listing-ar.md`، بريد التواصل `CONTACT_EMAIL`، والموقع الإلكتروني (اختياري).
+- [ ] **Store settings:** Category = **Trivia**، Tags حسب `listing-ar.md`، بريد التواصل `Aladeen35@gmail.com`، والموقع الإلكتروني (اختياري).
 
 > تنبيه: لا تضع في الصور أو الأيقونة عبارات مثل «للأطفال» ولا رسومًا طفولية بحتة، لأن الجمهور المستهدف 13+ (انظر `target-audience.md`).
 
@@ -188,7 +188,7 @@
 
 ## مراجعة نهائية سريعة
 
-- [ ] `CONTACT_EMAIL` مستبدل في كل مكان.
+- [ ] `Aladeen35@gmail.com` مستبدل في كل مكان.
 - [ ] رابط سياسة الخصوصية يعمل من متصفح خارجي بدون تسجيل دخول.
 - [ ] Data safety وسياسة الخصوصية وصفحة المتجر تقول الشيء نفسه.
 - [ ] نسخة احتياطية من `fullmark-upload.jks` وكلمات المرور محفوظة في مكانين آمنين.

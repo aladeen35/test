@@ -9,7 +9,7 @@
 
 | الحقل | الإجابة |
 |---|---|
-| Email address | `CONTACT_EMAIL` (يصل عليه شهادة التصنيف من IARC) |
+| Email address | `Aladeen35@gmail.com` (يصل عليه شهادة التصنيف من IARC) |
 | Category | **Game** (لعبة) — ليس «All Other App Types» ولا «Social». |
 | نوع اللعبة (إن سُئلت) | Trivia / Quiz — مسابقة معلومات عامة. |
 

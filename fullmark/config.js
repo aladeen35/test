@@ -6,5 +6,5 @@
 window.FM_CONFIG = {
   aiProxyUrl: null,
   aiModel: 'claude-haiku-4-5',
-  contactEmail: 'CONTACT_EMAIL',
+  contactEmail: 'Aladeen35@gmail.com',
 };
