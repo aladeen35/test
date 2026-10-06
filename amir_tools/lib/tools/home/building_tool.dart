@@ -137,6 +137,7 @@ class _BuildingToolState extends State<BuildingTool> {
     String? money(double v) => v > 0 ? '${fmt(v, 0)} $sym' : null;
 
     final unitName = brick == 'block' ? t('بلكة', 'بلوكة', 'blocks') : t('طوبة', 'طوبة', 'bricks');
+    final plural = brick == 'block' ? t('البلك', 'البلوك', 'blocks') : t('الطوب', 'الطوب', 'bricks');
     final bagsTxt = t('شوال', 'كيس', 'bags');
 
     String summary() {
@@ -157,7 +158,7 @@ class _BuildingToolState extends State<BuildingTool> {
 
     return ToolList(children: [
       ResultHero(
-        label: cost > 0 ? t('التكلفة التقريبية', 'التكلفة التقريبية', 'Approximate cost') : t('عدد ال$unitName', 'عدد ال$unitName', 'Number of $unitName'),
+        label: cost > 0 ? t('التكلفة التقريبية', 'التكلفة التقريبية', 'Approximate cost') : t('عدد $plural', 'عدد $plural', 'Number of $unitName'),
         value: cost > 0 ? '${fmt(cost, 0)} $sym' : fmt(unitsW, 0),
         sub: [
           '${fmt(unitsW, 0)} $unitName',
@@ -235,7 +236,7 @@ class _BuildingToolState extends State<BuildingTool> {
           QtyRow(t('صافي مساحة الحيطة', 'صافي مساحة الجدار', 'Net wall area'), '${fmt(net, 2)} $m2', icon: Icons.crop_square_rounded, color: SD.green),
           QtyRow(t('سُمك الحيطة', 'سُمك الجدار', 'Wall thickness'), '${fmt(thick * 100, 1)} cm', icon: Icons.width_normal_rounded),
           QtyRow('$unitName / $m2', fmt(perM2, 1), icon: Icons.grid_on_rounded),
-          QtyRow('${t('عدد ال', 'عدد ال', 'Number of ')}$unitName (+${fmt(f.n('waste'), 0)}%)', fmt(unitsW, 0), cost: money(unitsW * pb), icon: Icons.view_module_rounded, color: SD.henna),
+          QtyRow('${t('عدد $plural', 'عدد $plural', 'Number of $unitName')} (+${fmt(f.n('waste'), 0)}%)', fmt(unitsW, 0), cost: money(unitsW * pb), icon: Icons.view_module_rounded, color: SD.henna),
           QtyRow(t('مونة مبلولة', 'حجم المونة الرطب', 'Wet mortar'), '${fmt(wetMortar, 3)} $m3', icon: Icons.water_drop_rounded),
           QtyRow(t('أسمنت المونة', 'إسمنت المونة', 'Mortar cement'), '${fmt(wm.bags, 1)} $bagsTxt (${fmt(wm.cementKg, 0)} kg)', icon: Icons.inventory_rounded),
           QtyRow(t('رملة المونة', 'رمل المونة', 'Mortar sand'), '${fmt(wm.sandM3, 2)} $m3', icon: Icons.landscape_rounded),

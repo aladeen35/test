@@ -207,7 +207,7 @@ class _InvoiceToolState extends State<InvoiceTool> {
       s.award(5, tr('إصدار فاتورة', 'Issued an invoice'));
       s.bump('invoices');
     }
-    toast('${t('اتحفظت', 'حُفظت', 'Saved')} ${invNo(_draft['no'] as int)} ✓');
+    toast('${t('اتحفظت', 'حُفظت', 'Saved')} ${invNo(intOf(_draft['no']))} ✓');
     setState(() {});
   }
 
@@ -250,7 +250,7 @@ class _InvoiceToolState extends State<InvoiceTool> {
     final p = _profile(s);
     final tot = invoiceTotals(_draft);
     final items = mapList(_draft['items']);
-    final no = _draft['no'] == null ? invNo(_next(s)) : invNo(_draft['no'] as int);
+    final no = _draft['no'] == null ? invNo(_next(s)) : invNo(intOf(_draft['no']));
     final date = parseDk(_draft['date'] as String?) ?? todayPlace();
     return [
       if ((p['name'] ?? '').toString().isNotEmpty) '🏪 ${p['name']}',
@@ -282,7 +282,7 @@ class _InvoiceToolState extends State<InvoiceTool> {
       img.dispose();
       if (bd == null) throw StateError('no bytes');
       final bytes = bd.buffer.asUint8List();
-      final no = _draft['no'] == null ? invNo(_next(s)) : invNo(_draft['no'] as int);
+      final no = _draft['no'] == null ? invNo(_next(s)) : invNo(intOf(_draft['no']));
       final name = 'invoice_$no.png';
       XFile f;
       if (kIsWeb) {
@@ -329,7 +329,7 @@ class _InvoiceToolState extends State<InvoiceTool> {
               ]),
       ),
       SCard(
-        title: '${t('البنود', 'البنود', 'Items')} — ${_draft['no'] == null ? invNo(_next(s)) : invNo(_draft['no'] as int)}',
+        title: '${t('البنود', 'البنود', 'Items')} — ${_draft['no'] == null ? invNo(_next(s)) : invNo(intOf(_draft['no']))}',
         icon: Icons.list_alt_rounded,
         color: SD.nile,
         trailing: IconButton(tooltip: t('فاتورة جديدة', 'فاتورة جديدة', 'New invoice'), onPressed: _newInvoice, icon: const Icon(Icons.note_add_rounded)),
@@ -459,7 +459,7 @@ class _InvoiceToolState extends State<InvoiceTool> {
   Widget _receipt(AppState s, Map p, List<Map<String, dynamic>> items, ({double sub, double disc, double vat, double total}) tot) {
     const ink = Color(0xFF222222);
     const faint = Color(0xFF6B6B6B);
-    final no = _draft['no'] == null ? invNo(_next(s)) : invNo(_draft['no'] as int);
+    final no = _draft['no'] == null ? invNo(_next(s)) : invNo(intOf(_draft['no']));
     final date = parseDk(_draft['date'] as String?) ?? todayPlace();
     final name = (p['name'] ?? '').toString();
     Widget kv(String k, String v, {bool bold = false, double size = 13.5}) => Padding(

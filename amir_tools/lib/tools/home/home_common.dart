@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
-import '../../core/widgets.dart';
 
 /// أدوات مشتركة لقسم «البيت والزراعة»
 

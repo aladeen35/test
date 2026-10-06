@@ -253,7 +253,7 @@ class _FarmingToolState extends State<FarmingTool> {
                     'Whether zakat is due on ${c.name} differs among schools: Hanafis apply it to all produce grown for yield, while the majority limit it to stored grains and fruits. Consult a scholar.'),
                 kind: NoteKind.warn),
           NoteBox(
-            t('العُشر (10%) لما يكون السقي بالمطر أو بلا كلفة، ونص العُشر (5%) لما يكون بكلفة (طلمبات/شراء موية)، و7.5% لو نص بنص. النصاب خمسة أوسق (حوالي 653 كجم). بتطلع يوم الحصاد على كل المحصول — والتفاصيل اسأل عنها أهل العلم.',
+            t('العُشر (10%) لما يكون السقي بالمطر أو بلا كلفة، ونص العُشر (5%) لما يكون بكلفة (طلمبات/شراء موية)، و7.5% لو نص بنص. النصاب خمسة أوسق (حوالي 653 كجم). بتطلع يوم الحصاد — والتفاصيل اسأل عنها أهل العلم.',
                 'العُشر (10%) فيما سُقي بلا كلفة كالمطر، ونصف العُشر (5%) فيما سُقي بكلفة، و7.5% إن سُقي بالطريقتين مناصفة. النصاب خمسة أوسق (نحو 653 كجم)، وتُخرج يوم الحصاد. للتفاصيل راجع أهل العلم.',
                 'One-tenth (10%) if watered without cost (rain), half of that (5%) if irrigated at cost, and 7.5% if half-and-half. Nisab is five awsuq (≈ 653 kg), paid at harvest. Consult a scholar for details.'),
           ),
