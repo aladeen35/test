@@ -275,7 +275,7 @@ class _SplitToolState extends State<SplitTool> {
               contentPadding: EdgeInsets.zero,
               leading: const CircleAvatar(backgroundColor: Color(0x22007229), child: Icon(Icons.arrow_back_rounded, color: SD.green)),
               title: Text('${names[t.$1]} ← يدفع لـ ${names[t.$2]}', style: const TextStyle(fontWeight: FontWeight.w700)),
-              trailing: Text('${fmt(t.$3)} ج.س', style: const TextStyle(fontWeight: FontWeight.w800, color: SD.green, fontSize: 16)),
+              trailing: Text('${fmt(t.$3)} ج.س', style: TextStyle(fontWeight: FontWeight.w800, color: readable(context, SD.green), fontSize: 16)),
             ),
         ]),
       ),

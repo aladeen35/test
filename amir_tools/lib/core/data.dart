@@ -1,4 +1,5 @@
 /// بيانات ثابتة: مدن السودان، العملات، الأمثال السودانية
+library;
 
 class City {
   final String id, name, state;

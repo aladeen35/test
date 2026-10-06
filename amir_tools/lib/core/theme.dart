@@ -39,6 +39,13 @@ class SD {
   static const sunset = [Color(0xFFD4A017), Color(0xFFE2702B), Color(0xFFB4492D)];
 }
 
+/// يفتّح اللون الغامق ليُقرأ فوق الخلفية البنية في المظهر الداكن
+Color readable(BuildContext context, Color c) {
+  if (Theme.of(context).brightness != Brightness.dark) return c;
+  final l = c.computeLuminance();
+  return l > .35 ? c : Color.lerp(c, Colors.white, l < .08 ? .55 : .4)!;
+}
+
 /// ألوان مميزة لكل أداة
 const toolColors = <String, Color>{
   'green': SD.green, 'red': SD.red, 'nile': SD.nile, 'gold': SD.gold, 'henna': SD.henna,

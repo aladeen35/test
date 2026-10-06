@@ -48,11 +48,11 @@ class DateButton extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: .35)),
         ),
         child: Row(children: [
-          Icon(icon, color: color),
+          Icon(icon, color: readable(context, color)),
           const SizedBox(width: 10),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(label, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700)),
+              Text(label, style: TextStyle(fontSize: 12, color: readable(context, color), fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text(value == null ? 'دوس هنا واختار التاريخ' : fmtDateAr(value!),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),

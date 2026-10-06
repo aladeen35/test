@@ -59,7 +59,9 @@ String arabicWords(int n) {
     } else if (c <= 10) {
       parts.add('${_below1000(c)} $few');
     } else {
-      parts.add('${_below1000(c)} $one');
+      // تمييز منصوب عندما ينتهي العدد بـ 11–99 (مائتان وخمسون ألفًا)، ومجرور بعد المئات (مائة ألف)
+      final l2 = c % 100;
+      parts.add('${_below1000(c)} ${l2 >= 11 ? '${one}ًا' : one}');
     }
   }
   if (rest > 0) parts.add(_below1000(rest));
@@ -135,7 +137,12 @@ class _TafqeetToolState extends State<TafqeetTool> {
         child: Column(children: [
           NumField('المبلغ', _c, onChanged: (_) => setState(() {}), hint: 'مثلًا 1250750.50'),
           SegmentedButton<String>(
-            segments: [for (final e in _curNames.entries) ButtonSegment(value: e.key, label: Text(e.value.split(' ').first))],
+            segments: const [
+              ButtonSegment(value: 'SDG', label: Text('جنيه')),
+              ButtonSegment(value: 'USD', label: Text('دولار')),
+              ButtonSegment(value: 'SAR', label: Text('ريال')),
+              ButtonSegment(value: 'AED', label: Text('درهم')),
+            ],
             selected: {_cur},
             onSelectionChanged: (s) => setState(() => _cur = s.first),
           ),

@@ -57,7 +57,7 @@ class _PercentToolState extends State<PercentTool> {
           Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700))),
           GestureDetector(
             onLongPress: () => copyText(value),
-            child: Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c)),
+            child: Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: readable(context, c))),
           ),
         ]),
       );

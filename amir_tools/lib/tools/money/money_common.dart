@@ -118,7 +118,7 @@ class PercentBar extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
             Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700))),
-            Text(trailing, style: TextStyle(fontWeight: FontWeight.w800, color: color)),
+            Text(trailing, style: TextStyle(fontWeight: FontWeight.w800, color: readable(context, color))),
           ]),
           const SizedBox(height: 4),
           ClipRRect(

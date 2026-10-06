@@ -1,0 +1,47 @@
+name: أدوات أمير — بناء APK
+
+on:
+  push:
+    paths:
+      - 'amir_tools/**'
+      - '.github/workflows/amir-tools-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amir_tools
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+
+      - name: الحزم
+        run: flutter pub get
+
+      - name: الفحص
+        run: flutter analyze --no-fatal-infos
+
+      - name: الاختبارات
+        run: flutter test
+
+      - name: بناء APK
+        run: flutter build apk --release
+
+      - name: رفع الملف
+        uses: actions/upload-artifact@v4
+        with:
+          name: amir-tools-apk
+          path: amir_tools/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30

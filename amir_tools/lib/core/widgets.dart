@@ -141,7 +141,7 @@ class InfoRow extends StatelessWidget {
           Flexible(
             child: Text(value,
                 textAlign: TextAlign.end,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: valueColor)),
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: valueColor == null ? null : readable(context, valueColor!))),
           ),
         ]),
       ),
@@ -231,10 +231,14 @@ class StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: color.withValues(alpha: .12), borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .14),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: readable(context, color).withValues(alpha: .35)),
+        ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          if (icon != null) Icon(icon, color: color, size: 22),
-          FittedBox(child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: color))),
+          if (icon != null) Icon(icon, color: readable(context, color), size: 22),
+          FittedBox(child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: readable(context, color)))),
           Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
         ]),
       );

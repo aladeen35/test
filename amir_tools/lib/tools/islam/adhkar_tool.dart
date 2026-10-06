@@ -243,7 +243,7 @@ class _AdhkarToolState extends State<AdhkarTool> {
             Row(children: [
               CircleAvatar(radius: 13, backgroundColor: color.withValues(alpha: .18), child: Text('${i + 1}', style: TextStyle(fontSize: 12, color: cs.onSurface, fontWeight: FontWeight.w800))),
               const SizedBox(width: 8),
-              Expanded(child: Text(d.title ?? '', style: TextStyle(fontWeight: FontWeight.w800, color: color))),
+              Expanded(child: Text(d.title ?? '', style: TextStyle(fontWeight: FontWeight.w800, color: readable(context, color)))),
               if (done) const Icon(Icons.check_circle_rounded, color: SD.green),
             ]),
             if (d.note != null) ...[

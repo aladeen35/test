@@ -26,7 +26,8 @@ class _PinLockState extends State<PinLock> {
       _wrong = false;
     });
     if (_pin.length == 4) {
-      final ok = await hashPin(_pin) == context.read<AppState>().pinHash;
+      final want = context.read<AppState>().pinHash;
+      final ok = await hashPin(_pin) == want;
       if (ok) {
         widget.onUnlock();
       } else {

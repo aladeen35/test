@@ -238,7 +238,7 @@ class _CornerPainter extends CustomPainter {
   bool shouldRepaint(_CornerPainter o) => o.color != color;
 }
 
-/// شعار «أدوات أمير»: ختم دائري (حلقة ذهبية، خضرة العلم، هلال ونجمة ومفتاح) مع الاسم بالذهبي
+/// شعار «أدوات أمير» (صورة الشعار) بإطار ذهبي، مع سطر تعريفي اختياري
 class AmirLogo extends StatelessWidget {
   final double size;
   final bool withText;
@@ -246,70 +246,26 @@ class AmirLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(width: size, height: size, child: CustomPaint(painter: _EmblemPainter())),
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(size * .2),
+            border: Border.all(color: SD.gold, width: 2.5),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withValues(alpha: .35), blurRadius: 16, offset: const Offset(0, 6)),
+              BoxShadow(color: SD.gold.withValues(alpha: .35), blurRadius: 24),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(size * .18),
+            child: Image.asset('assets/images/amir_logo.png', fit: BoxFit.cover, semanticLabel: 'شعار أدوات أمير'),
+          ),
+        ),
         if (withText) ...[
-          const SizedBox(height: 4),
-          GoldText('أدوات أمير', size: size * .36),
+          const SizedBox(height: 8),
           Text('عِدّتك السودانية في جيبك 🇸🇩',
-              style: TextStyle(fontSize: size * .12, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .8))),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .85))),
         ],
       ]);
-}
-
-class _EmblemPainter extends CustomPainter {
-  @override
-  void paint(Canvas c, Size s) {
-    final ctr = s.center(Offset.zero);
-    final r = s.width / 2;
-    // ظل
-    c.drawCircle(ctr + const Offset(0, 4), r * .98, Paint()..color = Colors.black.withValues(alpha: .35)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8));
-    // حلقة ذهبية
-    c.drawCircle(ctr, r, Paint()..shader = const SweepGradient(colors: [SD.goldLight, SD.goldDeep, SD.goldLight, SD.goldDeep, SD.goldLight]).createShader(Rect.fromCircle(center: ctr, radius: r)));
-    // حلقة بألوان العلم
-    final ring = Rect.fromCircle(center: ctr, radius: r * .86);
-    const cols = [SD.red, Colors.white, SD.black, SD.green];
-    for (var i = 0; i < 4; i++) {
-      c.drawArc(ring, -math.pi / 2 + i * math.pi / 2, math.pi / 2, true, Paint()..color = cols[i]);
-    }
-    // القرص الداخلي البني
-    c.drawCircle(ctr, r * .74, Paint()..shader = RadialGradient(colors: const [SD.brownLight, SD.brown, SD.brownDeep]).createShader(Rect.fromCircle(center: ctr, radius: r * .74)));
-    c.drawCircle(ctr, r * .74, Paint()..style = PaintingStyle.stroke..strokeWidth = 2..color = SD.goldLight);
-    // مفتاح ربط ذهبي مائل
-    final g = Paint()
-      ..color = SD.goldLight
-      ..strokeWidth = r * .14
-      ..strokeCap = StrokeCap.round;
-    c.save();
-    c.translate(ctr.dx, ctr.dy);
-    c.rotate(-math.pi / 4);
-    c.drawLine(Offset(0, -r * .38), Offset(0, r * .36), g);
-    final head = Path()
-      ..addOval(Rect.fromCircle(center: Offset(0, -r * .42), radius: r * .17))
-      ..addRect(Rect.fromCenter(center: Offset(0, -r * .55), width: r * .13, height: r * .2));
-    c.drawPath(head, Paint()..color = SD.goldLight);
-    c.drawCircle(Offset(0, -r * .42), r * .07, Paint()..color = SD.brown);
-    c.drawRect(Rect.fromCenter(center: Offset(0, -r * .56), width: r * .12, height: r * .18), Paint()..color = SD.brown);
-    c.restore();
-    // هلال ونجمة
-    final mc = ctr + Offset(r * .26, -r * .28);
-    c.drawCircle(mc, r * .2, Paint()..color = Colors.white);
-    c.drawCircle(mc + Offset(r * .08, -r * .04), r * .17, Paint()..color = SD.brown);
-    _star(c, mc + Offset(r * .02, r * .02), r * .07, Paint()..color = SD.gold);
-    // نقطة خضراء (لمسة العلم)
-    c.drawCircle(ctr + Offset(-r * .3, r * .32), r * .08, Paint()..color = SD.green);
-  }
-
-  void _star(Canvas c, Offset o, double r, Paint p) {
-    final path = Path();
-    for (var i = 0; i < 10; i++) {
-      final a = -math.pi / 2 + i * math.pi / 5;
-      final rr = i.isEven ? r : r * .45;
-      final pt = o + Offset(math.cos(a) * rr, math.sin(a) * rr);
-      i == 0 ? path.moveTo(pt.dx, pt.dy) : path.lineTo(pt.dx, pt.dy);
-    }
-    c.drawPath(path..close(), p);
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
 }
