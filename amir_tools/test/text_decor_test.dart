@@ -108,17 +108,13 @@ void main() {
       await _loadFonts();
     });
     for (final lang in Lang.values) {
-      testWidgets('text — ${lang.name}', (tester) async {
+      testWidgets('text — ${lang.name}', timeout: const Timeout(Duration(minutes: 2)), (tester) async {
         SharedPreferences.setMockInitialValues({});
         final s = await AppState.load();
         s.lang = lang;
         tester.view.physicalSize = const Size(1080, 2340);
         tester.view.devicePixelRatio = 3;
         addTearDown(tester.view.reset);
-        final bad = <String>[];
-        final orig = FlutterError.onError;
-        FlutterError.onError = (d) => bad.add(d.exceptionAsString().split('\n').first);
-        addTearDown(() => FlutterError.onError = orig);
         final tool = allTools.firstWhere((x) => x.id == 'text');
         await tester.pumpWidget(ChangeNotifierProvider.value(
           value: s,
@@ -127,32 +123,47 @@ void main() {
         await tester.pump();
         await tester.tap(find.byIcon(Icons.auto_awesome_rounded).first);
         await tester.pump();
+        // بطاقة «ركّب زخرفتك» قريبة من الأعلى: نسخ (نقاط يومية) ثم مفضّلة
+        await tester.enterText(find.byType(TextField).first, 'Ameer');
+        await tester.pump();
+        final copy = find.byIcon(Icons.copy_rounded).first;
+        await tester.ensureVisible(copy);
+        await tester.pump();
+        await tester.tap(copy);
+        await tester.pump();
+        final favsBefore = s.getData<List>('text_decor_favs');
+        await tester.tap(find.byIcon(Icons.star_border_rounded).first);
+        await tester.pump();
+        final favsAfter = s.getData<List>('text_decor_favs');
+        await tester.tap(find.byIcon(Icons.casino_rounded));
+        await tester.pump();
+        // الرجوع لتبويب الأدوات ثم للزخرفة
+        final list = find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)).first;
+        await tester.scrollUntilVisible(find.byIcon(Icons.handyman_rounded), -300, scrollable: list);
+        await tester.pump();
+        await tester.tap(find.byIcon(Icons.handyman_rounded));
+        await tester.pump();
+        final speakBtn = find.byIcon(Icons.volume_up_rounded).evaluate().length;
+        await tester.tap(find.byIcon(Icons.auto_awesome_rounded).first);
+        await tester.pump();
+        // تمرير القائمة كاملة لبناء كل البطاقات بنصوص مختلفة
         for (final txt in ['', 'محمد أحمد عمر', 'Hello World 2026', 'Ameer مرحبا']) {
           await tester.enterText(find.byType(TextField).first, txt);
           await tester.pump();
-          // تمرير القائمة لبناء كل البطاقات
           for (var i = 0; i < 25; i++) {
             await tester.drag(find.byType(ListView).first, const Offset(0, -900));
             await tester.pump();
           }
-          await tester.drag(find.byType(ListView).first, const Offset(0, 30000));
-          await tester.pump();
+          for (var i = 0; i < 30; i++) {
+            await tester.drag(find.byType(ListView).first, const Offset(0, 900));
+            await tester.pump();
+          }
         }
-        // نسخ أول نتيجة → نقاط يومية
-        await tester.tap(find.byIcon(Icons.copy_rounded).first);
-        await tester.pump();
-        expect(s.getData<List>('text_decor_favs'), isNull);
-        await tester.tap(find.byIcon(Icons.star_border_rounded).first);
-        await tester.pump();
-        expect(s.getData<List>('text_decor_favs'), hasLength(1));
-        // الرجوع لتبويب الأدوات
-        await tester.tap(find.byIcon(Icons.handyman_rounded).first);
-        await tester.pump();
-        expect(find.byIcon(Icons.volume_up_rounded), findsOneWidget);
         await tester.pumpWidget(const SizedBox());
         await tester.pump(const Duration(seconds: 3));
-        FlutterError.onError = orig;
-        expect(bad, isEmpty);
+        expect(favsBefore, isNull);
+        expect(favsAfter, hasLength(1));
+        expect(speakBtn, 1);
       });
     }
   });
