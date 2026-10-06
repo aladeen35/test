@@ -8,6 +8,7 @@ import '../core/data.dart';
 import '../core/format.dart';
 import '../core/i18n.dart';
 import 'place_picker.dart';
+import 'privacy_screen.dart';
 import '../core/pattern.dart';
 import '../core/state.dart';
 import '../core/theme.dart';
@@ -215,11 +216,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ]),
         ),
+        SCard(
+          title: t('الخصوصية', 'الخصوصية', 'Privacy'),
+          icon: Icons.privacy_tip_rounded,
+          color: SD.green,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(t('بياناتك في تلفونك بس — ما في تسجيل ولا إعلانات ولا تتبّع.', 'بياناتك على جهازك فقط — لا تسجيل ولا إعلانات ولا تتبّع.', 'Your data stays on your phone — no sign-in, ads or tracking.')),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () => PrivacyScreen.open(context),
+              icon: const Icon(Icons.policy_rounded),
+              label: FittedBox(fit: BoxFit.scaleDown, child: Text(t('اقرأ سياسة الخصوصية', 'قراءة سياسة الخصوصية', 'Read the privacy policy'))),
+            ),
+          ]),
+        ),
         GoldFrame(
           child: Column(children: [
             const AmirLogo(size: 96),
             const SizedBox(height: 8),
-            Text('${tr('الإصدار', 'Version')} 1.1.0', style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text('${tr('الإصدار', 'Version')} 1.2.0', style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/images/albushra.webp', width: 26)),

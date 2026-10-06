@@ -16,6 +16,7 @@ import 'package:amir_tools/screens/prayer_screen.dart';
 import 'package:amir_tools/screens/points_screen.dart';
 import 'package:amir_tools/screens/settings_screen.dart';
 import 'package:amir_tools/screens/onboarding.dart';
+import 'package:amir_tools/screens/privacy_screen.dart';
 
 /// يحمّل خطوط التطبيق الحقيقية حتى يكون كشف تجاوز النصوص واقعيًا
 Future<void> _loadFonts() async {
@@ -71,6 +72,7 @@ void main() {
         ('prayer_screen', const PrayerScreen()),
         ('points_screen', const PointsScreen()),
         ('settings_screen', const SettingsScreen()),
+        ('privacy_screen', const PrivacyScreen()),
         ('onboarding', const Onboarding()),
       ]) {
         cur = id;

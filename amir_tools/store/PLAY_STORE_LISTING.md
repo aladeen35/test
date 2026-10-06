@@ -290,15 +290,21 @@ Tools, Productivity, Calculator, Religion (Islam), Utilities.
 
 ## 9) سياسة الخصوصية (Privacy policy)
 
-النص الكامل (عربي + إنجليزي) جاهز في الملف `store/privacy-policy.html`.
+الصفحة منشورة في المستودع في `docs/privacy-policy.html`، وموجودة كمان **داخل التطبيق**: الإعدادات، ثم الخصوصية، ثم «اقرأ سياسة الخصوصية».
 
-**أسهل طريقة لنشره برابط عام:**
-1. **Google Sites** (مجاني وسريع): أنشئ موقعًا، والصق النص، ثم انشر وخذ الرابط.
-2. **GitHub Pages**: انقل الملف لمستودع عام وفعّل Pages، فيصير الرابط مثل `https://<اسمك>.github.io/ameer-tools/privacy-policy.html`.
+**رابط جاهز من هسي:**
+```
+https://raw.githack.com/aladeen35/test/ccr-56d19381-tk4i0e/docs/privacy-policy.html
+```
 
-> البريد `aladeen35@gmail.com` مكتوب في الملف جاهز.
-
----
+**الرابط الدائم (الأحسن لقوقل بلي) عن طريق GitHub Pages، خطوة واحدة:**
+1. افتح https://github.com/aladeen35/test/settings/pages
+2. تحت **Build and deployment** اختار: Source = **Deploy from a branch**، وBranch = **ccr-56d19381-tk4i0e**، وFolder = **/docs**، وبعدها **Save**.
+3. بعد دقيقة أو اتنين يشتغل الرابط:
+```
+https://aladeen35.github.io/test/privacy-policy.html
+```
+وهو نفس الرابط اللي زر «افتح في المتصفح» داخل التطبيق بيفتحو.
 
 ## 10) باقي أسئلة Play Console (App content)
 
