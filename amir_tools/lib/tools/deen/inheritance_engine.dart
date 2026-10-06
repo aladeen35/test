@@ -52,7 +52,7 @@ class Frac implements Comparable<Frac> {
   bool operator <(Frac o) => compareTo(o) < 0;
 
   @override
-  bool operator ==(Object o) => o is Frac && o.n == n && o.d == d;
+  bool operator ==(Object other) => other is Frac && other.n == n && other.d == d;
   @override
   int get hashCode => Object.hash(n, d);
   @override
