@@ -5,7 +5,6 @@ import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
-import 'money_common.dart';
 
 class _U {
   final String name, sym;

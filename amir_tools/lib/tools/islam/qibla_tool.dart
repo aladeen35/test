@@ -12,7 +12,7 @@ import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import '../../services/prayer.dart';
 
-const _kLat = 21.4225, _kLng = 39.8262;
+const _kLng = 39.8262;
 
 String compassName(double deg) {
   const names = ['الشمال', 'شمال شرق', 'الشرق', 'جنوب شرق', 'الجنوب', 'جنوب غرب', 'الغرب', 'شمال غرب'];
@@ -110,7 +110,7 @@ class _QiblaToolState extends State<QiblaTool> {
     hy /= normH;
     hz /= normH;
     final normA = math.sqrt(ax * ax + ay * ay + az * az);
-    final nax = ax / normA, nay = ay / normA, naz = az / normA;
+    final nax = ax / normA, naz = az / normA;
     final my = naz * hx - nax * hz;
     final az0 = math.atan2(hy, my) * 180 / math.pi;
     final raw = (az0 + 360) % 360;
@@ -204,7 +204,7 @@ class _QiblaToolState extends State<QiblaTool> {
                   child: Text(
                     aligned
                         ? 'انت في الاتجاه الصح ✓'
-                        : 'لِف ${diff! > 0 ? 'يمين' : 'شمال'} ${fmt(diff.abs(), 0)}°',
+                        : 'لِف ${diff > 0 ? 'يمين' : 'شمال'} ${fmt(diff.abs(), 0)}°',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: aligned ? SD.green : cs.onSurface),
                   ),
                 ),
