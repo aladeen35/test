@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/data.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import '../../services/net.dart';
 import 'currency_tool.dart' show fmtRate;
 import 'money_common.dart';
+
+String get _sdg => tr('ج.س', 'SDG');
 
 class RemitTool extends StatefulWidget {
   const RemitTool({super.key});
@@ -72,7 +75,7 @@ class _RemitToolState extends State<RemitTool> {
     final rOff = s.rate(_cur, 'SDG', parallel: false);
     final hasPar = s.sdgParallel != null;
     final rUsed = custom > 0 ? custom : s.rate(_cur, 'SDG');
-    final usedName = custom > 0 ? 'سعرك الخاص' : (s.useParallel && hasPar ? 'السعر الموازي' : 'السعر الرسمي');
+    final usedName = custom > 0 ? tr('سعرك الخاص', 'Your custom rate') : (s.useParallel && hasPar ? t('السعر الموازي', 'سعر السوق الموازية', 'Parallel rate') : tr('السعر الرسمي', 'Official rate'));
     final r = _calc(amount, fee, pct);
     final sdg = r.delivered * rUsed;
     final sdgPar = r.delivered * rPar, sdgOff = r.delivered * rOff;
@@ -89,75 +92,75 @@ class _RemitToolState extends State<RemitTool> {
     final needFees = _onTop ? needSend - needDelivered : needSend - needDelivered;
 
     String summary() => [
-          '💸 تحويل للأهل',
-          'المبلغ: ${fmt(amount)} ${c.name} (${_onTop ? 'الرسوم فوق المبلغ' : 'الرسوم مخصومة منه'})',
-          'الرسوم والعمولة: ${fmt(r.fees)} ${c.sym} (${fmt(feePctOfPaid, 1)}%)',
-          'بيصل للأهل: ${fmt(sdg, 0)} جنيه سوداني ($usedName ${fmtRate(rUsed)})',
-          if (hasPar) 'بالموازي: ${fmt(sdgPar, 0)} ج.س',
-          'بالرسمي: ${fmt(sdgOff, 0)} ج.س',
-          'عشان يصل ${fmt(target, 0)} ج.س: رسّل ${fmt(needSend)} ${c.sym}',
+          '💸 ${t('تحويل للأهل', 'تحويل إلى الأهل', 'Money home')}',
+          '${tr('المبلغ', 'Amount')}: ${fmt(amount)} ${c.name} (${_onTop ? tr('الرسوم فوق المبلغ', 'fees on top') : tr('الرسوم مخصومة منه', 'fees deducted')})',
+          '${tr('الرسوم والعمولة', 'Fees & commission')}: ${fmt(r.fees)} ${c.sym} (${fmt(feePctOfPaid, 1)}%)',
+          t('بيصل للأهل: ${fmt(sdg, 0)} جنيه سوداني ($usedName ${fmtRate(rUsed)})', 'يصل إلى الأهل: ${fmt(sdg, 0)} جنيه سوداني ($usedName ${fmtRate(rUsed)})', 'Family receives: ${fmt(sdg, 0)} SDG ($usedName ${fmtRate(rUsed)})'),
+          if (hasPar) '${tr('بالموازي', 'Parallel')}: ${fmt(sdgPar, 0)} $_sdg',
+          '${tr('بالرسمي', 'Official')}: ${fmt(sdgOff, 0)} $_sdg',
+          t('عشان يصل ${fmt(target, 0)} ج.س: رسّل ${fmt(needSend)} ${c.sym}', 'ليصل ${fmt(target, 0)} ج.س: أرسل ${fmt(needSend)} ${c.sym}', 'To deliver ${fmt(target, 0)} SDG: send ${fmt(needSend)} ${c.sym}'),
         ].join('\n');
 
     return ToolList(children: [
       SCard(
-        title: 'تفاصيل التحويلة',
+        title: t('تفاصيل التحويلة', 'تفاصيل الحوالة', 'Transfer details'),
         icon: Icons.send_to_mobile_rounded,
         color: SD.green,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          CurrencyPicker('عملة التحويل', _cur, (v) {
+          CurrencyPicker(t('عملة التحويل', 'عملة الحوالة', 'Sending currency'), _cur, (v) {
             _cur = v;
             _save();
           }, codes: currencies.where((x) => x.code != 'SDG').map((x) => x.code).toList()),
           const SizedBox(height: 10),
-          NumField('المبلغ الداير ترسلو', _amount, suffix: c.sym, hint: 'أكتب هنا', onChanged: (_) => _save()),
+          NumField(t('المبلغ الداير ترسلو', 'المبلغ المراد إرساله', 'Amount to send'), _amount, suffix: c.sym, hint: t('أكتب هنا', 'اكتب هنا', 'Type here'), onChanged: (_) => _save()),
           Row(children: [
-            Expanded(child: NumField('رسوم ثابتة', _fee, suffix: c.sym, onChanged: (_) => _save())),
+            Expanded(child: NumField(tr('رسوم ثابتة', 'Fixed fee'), _fee, suffix: c.sym, onChanged: (_) => _save())),
             const SizedBox(width: 10),
-            Expanded(child: NumField('عمولة %', _pct, suffix: '%', onChanged: (_) => _save())),
+            Expanded(child: NumField(tr('عمولة %', 'Commission %'), _pct, suffix: '%', onChanged: (_) => _save())),
           ]),
-          NumField('سعر خاص (اختياري): 1 ${c.code} = كم جنيه؟', _custom,
-              suffix: 'ج.س', hint: 'لو الصرافة/الوكيل عندو سعر معيّن', onChanged: (_) => _save()),
-          ChoiceRow<bool>(const [(false, 'الرسوم بتنخصم من المبلغ'), (true, 'الرسوم بدفعها فوق المبلغ')], _onTop, (v) {
+          NumField(tr('سعر خاص (اختياري): 1 ${c.code} = كم جنيه؟', 'Custom rate (optional): 1 ${c.code} = ? SDG'), _custom,
+              suffix: _sdg, hint: t('لو الصرافة/الوكيل عندو سعر معيّن', 'إن كان لدى الصرّاف/الوكيل سعر محدد', 'If your exchange/agent quotes a specific rate'), onChanged: (_) => _save()),
+          ChoiceRow<bool>([(false, t('الرسوم بتنخصم من المبلغ', 'تُخصم الرسوم من المبلغ', 'Fees deducted from amount')), (true, t('الرسوم بدفعها فوق المبلغ', 'أدفع الرسوم فوق المبلغ', 'I pay fees on top'))], _onTop, (v) {
             _onTop = v;
             _save();
           }),
           if (!hasPar && custom <= 0)
-            const NoteBox('ما كتبت سعر الموازي في «محوّل العملات»، فبنحسب بالرسمي. أغلب التحويلات بتمشي بالموازي، فاكتب السعر هناك ولا هنا كسعر خاص.',
+            NoteBox(t('ما كتبت سعر الموازي في «الدولار والعملات»، فبنحسب بالرسمي. أغلب التحويلات بتمشي بالموازي، فاكتب السعر هناك ولا هنا كسعر خاص.', 'لم تُدخل سعر السوق الموازية في «الدولار والعملات»، لذا نحسب بالسعر الرسمي. معظم الحوالات تتم بالسعر الموازي، فأدخله هناك أو هنا كسعر خاص.', 'You haven\'t entered a parallel rate in "Dollar & Currencies", so we use the official rate. Most transfers go at the parallel rate — enter it there, or here as a custom rate.'),
                 kind: NoteKind.warn),
         ]),
       ),
       ResultHero(
-        label: 'الواصل للأهل في السودان',
-        value: '${fmt(sdg, 0)} ج.س',
-        sub: '$usedName: 1 ${c.code} = ${fmtRate(rUsed)} ج.س • ≈ ${fmt(usd)} \$',
+        label: t('الواصل للأهل في السودان', 'ما يصل إلى الأهل في السودان', 'Family receives in Sudan'),
+        value: '${fmt(sdg, 0)} $_sdg',
+        sub: '$usedName: 1 ${c.code} = ${fmtRate(rUsed)} $_sdg • ≈ ${fmt(usd)} \$',
       ),
       SCard(
-        title: 'الحساب بالتفصيل',
+        title: tr('الحساب بالتفصيل', 'Breakdown'),
         icon: Icons.receipt_long_rounded,
         color: SD.nile,
         child: Column(children: [
-          InfoRow('بتدفع كم جملةً', '${fmt(r.paid)} ${c.sym}', icon: Icons.payments_rounded),
-          InfoRow('الرسوم الثابتة', '${fmt(fee)} ${c.sym}', icon: Icons.price_change_rounded),
-          InfoRow('العمولة ($pct%)', '${fmt(amount * pct / 100)} ${c.sym}', icon: Icons.percent_rounded),
-          InfoRow('مجموع الرسوم', '${fmt(r.fees)} ${c.sym}', icon: Icons.money_off_rounded, valueColor: SD.red,
-              hint: 'يعني ${fmt(feePctOfPaid, 2)}% من اللي دفعتو'),
-          InfoRow('المبلغ الصافي المحوَّل', '${fmt(r.delivered)} ${c.sym}', icon: Icons.check_circle_rounded, valueColor: SD.green),
-          InfoRow('الخسارة بسبب الرسوم بالجنيه', '${fmt(lossSdg, 0)} ج.س', icon: Icons.trending_down_rounded, valueColor: SD.red),
-          InfoRow('الواصل بالدولار', '${fmt(usd)} \$', icon: Icons.attach_money_rounded),
+          InfoRow(t('بتدفع كم جملةً', 'إجمالي ما تدفعه', 'Total you pay'), '${fmt(r.paid)} ${c.sym}', icon: Icons.payments_rounded),
+          InfoRow(tr('الرسوم الثابتة', 'Fixed fee'), '${fmt(fee)} ${c.sym}', icon: Icons.price_change_rounded),
+          InfoRow(tr('العمولة ($pct%)', 'Commission ($pct%)'), '${fmt(amount * pct / 100)} ${c.sym}', icon: Icons.percent_rounded),
+          InfoRow(tr('مجموع الرسوم', 'Total fees'), '${fmt(r.fees)} ${c.sym}', icon: Icons.money_off_rounded, valueColor: SD.red,
+              hint: t('يعني ${fmt(feePctOfPaid, 2)}% من اللي دفعتو', 'أي ${fmt(feePctOfPaid, 2)}% مما دفعته', 'i.e. ${fmt(feePctOfPaid, 2)}% of what you paid')),
+          InfoRow(tr('المبلغ الصافي المحوَّل', 'Net amount sent'), '${fmt(r.delivered)} ${c.sym}', icon: Icons.check_circle_rounded, valueColor: SD.green),
+          InfoRow(tr('الخسارة بسبب الرسوم بالجنيه', 'Lost to fees (SDG)'), '${fmt(lossSdg, 0)} $_sdg', icon: Icons.trending_down_rounded, valueColor: SD.red),
+          InfoRow(tr('الواصل بالدولار', 'Received in USD'), '${fmt(usd)} \$', icon: Icons.attach_money_rounded),
         ]),
       ),
       SCard(
-        title: 'موازي ولا رسمي؟',
+        title: t('موازي ولا رسمي؟', 'موازٍ أم رسمي؟', 'Parallel or official?'),
         icon: Icons.compare_rounded,
         color: SD.gold,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          PercentBar('بالسعر الموازي ${hasPar ? '' : '(ما محدد)'}', 1, '${fmt(sdgPar, 0)} ج.س', color: SD.green),
-          PercentBar('بالسعر الرسمي', sdgPar == 0 ? 0 : sdgOff / sdgPar, '${fmt(sdgOff, 0)} ج.س', color: SD.nile),
-          if (custom > 0) PercentBar('بسعرك الخاص', sdgPar == 0 ? 0 : sdg / sdgPar, '${fmt(sdg, 0)} ج.س', color: SD.purple),
+          PercentBar('${tr('بالسعر الموازي', 'At parallel rate')} ${hasPar ? '' : t('(ما محدد)', '(غير محدد)', '(not set)')}', 1, '${fmt(sdgPar, 0)} $_sdg', color: SD.green),
+          PercentBar(tr('بالسعر الرسمي', 'At official rate'), sdgPar == 0 ? 0 : sdgOff / sdgPar, '${fmt(sdgOff, 0)} $_sdg', color: SD.nile),
+          if (custom > 0) PercentBar(tr('بسعرك الخاص', 'At your rate'), sdgPar == 0 ? 0 : sdg / sdgPar, '${fmt(sdg, 0)} $_sdg', color: SD.purple),
           const SizedBox(height: 6),
           if (hasPar)
             NoteBox(
-              'الفرق بين الموازي والرسمي في التحويلة دي: ${fmt((sdgPar - sdgOff).abs(), 0)} جنيه '
+              '${t('الفرق بين الموازي والرسمي في التحويلة دي', 'الفرق بين الموازي والرسمي في هذه الحوالة', 'Parallel vs official difference on this transfer')}: ${fmt((sdgPar - sdgOff).abs(), 0)} $_sdg '
               '(${fmt(sdgOff == 0 ? 0 : (sdgPar - sdgOff) / sdgOff * 100, 1)}%).',
               kind: NoteKind.tip,
             ),
@@ -166,11 +169,11 @@ class _RemitToolState extends State<RemitTool> {
       ShareBar(summary),
       const SizedBox(height: 14),
       SCard(
-        title: 'داير يصل كم بالضبط؟',
+        title: t('داير يصل كم بالضبط؟', 'كم تريد أن يصل بالضبط؟', 'How much should arrive?'),
         icon: Icons.u_turn_left_rounded,
         color: SD.purple,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          NumField('المبلغ المطلوب يصل للأهل', _target, suffix: 'ج.س', hint: 'مثلًا 500000', onChanged: (_) => _save()),
+          NumField(t('المبلغ المطلوب يصل للأهل', 'المبلغ المطلوب وصوله إلى الأهل', 'Amount family should receive'), _target, suffix: _sdg, hint: tr('مثلًا 500000', 'e.g. 500000'), onChanged: (_) => _save()),
           Wrap(spacing: 6, children: [
             for (final q in [100000, 250000, 500000, 1000000, 2000000])
               ActionChip(
@@ -181,18 +184,18 @@ class _RemitToolState extends State<RemitTool> {
                   }),
           ]),
           const SizedBox(height: 8),
-          InfoRow('لازم ترسل', '${fmt(needSend)} ${c.sym}', icon: Icons.send_rounded, valueColor: SD.purple),
-          InfoRow('الصافي اللي بيتحوّل', '${fmt(needDelivered)} ${c.sym}', icon: Icons.call_made_rounded),
-          InfoRow('رسوم التحويلة دي', '${fmt(needFees)} ${c.sym}', icon: Icons.money_off_rounded, valueColor: SD.red),
-          InfoRow('بالدولار تقريبًا', '${fmt(needSend / s.usdRate(_cur))} \$', icon: Icons.attach_money_rounded),
+          InfoRow(t('لازم ترسل', 'يجب أن ترسل', 'You need to send'), '${fmt(needSend)} ${c.sym}', icon: Icons.send_rounded, valueColor: SD.purple),
+          InfoRow(t('الصافي اللي بيتحوّل', 'الصافي المحوَّل', 'Net transferred'), '${fmt(needDelivered)} ${c.sym}', icon: Icons.call_made_rounded),
+          InfoRow(t('رسوم التحويلة دي', 'رسوم هذه الحوالة', 'Fees for this transfer'), '${fmt(needFees)} ${c.sym}', icon: Icons.money_off_rounded, valueColor: SD.red),
+          InfoRow(tr('بالدولار تقريبًا', 'Approx. in USD'), '${fmt(needSend / s.usdRate(_cur))} \$', icon: Icons.attach_money_rounded),
         ]),
       ),
       SCard(
-        title: 'مقارنة مبالغ شائعة',
+        title: tr('مقارنة مبالغ شائعة', 'Common amounts compared'),
         icon: Icons.table_rows_rounded,
         color: SD.teal,
         child: MiniTable(
-          ['المبلغ ${c.code}', 'الرسوم', 'نسبة الرسوم', 'بالموازي ج.س', 'بالرسمي ج.س'],
+          [tr('المبلغ ${c.code}', 'Amount ${c.code}'), tr('الرسوم', 'Fees'), tr('نسبة الرسوم', 'Fee %'), tr('بالموازي ج.س', 'Parallel SDG'), tr('بالرسمي ج.س', 'Official SDG')],
           [
             for (final a in [500.0, 1000.0, 2000.0, 5000.0])
               () {
@@ -209,8 +212,8 @@ class _RemitToolState extends State<RemitTool> {
           color: SD.teal,
         ),
       ),
-      const NoteBox('💡 الرسوم الثابتة بتأكل نسبة أكبر من المبالغ الصغيرة — لو بتقدر جمّع وارسل مرة واحدة في الشهر بدل مرات كتيرة.', kind: NoteKind.tip),
-      const NoteBox('الحساب تقديري: سعر الصرافة والرسوم الفعلية ممكن تختلف من مكان للتاني ومن يوم ليوم. اتأكد من الوكيل قبل ما ترسل.', kind: NoteKind.warn),
+      NoteBox(t('💡 الرسوم الثابتة بتأكل نسبة أكبر من المبالغ الصغيرة — لو بتقدر جمّع وارسل مرة واحدة في الشهر بدل مرات كتيرة.', '💡 الرسوم الثابتة تلتهم نسبة أكبر من المبالغ الصغيرة — إن استطعت فاجمع وأرسل مرة واحدة شهريًا بدل مرات كثيرة.', '💡 Fixed fees eat a bigger share of small amounts — if you can, send once a month instead of many times.'), kind: NoteKind.tip),
+      NoteBox(t('الحساب تقديري: سعر الصرافة والرسوم الفعلية ممكن تختلف من مكان للتاني ومن يوم ليوم. اتأكد من الوكيل قبل ما ترسل.', 'الحساب تقديري: قد يختلف سعر الصرف والرسوم الفعلية من مكان لآخر ومن يوم لآخر. تحقّق من الوكيل قبل الإرسال.', 'Estimate only: actual exchange rates and fees vary by provider and day. Confirm with your agent before sending.'), kind: NoteKind.warn),
     ]);
   }
 }

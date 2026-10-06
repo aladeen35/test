@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -15,7 +16,9 @@ import '../../services/prayer.dart';
 const _kLng = 39.8262;
 
 String compassName(double deg) {
-  const names = ['الشمال', 'شمال شرق', 'الشرق', 'جنوب شرق', 'الجنوب', 'جنوب غرب', 'الغرب', 'شمال غرب'];
+  final names = isEn
+      ? const ['North', 'Northeast', 'East', 'Southeast', 'South', 'Southwest', 'West', 'Northwest']
+      : const ['الشمال', 'شمال شرق', 'الشرق', 'جنوب شرق', 'الجنوب', 'جنوب غرب', 'الغرب', 'شمال غرب'];
   return names[((deg % 360) / 45).round() % 8];
 }
 
@@ -140,20 +143,20 @@ class _QiblaToolState extends State<QiblaTool> {
     setState(() => _locating = true);
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
-        toast('الـ GPS مقفول، افتحو من الإعدادات وجرّب تاني');
+        toast(t('الـ GPS مقفول، افتحو من الإعدادات وجرّب تاني', 'خدمة الموقع مغلقة، فعّلها من الإعدادات وحاول مجددًا', 'Location is off — turn it on in settings and try again'));
         return;
       }
       var p = await Geolocator.checkPermission();
       if (p == LocationPermission.denied) p = await Geolocator.requestPermission();
       if (p == LocationPermission.denied || p == LocationPermission.deniedForever) {
-        toast('ما ادّيتنا إذن الموقع، حنستخدم المدينة المختارة');
+        toast(t('ما ادّيتنا إذن الموقع، حنستخدم المدينة المختارة', 'لم تمنح إذن الموقع، سنستخدم المكان المختار', 'No location permission — using the selected place'));
         return;
       }
       final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(timeLimit: Duration(seconds: 20)));
       s.setGps(pos.latitude, pos.longitude);
-      toast('تمام، حدّدنا موقعك ✓');
+      toast(t('تمام، حدّدنا موقعك ✓', 'تم تحديد موقعك ✓', 'Got your location ✓'));
     } catch (_) {
-      toast('ما قدرنا نجيب الموقع هسي، جرّب في مكان مفتوح');
+      toast(t('ما قدرنا نجيب الموقع هسي، جرّب في مكان مفتوح', 'تعذّر تحديد الموقع الآن، جرّب في مكان مكشوف', "Couldn't get your location — try somewhere open"));
     } finally {
       if (mounted) setState(() => _locating = false);
     }
@@ -179,9 +182,11 @@ class _QiblaToolState extends State<QiblaTool> {
 
     return ToolList(children: [
       ResultHero(
-        label: 'اتجاه القبلة من ${c.name}',
+        label: tr('اتجاه القبلة من ${c.name}', 'Qibla direction from ${c.name}'),
         value: '${fmt(bearing, 1)}°',
-        sub: 'من الشمال الجغرافي ناحية ${compassName(bearing)} • المسافة للكعبة ${fmt(dist, 0)} كم',
+        sub: t('من الشمال الجغرافي ناحية ${compassName(bearing)} • المسافة للكعبة ${fmt(dist, 0)} كم',
+            'من الشمال الجغرافي باتجاه ${compassName(bearing)} • المسافة إلى الكعبة ${fmt(dist, 0)} كم',
+            'From true north, towards the ${compassName(bearing)} • ${fmt(dist, 0)} km to the Kaaba'),
         colors: const [SD.green, SD.coffee],
       ),
       SCard(
@@ -203,8 +208,9 @@ class _QiblaToolState extends State<QiblaTool> {
                 Flexible(
                   child: Text(
                     aligned
-                        ? 'انت في الاتجاه الصح ✓'
-                        : 'لِف ${diff > 0 ? 'يمين' : 'شمال'} ${fmt(diff.abs(), 0)}°',
+                        ? t('انت في الاتجاه الصح ✓', 'أنت في الاتجاه الصحيح ✓', "You're facing the Qibla ✓")
+                        : t('لِف ${diff > 0 ? 'يمين' : 'شمال'} ${fmt(diff.abs(), 0)}°', 'استدر ${diff > 0 ? 'يمينًا' : 'يسارًا'} ${fmt(diff.abs(), 0)}°',
+                            'Turn ${diff > 0 ? 'right' : 'left'} ${fmt(diff.abs(), 0)}°'),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: aligned ? SD.green : cs.onSurface),
                   ),
                 ),
@@ -231,60 +237,77 @@ class _QiblaToolState extends State<QiblaTool> {
           }),
           const SizedBox(height: 10),
           if (heading != null)
-            Text('اتجاه جوالك: ${fmt(heading, 0)}° (${compassName(heading)})', style: const TextStyle(fontWeight: FontWeight.w700))
+            Text('${t('اتجاه جوالك', 'اتجاه هاتفك', 'Your phone heading')}: ${fmt(heading, 0)}° (${compassName(heading)})', style: const TextStyle(fontWeight: FontWeight.w700))
           else if (_sensorsFailed)
-            const NoteBox(
-                'البوصلة ما شغّالة في الجهاز دا (أو انت فاتح من المتصفح). ما في مشكلة: اعرف الشمال بأي بوصلة أو بالشمس، وبعدين لف من الشمال مع عقارب الساعة بالزاوية المكتوبة فوق.',
+            NoteBox(
+                t('البوصلة ما شغّالة في الجهاز دا (أو انت فاتح من المتصفح). ما في مشكلة: اعرف الشمال بأي بوصلة أو بالشمس، وبعدين لف من الشمال مع عقارب الساعة بالزاوية المكتوبة فوق.',
+                    'البوصلة لا تعمل على هذا الجهاز (أو أنك تستخدم المتصفح). لا بأس: حدّد الشمال بأي بوصلة أو بالشمس، ثم استدر من الشمال مع عقارب الساعة بالزاوية المكتوبة أعلاه.',
+                    "The compass isn't available on this device (or you're in a browser). No problem: find north with any compass or the sun, then turn clockwise from north by the angle shown above."),
                 kind: NoteKind.warn)
           else
-            const Padding(padding: EdgeInsets.all(8), child: Text('بنجهّز البوصلة… ثبّت الجوال شوية')),
+            Padding(padding: const EdgeInsets.all(8), child: Text(t('بنجهّز البوصلة… ثبّت الجوال شوية', 'جارٍ تجهيز البوصلة… ثبّت الهاتف قليلًا', 'Preparing the compass… hold the phone still'))),
         ]),
       ),
       if (heading != null)
         StatGrid([
-          StatChip('${fmt(_field, 0)} µT', 'شدة المجال', color: fieldBad ? SD.red : SD.teal, icon: Icons.sensors_rounded),
-          StatChip('${fmt(_tilt, 0)}°', 'ميلان الجوال', color: _tilt > 35 ? SD.orange : SD.nile, icon: Icons.screen_rotation_alt_rounded),
-          StatChip(aligned ? 'تمام' : '${fmt(diff!.abs(), 0)}°', 'الفرق', color: aligned ? SD.green : SD.gold, icon: Icons.explore_rounded),
+          StatChip('${fmt(_field, 0)} µT', tr('شدة المجال', 'Field strength'), color: fieldBad ? SD.red : SD.teal, icon: Icons.sensors_rounded),
+          StatChip('${fmt(_tilt, 0)}°', t('ميلان الجوال', 'ميلان الهاتف', 'Phone tilt'), color: _tilt > 35 ? SD.orange : SD.nile, icon: Icons.screen_rotation_alt_rounded),
+          StatChip(aligned ? t('تمام', 'تمام', 'OK') : '${fmt(diff!.abs(), 0)}°', tr('الفرق', 'Offset'), color: aligned ? SD.green : SD.gold, icon: Icons.explore_rounded),
         ]),
       if (fieldBad)
-        const NoteBox('المجال المغناطيسي غريب (الطبيعي تقريبًا 25–65 µT). ابعد من الحديد والكهربا والسماعات وغطا الجوال المغناطيسي، وسوي معايرة.', kind: NoteKind.danger),
-      if (heading != null && _tilt > 35) const NoteBox('خلي الجوال مسطّح (موازي للأرض) عشان القراءة تكون أدق.', kind: NoteKind.warn),
+        NoteBox(
+            t('المجال المغناطيسي غريب (الطبيعي تقريبًا 25–65 µT). ابعد من الحديد والكهربا والسماعات وغطا الجوال المغناطيسي، وسوي معايرة.',
+                'المجال المغناطيسي غير طبيعي (المعتاد تقريبًا 25–65 µT). ابتعد عن الحديد والأجهزة الكهربائية والسماعات وغطاء الهاتف المغناطيسي، ثم قم بالمعايرة.',
+                'The magnetic field looks off (normal is about 25–65 µT). Move away from metal, electronics, speakers and magnetic phone cases, then calibrate.'),
+            kind: NoteKind.danger),
+      if (heading != null && _tilt > 35)
+        NoteBox(t('خلي الجوال مسطّح (موازي للأرض) عشان القراءة تكون أدق.', 'اجعل الهاتف مسطّحًا (موازيًا للأرض) لتكون القراءة أدق.', 'Hold the phone flat (parallel to the ground) for a more accurate reading.'),
+            kind: NoteKind.warn),
       SCard(
-        title: 'تفاصيل الموقع والقبلة',
+        title: tr('تفاصيل الموقع والقبلة', 'Location & Qibla details'),
         icon: Icons.place_rounded,
         color: SD.nile,
         trailing: TextButton.icon(
           onPressed: _locating ? null : _useGps,
           icon: _locating ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.my_location_rounded),
-          label: const Text('موقعي'),
+          label: Text(t('موقعي', 'موقعي', 'My location')),
         ),
         child: Column(children: [
-          InfoRow('المدينة', c.name, icon: Icons.location_city_rounded),
-          InfoRow('الإحداثيات', '${c.lat.toStringAsFixed(4)}°, ${c.lng.toStringAsFixed(4)}°', icon: Icons.pin_drop_rounded),
-          InfoRow('زاوية القبلة', '${fmt(bearing, 2)}° من الشمال', icon: Icons.navigation_rounded, hint: 'باتجاه عقارب الساعة'),
-          InfoRow('الاتجاه العام', compassName(bearing), icon: Icons.explore_rounded),
-          InfoRow('الزاوية من الشرق', '${fmt((bearing - 90).abs(), 1)}° ${bearing < 90 ? 'ناحية الشمال' : 'ناحية الجنوب'}', icon: Icons.wb_sunny_rounded,
-              hint: 'مفيدة لو عارف الشرق (مطلع الشمس تقريبًا)'),
-          InfoRow('المسافة للكعبة (خط مستقيم)', '${fmt(flightKm, 0)} كم', icon: Icons.straighten_rounded),
-          InfoRow('بالميل', '${fmt(flightKm * 0.621371, 0)} ميل', icon: Icons.social_distance_rounded),
-          InfoRow('بالطيارة (≈ 800 كم/س)', fmtDuration(Duration(minutes: (flightKm / 800 * 60).round())), icon: Icons.flight_rounded),
-          InfoRow('مشي على الأقدام (≈ 30 كم/يوم)', '${fmt(walkDays, 0)} يوم', icon: Icons.directions_walk_rounded),
-          InfoRow('فرق خط الطول مع مكة', '${fmt(dLng.abs(), 2)}° ${dLng > 0 ? 'شرقك' : 'غربك'}', icon: Icons.public_rounded,
-              hint: 'كل درجة ≈ 4 دقايق فرق في الشمس'),
-          InfoRow('إحداثيات الكعبة', '21.4225°, 39.8262°', icon: Icons.mosque_rounded),
+          InfoRow(tr('المكان', 'Place'), c.name, icon: Icons.location_city_rounded),
+          InfoRow(tr('الإحداثيات', 'Coordinates'), '${c.lat.toStringAsFixed(4)}°, ${c.lng.toStringAsFixed(4)}°', icon: Icons.pin_drop_rounded),
+          InfoRow(tr('زاوية القبلة', 'Qibla angle'), tr('${fmt(bearing, 2)}° من الشمال', '${fmt(bearing, 2)}° from north'), icon: Icons.navigation_rounded,
+              hint: tr('باتجاه عقارب الساعة', 'Clockwise')),
+          InfoRow(tr('الاتجاه العام', 'General direction'), compassName(bearing), icon: Icons.explore_rounded),
+          InfoRow(tr('الزاوية من الشرق', 'Angle from east'),
+              '${fmt((bearing - 90).abs(), 1)}° ${bearing < 90 ? t('ناحية الشمال', 'نحو الشمال', 'towards north') : t('ناحية الجنوب', 'نحو الجنوب', 'towards south')}',
+              icon: Icons.wb_sunny_rounded,
+              hint: t('مفيدة لو عارف الشرق (مطلع الشمس تقريبًا)', 'مفيدة إن كنت تعرف الشرق (مطلع الشمس تقريبًا)', 'Handy if you know where east is (roughly sunrise)')),
+          InfoRow(tr('المسافة للكعبة (خط مستقيم)', 'Distance to the Kaaba (straight line)'), tr('${fmt(flightKm, 0)} كم', '${fmt(flightKm, 0)} km'), icon: Icons.straighten_rounded),
+          InfoRow(tr('بالميل', 'In miles'), tr('${fmt(flightKm * 0.621371, 0)} ميل', '${fmt(flightKm * 0.621371, 0)} mi'), icon: Icons.social_distance_rounded),
+          InfoRow(t('بالطيارة (≈ 800 كم/س)', 'بالطائرة (≈ 800 كم/س)', 'By plane (≈ 800 km/h)'), fmtDuration(Duration(minutes: (flightKm / 800 * 60).round())), icon: Icons.flight_rounded),
+          InfoRow(tr('مشي على الأقدام (≈ 30 كم/يوم)', 'On foot (≈ 30 km/day)'), tr('${fmt(walkDays, 0)} يوم', '${fmt(walkDays, 0)} days'), icon: Icons.directions_walk_rounded),
+          InfoRow(tr('فرق خط الطول مع مكة', 'Longitude difference to Makkah'),
+              '${fmt(dLng.abs(), 2)}° ${dLng > 0 ? tr('شرقك', 'east of you') : tr('غربك', 'west of you')}',
+              icon: Icons.public_rounded,
+              hint: t('كل درجة ≈ 4 دقايق فرق في الشمس', 'كل درجة ≈ 4 دقائق فرق في الشمس', 'Each degree ≈ 4 minutes of sun time')),
+          InfoRow(tr('إحداثيات الكعبة', 'Kaaba coordinates'), '21.4225°, 39.8262°', icon: Icons.mosque_rounded),
         ]),
       ),
       if (heading != null && _maxField > 0)
-        InfoRow('مدى قراءات المجال منذ الفتح', '${fmt(_minField, 0)} – ${fmt(_maxField, 0)} µT', icon: Icons.tune_rounded),
+        InfoRow(tr('مدى قراءات المجال منذ الفتح', 'Field range since opening'), '${fmt(_minField, 0)} – ${fmt(_maxField, 0)} µT', icon: Icons.tune_rounded),
       const SizedBox(height: 8),
-      const NoteBox(
-          'المعايرة: حرّك الجوال في الهوا على شكل رقم 8 (∞) مرتين تلاتة، وابعد من الحديد والعربات والتلفزيونات. البوصلة بتقيس الشمال المغناطيسي، والفرق عن الشمال الجغرافي في السودان صغير (درجات قليلة).',
+      NoteBox(
+          t('المعايرة: حرّك الجوال في الهوا على شكل رقم 8 (∞) مرتين تلاتة، وابعد من الحديد والعربات والتلفزيونات. البوصلة بتقيس الشمال المغناطيسي، والفرق عن الشمال الجغرافي في أغلب الأماكن صغير (درجات قليلة).',
+              'المعايرة: حرّك الهاتف في الهواء على شكل رقم 8 (∞) مرتين أو ثلاثًا، وابتعد عن الحديد والسيارات والتلفزيونات. البوصلة تقيس الشمال المغناطيسي، والفرق عن الشمال الجغرافي صغير في أغلب الأماكن (درجات قليلة).',
+              'Calibrate: wave the phone in a figure-8 (∞) two or three times, away from metal, cars and TVs. The compass reads magnetic north; the difference from true north is small in most places (a few degrees).'),
           kind: NoteKind.tip),
-      const NoteBox(
-          'الزاوية محسوبة بدقة على الدائرة العظمى (أقصر طريق) من إحداثيات المدينة. البوصلة في الجوال تقريبية؛ لو في مسجد قريب فاتجاه محرابه هو المعتمد إن شاء الله.',
+      NoteBox(
+          t('الزاوية محسوبة بدقة على الدائرة العظمى (أقصر طريق) من إحداثيات المكان. البوصلة في الجوال تقريبية؛ لو في مسجد قريب فاتجاه محرابه هو المعتمد إن شاء الله.',
+              'الزاوية محسوبة بدقة على الدائرة العظمى (أقصر طريق) من إحداثيات المكان. بوصلة الهاتف تقريبية؛ وإن كان هناك مسجد قريب فاتجاه محرابه هو المعتمد إن شاء الله.',
+              "The angle is computed precisely along the great circle (shortest path) from the place's coordinates. Phone compasses are approximate; if there's a mosque nearby, its mihrab direction is the reference, in sha Allah."),
           kind: NoteKind.info),
-      ShareBar(() =>
-          '🕋 اتجاه القبلة من ${c.name}\nالزاوية: ${fmt(bearing, 1)}° من الشمال (${compassName(bearing)})\nالمسافة للكعبة: ${fmt(dist, 0)} كم'),
+      ShareBar(() => tr('🕋 اتجاه القبلة من ${c.name}\nالزاوية: ${fmt(bearing, 1)}° من الشمال (${compassName(bearing)})\nالمسافة للكعبة: ${fmt(dist, 0)} كم',
+          '🕋 Qibla direction from ${c.name}\nAngle: ${fmt(bearing, 1)}° from north (${compassName(bearing)})\nDistance to the Kaaba: ${fmt(dist, 0)} km')),
     ]);
   }
 }
@@ -328,10 +351,10 @@ class _DialPainter extends CustomPainter {
       canvas.drawLine(dir * (r - 12), dir * (r - (major ? 26 : 19)), p);
     }
     // الحروف
-    const labels = {0: 'ش', 90: 'ق', 180: 'ج', 270: 'غ'};
-    labels.forEach((a, t) {
+    final labels = isEn ? const {0: 'N', 90: 'E', 180: 'S', 270: 'W'} : const {0: 'ش', 90: 'ق', 180: 'ج', 270: 'غ'};
+    labels.forEach((a, lbl) {
       final dir = Offset(math.sin(_r(a.toDouble())), -math.cos(_r(a.toDouble())));
-      _text(canvas, t, dir * (r - 44), a == 0 ? SD.red : onSurface, 20, bold: true, rotate: _r(heading));
+      _text(canvas, lbl, dir * (r - 44), a == 0 ? SD.red : onSurface, 20, bold: true, rotate: _r(heading));
     });
     for (var a = 30; a < 360; a += 30) {
       if (a % 90 == 0) continue;
@@ -377,7 +400,7 @@ class _DialPainter extends CustomPainter {
   void _text(Canvas canvas, String t, Offset at, Color color, double size, {bool bold = false, double rotate = 0}) {
     final tp = TextPainter(
       text: TextSpan(text: t, style: TextStyle(color: color, fontSize: size, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, fontFamily: 'Tajawal')),
-      textDirection: TextDirection.rtl,
+      textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
     )..layout();
     canvas.save();
     canvas.translate(at.dx, at.dy);

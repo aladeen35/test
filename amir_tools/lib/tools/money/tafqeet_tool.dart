@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 
@@ -15,7 +16,12 @@ const _units = {
   'SAR': (_Unit('ريال سعودي', 'ريالان سعوديان', 'ريالات سعودية', 'ريالًا سعوديًا'), _Unit('هللة', 'هللتان', 'هللات', 'هللة'), 'Saudi Riyals', 'Halalas'),
   'AED': (_Unit('درهم إماراتي', 'درهمان إماراتيان', 'دراهم إماراتية', 'درهمًا إماراتيًا'), _Unit('فلس', 'فلسان', 'فلوس', 'فلسًا'), 'UAE Dirhams', 'Fils'),
 };
-const _curNames = {'SDG': '🇸🇩 جنيه سوداني', 'USD': '🇺🇸 دولار', 'SAR': '🇸🇦 ريال سعودي', 'AED': '🇦🇪 درهم'};
+Map<String, String> get _curNames => {
+      'SDG': tr('🇸🇩 جنيه سوداني', '🇸🇩 Sudanese pound'),
+      'USD': tr('🇺🇸 دولار', '🇺🇸 US dollar'),
+      'SAR': tr('🇸🇦 ريال سعودي', '🇸🇦 Saudi riyal'),
+      'AED': tr('🇦🇪 درهم', '🇦🇪 UAE dirham'),
+    };
 
 const _ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
 const _teens = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
@@ -125,23 +131,23 @@ class _TafqeetToolState extends State<TafqeetTool> {
     final (main, sub, enMain, enSub) = _units[_cur]!;
     final tooBig = whole >= 1000000000000;
     final ar = tooBig
-        ? 'الرقم كبير شديد 😅'
+        ? t('الرقم كبير شديد 😅', 'الرقم كبير جدًا 😅', 'Number too large 😅')
         : 'فقط ${whole == 0 && frac > 0 ? '' : _withUnit(whole, main)}${frac > 0 ? '${whole > 0 ? ' و' : ''}${_withUnit(frac, sub)}' : ''} لا غير';
-    final en = tooBig ? '—' : 'Only ${englishWords(whole)} $enMain${frac > 0 ? ' and ${englishWords(frac)} $enSub' : ''} Only';
+    final en = tooBig ? tr('—', 'Number too large 😅') : 'Only ${englishWords(whole)} $enMain${frac > 0 ? ' and ${englishWords(frac)} $enSub' : ''} Only';
 
     return ToolList(children: [
       SCard(
-        title: 'أكتب المبلغ',
+        title: t('أكتب المبلغ', 'اكتب المبلغ', 'Enter the amount'),
         icon: Icons.edit_rounded,
         color: SD.coffee,
         child: Column(children: [
-          NumField('المبلغ', _c, onChanged: (_) => setState(() {}), hint: 'مثلًا 1250750.50'),
+          NumField(tr('المبلغ', 'Amount'), _c, onChanged: (_) => setState(() {}), hint: tr('مثلًا 1250750.50', 'e.g. 1250750.50')),
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'SDG', label: Text('جنيه')),
-              ButtonSegment(value: 'USD', label: Text('دولار')),
-              ButtonSegment(value: 'SAR', label: Text('ريال')),
-              ButtonSegment(value: 'AED', label: Text('درهم')),
+            segments: [
+              ButtonSegment(value: 'SDG', label: Text(tr('جنيه', 'SDG'))),
+              ButtonSegment(value: 'USD', label: Text(tr('دولار', 'USD'))),
+              ButtonSegment(value: 'SAR', label: Text(tr('ريال', 'SAR'))),
+              ButtonSegment(value: 'AED', label: Text(tr('درهم', 'AED'))),
             ],
             selected: {_cur},
             onSelectionChanged: (s) => setState(() => _cur = s.first),
@@ -150,23 +156,25 @@ class _TafqeetToolState extends State<TafqeetTool> {
           Text(_curNames[_cur]!, style: const TextStyle(fontWeight: FontWeight.w700)),
         ]),
       ),
-      ResultHero(label: 'المبلغ بالحروف', value: fmt(v, 2), sub: ar),
+      ResultHero(label: tr('المبلغ بالحروف', 'Amount in words'), value: fmt(v, 2), sub: isEn ? en : ar),
       SCard(
-        title: 'للشيك والفاتورة',
+        title: tr('للشيك والفاتورة', 'For cheques & invoices'),
         icon: Icons.receipt_long_rounded,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          SelectableText(ar, style: const TextStyle(fontSize: 18, height: 1.8, fontWeight: FontWeight.w700)),
+          if (isEn) Text('Arabic', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6))),
+          Directionality(textDirection: TextDirection.rtl, child: SelectableText(ar, style: const TextStyle(fontSize: 18, height: 1.8, fontWeight: FontWeight.w700))),
           const Divider(),
+          if (!isEn) Text('English', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6))),
           Directionality(textDirection: TextDirection.ltr, child: SelectableText(en, style: const TextStyle(fontSize: 15, height: 1.6))),
           const SizedBox(height: 10),
-          InfoRow('الرقم بالأرقام العربية', toArabicDigits(fmt(v, 2))),
-          InfoRow('الجزء الصحيح', arabicWords(whole)),
-          if (frac > 0) InfoRow('الكسر (${sub.many})', arabicWords(frac)),
-          InfoRow('عدد الخانات', '${whole.toString().length} خانة'),
+          InfoRow(tr('الرقم بالأرقام العربية', 'In Arabic-Indic digits'), toArabicDigits(fmt(v, 2))),
+          InfoRow(tr('الجزء الصحيح', 'Whole part'), isEn ? englishWords(whole) : arabicWords(whole)),
+          if (frac > 0) InfoRow(isEn ? 'Fraction ($enSub)' : 'الكسر (${sub.many})', isEn ? englishWords(frac) : arabicWords(frac)),
+          InfoRow(tr('عدد الخانات', 'Digits'), tr('${whole.toString().length} خانة', '${whole.toString().length} digits')),
         ]),
       ),
       ShareBar(() => '$ar\n$en'),
-      const NoteBox('راجع النص قبل ما تكتبو في الشيك — الصياغة على الطريقة المتّبعة في البنوك («فقط … لا غير»).', kind: NoteKind.tip),
+      NoteBox(t('راجع النص قبل ما تكتبو في الشيك — الصياغة على الطريقة المتّبعة في البنوك («فقط … لا غير»).', 'راجع النص قبل كتابته في الشيك — الصياغة وفق الطريقة المتّبعة في البنوك («فقط … لا غير»).', 'Double-check the text before writing the cheque — the wording follows banking style ("Only … Only").'), kind: NoteKind.tip),
     ]);
   }
 }

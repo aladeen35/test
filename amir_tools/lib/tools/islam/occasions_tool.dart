@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import '../../services/calendars.dart';
 import '../../services/prayer.dart';
 
-/// لحظة مطلقة من «ساعة حائط» السودان
+/// لحظة مطلقة من «ساعة حائط» المكان المختار
 DateTime _sd(int y, int m, int d, [int h = 0, int mi = 0]) {
   final wall = DateTime.utc(y, m, d, h, mi);
   return wall.subtract(placeOffset(wall));
@@ -87,7 +88,7 @@ class _OccasionsToolState extends State<OccasionsTool> {
       if (r != null) out.add(_Occ(name, emoji, c, r.$1, r.$2, note: note, islamic: true, span: span));
     }
 
-    islamic('رمضان المبارك', '🌙', SD.indigo, 9, 1, note: 'أول أيام الصيام', span: const Duration(days: 29));
+    islamic(tr('رمضان المبارك', 'Ramadan'), '🌙', SD.indigo, 9, 1, note: tr('أول أيام الصيام', 'First day of fasting'), span: const Duration(days: 29));
     // ليلة القدر: تبدأ مع مغرب يوم 26 رمضان
     final lq = _nextOf((y) {
       final g = fromHijri(y, 9, 26, shift: s.hijriShift);
@@ -98,28 +99,31 @@ class _OccasionsToolState extends State<OccasionsTool> {
       }
     }, hy, const Duration(hours: 12));
     if (lq != null) {
-      out.add(_Occ('ليلة السابع والعشرين (تقديرًا لليلة القدر)', '✨', SD.gold, lq.$1, lq.$2,
-          note: 'تبدأ مع مغرب 26 رمضان. ليلة القدر تُتحرّى في العشر الأواخر خاصة الأوتار', islamic: true, span: const Duration(hours: 12)));
+      out.add(_Occ(tr('ليلة السابع والعشرين (تقديرًا لليلة القدر)', 'The 27th night (estimated Laylat al-Qadr)'), '✨', SD.gold, lq.$1, lq.$2,
+          note: tr('تبدأ مع مغرب 26 رمضان. ليلة القدر تُتحرّى في العشر الأواخر خاصة الأوتار',
+              'Starts at Maghrib on 26 Ramadan. Laylat al-Qadr is sought in the last ten nights, especially the odd ones'),
+          islamic: true,
+          span: const Duration(hours: 12)));
     }
-    islamic('عيد الفطر', '🎉', SD.green, 10, 1, note: '1 شوال — كل عام وانتو بخير');
-    islamic('يوم عرفة', '🤲', SD.henna, 12, 9, note: '9 ذو الحجة — صيامه لغير الحاج');
-    islamic('عيد الأضحى', '🐑', SD.green, 12, 10, note: '10 ذو الحجة');
-    islamic('رأس السنة الهجرية', '🗓️', SD.teal, 1, 1, note: '1 محرم');
-    islamic('يوم عاشوراء', '🌿', SD.nile, 1, 10, note: '10 محرم — يُستحب صيامه ويوم قبله');
-    islamic('المولد النبوي', '🕌', SD.gold, 3, 12, note: '12 ربيع الأول حسب المشهور');
+    islamic(tr('عيد الفطر', 'Eid al-Fitr'), '🎉', SD.green, 10, 1, note: t('1 شوال — كل عام وانتو بخير', '1 شوال — كل عام وأنتم بخير', '1 Shawwal — Eid Mubarak'));
+    islamic(tr('يوم عرفة', 'Day of Arafah'), '🤲', SD.henna, 12, 9, note: tr('9 ذو الحجة — صيامه لغير الحاج', '9 Dhul-Hijjah — fasting is for non-pilgrims'));
+    islamic(tr('عيد الأضحى', 'Eid al-Adha'), '🐑', SD.green, 12, 10, note: tr('10 ذو الحجة', '10 Dhul-Hijjah'));
+    islamic(tr('رأس السنة الهجرية', 'Islamic New Year'), '🗓️', SD.teal, 1, 1, note: tr('1 محرم', '1 Muharram'));
+    islamic(tr('يوم عاشوراء', 'Day of Ashura'), '🌿', SD.nile, 1, 10, note: tr('10 محرم — يُستحب صيامه ويوم قبله', '10 Muharram — recommended to fast it and the day before'));
+    islamic(tr('المولد النبوي', "Prophet's Birthday (Mawlid)"), '🕌', SD.gold, 3, 12, note: tr('12 ربيع الأول حسب المشهور', '12 Rabi al-Awwal, per the common view'));
 
     void national(String name, String emoji, int m, int d, int since, String note) {
       final r = _nextOf((y) => _sd(y, m, d), now.year, const Duration(days: 1));
       if (r != null) {
         final n = toSudan(r.$1).year - since;
-        out.add(_Occ('$name (الذكرى $n)', emoji, SD.red, r.$1, r.$2, note: note, national: true));
+        out.add(_Occ(tr('$name (الذكرى $n)', '$name (${_ordinal(n)} anniversary)'), emoji, SD.red, r.$1, r.$2, note: note, national: true));
       }
     }
 
-    national('عيد الاستقلال', '🇸🇩', 1, 1, 1956, '1 يناير 1956 — رفع العلم في الخرطوم');
-    national('ذكرى ثورة أكتوبر', '✊', 10, 21, 1964, '21 أكتوبر 1964');
-    national('ذكرى انتفاضة أبريل', '✊', 4, 6, 1985, '6 أبريل 1985');
-    national('ذكرى ثورة ديسمبر', '✊', 12, 19, 2018, '19 ديسمبر 2018');
+    national(tr('عيد الاستقلال', 'Sudan Independence Day'), '🇸🇩', 1, 1, 1956, tr('1 يناير 1956 — رفع العلم في الخرطوم', '1 January 1956 — flag raised in Khartoum'));
+    national(tr('ذكرى ثورة أكتوبر', 'October Revolution'), '✊', 10, 21, 1964, tr('21 أكتوبر 1964', '21 October 1964'));
+    national(tr('ذكرى انتفاضة أبريل', 'April Uprising'), '✊', 4, 6, 1985, tr('6 أبريل 1985', '6 April 1985'));
+    national(tr('ذكرى ثورة ديسمبر', 'December Revolution'), '✊', 12, 19, 2018, tr('19 ديسمبر 2018', '19 December 2018'));
 
     for (final e in _userEvents(s)) {
       final parts = (e['date'] as String).split('-').map(int.parse).toList();
@@ -129,7 +133,8 @@ class _OccasionsToolState extends State<OccasionsTool> {
       if (yearly) {
         final r = _nextOf((y) => _sd(y, parts[1], parts[2], h, mi), now.year, const Duration(days: 1));
         if (r != null) {
-          out.add(_Occ(e['name'], e['emoji'] ?? '⭐', SD.purple, r.$1, r.$2, userId: e['id'], note: 'يتكرر كل سنة • الأصل ${parts[2]}/${parts[1]}/${parts[0]}'));
+          out.add(_Occ(e['name'], e['emoji'] ?? '⭐', SD.purple, r.$1, r.$2,
+              userId: e['id'], note: tr('يتكرر كل سنة • الأصل ${parts[2]}/${parts[1]}/${parts[0]}', 'Repeats yearly • original ${parts[2]}/${parts[1]}/${parts[0]}')));
         }
       } else {
         final at = _sd(parts[0], parts[1], parts[2], h, mi);
@@ -138,6 +143,11 @@ class _OccasionsToolState extends State<OccasionsTool> {
     }
     out.sort((a, b) => a.at.compareTo(b.at));
     return out;
+  }
+
+  String _ordinal(int n) {
+    final suf = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : switch (n % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', _ => 'th' };
+    return '$n$suf';
   }
 
   List<Map> _userEvents(AppState s) => List<Map>.from(s.getData<List>('occasions_events') ?? []);
@@ -155,11 +165,15 @@ class _OccasionsToolState extends State<OccasionsTool> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setM) => Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+          padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('مناسبة جديدة', style: TextStyle(fontFamily: 'Lalezar', fontSize: 22)),
+            Text(tr('مناسبة جديدة', 'New occasion'), style: const TextStyle(fontFamily: 'Lalezar', fontSize: 22)),
             const SizedBox(height: 10),
-            TextField(controller: nameCtrl, autofocus: true, decoration: const InputDecoration(labelText: 'اسم المناسبة', hintText: 'مثلاً: عرس ود خالي')),
+            TextField(
+                controller: nameCtrl,
+                autofocus: true,
+                decoration: InputDecoration(
+                    labelText: tr('اسم المناسبة', 'Occasion name'), hintText: t('مثلاً: عرس ود خالي', 'مثلًا: زفاف ابن خالي', "e.g. My cousin's wedding"))),
             const SizedBox(height: 10),
             Wrap(spacing: 6, children: [
               for (final e in emojis)
@@ -180,10 +194,10 @@ class _OccasionsToolState extends State<OccasionsTool> {
               const SizedBox(width: 8),
               OutlinedButton.icon(
                 icon: const Icon(Icons.schedule_rounded),
-                label: Text(time == null ? 'الساعة' : fmtTimeAr(DateTime(2000, 1, 1, time!.hour, time!.minute))),
+                label: Text(time == null ? tr('الساعة', 'Time') : fmtTimeAr(DateTime(2000, 1, 1, time!.hour, time!.minute))),
                 onPressed: () async {
-                  final t = await showTimePicker(context: ctx, initialTime: time ?? const TimeOfDay(hour: 9, minute: 0));
-                  if (t != null) setM(() => time = t);
+                  final picked = await showTimePicker(context: ctx, initialTime: time ?? const TimeOfDay(hour: 9, minute: 0));
+                  if (picked != null) setM(() => time = picked);
                 },
               ),
             ]),
@@ -191,9 +205,9 @@ class _OccasionsToolState extends State<OccasionsTool> {
               contentPadding: EdgeInsets.zero,
               value: yearly,
               onChanged: (v) => setM(() => yearly = v),
-              title: const Text('بتتكرر كل سنة (زي عيد ميلاد)'),
+              title: Text(t('بتتكرر كل سنة (زي عيد ميلاد)', 'تتكرر كل سنة (مثل عيد الميلاد)', 'Repeats every year (like a birthday)')),
             ),
-            FilledButton.icon(onPressed: () => Navigator.pop(ctx, true), icon: const Icon(Icons.check_rounded), label: const Text('تمام، ضيفها')),
+            FilledButton.icon(onPressed: () => Navigator.pop(ctx, true), icon: const Icon(Icons.check_rounded), label: Text(t('تمام، ضيفها', 'أضفها', 'Add it'))),
           ]),
         ),
       ),
@@ -202,7 +216,7 @@ class _OccasionsToolState extends State<OccasionsTool> {
     nameCtrl.dispose();
     if (ok != true) return;
     if (name.isEmpty) {
-      toast('أكتب اسم المناسبة');
+      toast(t('أكتب اسم المناسبة', 'اكتب اسم المناسبة', 'Enter the occasion name'));
       return;
     }
     final l = _userEvents(s)
@@ -217,7 +231,7 @@ class _OccasionsToolState extends State<OccasionsTool> {
         'created': DateTime.now().millisecondsSinceEpoch,
       });
     s.setData('occasions_events', l);
-    toast('اتضافت ✓');
+    toast(t('اتضافت ✓', 'تمت الإضافة ✓', 'Added ✓'));
   }
 
   void _delete(String id) {
@@ -227,9 +241,9 @@ class _OccasionsToolState extends State<OccasionsTool> {
   }
 
   String _countdown(Duration d) {
-    if (d.isNegative) return 'هسي 🎉';
+    if (d.isNegative) return t('هسي 🎉', 'الآن 🎉', 'Now 🎉');
     final days = d.inDays, h = d.inHours % 24, m = d.inMinutes % 60, sec = d.inSeconds % 60;
-    return days > 0 ? '$days يوم  ${two(h)}:${two(m)}:${two(sec)}' : '${two(h)}:${two(m)}:${two(sec)}';
+    return days > 0 ? '$days ${tr('يوم', 'd')}  ${two(h)}:${two(m)}:${two(sec)}' : '${two(h)}:${two(m)}:${two(sec)}';
   }
 
   String _dateText(AppState s, DateTime at) {
@@ -264,31 +278,39 @@ class _OccasionsToolState extends State<OccasionsTool> {
     return ToolList(children: [
       if (next != null)
         ResultHero(
-          label: '${next.emoji} أقرب مناسبة: ${next.name}',
+          label: '${next.emoji} ${tr('أقرب مناسبة', 'Next occasion')}: ${next.name}',
           value: _countdown(next.at.difference(now)),
           sub: _dateText(s, next.at),
           colors: [next.color, SD.coffee],
         ),
       StatGrid([
-        StatChip('${upcoming.length}', 'مناسبة جاية', color: SD.gold, icon: Icons.event_available_rounded),
-        StatChip('$in30', 'خلال 30 يوم', color: SD.green, icon: Icons.date_range_rounded),
-        StatChip('${_userEvents(s).length}', 'مناسباتك', color: SD.purple, icon: Icons.person_rounded),
+        StatChip('${upcoming.length}', t('مناسبة جاية', 'مناسبة قادمة', 'Upcoming'), color: SD.gold, icon: Icons.event_available_rounded),
+        StatChip('$in30', tr('خلال 30 يوم', 'Within 30 days'), color: SD.green, icon: Icons.date_range_rounded),
+        StatChip('${_userEvents(s).length}', tr('مناسباتك', 'Yours'), color: SD.purple, icon: Icons.person_rounded),
       ]),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final f in const [('all', 'الكل'), ('islam', 'إسلامية'), ('sudan', 'وطنية'), ('mine', 'حقّتي')])
+        for (final f in [
+          ('all', tr('الكل', 'All')),
+          ('islam', tr('إسلامية', 'Islamic')),
+          ('sudan', t('وطنية', 'وطنية', 'Sudanese national')),
+          ('mine', t('حقّتي', 'الخاصة بي', 'Mine')),
+        ])
           ChoiceChip(label: Text(f.$2), selected: _filter == f.$1, onSelected: (_) => setState(() => _filter = f.$1)),
-        ActionChip(avatar: const Icon(Icons.add_rounded, size: 18), label: const Text('ضيف مناسبة'), onPressed: _add),
+        ActionChip(avatar: const Icon(Icons.add_rounded, size: 18), label: Text(t('ضيف مناسبة', 'أضف مناسبة', 'Add occasion')), onPressed: _add),
       ]),
       const SizedBox(height: 12),
-      if (list.isEmpty) const NoteBox('ما في مناسبات هنا. ضيف مناسبتك بالزر الفوق 👆', kind: NoteKind.info),
+      if (list.isEmpty) NoteBox(t('ما في مناسبات هنا. ضيف مناسبتك بالزر الفوق 👆', 'لا توجد مناسبات هنا. أضف مناسبتك بالزر في الأعلى 👆', 'No occasions here. Add yours with the button above 👆'), kind: NoteKind.info),
       for (final o in list) _card(s, o, now, cs),
       ShareBar(() => [
-            '📅 المناسبات الجاية:',
-            for (final o in upcoming.take(10)) '${o.emoji} ${o.name}: ${fmtDateAr(toSudan(o.at))} — ${o.at.isBefore(now) ? 'النهارده' : 'باقي ${o.at.difference(now).inDays} يوم'}',
+            t('📅 المناسبات الجاية:', '📅 المناسبات القادمة:', '📅 Upcoming occasions:'),
+            for (final o in upcoming.take(10))
+              '${o.emoji} ${o.name}: ${fmtDateAr(toSudan(o.at))} — ${o.at.isBefore(now) ? t('النهارده', 'اليوم', 'today') : t('باقي ${o.at.difference(now).inDays} يوم', 'بعد ${o.at.difference(now).inDays} يومًا', 'in ${o.at.difference(now).inDays} days')}',
           ].join('\n')),
-      const NoteBox(
-          'التواريخ الإسلامية تقديرية حسب تقويم أم القرى مع تعديل الهجري في الإعدادات؛ والمعتمد إعلان الرؤية الرسمي في السودان، فممكن تختلف يوم.',
+      NoteBox(
+          t('التواريخ الإسلامية تقديرية حسب تقويم أم القرى مع تعديل الهجري في الإعدادات؛ والمعتمد إعلان الرؤية الرسمي في بلدك، فممكن تختلف يوم.',
+              'التواريخ الإسلامية تقديرية حسب تقويم أم القرى مع تعديل الهجري في الإعدادات؛ والمعتمد إعلان الرؤية الرسمي في بلدك، فقد تختلف يومًا.',
+              'Islamic dates are estimates from the Umm al-Qura calendar plus your Hijri adjustment in settings; the official moon-sighting announcement in your country prevails, so they may differ by a day.'),
           kind: NoteKind.warn),
     ]);
   }
@@ -321,7 +343,7 @@ class _OccasionsToolState extends State<OccasionsTool> {
           if (o.userId != null)
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded),
-              tooltip: 'امسح',
+              tooltip: t('امسح', 'احذف', 'Delete'),
               onPressed: () => _delete(o.userId!),
             ),
         ]),
@@ -329,11 +351,13 @@ class _OccasionsToolState extends State<OccasionsTool> {
         Row(children: [
           Expanded(
             child: Text(
-              ongoing ? (o.span.inDays > 1 ? 'جاري هسي ✓ ربنا يتقبّل' : 'النهارده! 🎉') : (left.isNegative ? 'فاتت' : _countdown(left)),
+              ongoing
+                  ? (o.span.inDays > 1 ? t('جاري هسي ✓ ربنا يتقبّل', 'جارٍ الآن ✓ تقبّل الله', 'Happening now ✓ May Allah accept') : t('النهارده! 🎉', 'اليوم! 🎉', 'Today! 🎉'))
+                  : (left.isNegative ? t('فاتت', 'انقضت', 'Passed') : _countdown(left)),
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: o.color, fontFeatures: const [FontFeature.tabularFigures()]),
             ),
           ),
-          if (!left.isNegative) Text('${fmt(left.inHours, 0)} ساعة', style: TextStyle(fontSize: 12, color: cs.onSurface.withValues(alpha: .6))),
+          if (!left.isNegative) Text(tr('${fmt(left.inHours, 0)} ساعة', '${fmt(left.inHours, 0)} h'), style: TextStyle(fontSize: 12, color: cs.onSurface.withValues(alpha: .6))),
         ]),
         const SizedBox(height: 6),
         ClipRRect(
@@ -342,7 +366,8 @@ class _OccasionsToolState extends State<OccasionsTool> {
         ),
         const SizedBox(height: 4),
         Text(
-          '${(p * 100).toStringAsFixed(1)}٪ من المسافة من آخر مرة${!left.isNegative && left.inDays >= 7 ? ' • ≈ ${fmt(left.inDays / 7, 1)} أسبوع' : ''}',
+          tr('${(p * 100).toStringAsFixed(1)}٪ من المسافة من آخر مرة${!left.isNegative && left.inDays >= 7 ? ' • ≈ ${fmt(left.inDays / 7, 1)} أسبوع' : ''}',
+              '${(p * 100).toStringAsFixed(1)}% of the way since last time${!left.isNegative && left.inDays >= 7 ? ' • ≈ ${fmt(left.inDays / 7, 1)} weeks' : ''}'),
           style: TextStyle(fontSize: 11.5, color: cs.onSurface.withValues(alpha: .55)),
         ),
         if (o.note.isNotEmpty) ...[

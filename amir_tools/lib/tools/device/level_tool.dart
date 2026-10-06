@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import '../../core/i18n.dart';
 import '../../core/format.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -53,9 +54,12 @@ class _LevelToolState extends State<LevelTool> {
   Widget build(BuildContext context) {
     final color = _isLevel ? SD.green : SD.gold;
     return ToolList(children: [
-      if (_noSensor) const NoteBox('الحسّاس ما متاح في الجهاز دا.', kind: NoteKind.warn),
+      if (_noSensor) NoteBox(t('الحسّاس ما متاح في الجهاز دا.', 'الحسّاس غير متاح في هذا الجهاز.', 'The sensor is not available on this device.'), kind: NoteKind.warn),
       SegmentedButton<bool>(
-        segments: const [ButtonSegment(value: false, label: Text('على السطح (مسطّح)')), ButtonSegment(value: true, label: Text('على الحرف (واقف)'))],
+        segments: [
+          ButtonSegment(value: false, label: Text(t('على السطح (مسطّح)', 'على السطح (مسطّح)', 'Flat (on surface)'))),
+          ButtonSegment(value: true, label: Text(t('على الحرف (واقف)', 'على الحافة (قائم)', 'On edge (upright)'))),
+        ],
         selected: {_edge},
         onSelectionChanged: (v) => setState(() => _edge = v.first),
       ),
@@ -69,19 +73,20 @@ class _LevelToolState extends State<LevelTool> {
       ),
       const SizedBox(height: 16),
       ResultHero(
-        label: _isLevel ? 'مستوي تمام ✓' : 'لسه مايل',
+        label: _isLevel ? t('مستوي تمام ✓', 'مستوٍ تماماً ✓', 'Perfectly level ✓') : t('لسه مايل', 'ما زال مائلاً', 'Still tilted'),
         value: _edge ? '${fmt(_rx.abs(), 1)}°' : '${fmt(_px.abs(), 1)}° / ${fmt(_rx.abs(), 1)}°',
-        sub: _edge ? 'الميلان' : 'أمامي / جانبي',
+        sub: _edge ? tr('الميلان', 'Tilt') : tr('أمامي / جانبي', 'Front / side'),
         colors: _isLevel ? const [SD.green, Color(0xFF004D1C)] : null,
       ),
       SCard(
-        title: 'التفاصيل',
+        title: tr('التفاصيل', 'Details'),
         icon: Icons.straighten_rounded,
         child: Column(children: [
-          InfoRow('الميلان الأمامي', '${fmt(_px, 1)}°'),
-          InfoRow('الميلان الجانبي', '${fmt(_rx, 1)}°'),
-          InfoRow('الفرق على متر واحد (جانبي)', '${fmt(math.tan(_rx.abs() * math.pi / 180) * 100, 1)} سم', hint: 'مفيد للبلاط والرفوف'),
-          InfoRow('النسبة المئوية للميل', '${fmt(math.tan(_rx.abs() * math.pi / 180) * 100, 1)}%'),
+          InfoRow(tr('الميلان الأمامي', 'Front tilt'), '${fmt(_px, 1)}°'),
+          InfoRow(tr('الميلان الجانبي', 'Side tilt'), '${fmt(_rx, 1)}°'),
+          InfoRow(tr('الفرق على متر واحد (جانبي)', 'Drop over 1 m (side)'), '${fmt(math.tan(_rx.abs() * math.pi / 180) * 100, 1)} ${tr('سم', 'cm')}',
+              hint: tr('مفيد للبلاط والرفوف', 'Handy for tiles and shelves')),
+          InfoRow(tr('النسبة المئوية للميل', 'Slope percentage'), '${fmt(math.tan(_rx.abs() * math.pi / 180) * 100, 1)}%'),
         ]),
       ),
       Row(children: [
@@ -92,13 +97,15 @@ class _LevelToolState extends State<LevelTool> {
               _r0 = _roll;
             }),
             icon: const Icon(Icons.my_location_rounded),
-            label: const Text('صفّر (معايرة)'),
+            label: Text(tr('صفّر (معايرة)', 'Zero (calibrate)')),
           ),
         ),
         const SizedBox(width: 8),
-        Expanded(child: OutlinedButton(onPressed: () => setState(() => _p0 = _r0 = 0), child: const Text('رجّع الأصل'))),
+        Expanded(child: OutlinedButton(onPressed: () => setState(() => _p0 = _r0 = 0), child: Text(t('رجّع الأصل', 'استعد الأصل', 'Reset')))),
       ]),
-      const NoteBox('للمعايرة: ختّ التلفون على سطح مستوي معروف واضغط «صفّر».', kind: NoteKind.tip),
+      NoteBox(
+          t('للمعايرة: ختّ التلفون على سطح مستوي معروف واضغط «صفّر».', 'للمعايرة: ضع الهاتف على سطح مستوٍ معروف واضغط «صفّر».', 'To calibrate: place the phone on a known level surface and tap "Zero".'),
+          kind: NoteKind.tip),
     ]);
   }
 }

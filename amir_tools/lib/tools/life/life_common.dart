@@ -19,6 +19,12 @@ DateTime todayPlace() {
   return DateTime(n.year, n.month, n.day);
 }
 
+/// يوم لحظة زمنية (ملّي ثانية) حسب ساعة المكان المختار
+DateTime msDay(int ms) {
+  final d = toPlace(DateTime.fromMillisecondsSinceEpoch(ms));
+  return DateTime(d.year, d.month, d.day);
+}
+
 /// مفتاح يوم ثابت yyyy-mm-dd
 String dk(DateTime d) => '${d.year}-${two(d.month)}-${two(d.day)}';
 

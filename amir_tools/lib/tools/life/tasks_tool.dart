@@ -252,12 +252,11 @@ class _TasksToolState extends State<TasksTool> {
     int doneOn(DateTime d) => doneAll.where((x) {
           final ms = intOf(x['doneAt'], 0);
           if (ms == 0) return false;
-          final dd = DateTime.fromMillisecondsSinceEpoch(ms);
-          return dd.year == d.year && dd.month == d.month && dd.day == d.day;
+          return dayDiff(msDay(ms), d) == 0;
         }).length;
     final doneWeek = doneAll.where((x) {
       final ms = intOf(x['doneAt'], 0);
-      return ms > 0 && !DateTime.fromMillisecondsSinceEpoch(ms).isBefore(weekStart);
+      return ms > 0 && !msDay(ms).isBefore(weekStart);
     }).length;
     final rate = all.isEmpty ? 0.0 : doneAll.length / all.length;
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:torch_light/torch_light.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import '../../core/i18n.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 
@@ -89,9 +90,14 @@ class _FlashlightToolState extends State<FlashlightTool> {
       fullscreenDialog: true,
       builder: (ctx) => GestureDetector(
         onTap: () => Navigator.pop(ctx),
-        child: const Scaffold(
+        child: Scaffold(
           backgroundColor: Colors.white,
-          body: SafeArea(child: Align(alignment: Alignment.bottomCenter, child: Padding(padding: EdgeInsets.all(30), child: Text('اضغط في أي حتة عشان تطلع', style: TextStyle(color: Colors.black38))))),
+          body: SafeArea(
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: Text(t('اضغط في أي حتة عشان تطلع', 'اضغط في أي مكان للخروج', 'Tap anywhere to exit'), style: const TextStyle(color: Colors.black38))))),
         ),
       ),
     )).then((_) => _on ? null : WakelockPlus.disable().catchError((_) {}));
@@ -100,7 +106,11 @@ class _FlashlightToolState extends State<FlashlightTool> {
   @override
   Widget build(BuildContext context) {
     return ToolList(children: [
-      if (!_available) const NoteBox('الفلاش ما متاح هنا (أو الإذن مقفول) — استعمل «الشاشة البيضاء» تحت.', kind: NoteKind.warn),
+      if (!_available)
+        NoteBox(
+            t('الفلاش ما متاح هنا (أو الإذن مقفول) — استعمل «الشاشة البيضاء» تحت.', 'الفلاش غير متاح هنا (أو الإذن مرفوض) — استخدم «الشاشة البيضاء» أدناه.',
+                'Flash is unavailable here (or permission denied) — use "White screen" below.'),
+            kind: NoteKind.warn),
       Center(
         child: GestureDetector(
           onTap: _available ? (_on ? _stop : _start) : null,
@@ -119,18 +129,22 @@ class _FlashlightToolState extends State<FlashlightTool> {
           ),
         ),
       ),
-      Center(child: Text(_on ? 'شغّال ${_mode == 'sos' ? '— SOS' : _mode == 'strobe' ? '— وميض' : ''}' : 'اضغط الدائرة عشان تولّع', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18))),
+      Center(
+          child: Text(
+              _on
+                  ? '${t('شغّال', 'يعمل', 'On')} ${_mode == 'sos' ? '— SOS' : _mode == 'strobe' ? '— ${tr('وميض', 'Strobe')}' : ''}'
+                  : t('اضغط الدائرة عشان تولّع', 'اضغط الدائرة للتشغيل', 'Tap the circle to turn on'), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18))),
       const SizedBox(height: 14),
       SCard(
-        title: 'الوضع',
+        title: tr('الوضع', 'Mode'),
         icon: Icons.tune_rounded,
         color: SD.gold,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'normal', label: Text('عادي')),
-              ButtonSegment(value: 'sos', label: Text('SOS')),
-              ButtonSegment(value: 'strobe', label: Text('وميض')),
+            segments: [
+              ButtonSegment(value: 'normal', label: Text(tr('عادي', 'Steady'))),
+              const ButtonSegment(value: 'sos', label: Text('SOS')),
+              ButtonSegment(value: 'strobe', label: Text(tr('وميض', 'Strobe'))),
             ],
             selected: {_mode},
             onSelectionChanged: (v) {
@@ -140,16 +154,23 @@ class _FlashlightToolState extends State<FlashlightTool> {
           ),
           if (_mode == 'strobe') ...[
             const SizedBox(height: 8),
-            Text('السرعة: ${_speed.round()} ومضة/ثانية'),
+            Text('${tr('السرعة', 'Speed')}: ${_speed.round()} ${tr('ومضة/ثانية', 'flashes/sec')}'),
             Slider(value: _speed, min: 1, max: 15, divisions: 14, onChanged: (v) => setState(() => _speed = v), onChangeEnd: (_) => _on ? _start() : null),
           ],
-          if (_mode == 'sos') const NoteBox('SOS هي إشارة الاستغاثة الدولية (··· ––– ···) — مفيدة لو اتزنقت بالليل في طريق سفر.', kind: NoteKind.info),
+          if (_mode == 'sos')
+            NoteBox(
+                t('SOS هي إشارة الاستغاثة الدولية (··· ––– ···) — مفيدة لو اتزنقت بالليل في طريق سفر.', 'SOS هي إشارة الاستغاثة الدولية (··· ––– ···) — مفيدة إن علِقت ليلاً في طريق سفر.',
+                    'SOS is the international distress signal (··· ––– ···) — useful if you get stranded at night on the road.'),
+                kind: NoteKind.info),
         ]),
       ),
-      OutlinedButton.icon(onPressed: _whiteScreen, icon: const Icon(Icons.brightness_high_rounded), label: const Text('شاشة بيضاء (ارفع السطوع للآخر)')),
+      OutlinedButton.icon(onPressed: _whiteScreen, icon: const Icon(Icons.brightness_high_rounded), label: Text(t('شاشة بيضاء (ارفع السطوع للآخر)', 'شاشة بيضاء (ارفع السطوع للحد الأقصى)', 'White screen (turn brightness all the way up)'))),
       const SizedBox(height: 12),
-      if (_on && _since != null) InfoRow('شغّال من', '${DateTime.now().difference(_since!).inMinutes} دقيقة'),
-      const NoteBox('الفلاش بيصرف بطارية — لو القطوعة طويلة، استعمله على فترات واحتفظ بشحن للتلفون.', kind: NoteKind.tip),
+      if (_on && _since != null) InfoRow(t('شغّال من', 'يعمل منذ', 'On for'), '${DateTime.now().difference(_since!).inMinutes} ${tr('دقيقة', 'min')}'),
+      NoteBox(
+          t('الفلاش بيصرف بطارية — لو القطوعة طويلة، استعمله على فترات واحتفظ بشحن للتلفون.', 'الفلاش يستهلك البطارية — إن طال انقطاع الكهرباء فاستخدمه على فترات واحتفظ بشحن للهاتف.',
+              'The flash drains the battery — during long power cuts, use it in bursts and save some charge.'),
+          kind: NoteKind.tip),
     ]);
   }
 }

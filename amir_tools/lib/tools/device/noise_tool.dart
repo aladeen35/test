@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/i18n.dart';
 import '../../core/format.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -23,9 +24,9 @@ class _NoiseToolState extends State<NoiseTool> {
   String? _err;
 
   Future<void> _start() async {
-    if (kIsWeb) return setState(() => _err = 'المقياس شغّال في تطبيق الموبايل بس');
+    if (kIsWeb) return setState(() => _err = t('المقياس شغّال في تطبيق الموبايل بس', 'المقياس يعمل في تطبيق الجوال فقط', 'The meter works in the mobile app only'));
     final st = await Permission.microphone.request();
-    if (!st.isGranted) return setState(() => _err = 'محتاجين إذن المايك عشان نقيس');
+    if (!st.isGranted) return setState(() => _err = t('محتاجين إذن المايك عشان نقيس', 'نحتاج إذن الميكروفون للقياس', 'Microphone permission is needed to measure'));
     try {
       _sub = NoiseMeter().noise.listen((r) {
         final v = r.meanDecibel;
@@ -40,12 +41,14 @@ class _NoiseToolState extends State<NoiseTool> {
           _hist.add(v);
           if (_hist.length > 120) _hist.removeAt(0);
         });
-      }, onError: (_) => setState(() => _err = 'حصلت مشكلة في المايك'));
+      }, onError: (_) => setState(() => _err = _micErr));
       setState(() {});
     } catch (_) {
-      setState(() => _err = 'حصلت مشكلة في المايك');
+      setState(() => _err = _micErr);
     }
   }
+
+  String get _micErr => t('حصلت مشكلة في المايك', 'حدثت مشكلة في الميكروفون', 'Microphone error');
 
   void _stop() {
     _sub?.cancel();
@@ -59,13 +62,13 @@ class _NoiseToolState extends State<NoiseTool> {
   }
 
   (String, Color) _label(double v) {
-    if (v < 30) return ('هدوء تام 🤫', SD.green);
-    if (v < 50) return ('هادئ — زي البيت بالليل', SD.green);
-    if (v < 65) return ('ونسة عادية', SD.teal);
-    if (v < 80) return ('زحمة شارع', SD.gold);
-    if (v < 90) return ('عالي — ركشة أو مولّد قريب', SD.orange);
-    if (v < 100) return ('عالي شديد — خطر مع الوقت', SD.red);
-    return ('خطر على السمع ⚠️ — بعّد طوالي', SD.red);
+    if (v < 30) return (t('هدوء تام 🤫', 'هدوء تام 🤫', 'Total silence 🤫'), SD.green);
+    if (v < 50) return (t('هادئ — زي البيت بالليل', 'هادئ — مثل البيت ليلاً', 'Quiet — like home at night'), SD.green);
+    if (v < 65) return (t('ونسة عادية', 'محادثة عادية', 'Normal conversation'), SD.teal);
+    if (v < 80) return (t('زحمة شارع', 'زحمة الشارع', 'Busy street'), SD.gold);
+    if (v < 90) return (t('عالي — ركشة أو مولّد قريب', 'مرتفع — دراجة نارية أو مولّد قريب', 'Loud — motorbike or generator nearby'), SD.orange);
+    if (v < 100) return (t('عالي شديد — خطر مع الوقت', 'مرتفع جداً — خطر مع طول التعرض', 'Very loud — harmful over time'), SD.red);
+    return (t('خطر على السمع ⚠️ — بعّد طوالي', 'خطر على السمع ⚠️ — ابتعد فوراً', 'Hearing danger ⚠️ — move away now'), SD.red);
   }
 
   @override
@@ -74,34 +77,37 @@ class _NoiseToolState extends State<NoiseTool> {
     final (lbl, col) = _label(_cur);
     return ToolList(children: [
       if (_err != null) NoteBox(_err!, kind: NoteKind.warn),
-      ResultHero(label: running ? lbl : 'اضغط ابدأ عشان نقيس', value: running ? '${fmt(_cur, 0)} dB' : '— dB', colors: running ? [col, SD.brownDeep] : null),
+      ResultHero(label: running ? lbl : t('اضغط ابدأ عشان نقيس', 'اضغط ابدأ للقياس', 'Tap Start to measure'), value: running ? '${fmt(_cur, 0)} dB' : '— dB', colors: running ? [col, SD.brownDeep] : null),
       SizedBox(height: 120, child: CustomPaint(painter: _ChartPainter(List.of(_hist)), size: const Size(double.infinity, 120))),
       const SizedBox(height: 10),
       FilledButton.icon(
         onPressed: running ? _stop : _start,
         icon: Icon(running ? Icons.stop_rounded : Icons.mic_rounded),
-        label: Text(running ? 'وقّف' : 'ابدأ القياس'),
+        label: Text(running ? t('وقّف', 'إيقاف', 'Stop') : tr('ابدأ القياس', 'Start measuring')),
       ),
       const SizedBox(height: 12),
       if (_n > 0)
         StatGrid([
-          StatChip(fmt(_min, 0), 'أقل', color: SD.green),
-          StatChip(fmt(_sum / _n, 0), 'المتوسط', color: SD.gold),
-          StatChip(fmt(_max, 0), 'أعلى', color: SD.red),
+          StatChip(fmt(_min, 0), tr('أقل', 'Min'), color: SD.green),
+          StatChip(fmt(_sum / _n, 0), tr('المتوسط', 'Average'), color: SD.gold),
+          StatChip(fmt(_max, 0), tr('أعلى', 'Max'), color: SD.red),
         ]),
       SCard(
-        title: 'مقارنات',
+        title: tr('مقارنات', 'Comparisons'),
         icon: Icons.hearing_rounded,
-        child: const Column(children: [
-          InfoRow('همس', '30 dB'),
-          InfoRow('ونسة عادية', '60 dB'),
-          InfoRow('زحمة السوق العربي', '70–80 dB'),
-          InfoRow('ركشة / مولّد كهرباء', '85–95 dB'),
-          InfoRow('مكبرات صوت الحفلات', '100–110 dB'),
-          InfoRow('الأذى يبدأ مع التعرض الطويل', 'من 85 dB'),
+        child: Column(children: [
+          InfoRow(tr('همس', 'Whisper'), '30 dB'),
+          InfoRow(t('ونسة عادية', 'محادثة عادية', 'Normal conversation'), '60 dB'),
+          InfoRow(t('زحمة السوق', 'زحمة السوق', 'Busy market'), '70–80 dB'),
+          InfoRow(t('ركشة / مولّد كهرباء', 'دراجة نارية / مولّد كهرباء', 'Motorbike / generator'), '85–95 dB'),
+          InfoRow(t('مكبرات صوت الحفلات', 'مكبرات صوت الحفلات', 'Party speakers'), '100–110 dB'),
+          InfoRow(tr('الأذى يبدأ مع التعرض الطويل', 'Damage with long exposure'), tr('من 85 dB', 'from 85 dB')),
         ]),
       ),
-      const NoteBox('القراءة تقريبية حسب مايك التلفون وما بتعتبر جهاز قياس معتمد.', kind: NoteKind.info),
+      NoteBox(
+          t('القراءة تقريبية حسب مايك التلفون وما بتعتبر جهاز قياس معتمد.', 'القراءة تقريبية بحسب ميكروفون الهاتف ولا تُعدّ جهاز قياس معتمداً.',
+              "Readings are approximate, depend on the phone's mic, and aren't a certified meter."),
+          kind: NoteKind.info),
     ]);
   }
 }
