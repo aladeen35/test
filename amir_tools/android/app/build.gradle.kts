@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.albushra.amir_tools"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
