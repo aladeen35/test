@@ -115,7 +115,7 @@ const sudaneseProverbs = [
   ('الما بتلحقو جدّعو', 'الحاجة الما بتقدر عليها خليها', "What you can't reach, let it go."),
   ('جدادة الخلا طردت جدادة البيت', 'الغريب ممكن يطلّع صاحب المكان', 'The wild hen chased out the house hen.'),
   ('الشينة منكورة', 'الغلط ما في زول بيعترف بيهو', 'Nobody owns up to a bad deed.'),
-  ('دخلوها وصقيرها حام', 'جو في الوقت الغلط بعد ما الأمر انتهى', 'They came in after the matter was settled.'),
+  ('دخلوها وصقيرها حام', 'خشّوا في الموضوع والخطر لسه حايم فوقهم', 'They walked into it while the danger was still hovering overhead.'),
   ('الرك على الله', 'التوكل على الله في كل حال', 'Reliance is on God.'),
   ('المال تلتو ولا كتلتو', 'تاخد جزء من حقك أحسن من تضيّعو كلو', 'A third of your money is better than losing it all.'),
 ];
