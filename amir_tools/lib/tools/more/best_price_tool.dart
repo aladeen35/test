@@ -62,8 +62,8 @@ class BestPriceTool extends StatefulWidget {
 
 class _BestPriceToolState extends State<BestPriceTool> {
   List<_Item> items = [];
-  final needC = TextEditingController();
-  String cur = '';
+  final needC = TextEditingController(), curC = TextEditingController();
+  String get cur => curC.text;
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _BestPriceToolState extends State<BestPriceTool> {
     if (saved != null) {
       items = List<Map>.from(saved['items'] ?? []).map(_Item.new).toList();
       needC.text = saved['need'] ?? '';
-      cur = saved['cur'] ?? '';
+      curC.text = saved['cur'] ?? '';
     }
     while (items.length < 2) {
       items.add(_Item());
@@ -86,6 +86,7 @@ class _BestPriceToolState extends State<BestPriceTool> {
       i.dispose();
     }
     needC.dispose();
+    curC.dispose();
     super.dispose();
   }
 
@@ -95,9 +96,12 @@ class _BestPriceToolState extends State<BestPriceTool> {
   }
 
   void _example() {
-    for (final i in items) {
-      i.dispose();
-    }
+    final old = items;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final i in old) {
+        i.dispose();
+      }
+    });
     items = [
       _Item({'n': t('جوال سكر', 'كيس سكر', 'Sugar sack'), 'p': '95000', 's': '50', 'u': 'kg', 'c': '1'}),
       _Item({'n': t('كيلو سكر بالقطاعي', 'كيلو سكر بالتجزئة', 'Sugar by the kilo'), 'p': '2300', 's': '1', 'u': 'kg', 'c': '1'}),
@@ -193,13 +197,9 @@ class _BestPriceToolState extends State<BestPriceTool> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           NumField('${t('الكمية', 'الكمية', 'Quantity')} (${mainFam == null ? '' : _baseLabel(mainFam)})', needC, onChanged: (_) => _save()),
           TextField(
-            controller: TextEditingController(text: cur),
+            controller: curC,
             decoration: InputDecoration(labelText: t('العملة (اختياري)', 'العملة (اختياري)', 'Currency (optional)'), hintText: t('جنيه، ريال…', 'جنيه، ريال…', 'SDG, SAR…')),
-            onChanged: (v) {
-              cur = v;
-              context.read<AppState>().setData('best_price', {'items': items.map((e) => e.toJson()).toList(), 'need': needC.text, 'cur': cur});
-            },
-            onSubmitted: (_) => setState(() {}),
+            onChanged: (_) => _save(),
           ),
           const SizedBox(height: 8),
           if (need > 0 && mainFam != null)
@@ -239,6 +239,7 @@ class _BestPriceToolState extends State<BestPriceTool> {
     final pu = it.perUnit;
     final color = isBest ? SD.green : _colors[i % _colors.length];
     return SCard(
+      key: ObjectKey(it),
       title: '${isBest ? '🏆 ' : ''}${t('منتج', 'منتج', 'Product')} ${i + 1}',
       icon: Icons.shopping_basket_rounded,
       color: color,
@@ -247,7 +248,9 @@ class _BestPriceToolState extends State<BestPriceTool> {
           onTap: items.length <= 2
               ? null
               : () {
-                  setState(() => items.removeAt(i).dispose());
+                  final r = items.removeAt(i);
+                  WidgetsBinding.instance.addPostFrameCallback((_) => r.dispose());
+                  setState(() {});
                   _save();
                 }),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
