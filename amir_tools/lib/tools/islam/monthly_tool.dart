@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../../core/data.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -9,9 +11,9 @@ import '../../services/calendars.dart';
 import '../../services/prayer.dart';
 
 class _Row {
-  final DateTime date; // تاريخ اليوم (ميلادي، تقويم السودان)
+  final DateTime date; // تاريخ اليوم (ميلادي، بتقويم المكان المختار)
   final CalDate hijri;
-  final Map<String, DateTime> t; // ساعة الحائط في السودان
+  final Map<String, DateTime> t; // ساعة الحائط في المكان المختار
   _Row(this.date, this.hijri, this.t);
   DateTime get imsak => t['fajr']!.subtract(const Duration(minutes: 10));
   Duration get dayLen => t['maghrib']!.difference(t['sunrise']!);
@@ -45,6 +47,30 @@ class _MonthlyToolState extends State<MonthlyTool> {
     _ramadan = h?.m == 9 || h?.m == 8;
   }
 
+  /// ساعة الحائط في المدينة المختارة في الجدول (قد تختلف عن مكان التطبيق)
+  DateTime _wall(DateTime v) {
+    if (_city.tz.isNotEmpty) {
+      try {
+        return v.toUtc().add(tz.getLocation(_city.tz).timeZone(v.millisecondsSinceEpoch).offset);
+      } catch (_) {}
+    }
+    return toSudan(v);
+  }
+
+  /// فرق التوقيت عن UTC كنص (UTC+3)
+  String _utcLabel() {
+    Duration off;
+    try {
+      off = _city.tz.isNotEmpty ? tz.getLocation(_city.tz).timeZone(DateTime.now().millisecondsSinceEpoch).offset : placeOffset(DateTime.now());
+    } catch (_) {
+      off = placeOffset(DateTime.now());
+    }
+    final m = off.inMinutes;
+    final sign = m < 0 ? '−' : '+';
+    final h = m.abs() ~/ 60, mm = m.abs() % 60;
+    return 'UTC$sign$h${mm == 0 ? '' : ':${two(mm)}'}';
+  }
+
   CalDate? _safeHijri(DateTime d, int shift) {
     try {
       return toHijri(d, shift: shift);
@@ -76,26 +102,31 @@ class _MonthlyToolState extends State<MonthlyTool> {
           d,
           _safeHijri(d, s.hijriShift) ?? const CalDate(0, 1, 0),
           prayerTimes(d.year, d.month, d.day, _city.lat, _city.lng, method: s.prayerMethod, hanafi: s.hanafi, adjust: s.prayerAdjust)
-              .map((k, v) => MapEntry(k, toSudan(v))),
+              .map((k, v) => MapEntry(k, _wall(v))),
         ),
     ];
   }
 
-  String _dur(Duration d) => '${d.inHours}س ${two(d.inMinutes % 60)}د';
+  String _dur(Duration d) => tr('${d.inHours}س ${two(d.inMinutes % 60)}د', '${d.inHours}h ${two(d.inMinutes % 60)}m');
 
   String _shareText(List<_Row> rows) {
     final b = StringBuffer();
-    b.writeln(_ramadan ? '🌙 إمساكية رمضان $_hYear هـ — ${_city.name}' : '🕌 مواقيت ${monthsAr[_month - 1]} $_year — ${_city.name}');
-    b.writeln(_ramadan ? 'اليوم | التاريخ | الإمساك | الفجر | الظهر | العصر | المغرب(الإفطار) | العشاء' : 'اليوم | الهجري | الفجر | الشروق | الظهر | العصر | المغرب | العشاء');
+    b.writeln(_ramadan
+        ? tr('🌙 إمساكية رمضان $_hYear هـ — ${_city.name}', '🌙 Ramadan $_hYear AH timetable — ${_city.name}')
+        : tr('🕌 مواقيت ${monthsAr[_month - 1]} $_year — ${_city.name}', '🕌 Prayer times, ${monthsAr[_month - 1]} $_year — ${_city.name}'));
+    b.writeln(_ramadan
+        ? tr('اليوم | التاريخ | الإمساك | الفجر | الظهر | العصر | المغرب(الإفطار) | العشاء', 'Day | Date | Imsak | Fajr | Dhuhr | Asr | Maghrib (Iftar) | Isha')
+        : tr('اليوم | الهجري | الفجر | الشروق | الظهر | العصر | المغرب | العشاء', 'Day | Hijri | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha'));
     for (final r in rows) {
-      final t = r.t;
+      final pt = r.t;
       if (_ramadan) {
-        b.writeln('${r.hijri.d} | ${r.date.day}/${r.date.month} | ${fmtTimeAr(r.imsak)} | ${fmtTimeAr(t['fajr']!)} | ${fmtTimeAr(t['dhuhr']!)} | ${fmtTimeAr(t['asr']!)} | ${fmtTimeAr(t['maghrib']!)} | ${fmtTimeAr(t['isha']!)}');
+        b.writeln('${r.hijri.d} | ${r.date.day}/${r.date.month} | ${fmtTimeAr(r.imsak)} | ${fmtTimeAr(pt['fajr']!)} | ${fmtTimeAr(pt['dhuhr']!)} | ${fmtTimeAr(pt['asr']!)} | ${fmtTimeAr(pt['maghrib']!)} | ${fmtTimeAr(pt['isha']!)}');
       } else {
-        b.writeln('${r.date.day} | ${r.hijri.d} ${hijriMonths[r.hijri.m - 1]} | ${fmtTimeAr(t['fajr']!)} | ${fmtTimeAr(t['sunrise']!)} | ${fmtTimeAr(t['dhuhr']!)} | ${fmtTimeAr(t['asr']!)} | ${fmtTimeAr(t['maghrib']!)} | ${fmtTimeAr(t['isha']!)}');
+        b.writeln('${r.date.day} | ${r.hijri.d} ${hijriMonths[r.hijri.m - 1]} | ${fmtTimeAr(pt['fajr']!)} | ${fmtTimeAr(pt['sunrise']!)} | ${fmtTimeAr(pt['dhuhr']!)} | ${fmtTimeAr(pt['asr']!)} | ${fmtTimeAr(pt['maghrib']!)} | ${fmtTimeAr(pt['isha']!)}');
       }
     }
-    b.write('(الأوقات تقريبية بتوقيت السودان، احتاط دقيقتين)');
+    b.write(t('(الأوقات تقريبية بالتوقيت المحلي لـ${_city.name}، احتاط دقيقتين)', '(الأوقات تقريبية بالتوقيت المحلي لـ${_city.name}، احتط بدقيقتين)',
+        '(Approximate times in ${_city.name} local time; allow a couple of minutes)'));
     return b.toString();
   }
 
@@ -105,8 +136,13 @@ class _MonthlyToolState extends State<MonthlyTool> {
     final cs = Theme.of(context).colorScheme;
     final rows = _rows(s);
     final today = sudanNow();
-    final cityOptions = <City>[if (s.city.name.contains('موقعي')) s.city, ...cities];
-    final selected = cityOptions.firstWhere((c) => c.name == _city.name, orElse: () => cityOptions.first);
+    // المكان الحالي للتطبيق (أي مكان في العالم) + المدينة المختارة هنا + مدن السودان كخيارات سريعة
+    final cityOptions = <City>[
+      if (!cities.any((c) => c.id == s.city.id)) s.city,
+      if (_city.id != s.city.id && !cities.any((c) => c.id == _city.id)) _city,
+      ...cities,
+    ];
+    final selected = cityOptions.firstWhere((c) => c.id == _city.id, orElse: () => cityOptions.first);
 
     _Row? longest, shortest, earliestFajr, latestFajr;
     var totalFast = 0;
@@ -123,32 +159,37 @@ class _MonthlyToolState extends State<MonthlyTool> {
 
     return ToolList(children: [
       SegmentedButton<bool>(
-        segments: const [
-          ButtonSegment(value: false, label: Text('شهر ميلادي'), icon: Icon(Icons.calendar_month_rounded)),
-          ButtonSegment(value: true, label: Text('إمساكية رمضان'), icon: Icon(Icons.nightlight_round)),
+        segments: [
+          ButtonSegment(value: false, label: Text(tr('شهر ميلادي', 'Calendar month')), icon: const Icon(Icons.calendar_month_rounded)),
+          ButtonSegment(value: true, label: Text(tr('إمساكية رمضان', 'Ramadan timetable')), icon: const Icon(Icons.nightlight_round)),
         ],
         selected: {_ramadan},
         onSelectionChanged: (v) => setState(() => _ramadan = v.first),
       ),
       const SizedBox(height: 12),
       SCard(
-        title: 'المدينة والفترة',
+        title: tr('المدينة والفترة', 'Place and period'),
         icon: Icons.tune_rounded,
         color: SD.nile,
         child: Column(children: [
           DropdownButtonFormField<City>(
             initialValue: selected,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'المدينة', prefixIcon: Icon(Icons.location_city_rounded)),
-            items: [for (final c in cityOptions) DropdownMenuItem(value: c, child: Text('${c.name} — ${c.state}', overflow: TextOverflow.ellipsis))],
+            decoration: InputDecoration(labelText: tr('المدينة', 'City'), prefixIcon: const Icon(Icons.location_city_rounded)),
+            items: [
+              for (final c in cityOptions)
+                DropdownMenuItem(
+                    value: c,
+                    child: Text('${c.inSudan ? '' : '${flagOf(c.country)} '}${c.name}${c.state.isEmpty ? '' : ' — ${c.state}'}', overflow: TextOverflow.ellipsis)),
+            ],
             onChanged: (c) => setState(() => _city = c ?? _city),
           ),
           const SizedBox(height: 10),
           if (_ramadan)
             Row(children: [
-              IconButton.filledTonal(onPressed: () => setState(() => _hYear--), icon: const Icon(Icons.chevron_right_rounded)),
-              Expanded(child: Text('رمضان $_hYear هـ', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800))),
-              IconButton.filledTonal(onPressed: () => setState(() => _hYear++), icon: const Icon(Icons.chevron_left_rounded)),
+              IconButton.filledTonal(onPressed: () => setState(() => _hYear--), icon: const Icon(Icons.chevron_left_rounded), tooltip: tr('السابق', 'Previous')),
+              Expanded(child: Text(tr('رمضان $_hYear هـ', 'Ramadan $_hYear AH'), textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800))),
+              IconButton.filledTonal(onPressed: () => setState(() => _hYear++), icon: const Icon(Icons.chevron_right_rounded), tooltip: tr('التالي', 'Next')),
             ])
           else
             Row(children: [
@@ -160,7 +201,8 @@ class _MonthlyToolState extends State<MonthlyTool> {
                     _year--;
                   }
                 }),
-                icon: const Icon(Icons.chevron_right_rounded),
+                tooltip: tr('السابق', 'Previous'),
+                icon: const Icon(Icons.chevron_left_rounded),
               ),
               Expanded(
                 child: InkWell(
@@ -179,58 +221,64 @@ class _MonthlyToolState extends State<MonthlyTool> {
                     _year++;
                   }
                 }),
-                icon: const Icon(Icons.chevron_left_rounded),
+                tooltip: tr('التالي', 'Next'),
+                icon: const Icon(Icons.chevron_right_rounded),
               ),
             ]),
         ]),
       ),
       if (rows.isEmpty)
-        const NoteBox('التاريخ دا برّه مدى التقويم الهجري المتاح (1356–1500 هـ). جرّب سنة تانية.', kind: NoteKind.warn)
+        NoteBox(t('التاريخ دا برّه مدى التقويم الهجري المتاح (1356–1500 هـ). جرّب سنة تانية.', 'هذا التاريخ خارج مدى التقويم الهجري المتاح (1356–1500 هـ). جرّب سنة أخرى.',
+            'This date is outside the supported Hijri range (1356–1500 AH). Try another year.'), kind: NoteKind.warn)
       else ...[
         if (_ramadan)
           ResultHero(
-            label: 'رمضان $_hYear هـ في ${_city.name}',
-            value: '${rows.length} يوم',
-            sub: 'من ${fmtDateAr(rows.first.date)}\nلحدي ${fmtDateAr(rows.last.date)}\nمتوسط الصيام ${_dur(avgFast)}',
+            label: tr('رمضان $_hYear هـ في ${_city.name}', 'Ramadan $_hYear AH in ${_city.name}'),
+            value: tr('${rows.length} يوم', '${rows.length} days'),
+            sub: t('من ${fmtDateAr(rows.first.date)}\nلحدي ${fmtDateAr(rows.last.date)}\nمتوسط الصيام ${_dur(avgFast)}',
+                'من ${fmtDateAr(rows.first.date)}\nإلى ${fmtDateAr(rows.last.date)}\nمتوسط الصيام ${_dur(avgFast)}',
+                'From ${fmtDateAr(rows.first.date)}\nto ${fmtDateAr(rows.last.date)}\nAverage fast ${_dur(avgFast)}'),
             colors: const [SD.indigo, SD.coffee],
           )
         else if (todayRow != null)
           ResultHero(
-            label: 'النهارده ${fmtDateAr(todayRow.date)}',
+            label: '${t('النهارده', 'اليوم', 'Today')} ${fmtDateAr(todayRow.date)}',
             value: '${todayRow.hijri.d} ${hijriMonths[todayRow.hijri.m - 1]}',
-            sub: 'الفجر ${fmtTimeAr(todayRow.t['fajr']!)} • المغرب ${fmtTimeAr(todayRow.t['maghrib']!)} • النهار ${_dur(todayRow.dayLen)}',
+            sub: '${prayerNames['fajr']} ${fmtTimeAr(todayRow.t['fajr']!)} • ${prayerNames['maghrib']} ${fmtTimeAr(todayRow.t['maghrib']!)} • ${tr('النهار', 'Daylight')} ${_dur(todayRow.dayLen)}',
             colors: const [SD.green, SD.coffee],
           ),
         _table(rows, today, cs),
         const SizedBox(height: 12),
-        const SectionTitle('خلاصة الفترة', icon: Icons.insights_rounded),
+        SectionTitle(tr('خلاصة الفترة', 'Period summary'), icon: Icons.insights_rounded),
         StatGrid([
-          StatChip(_dur(longest!.dayLen), 'أطول نهار (${longest.date.day}/${longest.date.month})', color: SD.gold, icon: Icons.wb_sunny_rounded),
-          StatChip(_dur(shortest!.dayLen), 'أقصر نهار (${shortest.date.day}/${shortest.date.month})', color: SD.nile, icon: Icons.brightness_3_rounded),
-          StatChip(_dur(avgFast), _ramadan ? 'متوسط ساعات الصيام' : 'متوسط فجر→مغرب', color: SD.henna, icon: Icons.timelapse_rounded),
-          StatChip(fmtTimeAr(earliestFajr!.t['fajr']!), 'أبدر فجر (${earliestFajr.date.day}/${earliestFajr.date.month})', color: SD.teal, icon: Icons.alarm_rounded),
-          StatChip(fmtTimeAr(latestFajr!.t['fajr']!), 'أأخر فجر (${latestFajr.date.day}/${latestFajr.date.month})', color: SD.indigo, icon: Icons.alarm_on_rounded),
-          StatChip('${rows.length}', 'عدد الأيام', color: SD.green, icon: Icons.calendar_view_month_rounded),
+          StatChip(_dur(longest!.dayLen), '${tr('أطول نهار', 'Longest day')} (${longest.date.day}/${longest.date.month})', color: SD.gold, icon: Icons.wb_sunny_rounded),
+          StatChip(_dur(shortest!.dayLen), '${tr('أقصر نهار', 'Shortest day')} (${shortest.date.day}/${shortest.date.month})', color: SD.nile, icon: Icons.brightness_3_rounded),
+          StatChip(_dur(avgFast), _ramadan ? tr('متوسط ساعات الصيام', 'Average fasting hours') : tr('متوسط فجر→مغرب', 'Average Fajr→Maghrib'), color: SD.henna, icon: Icons.timelapse_rounded),
+          StatChip(fmtTimeAr(earliestFajr!.t['fajr']!), '${t('أبدر فجر', 'أبكر فجر', 'Earliest Fajr')} (${earliestFajr.date.day}/${earliestFajr.date.month})', color: SD.teal, icon: Icons.alarm_rounded),
+          StatChip(fmtTimeAr(latestFajr!.t['fajr']!), '${tr('أأخر فجر', 'Latest Fajr')} (${latestFajr.date.day}/${latestFajr.date.month})', color: SD.indigo, icon: Icons.alarm_on_rounded),
+          StatChip('${rows.length}', tr('عدد الأيام', 'Days'), color: SD.green, icon: Icons.calendar_view_month_rounded),
         ]),
         const SizedBox(height: 12),
         SCard(
-          title: 'معلومات الحساب',
+          title: tr('معلومات الحساب', 'Calculation details'),
           icon: Icons.info_outline_rounded,
           color: SD.teal,
           child: Column(children: [
-            InfoRow('طريقة الحساب', prayerMethods.firstWhere((m) => m.id == s.prayerMethod, orElse: () => prayerMethods.first).name),
-            InfoRow('مذهب العصر', s.hanafi ? 'الحنفي (ظل المثلين)' : 'الجمهور (ظل المثل)'),
-            InfoRow('الإحداثيات', '${_city.lat.toStringAsFixed(3)}°, ${_city.lng.toStringAsFixed(3)}°'),
-            InfoRow('التوقيت', 'السودان (UTC+2)'),
-            InfoRow('تعديل الهجري', '${s.hijriShift > 0 ? '+' : ''}${s.hijriShift} يوم'),
-            if (_ramadan) const InfoRow('الإمساك', 'قبل الفجر بـ 10 دقايق (احتياط)'),
+            InfoRow(tr('طريقة الحساب', 'Calculation method'), prayerMethods.firstWhere((m) => m.id == s.prayerMethod, orElse: () => prayerMethods.first).name),
+            InfoRow(tr('مذهب العصر', 'Asr juristic method'), s.hanafi ? tr('الحنفي (ظل المثلين)', 'Hanafi (shadow ×2)') : tr('الجمهور (ظل المثل)', 'Standard (shadow ×1)')),
+            InfoRow(tr('الإحداثيات', 'Coordinates'), '${_city.lat.toStringAsFixed(3)}°, ${_city.lng.toStringAsFixed(3)}°'),
+            InfoRow(tr('التوقيت', 'Time zone'), '${_city.tz.isEmpty ? tr('توقيت الجهاز', 'Device time') : _city.tz} (${_utcLabel()})'),
+            InfoRow(tr('تعديل الهجري', 'Hijri adjustment'), '${s.hijriShift > 0 ? '+' : ''}${s.hijriShift} ${tr('يوم', 'day(s)')}'),
+            if (_ramadan) InfoRow(tr('الإمساك', 'Imsak'), t('قبل الفجر بـ 10 دقايق (احتياط)', 'قبل الفجر بـ 10 دقائق (احتياطًا)', '10 minutes before Fajr (precaution)')),
           ]),
         ),
         ShareBar(() => _shareText(rows)),
         NoteBox(
             _ramadan
-                ? 'بداية رمضان ونهايته بالرؤية الشرعية، والتواريخ هنا تقديرية حسب تقويم أم القرى مع تعديلك. الإمساك احتياط مستحب، والصيام الواجب يبدأ مع أذان الفجر.'
-                : 'المواقيت محسوبة فلكيًا وتقريبية؛ احتاط دقيقتين، والمعتمد أذان مسجد منطقتك.',
+                ? tr('بداية رمضان ونهايته بالرؤية الشرعية، والتواريخ هنا تقديرية حسب تقويم أم القرى مع تعديلك. الإمساك احتياط مستحب، والصيام الواجب يبدأ مع أذان الفجر.',
+                    'Ramadan begins and ends with the moon sighting; dates here are estimates from the Umm al-Qura calendar plus your adjustment. Imsak is a recommended precaution; the obligatory fast starts at the Fajr adhan.')
+                : t('المواقيت محسوبة فلكيًا وتقريبية؛ احتاط دقيقتين، والمعتمد أذان مسجد منطقتك.', 'المواقيت محسوبة فلكيًا وتقريبية؛ احتط بدقيقتين، والمعتمد أذان مسجد منطقتك.',
+                    'Times are calculated astronomically and approximate; allow a couple of minutes and follow your local mosque\'s adhan.'),
             kind: NoteKind.warn),
       ],
     ]);
@@ -238,8 +286,12 @@ class _MonthlyToolState extends State<MonthlyTool> {
 
   Widget _table(List<_Row> rows, DateTime today, ColorScheme cs) {
     final headers = _ramadan
-        ? ['رمضان', 'التاريخ', 'الإمساك', 'الفجر', 'الظهر', 'العصر', 'الإفطار', 'العشاء', 'الصيام']
-        : ['اليوم', 'الهجري', 'الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء', 'النهار'];
+        ? isEn
+            ? ['Ramadan', 'Date', 'Imsak', 'Fajr', 'Dhuhr', 'Asr', 'Iftar', 'Isha', 'Fast']
+            : ['رمضان', 'التاريخ', 'الإمساك', 'الفجر', 'الظهر', 'العصر', 'الإفطار', 'العشاء', 'الصيام']
+        : isEn
+            ? ['Day', 'Hijri', 'Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Daylight']
+            : ['اليوم', 'الهجري', 'الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء', 'النهار'];
     TextStyle hs = const TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5, color: SD.gold);
     return Container(
       decoration: BoxDecoration(
@@ -263,28 +315,28 @@ class _MonthlyToolState extends State<MonthlyTool> {
               () {
                 final isToday = r.date.year == today.year && r.date.month == today.month && r.date.day == today.day;
                 final isFri = r.date.weekday == DateTime.friday;
-                final t = r.t;
+                final pt = r.t;
                 final cells = _ramadan
                     ? [
                         '${r.hijri.d}',
                         '${weekdaysAr[r.date.weekday - 1]} ${r.date.day}/${r.date.month}',
                         fmtTimeAr(r.imsak),
-                        fmtTimeAr(t['fajr']!),
-                        fmtTimeAr(t['dhuhr']!),
-                        fmtTimeAr(t['asr']!),
-                        fmtTimeAr(t['maghrib']!),
-                        fmtTimeAr(t['isha']!),
+                        fmtTimeAr(pt['fajr']!),
+                        fmtTimeAr(pt['dhuhr']!),
+                        fmtTimeAr(pt['asr']!),
+                        fmtTimeAr(pt['maghrib']!),
+                        fmtTimeAr(pt['isha']!),
                         _dur(r.fastLen),
                       ]
                     : [
                         '${weekdaysAr[r.date.weekday - 1]} ${r.date.day}',
                         r.hijri.y == 0 ? '—' : '${r.hijri.d} ${hijriMonths[r.hijri.m - 1]}',
-                        fmtTimeAr(t['fajr']!),
-                        fmtTimeAr(t['sunrise']!),
-                        fmtTimeAr(t['dhuhr']!),
-                        fmtTimeAr(t['asr']!),
-                        fmtTimeAr(t['maghrib']!),
-                        fmtTimeAr(t['isha']!),
+                        fmtTimeAr(pt['fajr']!),
+                        fmtTimeAr(pt['sunrise']!),
+                        fmtTimeAr(pt['dhuhr']!),
+                        fmtTimeAr(pt['asr']!),
+                        fmtTimeAr(pt['maghrib']!),
+                        fmtTimeAr(pt['isha']!),
                         _dur(r.dayLen),
                       ];
                 return DataRow(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../core/i18n.dart';
 import '../registry.dart';
 import 'image_tool.dart';
 import 'password_tool.dart';
@@ -7,23 +8,23 @@ import 'qr_tool.dart';
 import 'text_tool.dart';
 import 'vault_tool.dart';
 
-final List<ToolDef> mediaTools = [
+List<ToolDef> get mediaTools => [
   ToolDef(
     id: 'qr',
-    name: 'رمز QR',
-    sub: 'اعمل واقرأ رموز QR: روابط، واي فاي، واتساب',
+    name: tr('رمز QR', 'QR Code'),
+    sub: t('اعمل واقرأ رموز QR: روابط، واي فاي، واتساب', 'أنشئ واقرأ رموز QR: روابط، واي فاي، واتساب', 'Create & scan QR codes: links, Wi‑Fi, WhatsApp'),
     cat: ToolCat.media,
     icon: Icons.qr_code_2_rounded,
     color: SD.nile,
-    keywords: 'qr باركود كيو ار واي فاي wifi مسح سكان',
+    keywords: 'qr باركود كيو ار واي فاي wifi مسح سكان barcode scan code link whatsapp',
     builder: (_) => const QrTool(),
   ),
-  ToolDef(id: 'password', name: 'كلمات السر', sub: 'مولّد وفاحص', cat: ToolCat.media, icon: Icons.password_rounded,
-      color: SD.indigo, keywords: 'كلمة سر باسوورد مرور', builder: (_) => const PasswordTool()),
-  ToolDef(id: 'vault', name: 'الخزنة السرية', sub: 'ملاحظات مشفّرة', cat: ToolCat.media, icon: Icons.lock_rounded,
-      color: SD.red, keywords: 'خزنة سر ملاحظات تشفير', builder: (_) => const VaultTool()),
-  ToolDef(id: 'image', name: 'ضغط الصور', sub: 'وفّر الباقة', cat: ToolCat.media, icon: Icons.photo_size_select_large_rounded,
-      color: SD.teal, sudan: true, keywords: 'صورة ضغط حجم باقة واتساب', builder: (_) => const ImageTool()),
-  ToolDef(id: 'text', name: 'أدوات النص', sub: 'عدّ، تنظيف، نطق', cat: ToolCat.media, icon: Icons.text_fields_rounded,
-      color: SD.henna, keywords: 'نص كلمات تشكيل نطق املاء صوت', builder: (_) => const TextTool()),
+  ToolDef(id: 'password', name: tr('كلمات السر', 'Passwords'), sub: tr('مولّد وفاحص', 'Generator & checker'), cat: ToolCat.media, icon: Icons.password_rounded,
+      color: SD.indigo, keywords: 'كلمة سر باسوورد مرور password generator strength passphrase', builder: (_) => const PasswordTool()),
+  ToolDef(id: 'vault', name: tr('الخزنة السرية', 'Secret Vault'), sub: tr('ملاحظات مشفّرة', 'Encrypted notes'), cat: ToolCat.media, icon: Icons.lock_rounded,
+      color: SD.red, keywords: 'خزنة سر ملاحظات تشفير vault secret notes encrypt private pin', builder: (_) => const VaultTool()),
+  ToolDef(id: 'image', name: tr('ضغط الصور', 'Image Compressor'), sub: t('وفّر الباقة', 'وفّر باقة الإنترنت', 'Save mobile data'), cat: ToolCat.media, icon: Icons.photo_size_select_large_rounded,
+      color: SD.teal, sudan: true, keywords: 'صورة ضغط حجم باقة واتساب image photo compress resize size data', builder: (_) => const ImageTool()),
+  ToolDef(id: 'text', name: tr('أدوات النص', 'Text Tools'), sub: tr('عدّ، تنظيف، نطق', 'Count, clean, speak'), cat: ToolCat.media, icon: Icons.text_fields_rounded,
+      color: SD.henna, keywords: 'نص كلمات تشكيل نطق املاء صوت text words count diacritics speech tts dictation voice', builder: (_) => const TextTool()),
 ];

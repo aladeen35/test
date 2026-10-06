@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/i18n.dart';
 import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
@@ -58,7 +59,9 @@ class _ImageToolState extends State<ImageTool> {
       });
       await _run();
     } catch (e) {
-      toast(src == ImageSource.camera ? 'ما قدرنا نفتح الكاميرا — أتأكد من الإذن' : 'ما قدرنا نفتح الصورة');
+      toast(src == ImageSource.camera
+          ? t('ما قدرنا نفتح الكاميرا — أتأكد من الإذن', 'تعذّر فتح الكاميرا — تحقّق من الإذن', "Couldn't open the camera — check the permission")
+          : t('ما قدرنا نفتح الصورة', 'تعذّر فتح الصورة', "Couldn't open the image"));
     }
   }
 
@@ -70,7 +73,7 @@ class _ImageToolState extends State<ImageTool> {
     try {
       final r = await compute(_compress, <String, dynamic>{'bytes': o, 'q': _q.round(), 'maxW': _maxW});
       if (r == null) {
-        toast('الصيغة دي ما مدعومة');
+        toast(t('الصيغة دي ما مدعومة', 'هذه الصيغة غير مدعومة', 'This format is not supported'));
       } else {
         _out = Uint8List.fromList(r['bytes'] as List<int>);
         _w = r['w'];
@@ -79,7 +82,7 @@ class _ImageToolState extends State<ImageTool> {
         _oh = r['oh'];
       }
     } catch (_) {
-      toast('حصلت مشكلة في الضغط، جرّب صورة تانية');
+      toast(t('حصلت مشكلة في الضغط، جرّب صورة تانية', 'حدثت مشكلة أثناء الضغط، جرّب صورة أخرى', 'Compression failed, try another image'));
     }
     _ms = sw.elapsedMilliseconds;
     if (mounted) setState(() => _busy = false);
@@ -100,23 +103,23 @@ class _ImageToolState extends State<ImageTool> {
     final monthMb = saved > 0 ? saved * _perDay * 30 / 1048576 : 0.0;
     return ToolList(children: [
       SCard(
-        title: 'اختار صورة',
+        title: t('اختار صورة', 'اختر صورة', 'Pick an image'),
         icon: Icons.add_photo_alternate_rounded,
         color: SD.green,
         child: Row(children: [
-          Expanded(child: FilledButton.icon(onPressed: () => _pick(ImageSource.gallery), icon: const Icon(Icons.photo_library_rounded), label: const Text('من الاستوديو'))),
+          Expanded(child: FilledButton.icon(onPressed: () => _pick(ImageSource.gallery), icon: const Icon(Icons.photo_library_rounded), label: Text(t('من الاستوديو', 'من المعرض', 'From gallery')))),
           const SizedBox(width: 10),
           if (!kIsWeb)
-            Expanded(child: OutlinedButton.icon(onPressed: () => _pick(ImageSource.camera), icon: const Icon(Icons.photo_camera_rounded), label: const Text('صوّر'))),
+            Expanded(child: OutlinedButton.icon(onPressed: () => _pick(ImageSource.camera), icon: const Icon(Icons.photo_camera_rounded), label: Text(t('صوّر', 'التقط صورة', 'Camera')))),
         ]),
       ),
       SCard(
-        title: 'إعدادات الضغط',
+        title: tr('إعدادات الضغط', 'Compression settings'),
         icon: Icons.tune_rounded,
         color: SD.gold,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
-            const Text('الجودة'),
+            Text(tr('الجودة', 'Quality')),
             Expanded(
               child: Slider(
                 value: _q,
@@ -132,21 +135,21 @@ class _ImageToolState extends State<ImageTool> {
           ]),
           Text(
             _q >= 85
-                ? 'جودة عالية — الفرق في الحجم بسيط'
+                ? t('جودة عالية — الفرق في الحجم بسيط', 'جودة عالية — الفرق في الحجم بسيط', 'High quality — small size difference')
                 : _q >= 60
-                    ? 'متوازنة 👌 — مناسبة للواتساب والفيسبوك'
+                    ? t('متوازنة 👌 — مناسبة للواتساب والفيسبوك', 'متوازنة 👌 — مناسبة للواتساب وفيسبوك', 'Balanced 👌 — good for WhatsApp & Facebook')
                     : _q >= 35
-                        ? 'موفّرة — ممكن يظهر تشويش خفيف'
-                        : 'موفّرة شديد — الجودة بتنزل واضح',
+                        ? t('موفّرة — ممكن يظهر تشويش خفيف', 'موفّرة — قد يظهر تشويش خفيف', 'Saver — slight artifacts may appear')
+                        : t('موفّرة شديد — الجودة بتنزل واضح', 'موفّرة جداً — تنخفض الجودة بوضوح', 'Max saver — noticeable quality loss'),
             style: const TextStyle(fontSize: 12.5),
           ),
           const SizedBox(height: 10),
-          const Text('أقصى عرض (الضلع الأطول)'),
+          Text(tr('أقصى عرض (الضلع الأطول)', 'Max width (longest side)')),
           const SizedBox(height: 6),
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final w in _widths)
               ChoiceChip(
-                label: Text(w == 0 ? 'الأصلي' : '$w px'),
+                label: Text(w == 0 ? tr('الأصلي', 'Original') : '$w px'),
                 selected: _maxW == w,
                 onSelected: (_) {
                   setState(() => _maxW = w);
@@ -157,55 +160,72 @@ class _ImageToolState extends State<ImageTool> {
         ]),
       ),
       if (_busy) const Padding(padding: EdgeInsets.all(20), child: Center(child: CircularProgressIndicator(color: SD.gold))),
-      if (o == null) const NoteBox('اختار صورة وبنضغطها ليك عشان توفّر الباقة والمساحة، والصورة ما بتطلع من جهازك.', kind: NoteKind.tip),
+      if (o == null)
+        NoteBox(
+            t('اختار صورة وبنضغطها ليك عشان توفّر الباقة والمساحة، والصورة ما بتطلع من جهازك.',
+                'اختر صورة وسنضغطها لك لتوفّر الباقة والمساحة، والصورة لا تغادر جهازك.',
+                'Pick an image and we\'ll compress it to save data and storage. The image never leaves your device.'),
+            kind: NoteKind.tip),
       if (o != null && c != null && !_busy) ...[
         ResultHero(
-          label: saved > 0 ? 'وفّرت' : 'الحجم ما نقص',
+          label: saved > 0 ? t('وفّرت', 'وفّرت', 'You saved') : t('الحجم ما نقص', 'لم ينقص الحجم', 'No size reduction'),
           value: saved > 0 ? '${pct.toStringAsFixed(0)}%' : '0%',
-          sub: '${fmtBytes(o.length)}  ←  ${fmtBytes(c.length)}',
+          sub: '${fmtBytes(o.length)}  ${isEn ? '→' : '←'}  ${fmtBytes(c.length)}',
           colors: const [SD.green, SD.teal, SD.nile],
         ),
         Row(children: [
-          Expanded(child: _preview('قبل', o, '$_ow×$_oh')),
+          Expanded(child: _preview(tr('قبل', 'Before'), o, '$_ow×$_oh')),
           const SizedBox(width: 10),
-          Expanded(child: _preview('بعد', c, '$_w×$_h')),
+          Expanded(child: _preview(tr('بعد', 'After'), c, '$_w×$_h')),
         ]),
         const SizedBox(height: 14),
         SCard(
-          title: 'التفاصيل',
+          title: tr('التفاصيل', 'Details'),
           icon: Icons.analytics_rounded,
           color: SD.nile,
           child: Column(children: [
-            InfoRow('الحجم الأصلي', fmtBytes(o.length), icon: Icons.image_rounded),
-            InfoRow('الحجم بعد الضغط', fmtBytes(c.length), icon: Icons.compress_rounded, valueColor: SD.green),
-            InfoRow('المساحة اللي وفرتها', saved > 0 ? fmtBytes(saved) : '—', icon: Icons.savings_rounded),
-            InfoRow('نسبة الضغط', saved > 0 ? '1 : ${(o.length / c.length).toStringAsFixed(1)}' : '—', icon: Icons.percent_rounded),
-            InfoRow('الأبعاد الأصلية', '$_ow × $_oh (${(_ow * _oh / 1e6).toStringAsFixed(1)} ميغابكسل)', icon: Icons.aspect_ratio_rounded),
-            InfoRow('الأبعاد الجديدة', '$_w × $_h (${(_w * _h / 1e6).toStringAsFixed(1)} ميغابكسل)', icon: Icons.photo_size_select_large_rounded),
-            InfoRow('الصيغة الناتجة', 'JPEG بجودة ${_q.round()}%', icon: Icons.insert_drive_file_rounded),
-            InfoRow('زمن الضغط', '$_ms ملي ثانية', icon: Icons.timer_rounded),
+            InfoRow(tr('الحجم الأصلي', 'Original size'), fmtBytes(o.length), icon: Icons.image_rounded),
+            InfoRow(tr('الحجم بعد الضغط', 'Compressed size'), fmtBytes(c.length), icon: Icons.compress_rounded, valueColor: SD.green),
+            InfoRow(t('المساحة اللي وفرتها', 'المساحة الموفَّرة', 'Space saved'), saved > 0 ? fmtBytes(saved) : '—', icon: Icons.savings_rounded),
+            InfoRow(tr('نسبة الضغط', 'Compression ratio'), saved > 0 ? '1 : ${(o.length / c.length).toStringAsFixed(1)}' : '—', icon: Icons.percent_rounded),
+            InfoRow(tr('الأبعاد الأصلية', 'Original dimensions'), '$_ow × $_oh (${(_ow * _oh / 1e6).toStringAsFixed(1)} ${tr('ميغابكسل', 'MP')})', icon: Icons.aspect_ratio_rounded),
+            InfoRow(tr('الأبعاد الجديدة', 'New dimensions'), '$_w × $_h (${(_w * _h / 1e6).toStringAsFixed(1)} ${tr('ميغابكسل', 'MP')})', icon: Icons.photo_size_select_large_rounded),
+            InfoRow(tr('الصيغة الناتجة', 'Output format'), tr('JPEG بجودة ${_q.round()}%', 'JPEG at ${_q.round()}% quality'), icon: Icons.insert_drive_file_rounded),
+            InfoRow(tr('زمن الضغط', 'Compression time'), '$_ms ${tr('ملي ثانية', 'ms')}', icon: Icons.timer_rounded),
           ]),
         ),
         if (saved > 0)
           SCard(
-            title: 'وفّر الباقة 📶',
+            title: t('وفّر الباقة 📶', 'وفّر الباقة 📶', 'Data savings 📶'),
             icon: Icons.data_saver_on_rounded,
             color: SD.henna,
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Row(children: [
-                const Text('صور برسلها في اليوم'),
+                Text(t('صور برسلها في اليوم', 'صور أرسلها يومياً', 'Photos I send per day')),
                 Expanded(child: Slider(value: _perDay, min: 1, max: 50, divisions: 49, label: '${_perDay.round()}', onChanged: (v) => setState(() => _perDay = v))),
                 Text('${_perDay.round()}'),
               ]),
-              InfoRow('توفير في اليوم', fmtBytes((saved * _perDay).round())),
-              InfoRow('توفير في الشهر', '${monthMb.toStringAsFixed(0)} MB', valueColor: SD.green),
-              InfoRow('توفير في السنة', '${(monthMb * 12 / 1024).toStringAsFixed(2)} GB'),
-              const NoteBox('ده تقدير لو كل صورك بنفس الحجم ده. الواتساب نفسه بيضغط الصور، فالتوفير الحقيقي أوضح في التلغرام والإيميل والرفع للمواقع.', kind: NoteKind.info),
+              InfoRow(tr('توفير في اليوم', 'Saved per day'), fmtBytes((saved * _perDay).round())),
+              InfoRow(tr('توفير في الشهر', 'Saved per month'), '${monthMb.toStringAsFixed(0)} MB', valueColor: SD.green),
+              InfoRow(tr('توفير في السنة', 'Saved per year'), '${(monthMb * 12 / 1024).toStringAsFixed(2)} GB'),
+              NoteBox(
+                  t('ده تقدير لو كل صورك بنفس الحجم ده. الواتساب نفسه بيضغط الصور، فالتوفير الحقيقي أوضح في التلغرام والإيميل والرفع للمواقع.',
+                      'هذا تقدير لو كانت كل صورك بنفس هذا الحجم. واتساب نفسه يضغط الصور، لذا يظهر التوفير الحقيقي أكثر في تيليغرام والبريد والرفع للمواقع.',
+                      'An estimate assuming all your photos are this size. WhatsApp already compresses images, so the real savings show more on Telegram, email and web uploads.'),
+                  kind: NoteKind.info),
             ]),
           ),
-        if (saved <= 0) const NoteBox('الصورة أصلاً مضغوطة كويس. جرّب تقلّل الجودة أو العرض الأقصى.', kind: NoteKind.warn),
-        FilledButton.icon(onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: const Text('احفظ / شارك الصورة المضغوطة')),
-        const NoteBox('الصور الشفافة (PNG) بتتحول لـ JPEG وبتفقد الشفافية — ما تستعمل الضغط ده للشعارات.', kind: NoteKind.tip),
+        if (saved <= 0)
+          NoteBox(
+              t('الصورة أصلاً مضغوطة كويس. جرّب تقلّل الجودة أو العرض الأقصى.', 'الصورة مضغوطة جيداً أصلاً. جرّب تقليل الجودة أو العرض الأقصى.',
+                  'This image is already well compressed. Try lowering the quality or max width.'),
+              kind: NoteKind.warn),
+        FilledButton.icon(onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: Text(tr('احفظ / شارك الصورة المضغوطة', 'Save / share compressed image'))),
+        NoteBox(
+            t('الصور الشفافة (PNG) بتتحول لـ JPEG وبتفقد الشفافية — ما تستعمل الضغط ده للشعارات.',
+                'الصور الشفافة (PNG) تتحوّل إلى JPEG وتفقد شفافيتها — لا تستخدم هذا الضغط للشعارات.',
+                'Transparent images (PNG) become JPEG and lose transparency — don\'t use this for logos.'),
+            kind: NoteKind.tip),
       ],
     ]);
   }

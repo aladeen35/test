@@ -5,6 +5,7 @@ import '../core/state.dart';
 import '../core/theme.dart';
 import '../core/widgets.dart';
 import '../tools/registry.dart';
+import '../core/i18n.dart';
 
 /// ترتيب المفضلة وإضافة/حذف أدوات
 class FavoritesEditor extends StatelessWidget {
@@ -17,14 +18,14 @@ class FavoritesEditor extends StatelessWidget {
     final others = allTools.where((t) => !t.hidden && !s.isFav(t.id)).toList();
     return SudanBackground(
       child: Scaffold(
-        appBar: AppBar(title: const Text('مفضلاتك')),
+        appBar: AppBar(title: Text(t('مفضلاتك', 'المفضلة', 'Favorites'))),
         body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
-          const NoteBox('اسحب الأدوات عشان ترتّبها — الترتيب دا بيظهر في البيت.', kind: NoteKind.tip),
+          NoteBox(t('اسحب الأدوات عشان ترتّبها — الترتيب دا بيظهر في البيت.', 'اسحب الأدوات لترتيبها — يظهر هذا الترتيب في الصفحة الرئيسية.', 'Drag tools to reorder — this order shows on the home screen.'), kind: NoteKind.tip),
           SCard(
-            title: 'المفضلة (${favs.length})',
+            title: '${tr('المفضلة', 'Favorites')} (${favs.length})',
             icon: Icons.star_rounded,
             child: favs.isEmpty
-                ? const Padding(padding: EdgeInsets.all(12), child: Text('فاضية — أضف من تحت 👇'))
+                ? Padding(padding: const EdgeInsets.all(12), child: Text(t('فاضية — أضف من تحت 👇', 'فارغة — أضف من الأسفل 👇', 'Empty — add from below 👇')))
                 : ReorderableListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -42,7 +43,7 @@ class FavoritesEditor extends StatelessWidget {
                   ),
           ),
           SCard(
-            title: 'أضف للمفضلة',
+            title: t('أضف للمفضلة', 'إضافة إلى المفضلة', 'Add to favorites'),
             icon: Icons.add_circle_outline,
             color: SD.green,
             child: Column(children: [

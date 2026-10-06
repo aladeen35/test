@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../core/state.dart';
 import 'prayer.dart';
+import '../core/i18n.dart';
 
 /// تنبيهات مواقيت الصلاة — تُجدول لسبعة أيام قادمة وتعمل والتطبيق مقفول
 class PrayerNotifications {
@@ -44,25 +45,28 @@ class PrayerNotifications {
     await init();
     if (!_ready) return;
     try {
-      await _plugin.cancelAll();
+      // نلغي تنبيهات الصلاة فقط (المعرّفات 100–199) حتى لا تُمسح تنبيهات الدواء
+      for (var i = 100; i < 200; i++) {
+        await _plugin.cancel(id: i);
+      }
       if (!s.prayerNotify) return;
-      const details = NotificationDetails(
-        android: AndroidNotificationDetails('prayer', 'مواقيت الصلاة',
-            channelDescription: 'تنبيه عند دخول وقت الصلاة', importance: Importance.high, priority: Priority.high),
-        iOS: DarwinNotificationDetails(presentSound: true),
+      final details = NotificationDetails(
+        android: AndroidNotificationDetails('prayer', tr('مواقيت الصلاة', 'Prayer times'),
+            channelDescription: tr('تنبيه عند دخول وقت الصلاة', 'Alert at prayer time'), importance: Importance.high, priority: Priority.high),
+        iOS: const DarwinNotificationDetails(presentSound: true),
       );
       final now = DateTime.now();
       var id = 100;
       for (var day = 0; day < 7; day++) {
         final times = s.timesFor(sudanNow().add(Duration(days: day)));
         for (final k in fardKeys) {
-          final t = times[k]!;
-          if (t.isBefore(now)) continue;
+          final at = times[k]!;
+          if (at.isBefore(now)) continue;
           await _plugin.zonedSchedule(
             id: id++,
-            title: '🕌 حان وقت صلاة ${prayerNames[k]}',
+            title: '🕌 ${t('حان وقت صلاة', 'حان وقت صلاة', 'Time for')} ${prayerNames[k]}',
             body: '${s.city.name} — «إن الصلاة كانت على المؤمنين كتابًا موقوتًا»',
-            scheduledDate: tz.TZDateTime.from(t.toUtc(), tz.UTC),
+            scheduledDate: tz.TZDateTime.from(at.toUtc(), tz.UTC),
             notificationDetails: details,
             androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           );

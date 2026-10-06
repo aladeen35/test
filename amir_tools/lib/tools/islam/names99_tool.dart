@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n.dart';
 import '../../core/pattern.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -32,11 +33,14 @@ class _Names99ToolState extends State<Names99Tool> {
   Widget build(BuildContext context) {
     final list = [for (var i = 0; i < names99.length; i++) (i + 1, names99[i])].where((e) => _q.isEmpty || _norm(e.$2).contains(_norm(_q))).toList();
     return ToolList(children: [
-      const NoteBox('قال رسول الله ﷺ: «إنّ لله تسعةً وتسعين اسمًا، مائةً إلا واحدًا، من أحصاها دخل الجنة» — متفق عليه. والقائمة دي هي المشهورة من رواية الترمذي.',
+      NoteBox(
+          t('قال رسول الله ﷺ: «إنّ لله تسعةً وتسعين اسمًا، مائةً إلا واحدًا، من أحصاها دخل الجنة» — متفق عليه. والقائمة دي هي المشهورة من رواية الترمذي.',
+              'قال رسول الله ﷺ: «إنّ لله تسعةً وتسعين اسمًا، مائةً إلا واحدًا، من أحصاها دخل الجنة» — متفق عليه. وهذه القائمة هي المشهورة من رواية الترمذي.',
+              'The Prophet ﷺ said: «إنّ لله تسعةً وتسعين اسمًا، مائةً إلا واحدًا، من أحصاها دخل الجنة» — Allah has ninety-nine names; whoever learns them enters Paradise (al-Bukhari and Muslim). This is the well-known list narrated by al-Tirmidhi.'),
           kind: NoteKind.info),
       TextField(
         onChanged: (v) => setState(() => _q = v),
-        decoration: const InputDecoration(hintText: 'فتّش عن اسم…', prefixIcon: Icon(Icons.search_rounded)),
+        decoration: InputDecoration(hintText: t('فتّش عن اسم…', 'ابحث عن اسم…', 'Search a name (Arabic)…'), prefixIcon: const Icon(Icons.search_rounded)),
       ),
       const SizedBox(height: 12),
       GoldFrame(
@@ -59,7 +63,7 @@ class _Names99ToolState extends State<Names99Tool> {
                     color: SD.gold.withValues(alpha: .08),
                   ),
                   child: Stack(children: [
-                    Positioned(top: 4, right: 8, child: Text('$n', style: const TextStyle(fontSize: 11, color: SD.gold))),
+                    PositionedDirectional(top: 4, end: 8, child: Text('$n', style: const TextStyle(fontSize: 11, color: SD.gold))),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.all(4),
@@ -72,7 +76,7 @@ class _Names99ToolState extends State<Names99Tool> {
           ],
         ),
       ),
-      Center(child: Text('${names99.length} اسمًا', style: const TextStyle(fontWeight: FontWeight.w700))),
+      Center(child: Text(tr('${names99.length} اسمًا', '${names99.length} names'), style: const TextStyle(fontWeight: FontWeight.w700))),
     ]);
   }
 
@@ -80,15 +84,15 @@ class _Names99ToolState extends State<Names99Tool> {
         context: context,
         builder: (ctx) => AlertDialog(
           content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('الاسم رقم $n', style: const TextStyle(color: SD.gold)),
+            Text(tr('الاسم رقم $n', 'Name no. $n'), style: const TextStyle(color: SD.gold)),
             const SizedBox(height: 10),
             GoldText(name, size: 46),
             const SizedBox(height: 10),
             const Text('جلّ جلاله', style: TextStyle(fontWeight: FontWeight.w700)),
           ]),
           actions: [
-            TextButton(onPressed: () => copyText(name), child: const Text('انسخ')),
-            FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('تمام')),
+            TextButton(onPressed: () => copyText(name), child: Text(tr('انسخ', 'Copy'))),
+            FilledButton(onPressed: () => Navigator.pop(ctx), child: Text(t('تمام', 'حسنًا', 'OK'))),
           ],
         ),
       );

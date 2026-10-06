@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -15,7 +16,9 @@ class AdhkarTool extends StatefulWidget {
 }
 
 class _AdhkarToolState extends State<AdhkarTool> {
-  late AdhkarSet _set;
+  late String _setId;
+  AdhkarSet get _set => adhkarSets.firstWhere((x) => x.id == _setId, orElse: () => adhkarSets.first);
+  set _set(AdhkarSet v) => _setId = v.id;
   String _autoReason = '';
   double _fontScale = 1;
   bool _showDone = true;
@@ -36,24 +39,24 @@ class _AdhkarToolState extends State<AdhkarTool> {
   AdhkarSet _autoSelect(AppState s) {
     try {
       final now = DateTime.now();
-      final t = s.timesFor(sudanNow());
-      if (now.isBefore(t['fajr']!)) {
-        _autoReason = 'هسي ليل، اخترنا ليك أذكار النوم';
+      final pt = s.timesFor(sudanNow());
+      if (now.isBefore(pt['fajr']!)) {
+        _autoReason = t('هسي ليل، اخترنا ليك أذكار النوم', 'الوقت ليل، فاخترنا لك أذكار النوم', "It's night, so we picked the sleep adhkar");
         return sleepAdhkar;
       }
-      if (now.isBefore(t['asr']!)) {
-        _autoReason = 'الوقت صباح (بعد الفجر)، اخترنا ليك أذكار الصباح';
+      if (now.isBefore(pt['asr']!)) {
+        _autoReason = t('الوقت صباح (بعد الفجر)، اخترنا ليك أذكار الصباح', 'الوقت صباح (بعد الفجر)، فاخترنا لك أذكار الصباح', "It's morning (after Fajr), so we picked the morning adhkar");
         return morningAdhkar;
       }
-      if (now.isBefore(t['isha']!.add(const Duration(hours: 1)))) {
-        _autoReason = 'الوقت مساء (بعد العصر)، اخترنا ليك أذكار المساء';
+      if (now.isBefore(pt['isha']!.add(const Duration(hours: 1)))) {
+        _autoReason = t('الوقت مساء (بعد العصر)، اخترنا ليك أذكار المساء', 'الوقت مساء (بعد العصر)، فاخترنا لك أذكار المساء', "It's evening (after Asr), so we picked the evening adhkar");
         return eveningAdhkar;
       }
-      _autoReason = 'الليل دخل، اخترنا ليك أذكار النوم';
+      _autoReason = t('الليل دخل، اخترنا ليك أذكار النوم', 'حلّ الليل، فاخترنا لك أذكار النوم', 'Night has fallen, so we picked the sleep adhkar');
       return sleepAdhkar;
     } catch (_) {
       final h = sudanNow().hour;
-      _autoReason = 'اخترنا حسب الساعة';
+      _autoReason = t('اخترنا حسب الساعة', 'اخترنا حسب الساعة', 'Picked by the time of day');
       if (h >= 4 && h < 15) return morningAdhkar;
       if (h >= 15 && h < 21) return eveningAdhkar;
       return sleepAdhkar;
@@ -113,9 +116,9 @@ class _AdhkarToolState extends State<AdhkarTool> {
     final hist = Map<String, dynamic>.from(s.getData<Map>('adhkar_history') ?? {});
     hist[_set.id] = ((hist[_set.id] as num?) ?? 0).toInt() + 1;
     s.setData('adhkar_history', hist);
-    s.awardDaily('adhkar_${_set.id}', 30, 'إكمال ${_set.name}');
+    s.awardDaily('adhkar_${_set.id}', 30, tr('إكمال ${_set.name}', 'Completed ${_set.name}'));
     HapticFeedback.heavyImpact();
-    toast('ما شاء الله! كمّلت ${_set.name} 🤲 تقبّل الله', icon: Icons.verified_rounded);
+    toast(t('ما شاء الله! كمّلت ${_set.name} 🤲 تقبّل الله', 'ما شاء الله! أكملت ${_set.name} 🤲 تقبّل الله', 'MashaAllah! You completed the ${_set.name} 🤲 May Allah accept it'), icon: Icons.verified_rounded);
   }
 
   void _resetSet() {
@@ -128,7 +131,7 @@ class _AdhkarToolState extends State<AdhkarTool> {
     for (final d in _set.items) {
       if (d.title != null) b.writeln('【${d.title}】');
       b.writeln(d.text);
-      b.writeln('(${d.count} ${d.count == 1 ? 'مرة' : 'مرات'})${d.source != null ? ' — ${d.source}' : ''}');
+      b.writeln('(${timesAr(d.count)})${d.source != null ? ' — ${d.source}' : ''}');
       b.writeln();
     }
     return b.toString().trim();
@@ -162,8 +165,8 @@ class _AdhkarToolState extends State<AdhkarTool> {
       const SizedBox(height: 10),
       ResultHero(
         label: '${_set.emoji} ${_set.name}',
-        value: '${(progress * 100).round()}٪',
-        sub: '$itemsDone من ${_set.items.length} أذكار مكتملة • $doneCount / $total تكرار${doneToday.contains(_set.id) ? '\nكمّلتها النهارده ✓' : ''}',
+        value: '${(progress * 100).round()}${tr('٪', '%')}',
+        sub: '${tr('$itemsDone من ${_set.items.length} أذكار مكتملة', '$itemsDone of ${_set.items.length} done')} • $doneCount / $total ${tr('تكرار', 'reps')}${doneToday.contains(_set.id) ? '\n${t('كمّلتها النهارده ✓', 'أكملتها اليوم ✓', 'Completed today ✓')}' : ''}',
         colors: [color, SD.coffee],
       ),
       ClipRRect(
@@ -173,9 +176,9 @@ class _AdhkarToolState extends State<AdhkarTool> {
       const SizedBox(height: 10),
       NoteBox(_set.intro, kind: NoteKind.tip),
       StatGrid([
-        StatChip('${doneToday.length}/4', 'أوراد النهارده', color: SD.green, icon: Icons.today_rounded),
-        StatChip('${s.counter('adhkar_done')}', 'مرات الإكمال الكلية', color: SD.gold, icon: Icons.emoji_events_rounded),
-        StatChip('${(hist[_set.id] as num?) ?? 0}', 'إكمال ${_set.name.replaceFirst('أذكار ', '')}', color: SD.nile, icon: Icons.history_rounded),
+        StatChip('${doneToday.length}/4', t('أوراد النهارده', 'أوراد اليوم', "Today's sets"), color: SD.green, icon: Icons.today_rounded),
+        StatChip('${s.counter('adhkar_done')}', tr('مرات الإكمال الكلية', 'Total completions'), color: SD.gold, icon: Icons.emoji_events_rounded),
+        StatChip('${(hist[_set.id] as num?) ?? 0}', tr('إكمال ${_set.name.replaceFirst('أذكار ', '')}', '${_set.name} done'), color: SD.nile, icon: Icons.history_rounded),
       ]),
       const SizedBox(height: 8),
       Row(children: [
@@ -186,27 +189,27 @@ class _AdhkarToolState extends State<AdhkarTool> {
             min: .8,
             max: 1.8,
             divisions: 10,
-            label: 'حجم الخط',
+            label: tr('حجم الخط', 'Font size'),
             onChanged: (v) => setState(() => _fontScale = v),
             onChangeEnd: (v) => s.setData('adhkar_font', v),
           ),
         ),
         IconButton(
-          tooltip: _showDone ? 'اخفي المكتمل' : 'أظهر المكتمل',
+          tooltip: _showDone ? t('اخفي المكتمل', 'أخفِ المكتمل', 'Hide completed') : tr('أظهر المكتمل', 'Show completed'),
           onPressed: () => setState(() => _showDone = !_showDone),
           icon: Icon(_showDone ? Icons.visibility_rounded : Icons.visibility_off_rounded),
         ),
         IconButton(
-          tooltip: 'ابدأ من جديد',
+          tooltip: tr('ابدأ من جديد', 'Start over'),
           onPressed: () async {
             final ok = await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('تبدأ من الأول؟'),
-                content: Text('حنصفّر عدّادات ${_set.name} بتاعة النهارده.'),
+                title: Text(t('تبدأ من الأول؟', 'هل تبدأ من جديد؟', 'Start over?')),
+                content: Text(t('حنصفّر عدّادات ${_set.name} بتاعة النهارده.', 'سيتم تصفير عدّادات ${_set.name} لهذا اليوم.', "This resets today's ${_set.name} counters.")),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('لا')),
-                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('أيوه صفّر')),
+                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tr('لا', 'No'))),
+                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(t('أيوه صفّر', 'نعم، صفّر', 'Yes, reset'))),
                 ],
               ),
             );
@@ -218,10 +221,10 @@ class _AdhkarToolState extends State<AdhkarTool> {
       for (var i = 0; i < _set.items.length; i++)
         if (_showDone || c[i] < _set.items[i].count) _dhikrCard(i, _set.items[i], c[i], color),
       if (itemsDone == _set.items.length)
-        const NoteBox('الحمد لله، كمّلت الورد كله. ربنا يتقبّل ويحفظك 🤲', kind: NoteKind.tip),
+        NoteBox(t('الحمد لله، كمّلت الورد كله. ربنا يتقبّل ويحفظك 🤲', 'الحمد لله، أكملت الورد كله. تقبّل الله منك وحفظك 🤲', 'Alhamdulillah, you finished the whole set. May Allah accept it and protect you 🤲'), kind: NoteKind.tip),
       const SizedBox(height: 6),
       ShareBar(_shareText),
-      const NoteBox('النصوص منقولة من القرآن الكريم وكتب الأذكار المعتمدة (مثل حصن المسلم). عدد التكرار حسب الوارد، والتخريج المختصر مذكور تحت كل ذكر حيث ثبت.'),
+      NoteBox(tr('النصوص منقولة من القرآن الكريم وكتب الأذكار المعتمدة (مثل حصن المسلم). عدد التكرار حسب الوارد، والتخريج المختصر مذكور تحت كل ذكر حيث ثبت.', 'Texts are taken from the Holy Qur\'an and trusted adhkar books (such as Hisn al-Muslim) and kept in Arabic. Repetition counts follow the narrations; a short source is shown under each dhikr where authenticated.')),
     ]);
   }
 
@@ -251,7 +254,7 @@ class _AdhkarToolState extends State<AdhkarTool> {
               Text(d.note!, style: TextStyle(fontSize: 12.5, color: cs.onSurface.withValues(alpha: .7))),
             ],
             const SizedBox(height: 8),
-            Text(d.text, textAlign: TextAlign.justify, style: TextStyle(fontSize: 19 * _fontScale, height: 1.9, color: cs.onSurface)),
+            Text(d.text, textAlign: TextAlign.justify, textDirection: TextDirection.rtl, style: TextStyle(fontSize: 19 * _fontScale, height: 1.9, color: cs.onSurface)),
             if (d.source != null) ...[
               const SizedBox(height: 4),
               Text('«${d.source}»', style: TextStyle(fontSize: 12, color: cs.onSurface.withValues(alpha: .6))),
@@ -268,13 +271,13 @@ class _AdhkarToolState extends State<AdhkarTool> {
               FilledButton.tonal(
                 onPressed: done ? null : () => _tap(i),
                 style: FilledButton.styleFrom(minimumSize: const Size(96, 44)),
-                child: Text(done ? 'تمام ✓' : '$n / ${d.count}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                child: Text(done ? t('تمام ✓', 'تم ✓', 'Done ✓') : '$n / ${d.count}', style: const TextStyle(fontWeight: FontWeight.w800)),
               ),
             ]),
             if (!done && d.count > 1)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text('باقي ${d.count - n} — اضغط على البطاقة في أي حتة للعد', style: TextStyle(fontSize: 11.5, color: cs.onSurface.withValues(alpha: .55))),
+                child: Text(t('باقي ${d.count - n} — اضغط على البطاقة في أي حتة للعد', 'متبقٍ ${d.count - n} — اضغط في أي مكان على البطاقة للعد', '${d.count - n} left — tap anywhere on the card to count'), style: TextStyle(fontSize: 11.5, color: cs.onSurface.withValues(alpha: .55))),
               ),
           ]),
         ),
@@ -284,4 +287,6 @@ class _AdhkarToolState extends State<AdhkarTool> {
 }
 
 /// نص مختصر لعدد المرات
-String timesAr(int n) => n == 1 ? 'مرة' : n == 2 ? 'مرتين' : '${fmt(n, 0)} مرات';
+String timesAr(int n) => isEn
+    ? (n == 1 ? 'once' : n == 2 ? 'twice' : '${fmt(n, 0)} times')
+    : n == 1 ? 'مرة' : n == 2 ? 'مرتين' : '${fmt(n, 0)} مرات';

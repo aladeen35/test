@@ -2,6 +2,8 @@
 /// تنبيه للمطوّر: لا تعدّل حرفًا في النصوص الدينية.
 library;
 
+import '../../core/i18n.dart';
+
 class Dhikr {
   final String text;
   final int count;
@@ -57,73 +59,99 @@ const _hasbi = 'حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّ
 
 const _subhanBihamdih = 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ';
 
-final morningAdhkar = AdhkarSet('morning', 'أذكار الصباح', '🌅', 'وقتها من بعد صلاة الفجر لحدي طلوع الشمس، والأمر فيه سعة لحدي الضحى.', [
-  const Dhikr(ayatAlKursi, title: 'آية الكرسي', note: 'أعوذ بالله من الشيطان الرجيم'),
-  const Dhikr(surahIkhlas, count: 3, title: 'سورة الإخلاص', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(surahFalaq, count: 3, title: 'سورة الفلق', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(surahNas, count: 3, title: 'سورة الناس', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(
+AdhkarSet get morningAdhkar => AdhkarSet('morning', tr('أذكار الصباح', 'Morning adhkar'), '🌅', t('وقتها من بعد صلاة الفجر لحدي طلوع الشمس، والأمر فيه سعة لحدي الضحى.', 'وقتها من بعد صلاة الفجر إلى طلوع الشمس، وفي الأمر سعة إلى الضحى.', 'Time: from after Fajr until sunrise, with leeway until mid-morning (Duha).'), [
+  Dhikr(ayatAlKursi, title: _ttl('آية الكرسي'), note: 'أعوذ بالله من الشيطان الرجيم'),
+  Dhikr(surahIkhlas, count: 3, title: _ttl('سورة الإخلاص'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(surahFalaq, count: 3, title: _ttl('سورة الفلق'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(surahNas, count: 3, title: _ttl('سورة الناس'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(
       'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ',
-      source: 'رواه مسلم'),
-  const Dhikr('اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ', source: 'رواه الترمذي'),
-  const Dhikr(_sayyidIstighfar, title: 'سيّد الاستغفار', source: 'رواه البخاري'),
-  const Dhikr(_afini, count: 3, source: 'رواه أبو داود'),
-  const Dhikr(_afw, source: 'رواه أبو داود وابن ماجه'),
-  const Dhikr(_bismillahLaYadur, count: 3, source: 'رواه أبو داود والترمذي'),
-  const Dhikr(_raditu, count: 3),
-  const Dhikr(_yaHayy),
-  const Dhikr(_hasbi, count: 7),
-  const Dhikr(_tahlil, count: 10),
-  const Dhikr(_subhanBihamdih, count: 100, source: 'رواه مسلم'),
+      source: _src('رواه مسلم')),
+  Dhikr('اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ', source: _src('رواه الترمذي')),
+  Dhikr(_sayyidIstighfar, title: _ttl('سيّد الاستغفار'), source: _src('رواه البخاري')),
+  Dhikr(_afini, count: 3, source: _src('رواه أبو داود')),
+  Dhikr(_afw, source: _src('رواه أبو داود وابن ماجه')),
+  Dhikr(_bismillahLaYadur, count: 3, source: _src('رواه أبو داود والترمذي')),
+  Dhikr(_raditu, count: 3),
+  Dhikr(_yaHayy),
+  Dhikr(_hasbi, count: 7),
+  Dhikr(_tahlil, count: 10),
+  Dhikr(_subhanBihamdih, count: 100, source: _src('رواه مسلم')),
 ]);
 
-final eveningAdhkar = AdhkarSet('evening', 'أذكار المساء', '🌇', 'وقتها من بعد صلاة العصر لحدي غروب الشمس، وفيها سعة لأول الليل.', [
-  const Dhikr(ayatAlKursi, title: 'آية الكرسي', note: 'أعوذ بالله من الشيطان الرجيم'),
-  const Dhikr(surahIkhlas, count: 3, title: 'سورة الإخلاص', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(surahFalaq, count: 3, title: 'سورة الفلق', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(surahNas, count: 3, title: 'سورة الناس', source: 'رواه أبو داود والترمذي'),
-  const Dhikr(
+AdhkarSet get eveningAdhkar => AdhkarSet('evening', tr('أذكار المساء', 'Evening adhkar'), '🌇', t('وقتها من بعد صلاة العصر لحدي غروب الشمس، وفيها سعة لأول الليل.', 'وقتها من بعد صلاة العصر إلى غروب الشمس، وفيها سعة إلى أول الليل.', 'Time: from after Asr until sunset, with leeway into the early night.'), [
+  Dhikr(ayatAlKursi, title: _ttl('آية الكرسي'), note: 'أعوذ بالله من الشيطان الرجيم'),
+  Dhikr(surahIkhlas, count: 3, title: _ttl('سورة الإخلاص'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(surahFalaq, count: 3, title: _ttl('سورة الفلق'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(surahNas, count: 3, title: _ttl('سورة الناس'), source: _src('رواه أبو داود والترمذي')),
+  Dhikr(
       'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ',
-      source: 'رواه مسلم'),
-  const Dhikr('اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ', source: 'رواه الترمذي'),
-  const Dhikr(_sayyidIstighfar, title: 'سيّد الاستغفار', source: 'رواه البخاري'),
-  const Dhikr(_afini, count: 3, source: 'رواه أبو داود'),
-  const Dhikr(_afw, source: 'رواه أبو داود وابن ماجه'),
-  const Dhikr(_bismillahLaYadur, count: 3, source: 'رواه أبو داود والترمذي'),
-  const Dhikr('أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', count: 3, source: 'رواه مسلم'),
-  const Dhikr(_raditu, count: 3),
-  const Dhikr(_yaHayy),
-  const Dhikr(_hasbi, count: 7),
-  const Dhikr(_tahlil, count: 10),
-  const Dhikr(_subhanBihamdih, count: 100, source: 'رواه مسلم'),
+      source: _src('رواه مسلم')),
+  Dhikr('اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ', source: _src('رواه الترمذي')),
+  Dhikr(_sayyidIstighfar, title: _ttl('سيّد الاستغفار'), source: _src('رواه البخاري')),
+  Dhikr(_afini, count: 3, source: _src('رواه أبو داود')),
+  Dhikr(_afw, source: _src('رواه أبو داود وابن ماجه')),
+  Dhikr(_bismillahLaYadur, count: 3, source: _src('رواه أبو داود والترمذي')),
+  Dhikr('أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', count: 3, source: _src('رواه مسلم')),
+  Dhikr(_raditu, count: 3),
+  Dhikr(_yaHayy),
+  Dhikr(_hasbi, count: 7),
+  Dhikr(_tahlil, count: 10),
+  Dhikr(_subhanBihamdih, count: 100, source: _src('رواه مسلم')),
 ]);
 
-final sleepAdhkar = AdhkarSet('sleep', 'أذكار النوم', '🌙', 'قبل ما ترقد: اتوضأ، وارقد على شِقّك اليمين، واقرأها بهدوء.', [
-  const Dhikr(surahIkhlas, count: 3, title: 'سورة الإخلاص', note: 'يجمع كفّيه وينفث فيهما ويقرأ المعوذات ويمسح بهما ما استطاع من جسده', source: 'رواه البخاري'),
-  const Dhikr(surahFalaq, count: 3, title: 'سورة الفلق', source: 'رواه البخاري'),
-  const Dhikr(surahNas, count: 3, title: 'سورة الناس', source: 'رواه البخاري'),
-  const Dhikr(ayatAlKursi, title: 'آية الكرسي', source: 'رواه البخاري'),
-  const Dhikr(baqarahEnd, title: 'آخر آيتين من سورة البقرة', source: 'متفق عليه'),
-  const Dhikr('بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا', source: 'رواه البخاري'),
-  const Dhikr('سُبْحَانَ اللَّهِ', count: 33, source: 'متفق عليه'),
-  const Dhikr('الْحَمْدُ لِلَّهِ', count: 33, source: 'متفق عليه'),
-  const Dhikr('اللَّهُ أَكْبَرُ', count: 34, source: 'متفق عليه'),
+AdhkarSet get sleepAdhkar => AdhkarSet('sleep', tr('أذكار النوم', 'Sleep adhkar'), '🌙', t('قبل ما ترقد: اتوضأ، وارقد على شِقّك اليمين، واقرأها بهدوء.', 'قبل النوم: توضأ، ونم على شقّك الأيمن، واقرأها بتمهّل.', 'Before sleeping: make wudu, lie on your right side, and recite calmly.'), [
+  Dhikr(surahIkhlas, count: 3, title: _ttl('سورة الإخلاص'), note: tr('يجمع كفّيه وينفث فيهما ويقرأ المعوذات ويمسح بهما ما استطاع من جسده', 'Cup your palms, blow lightly into them, recite the three surahs, then wipe over as much of your body as you can'), source: _src('رواه البخاري')),
+  Dhikr(surahFalaq, count: 3, title: _ttl('سورة الفلق'), source: _src('رواه البخاري')),
+  Dhikr(surahNas, count: 3, title: _ttl('سورة الناس'), source: _src('رواه البخاري')),
+  Dhikr(ayatAlKursi, title: _ttl('آية الكرسي'), source: _src('رواه البخاري')),
+  Dhikr(baqarahEnd, title: _ttl('آخر آيتين من سورة البقرة'), source: _src('متفق عليه')),
+  Dhikr('بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا', source: _src('رواه البخاري')),
+  Dhikr('سُبْحَانَ اللَّهِ', count: 33, source: _src('متفق عليه')),
+  Dhikr('الْحَمْدُ لِلَّهِ', count: 33, source: _src('متفق عليه')),
+  Dhikr('اللَّهُ أَكْبَرُ', count: 34, source: _src('متفق عليه')),
 ]);
 
-final prayerAdhkar = AdhkarSet('prayer', 'أذكار بعد الصلاة', '🕌', 'بعد السلام من الصلاة المفروضة مباشرة.', [
-  const Dhikr('أَسْتَغْفِرُ اللَّهَ', count: 3, source: 'رواه مسلم'),
-  const Dhikr('اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', source: 'رواه مسلم'),
-  const Dhikr(
+AdhkarSet get prayerAdhkar => AdhkarSet('prayer', tr('أذكار بعد الصلاة', 'After-prayer adhkar'), '🕌', tr('بعد السلام من الصلاة المفروضة مباشرة.', 'Right after the closing salam of an obligatory prayer.'), [
+  Dhikr('أَسْتَغْفِرُ اللَّهَ', count: 3, source: _src('رواه مسلم')),
+  Dhikr('اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', source: _src('رواه مسلم')),
+  Dhikr(
       '$_tahlil، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ',
-      source: 'متفق عليه'),
-  const Dhikr('سُبْحَانَ اللَّهِ', count: 33, source: 'رواه مسلم'),
-  const Dhikr('الْحَمْدُ لِلَّهِ', count: 33, source: 'رواه مسلم'),
-  const Dhikr('اللَّهُ أَكْبَرُ', count: 33, source: 'رواه مسلم'),
-  const Dhikr(_tahlil, title: 'تمام المئة', source: 'رواه مسلم'),
-  const Dhikr(ayatAlKursi, title: 'آية الكرسي'),
-  const Dhikr(surahIkhlas, title: 'سورة الإخلاص'),
-  const Dhikr(surahFalaq, title: 'سورة الفلق'),
-  const Dhikr(surahNas, title: 'سورة الناس'),
+      source: _src('متفق عليه')),
+  Dhikr('سُبْحَانَ اللَّهِ', count: 33, source: _src('رواه مسلم')),
+  Dhikr('الْحَمْدُ لِلَّهِ', count: 33, source: _src('رواه مسلم')),
+  Dhikr('اللَّهُ أَكْبَرُ', count: 33, source: _src('رواه مسلم')),
+  Dhikr(_tahlil, title: _ttl('تمام المئة'), source: _src('رواه مسلم')),
+  Dhikr(ayatAlKursi, title: _ttl('آية الكرسي')),
+  Dhikr(surahIkhlas, title: _ttl('سورة الإخلاص')),
+  Dhikr(surahFalaq, title: _ttl('سورة الفلق')),
+  Dhikr(surahNas, title: _ttl('سورة الناس')),
 ]);
 
-final adhkarSets = [morningAdhkar, eveningAdhkar, sleepAdhkar, prayerAdhkar];
+List<AdhkarSet> get adhkarSets => [morningAdhkar, eveningAdhkar, sleepAdhkar, prayerAdhkar];
+
+const _srcEn = {
+  'رواه مسلم': 'Narrated by Muslim',
+  'رواه البخاري': 'Narrated by al-Bukhari',
+  'رواه الترمذي': 'Narrated by al-Tirmidhi',
+  'رواه أبو داود': 'Narrated by Abu Dawud',
+  'رواه أبو داود والترمذي': 'Narrated by Abu Dawud and al-Tirmidhi',
+  'رواه أبو داود وابن ماجه': 'Narrated by Abu Dawud and Ibn Majah',
+  'متفق عليه': 'Agreed upon (al-Bukhari and Muslim)',
+};
+
+const _titleEn = {
+  'آية الكرسي': 'Ayat al-Kursi',
+  'سورة الإخلاص': 'Surah Al-Ikhlas',
+  'سورة الفلق': 'Surah Al-Falaq',
+  'سورة الناس': 'Surah An-Nas',
+  'سيّد الاستغفار': 'The master supplication for forgiveness',
+  'آخر آيتين من سورة البقرة': 'Last two verses of Al-Baqarah',
+  'تمام المئة': 'Completing the hundred',
+};
+
+/// التخريج (نص واجهة يُترجم)
+String _src(String ar) => isEn ? (_srcEn[ar] ?? ar) : ar;
+
+/// عنوان الذكر (نص واجهة يُترجم)
+String _ttl(String ar) => isEn ? (_titleEn[ar] ?? ar) : ar;

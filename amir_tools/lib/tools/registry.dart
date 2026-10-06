@@ -4,19 +4,24 @@ import 'islam/islam_tools.dart';
 import 'daily/daily_tools.dart';
 import 'media/media_tools.dart';
 import 'device/device_tools.dart';
+import 'life/life_tools.dart';
+import 'more/more_tools.dart';
+import '../core/i18n.dart';
 
 /// تصنيفات الأدوات
 enum ToolCat {
-  money('المال والسوق', Icons.payments_rounded),
-  islam('دين ودنيا', Icons.mosque_rounded),
-  daily('يومياتك', Icons.wb_sunny_rounded),
-  health('صحتك', Icons.favorite_rounded),
-  media('نصوص وصور', Icons.text_snippet_rounded),
-  device('جهازك', Icons.smartphone_rounded);
+  money('المال والسوق', 'المال والسوق', 'Money & Market', Icons.payments_rounded),
+  islam('دين ودنيا', 'الدين', 'Faith', Icons.mosque_rounded),
+  life('تنظيم حياتك', 'تنظيم الحياة', 'Organize', Icons.checklist_rounded),
+  daily('يومياتك', 'اليوميات', 'Daily', Icons.wb_sunny_rounded),
+  health('صحتك', 'الصحة', 'Health', Icons.favorite_rounded),
+  media('نصوص وصور', 'نصوص وصور', 'Text & Images', Icons.text_snippet_rounded),
+  device('جهازك', 'الجهاز', 'Device', Icons.smartphone_rounded);
 
-  final String label;
+  final String sd, ar, en;
   final IconData icon;
-  const ToolCat(this.label, this.icon);
+  const ToolCat(this.sd, this.ar, this.en, this.icon);
+  String get label => t(sd, ar, en);
 }
 
 /// تعريف أداة
@@ -50,7 +55,8 @@ class ToolDef {
   });
 }
 
-final List<ToolDef> allTools = [...moneyTools, ...islamTools, ...dailyTools, ...mediaTools, ...deviceTools];
+/// تُبنى من جديد عند كل استدعاء حتى تتبع لغة التطبيق
+List<ToolDef> get allTools => [...moneyTools, ...islamTools, ...lifeTools, ...dailyTools, ...moreTools, ...mediaTools, ...deviceTools];
 
 ToolDef? toolById(String id) {
   for (final t in allTools) {

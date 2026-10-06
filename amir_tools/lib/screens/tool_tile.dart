@@ -5,6 +5,7 @@ import '../core/state.dart';
 import '../core/theme.dart';
 import '../tools/registry.dart';
 import 'tool_page.dart';
+import '../core/i18n.dart';
 
 /// بلاطة أداة بطابع الجلد والذهب: أيقونة ملوّنة، الاسم، وصف قصير، علم للأدوات السودانية، نجمة للمفضلة
 class ToolTile extends StatelessWidget {
@@ -23,7 +24,7 @@ class ToolTile extends StatelessWidget {
         onTap: () => ToolPage.open(context, tool.id),
         onLongPress: () {
           s.toggleFav(tool.id);
-          toast(fav ? 'اتشالت من المفضلة' : '«${tool.name}» اتضافت للمفضلة ⭐');
+          toast(fav ? t('اتشالت من المفضلة', 'أُزيلت من المفضلة', 'Removed from favorites') : '«${tool.name}» ${t('اتضافت للمفضلة', 'أُضيفت إلى المفضلة', 'added to favorites')} ⭐');
         },
         child: Ink(
           decoration: BoxDecoration(

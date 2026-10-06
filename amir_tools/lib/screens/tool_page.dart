@@ -4,6 +4,7 @@ import '../core/pattern.dart';
 import '../core/state.dart';
 import '../core/theme.dart';
 import '../tools/registry.dart';
+import '../core/i18n.dart';
 
 /// غلاف كل أداة: خلفية مزخرفة، عنوان، نجمة المفضلة
 class ToolPage extends StatefulWidget {
@@ -48,11 +49,11 @@ class _ToolPageState extends State<ToolPage> {
           ]),
           actions: [
             IconButton(
-              tooltip: fav ? 'شيلها من المفضلة' : 'أضفها للمفضلة',
+              tooltip: fav ? t('شيلها من المفضلة', 'إزالة من المفضلة', 'Remove from favorites') : t('أضفها للمفضلة', 'إضافة إلى المفضلة', 'Add to favorites'),
               icon: Icon(fav ? Icons.star_rounded : Icons.star_outline_rounded, color: fav ? SD.gold : null, size: 30),
               onPressed: () {
                 s.toggleFav(widget.tool.id);
-                toast(fav ? 'اتشالت من المفضلة' : 'اتضافت للمفضلة ⭐');
+                toast(fav ? t('اتشالت من المفضلة', 'أُزيلت من المفضلة', 'Removed from favorites') : t('اتضافت للمفضلة ⭐', 'أُضيفت إلى المفضلة ⭐', 'Added to favorites ⭐'));
               },
             ),
             const SizedBox(width: 6),

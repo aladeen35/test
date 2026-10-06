@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest_10y.dart' as tzdata;
+import 'core/i18n.dart';
 import 'core/state.dart';
 import 'core/theme.dart';
 import 'screens/shell.dart';
@@ -12,6 +14,7 @@ import 'services/notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tzdata.initializeTimeZones();
   final state = await AppState.load();
   runApp(ChangeNotifierProvider.value(value: state, child: const AmirApp()));
   // مهام خلفية لا تؤخّر فتح التطبيق
@@ -25,11 +28,12 @@ class AmirApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mode = context.select<AppState, ThemeMode>((s) => s.themeMode);
+    final lang = context.select<AppState, Lang>((s) => s.lang);
     return MaterialApp(
-      title: 'أدوات أمير',
+      title: tr('أدوات أمير', 'Amir Tools'),
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: messengerKey,
-      locale: const Locale('ar'),
+      locale: Locale(lang == Lang.en ? 'en' : 'ar'),
       supportedLocales: const [Locale('ar'), Locale('en')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -44,7 +48,8 @@ class AmirApp extends StatelessWidget {
         SystemChrome.setSystemUIOverlayStyle(dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
         return child!;
       },
-      home: const RootGate(),
+      // مفتاح اللغة: تغيير اللغة يعيد بناء كل الشاشات بالنصوص الجديدة
+      home: RootGate(key: ValueKey(lang)),
     );
   }
 }

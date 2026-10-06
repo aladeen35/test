@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'pattern.dart';
 import 'state.dart';
 import 'theme.dart';
+import 'i18n.dart';
 
 /// بطاقة قسم مزخرفة بعنوان وأيقونة
 class SCard extends StatelessWidget {
@@ -268,14 +269,14 @@ class ShareBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(children: [
         Expanded(
-          child: OutlinedButton.icon(onPressed: () => copyText(text()), icon: const Icon(Icons.copy_rounded), label: const Text('انسخ النتيجة')),
+          child: OutlinedButton.icon(onPressed: () => copyText(text()), icon: const Icon(Icons.copy_rounded), label: Text(tr('انسخ النتيجة', 'Copy'))),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: FilledButton.icon(
-            onPressed: () => SharePlus.instance.share(ShareParams(text: '${text()}\n\n— من تطبيق أدوات أمير 🇸🇩')),
+            onPressed: () => SharePlus.instance.share(ShareParams(text: '${text()}\n\n— ${tr('من تطبيق أدوات أمير', 'via Amir Tools app')} 🇸🇩')),
             icon: const Icon(Icons.share_rounded),
-            label: const Text('شارك'),
+            label: Text(t('شارك', 'مشاركة', 'Share')),
           ),
         ),
       ]);
@@ -284,7 +285,7 @@ class ShareBar extends StatelessWidget {
 Future<void> copyText(String s) async {
   if (s.isEmpty || s == '—') return;
   await Clipboard.setData(ClipboardData(text: s));
-  toast('اتنسخ تمام ✓');
+  toast(t('اتنسخ تمام ✓', 'تم النسخ ✓', 'Copied ✓'));
 }
 
 /// قائمة أدوات قياسية: ListView بحشوات مناسبة للشريط السفلي

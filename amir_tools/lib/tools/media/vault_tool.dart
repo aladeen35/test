@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/i18n.dart';
 import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
@@ -79,8 +80,8 @@ class _VaultToolState extends State<VaultTool> {
 
   Future<void> _setup() async {
     final p = _pw.text;
-    if (p.length < 6) return toast('كلمة السر لازم تكون 6 حروف على الأقل');
-    if (p != _pw2.text) return toast('كلمتين السر ما متطابقات');
+    if (p.length < 6) return toast(t('كلمة السر لازم تكون 6 حروف على الأقل', 'يجب أن تكون كلمة السر 6 أحرف على الأقل', 'Password must be at least 6 characters'));
+    if (p != _pw2.text) return toast(t('كلمتين السر ما متطابقات', 'كلمتا السر غير متطابقتين', "Passwords don't match"));
     setState(() => _busy = true);
     try {
       final salt = _randomBytes(16);
@@ -91,9 +92,9 @@ class _VaultToolState extends State<VaultTool> {
       await _save();
       _pw.clear();
       _pw2.clear();
-      toast('الخزنة جاهزة 🔐');
+      toast(t('الخزنة جاهزة 🔐', 'الخزنة جاهزة 🔐', 'Vault ready 🔐'));
     } catch (e) {
-      toast('حصلت مشكلة في التشفير: $e');
+      toast('${t('حصلت مشكلة في التشفير', 'حدثت مشكلة في التشفير', 'Encryption error')}: $e');
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -114,7 +115,7 @@ class _VaultToolState extends State<VaultTool> {
       _pw.clear();
     } catch (_) {
       _fails++;
-      toast('كلمة السر غلط ❌');
+      toast(t('كلمة السر غلط ❌', 'كلمة السر خاطئة ❌', 'Wrong password ❌'));
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -132,7 +133,7 @@ class _VaultToolState extends State<VaultTool> {
       });
 
   Future<void> _edit([_Note? n]) async {
-    final t = TextEditingController(text: n?.title ?? '');
+    final ti = TextEditingController(text: n?.title ?? '');
     final b = TextEditingController(text: n?.body ?? '');
     final ok = await showModalBottomSheet<bool>(
       context: context,
@@ -141,32 +142,32 @@ class _VaultToolState extends State<VaultTool> {
       builder: (ctx) => Padding(
         padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.viewInsetsOf(ctx).bottom + 16),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(n == null ? 'ملاحظة سرية جديدة' : 'عدّل الملاحظة', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          Text(n == null ? tr('ملاحظة سرية جديدة', 'New secret note') : t('عدّل الملاحظة', 'تعديل الملاحظة', 'Edit note'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
-          TextField(controller: t, decoration: const InputDecoration(labelText: 'العنوان', prefixIcon: Icon(Icons.title_rounded))),
+          TextField(controller: ti, decoration: InputDecoration(labelText: tr('العنوان', 'Title'), prefixIcon: const Icon(Icons.title_rounded))),
           const SizedBox(height: 10),
-          TextField(controller: b, minLines: 5, maxLines: 12, decoration: const InputDecoration(labelText: 'أكتب هنا السر بتاعك', alignLabelWithHint: true)),
+          TextField(controller: b, minLines: 5, maxLines: 12, decoration: InputDecoration(labelText: t('أكتب هنا السر بتاعك', 'اكتب سرّك هنا', 'Write your secret here'), alignLabelWithHint: true)),
           const SizedBox(height: 12),
-          FilledButton.icon(onPressed: () => Navigator.pop(ctx, true), icon: const Icon(Icons.lock_rounded), label: const Text('شفّر واحفظ')),
+          FilledButton.icon(onPressed: () => Navigator.pop(ctx, true), icon: const Icon(Icons.lock_rounded), label: Text(tr('شفّر واحفظ', 'Encrypt & save'))),
         ]),
       ),
     );
-    if (ok == true && (t.text.trim().isNotEmpty || b.text.trim().isNotEmpty)) {
+    if (ok == true && (ti.text.trim().isNotEmpty || b.text.trim().isNotEmpty)) {
       final now = DateTime.now().millisecondsSinceEpoch;
       setState(() {
         if (n == null) {
-          _notes.insert(0, _Note(t.text.trim().isEmpty ? 'بدون عنوان' : t.text.trim(), b.text, now, now));
+          _notes.insert(0, _Note(ti.text.trim().isEmpty ? tr('بدون عنوان', 'Untitled') : ti.text.trim(), b.text, now, now));
         } else {
           n
-            ..title = t.text.trim().isEmpty ? 'بدون عنوان' : t.text.trim()
+            ..title = ti.text.trim().isEmpty ? tr('بدون عنوان', 'Untitled') : ti.text.trim()
             ..body = b.text
             ..updated = now;
         }
       });
       await _save();
-      toast('اتحفظت مشفّرة ✓');
+      toast(t('اتحفظت مشفّرة ✓', 'حُفظت مشفّرة ✓', 'Saved encrypted ✓'));
     }
-    t.dispose();
+    ti.dispose();
     b.dispose();
   }
 
@@ -174,11 +175,11 @@ class _VaultToolState extends State<VaultTool> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('تمسح الملاحظة؟'),
-        content: Text('«${n.title}» بتتمسح نهائي.'),
+        title: Text(t('تمسح الملاحظة؟', 'حذف الملاحظة؟', 'Delete note?')),
+        content: Text(t('«${n.title}» بتتمسح نهائي.', 'ستُحذف «${n.title}» نهائياً.', '"${n.title}" will be deleted permanently.')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('لا')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('امسح')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tr('لا', 'No'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(t('امسح', 'احذف', 'Delete'))),
         ],
       ),
     );
@@ -193,15 +194,15 @@ class _VaultToolState extends State<VaultTool> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('غيّر كلمة السر الرئيسية'),
+        title: Text(tr('غيّر كلمة السر الرئيسية', 'Change master password')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: a, obscureText: true, decoration: const InputDecoration(labelText: 'الجديدة')),
+          TextField(controller: a, obscureText: true, decoration: InputDecoration(labelText: tr('الجديدة', 'New password'))),
           const SizedBox(height: 10),
-          TextField(controller: b, obscureText: true, decoration: const InputDecoration(labelText: 'أكّدها')),
+          TextField(controller: b, obscureText: true, decoration: InputDecoration(labelText: tr('أكّدها', 'Confirm'))),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('غيّر')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tr('إلغاء', 'Cancel'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(tr('غيّر', 'Change'))),
         ],
       ),
     );
@@ -209,8 +210,8 @@ class _VaultToolState extends State<VaultTool> {
     a.dispose();
     b.dispose();
     if (ok != true) return;
-    if (p.length < 6) return toast('6 حروف على الأقل');
-    if (p != p2) return toast('ما متطابقات');
+    if (p.length < 6) return toast(tr('6 حروف على الأقل', 'At least 6 characters'));
+    if (p != p2) return toast(t('ما متطابقات', 'غير متطابقتين', "Don't match"));
     setState(() => _busy = true);
     try {
       final salt = _randomBytes(16);
@@ -223,9 +224,9 @@ class _VaultToolState extends State<VaultTool> {
       _s.setData('vault_meta', m);
       _key = key;
       await _save();
-      toast('كلمة السر اتغيّرت والملاحظات اتشفّرت من جديد ✓');
+      toast(t('كلمة السر اتغيّرت والملاحظات اتشفّرت من جديد ✓', 'تغيّرت كلمة السر وأُعيد تشفير الملاحظات ✓', 'Password changed and notes re-encrypted ✓'));
     } catch (_) {
-      toast('ما قدرنا نغيّرها');
+      toast(t('ما قدرنا نغيّرها', 'تعذّر تغييرها', "Couldn't change it"));
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -234,11 +235,12 @@ class _VaultToolState extends State<VaultTool> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('تمسح الخزنة كلها؟'),
-        content: const Text('كل الملاحظات المشفّرة بتتمسح نهائياً وما في طريقة ترجّعها. متأكد؟'),
+        title: Text(t('تمسح الخزنة كلها؟', 'حذف الخزنة كلها؟', 'Delete the whole vault?')),
+        content: Text(t('كل الملاحظات المشفّرة بتتمسح نهائياً وما في طريقة ترجّعها. متأكد؟', 'ستُحذف كل الملاحظات المشفّرة نهائياً ولا توجد طريقة لاستعادتها. هل أنت متأكد؟',
+            'All encrypted notes will be permanently deleted with no way to recover them. Are you sure?')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('لا خليها')),
-          FilledButton(style: FilledButton.styleFrom(backgroundColor: SD.red), onPressed: () => Navigator.pop(ctx, true), child: const Text('أيوه امسح')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(t('لا خليها', 'لا، أبقِها', 'No, keep it'))),
+          FilledButton(style: FilledButton.styleFrom(backgroundColor: SD.red), onPressed: () => Navigator.pop(ctx, true), child: Text(t('أيوه امسح', 'نعم، احذف', 'Yes, delete'))),
         ],
       ),
     );
@@ -246,7 +248,7 @@ class _VaultToolState extends State<VaultTool> {
       _s.setData('vault_meta', null);
       _s.setData('vault_notes', null);
       _lock();
-      toast('الخزنة اتمسحت');
+      toast(t('الخزنة اتمسحت', 'حُذفت الخزنة', 'Vault deleted'));
     }
   }
 
@@ -255,11 +257,12 @@ class _VaultToolState extends State<VaultTool> {
     context.watch<AppState>();
     final m = _meta;
     if (_busy) {
-      return const Center(
+      return Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          CircularProgressIndicator(color: SD.gold),
-          SizedBox(height: 14),
-          Text('بنشفّر/بنفك… (100 ألف دورة PBKDF2، أصبر ثواني)'),
+          const CircularProgressIndicator(color: SD.gold),
+          const SizedBox(height: 14),
+          Text(t('بنشفّر/بنفك… (100 ألف دورة PBKDF2، أصبر ثواني)', 'جارٍ التشفير/فك التشفير… (100 ألف دورة PBKDF2، انتظر ثوانٍ)', 'Encrypting/decrypting… (100k PBKDF2 rounds, a few seconds)'),
+              textAlign: TextAlign.center),
         ]),
       );
     }
@@ -269,7 +272,7 @@ class _VaultToolState extends State<VaultTool> {
   }
 
   Widget _pwField(TextEditingController c, String label, {VoidCallback? onSubmit}) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsetsDirectional.only(bottom: 10),
         child: TextField(
           controller: c,
           obscureText: !_show,
@@ -285,47 +288,66 @@ class _VaultToolState extends State<VaultTool> {
       );
 
   Widget _setupView() => ToolList(children: [
-        const ResultHero(label: 'الخزنة السرية', value: '🔐', sub: 'ملاحظات مشفّرة AES-256 بكلمة سر بتعرفها إنت بس'),
+        ResultHero(
+            label: tr('الخزنة السرية', 'Secret Vault'),
+            value: '🔐',
+            sub: t('ملاحظات مشفّرة AES-256 بكلمة سر بتعرفها إنت بس', 'ملاحظات مشفّرة AES-256 بكلمة سر لا يعرفها سواك', 'AES-256 encrypted notes with a password only you know')),
         SCard(
-          title: 'أعمل كلمة سر رئيسية',
+          title: t('أعمل كلمة سر رئيسية', 'أنشئ كلمة سر رئيسية', 'Create a master password'),
           icon: Icons.password_rounded,
           color: SD.gold,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            _pwField(_pw, 'كلمة السر الرئيسية'),
-            _pwField(_pw2, 'أكّدها تاني', onSubmit: _setup),
-            FilledButton.icon(onPressed: _setup, icon: const Icon(Icons.lock_rounded), label: const Text('يلا أعمل الخزنة')),
+            _pwField(_pw, tr('كلمة السر الرئيسية', 'Master password')),
+            _pwField(_pw2, t('أكّدها تاني', 'أكّدها مرة أخرى', 'Confirm it'), onSubmit: _setup),
+            FilledButton.icon(onPressed: _setup, icon: const Icon(Icons.lock_rounded), label: Text(t('يلا أعمل الخزنة', 'أنشئ الخزنة', 'Create vault'))),
           ]),
         ),
-        const NoteBox('تحذير مهم: لو نسيت كلمة السر الرئيسية، الملاحظات بتضيع للأبد. ما في «نسيت كلمة السر» ولا زول يقدر يفكها — لا نحن ولا غيرنا.', kind: NoteKind.danger),
-        const NoteBox('كيف بتشتغل: من كلمة السر بنطلع مفتاح 256 بت بـ PBKDF2-HMAC-SHA256 (100,000 دورة + ملح عشوائي)، وبنشفّر الملاحظات بـ AES-GCM. المحفوظ في الجهاز نص مشفّر بس.', kind: NoteKind.info),
-        const NoteBox('استعملها لأرقام الحسابات، أرقام سرية، أكواد الاسترجاع… بس ما تعتمد عليها كنسخة وحيدة: لو مسحت التطبيق بتمسح معاهو.', kind: NoteKind.tip),
+        NoteBox(
+            t('تحذير مهم: لو نسيت كلمة السر الرئيسية، الملاحظات بتضيع للأبد. ما في «نسيت كلمة السر» ولا زول يقدر يفكها — لا نحن ولا غيرنا.',
+                'تحذير مهم: إن نسيت كلمة السر الرئيسية فستضيع الملاحظات للأبد. لا يوجد «نسيت كلمة السر» ولا يستطيع أحد فكّها — لا نحن ولا غيرنا.',
+                "Important: if you forget the master password, your notes are lost forever. There's no \"forgot password\" and nobody can decrypt them — not us, not anyone."),
+            kind: NoteKind.danger),
+        NoteBox(
+            t('كيف بتشتغل: من كلمة السر بنطلع مفتاح 256 بت بـ PBKDF2-HMAC-SHA256 (100,000 دورة + ملح عشوائي)، وبنشفّر الملاحظات بـ AES-GCM. المحفوظ في الجهاز نص مشفّر بس.',
+                'كيف تعمل: نشتق من كلمة السر مفتاح 256 بت عبر PBKDF2-HMAC-SHA256 (100,000 دورة + ملح عشوائي)، ونشفّر الملاحظات بـ AES-GCM. المحفوظ في الجهاز نص مشفّر فقط.',
+                'How it works: a 256-bit key is derived from your password with PBKDF2-HMAC-SHA256 (100,000 rounds + random salt), and notes are encrypted with AES-GCM. Only ciphertext is stored on the device.'),
+            kind: NoteKind.info),
+        NoteBox(
+            t('استعملها لأرقام الحسابات، أرقام سرية، أكواد الاسترجاع… بس ما تعتمد عليها كنسخة وحيدة: لو مسحت التطبيق بتمسح معاهو.',
+                'استخدمها لأرقام الحسابات والأرقام السرية وأكواد الاسترجاع… لكن لا تعتمد عليها كنسخة وحيدة: إن حذفت التطبيق ستُحذف معه.',
+                "Use it for account numbers, PINs, recovery codes… but don't rely on it as the only copy: uninstalling the app deletes it too."),
+            kind: NoteKind.tip),
       ]);
 
   Widget _lockedView(Map m) {
     final created = DateTime.fromMillisecondsSinceEpoch((m['created'] as num?)?.toInt() ?? 0);
     return ToolList(children: [
-      const ResultHero(label: 'الخزنة مقفولة', value: '🔒', sub: 'أكتب كلمة السر الرئيسية عشان تفتحها'),
+      ResultHero(
+          label: t('الخزنة مقفولة', 'الخزنة مقفلة', 'Vault locked'),
+          value: '🔒',
+          sub: t('أكتب كلمة السر الرئيسية عشان تفتحها', 'اكتب كلمة السر الرئيسية لفتحها', 'Enter your master password to open it')),
       SCard(
-        title: 'افتح الخزنة',
+        title: tr('افتح الخزنة', 'Open vault'),
         icon: Icons.lock_open_rounded,
         color: SD.gold,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          _pwField(_pw, 'كلمة السر', onSubmit: _unlock),
-          FilledButton.icon(onPressed: _unlock, icon: const Icon(Icons.lock_open_rounded), label: const Text('افتح')),
-          if (_fails > 0) Padding(padding: const EdgeInsets.only(top: 8), child: Text('محاولات غلط: $_fails', style: const TextStyle(color: SD.red))),
+          _pwField(_pw, tr('كلمة السر', 'Password'), onSubmit: _unlock),
+          FilledButton.icon(onPressed: _unlock, icon: const Icon(Icons.lock_open_rounded), label: Text(tr('افتح', 'Open'))),
+          if (_fails > 0) Padding(padding: const EdgeInsetsDirectional.only(top: 8), child: Text('${t('محاولات غلط', 'محاولات خاطئة', 'Wrong attempts')}: $_fails', style: const TextStyle(color: SD.red))),
         ]),
       ),
       SCard(
-        title: 'معلومات الخزنة',
+        title: tr('معلومات الخزنة', 'Vault info'),
         icon: Icons.info_outline_rounded,
         color: SD.nile,
         child: Column(children: [
-          if (created.year > 2000) InfoRow('اتعملت', fmtDateAr(created), icon: Icons.event_rounded),
-          InfoRow('التشفير', 'AES-GCM 256', icon: Icons.enhanced_encryption_rounded),
-          InfoRow('اشتقاق المفتاح', 'PBKDF2-SHA256 × ${fmt((m['it'] as num?) ?? _iterations, 0)}', icon: Icons.key_rounded),
+          if (created.year > 2000) InfoRow(t('اتعملت', 'أُنشئت', 'Created'), fmtDateAr(created), icon: Icons.event_rounded),
+          InfoRow(tr('التشفير', 'Encryption'), 'AES-GCM 256', icon: Icons.enhanced_encryption_rounded),
+          InfoRow(tr('اشتقاق المفتاح', 'Key derivation'), 'PBKDF2-SHA256 × ${fmt((m['it'] as num?) ?? _iterations, 0)}', icon: Icons.key_rounded),
         ]),
       ),
-      TextButton.icon(onPressed: _reset, icon: const Icon(Icons.delete_forever_rounded, color: SD.red), label: const Text('نسيت كلمة السر؟ امسح الخزنة وابدا من جديد', style: TextStyle(color: SD.red))),
+      TextButton.icon(onPressed: _reset, icon: const Icon(Icons.delete_forever_rounded, color: SD.red), label: Text(t('نسيت كلمة السر؟ امسح الخزنة وابدا من جديد', 'نسيت كلمة السر؟ احذف الخزنة وابدأ من جديد', 'Forgot the password? Delete the vault and start over'),
+            style: const TextStyle(color: SD.red))),
     ]);
   }
 
@@ -335,27 +357,27 @@ class _VaultToolState extends State<VaultTool> {
     final chars = _notes.fold<int>(0, (a, n) => a + n.body.length);
     return ToolList(children: [
       Row(children: [
-        Expanded(child: FilledButton.icon(onPressed: () => _edit(), icon: const Icon(Icons.add_rounded), label: const Text('ملاحظة جديدة'))),
+        Expanded(child: FilledButton.icon(onPressed: () => _edit(), icon: const Icon(Icons.add_rounded), label: Text(tr('ملاحظة جديدة', 'New note')))),
         const SizedBox(width: 10),
-        OutlinedButton.icon(onPressed: _lock, icon: const Icon(Icons.lock_rounded), label: const Text('اقفل')),
+        OutlinedButton.icon(onPressed: _lock, icon: const Icon(Icons.lock_rounded), label: Text(t('اقفل', 'أقفل', 'Lock'))),
       ]),
       const SizedBox(height: 12),
       StatGrid([
-        StatChip('${_notes.length}', 'ملاحظة', color: SD.gold, icon: Icons.sticky_note_2_rounded),
-        StatChip(fmt(chars, 0), 'حرف مشفّر', color: SD.green, icon: Icons.text_fields_rounded),
-        StatChip(fmtBytes((_s.getData<String>('vault_notes') ?? '').length), 'حجم المحفوظ', color: SD.nile, icon: Icons.sd_storage_rounded),
+        StatChip('${_notes.length}', tr('ملاحظة', 'Notes'), color: SD.gold, icon: Icons.sticky_note_2_rounded),
+        StatChip(fmt(chars, 0), tr('حرف مشفّر', 'Encrypted chars'), color: SD.green, icon: Icons.text_fields_rounded),
+        StatChip(fmtBytes((_s.getData<String>('vault_notes') ?? '').length), t('حجم المحفوظ', 'حجم المحفوظ', 'Stored size'), color: SD.nile, icon: Icons.sd_storage_rounded),
       ]),
       const SizedBox(height: 12),
       if (_notes.length > 3)
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsetsDirectional.only(bottom: 12),
           child: TextField(
             controller: _search,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: 'فتّش في الملاحظات', prefixIcon: Icon(Icons.search_rounded)),
+            decoration: InputDecoration(labelText: t('فتّش في الملاحظات', 'ابحث في الملاحظات', 'Search notes'), prefixIcon: const Icon(Icons.search_rounded)),
           ),
         ),
-      if (_notes.isEmpty) const NoteBox('الخزنة فاضية. أضف أول ملاحظة سرية 👆', kind: NoteKind.tip),
+      if (_notes.isEmpty) NoteBox(t('الخزنة فاضية. أضف أول ملاحظة سرية 👆', 'الخزنة فارغة. أضف أول ملاحظة سرية 👆', 'The vault is empty. Add your first secret note 👆'), kind: NoteKind.tip),
       for (final n in list)
         SCard(
           title: n.title,
@@ -367,10 +389,10 @@ class _VaultToolState extends State<VaultTool> {
               if (v == 'c') copyText(n.body);
               if (v == 'd') _delete(n);
             },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'e', child: Text('عدّل')),
-              PopupMenuItem(value: 'c', child: Text('انسخ')),
-              PopupMenuItem(value: 'd', child: Text('امسح')),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'e', child: Text(t('عدّل', 'تعديل', 'Edit'))),
+              PopupMenuItem(value: 'c', child: Text(t('انسخ', 'نسخ', 'Copy'))),
+              PopupMenuItem(value: 'd', child: Text(t('امسح', 'حذف', 'Delete'))),
             ],
           ),
           child: InkWell(
@@ -378,18 +400,21 @@ class _VaultToolState extends State<VaultTool> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(n.body, maxLines: 4, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 6),
-              Text('آخر تعديل: ${fmtDateAr(DateTime.fromMillisecondsSinceEpoch(n.updated), weekday: false)} ${fmtTimeAr(DateTime.fromMillisecondsSinceEpoch(n.updated))}',
+              Text('${tr('آخر تعديل', 'Last edited')}: ${fmtDateAr(DateTime.fromMillisecondsSinceEpoch(n.updated), weekday: false)} ${fmtTimeAr(DateTime.fromMillisecondsSinceEpoch(n.updated))}',
                   style: TextStyle(fontSize: 11.5, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6))),
             ]),
           ),
         ),
       const SizedBox(height: 8),
       Row(children: [
-        Expanded(child: OutlinedButton.icon(onPressed: _changePassword, icon: const Icon(Icons.key_rounded), label: const Text('غيّر كلمة السر'))),
+        Expanded(child: OutlinedButton.icon(onPressed: _changePassword, icon: const Icon(Icons.key_rounded), label: Text(tr('غيّر كلمة السر', 'Change password')))),
         const SizedBox(width: 10),
-        Expanded(child: OutlinedButton.icon(onPressed: _reset, icon: const Icon(Icons.delete_forever_rounded, color: SD.red), label: const Text('امسح الخزنة'))),
+        Expanded(child: OutlinedButton.icon(onPressed: _reset, icon: const Icon(Icons.delete_forever_rounded, color: SD.red), label: Text(t('امسح الخزنة', 'احذف الخزنة', 'Delete vault')))),
       ]),
-      const NoteBox('اقفل الخزنة لما تخلص. لو نسيت كلمة السر الرئيسية، البيانات بتضيع نهائي.', kind: NoteKind.warn),
+      NoteBox(
+          t('اقفل الخزنة لما تخلص. لو نسيت كلمة السر الرئيسية، البيانات بتضيع نهائي.', 'أقفل الخزنة عند الانتهاء. إن نسيت كلمة السر الرئيسية فستضيع البيانات نهائياً.',
+              'Lock the vault when done. If you forget the master password, the data is lost for good.'),
+          kind: NoteKind.warn),
     ]);
   }
 }

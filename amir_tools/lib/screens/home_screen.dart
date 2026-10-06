@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/data.dart';
+import '../core/i18n.dart';
 import '../core/format.dart';
 import '../core/pattern.dart';
 import '../core/state.dart';
@@ -66,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _weatherCard(s),
           _rateCard(s),
           GoldFrame(
-            title: 'مفضلاتك ⭐',
+            title: '${t('مفضلاتك', 'المفضلة', 'Favorites')} ⭐',
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               if (favs.isEmpty)
-                const NoteBox('ما عندك مفضلات لسه — اضغط ضغطة طويلة على أي أداة أو النجمة جوه الأداة عشان تضيفها هنا.', kind: NoteKind.tip)
+                NoteBox(t('ما عندك مفضلات لسه — اضغط ضغطة طويلة على أي أداة أو النجمة جوه الأداة عشان تضيفها هنا.', 'لا توجد مفضلات بعد — اضغط مطولًا على أي أداة أو على النجمة داخلها لإضافتها هنا.', 'No favorites yet — long-press any tool or tap the star inside it to add it here.'), kind: NoteKind.tip)
               else
                 ToolGrid(favs),
               const SizedBox(height: 6),
@@ -77,23 +78,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextButton.icon(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesEditor())),
                   icon: const Icon(Icons.edit_rounded, size: 18),
-                  label: const Text('رتّب مفضلاتك'),
+                  label: Text(t('رتّب مفضلاتك', 'ترتيب المفضلة', 'Reorder')),
                 ),
                 TextButton.icon(
                   onPressed: () => Shell.tab.value = 1,
                   icon: const Icon(Icons.grid_view_rounded, size: 18),
-                  label: const Text('كل العِدّة'),
+                  label: Text(t('كل العِدّة', 'كل الأدوات', 'All tools')),
                 ),
               ]),
             ]),
           ),
           _proverbCard(proverb),
-          SectionTitle('أقسام العِدّة', icon: Icons.category_rounded),
+          SectionTitle(t('أقسام العِدّة', 'أقسام الأدوات', 'Categories'), icon: Icons.category_rounded),
           _categories(),
-          if (recent.isNotEmpty) GoldFrame(title: 'استعملتها قريب', child: ToolGrid(recent)),
+          if (recent.isNotEmpty) GoldFrame(title: t('استعملتها قريب', 'المستخدمة مؤخرًا', 'Recently used'), child: ToolGrid(recent)),
           const SizedBox(height: 16),
           Center(
-            child: Text('أدوات أمير 🇸🇩 — من البشري للتكنولوجيا',
+            child: Text(tr('أدوات أمير 🇸🇩 — من البشري للتكنولوجيا', 'Amir Tools 🇸🇩 — by Al-Bushra Technology'),
                 style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5))),
           ),
         ],
@@ -107,20 +108,20 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _roundBtn(Icons.tune_rounded, 'الضبط', () => Shell.tab.value = 4),
+          _roundBtn(Icons.tune_rounded, t('الضبط', 'الإعدادات', 'Settings'), () => Shell.tab.value = 4),
           const Expanded(child: Center(child: AmirLogo(size: 104))),
-          _roundBtn(Icons.search_rounded, 'فتّش', () => Shell.tab.value = 1),
+          _roundBtn(Icons.search_rounded, t('فتّش', 'بحث', 'Search'), () => Shell.tab.value = 1),
         ]),
         const GoldDivider(),
-        Text('${sudaneseGreeting(now.hour)} ${s.name.isEmpty ? 'زول' : s.name} 👋',
+        Text('${sudaneseGreeting(now.hour)} ${s.name.isEmpty ? t('زول', 'صديقي', 'friend') : s.name} 👋',
             textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Lalezar', fontSize: 24, color: scheme.onSurface)),
         Text('${fmtDateAr(now)} • ${hijriText(now, shift: s.hijriShift)}',
             textAlign: TextAlign.center, style: TextStyle(color: scheme.onSurface.withValues(alpha: .75), fontSize: 13)),
         const SizedBox(height: 4),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const FlagStrip(width: 22, height: 14),
+          Text(flagOf(s.city.country), style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 6),
-          Text('${s.city.name} • جنيه سوداني', style: const TextStyle(color: SD.gold, fontWeight: FontWeight.w800, fontSize: 13.5)),
+          Flexible(child: Text('${s.city.name}${s.city.state.isNotEmpty && !s.city.inSudan ? '، ${s.city.state}' : ''}', overflow: TextOverflow.ellipsis, style: const TextStyle(color: SD.gold, fontWeight: FontWeight.w800, fontSize: 13.5))),
         ]),
       ]),
     );
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(children: [
               const Text('🏅', style: TextStyle(fontSize: 22)),
               const SizedBox(width: 6),
-              Text('المستوى ${s.level}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: SD.goldLight)),
+              Text('${tr('المستوى', 'Level')} ${s.level}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: SD.goldLight)),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -210,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                   Text('$h:${two(now.minute)}', style: const TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w800, height: 1)),
                   const SizedBox(width: 6),
-                  Text(now.hour < 12 ? 'ص' : 'م', style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800)),
+                  Text(now.hour < 12 ? tr('ص', 'AM') : tr('م', 'PM'), style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800)),
                 ]),
                 const SizedBox(height: 10),
                 Row(children: [
@@ -219,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text('${prayerNames[np.key]} • ${fmtTimeAr(toSudan(np.at))}',
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 17)),
                 ]),
-                Text('فاضل ليها ${fmtDuration(left)}', style: const TextStyle(color: Colors.white70)),
+                Text('${t('فاضل ليها', 'متبقٍّ', 'in')} ${fmtDuration(left)}', style: const TextStyle(color: Colors.white70)),
               ]),
             ),
           ]),
@@ -230,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _weatherCard(AppState s) {
     final w = _wx;
-    final (desc, emo) = w == null ? ('بنجيب الطقس…', '⛅') : weatherDesc(w.code);
+    final (desc, emo) = w == null ? (t('بنجيب الطقس…', 'جارٍ جلب الطقس…', 'Loading weather…'), '⛅') : weatherDesc(w.code);
     final alert = w?.dustAlert;
     return GestureDetector(
       onTap: () => ToolPage.open(context, 'weather'),
@@ -250,13 +251,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(w == null ? '--°' : '${w.temp.round()}°',
                   style: const TextStyle(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w800, height: 1)),
-              Text(w == null ? desc : '$desc • ${s.city.name} • بيحسّ ${w.feels.round()}°', style: const TextStyle(color: Colors.white)),
+              Text(w == null ? desc : '$desc • ${s.city.name} • ${t('بيحسّ', 'المحسوسة', 'feels')} ${w.feels.round()}°', style: const TextStyle(color: Colors.white)),
               if (alert != null)
                 Container(
                   margin: const EdgeInsets.only(top: 6),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(color: alert.severe ? SD.red : Colors.white24, borderRadius: BorderRadius.circular(20)),
-                  child: Text('🌪️ ${alert.severe ? 'هبوب' : 'غبار'}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
+                  child: Text('🌪️ ${alert.severe ? t('هبوب', 'عاصفة ترابية', 'Dust storm') : tr('غبار', 'Dust')}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
                 ),
             ]),
           ),
@@ -284,21 +285,21 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('الدولار الليلة كم؟', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-              Text(par == null ? 'رسمي ${fmt(off, 0)} ج.س • دخّل سعر السوق' : 'موازي ${fmt(par, 0)} • رسمي ${fmt(off, 0)} ج.س',
+              Text(t('الدولار الليلة كم؟', 'سعر الدولار اليوم', 'Dollar today'), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              Text(par == null ? '${tr('رسمي', 'Official')} ${fmt(off, 0)} SDG • ${t('دخّل سعر السوق', 'أدخل سعر السوق', 'add market rate')}' : '${tr('موازي', 'Parallel')} ${fmt(par, 0)} • ${tr('رسمي', 'Official')} ${fmt(off, 0)} SDG',
                   style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .65))),
             ]),
           ),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Text(fmt(s.rate('SAR', 'SDG'), 0), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-            const Text('ج.س للريال', style: TextStyle(fontSize: 11.5)),
+            Text(tr('ج.س للريال', 'SDG per SAR'), style: const TextStyle(fontSize: 11.5)),
           ]),
         ]),
       ),
     );
   }
 
-  Widget _proverbCard((String, String) p) => Container(
+  Widget _proverbCard((String, String, String) p) => Container(
         margin: const EdgeInsets.only(top: 6, bottom: 4),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -313,9 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('مَثَل اليوم', style: TextStyle(color: SD.sandDeep, fontWeight: FontWeight.w700, fontSize: 12.5)),
+                Text(t('مَثَل اليوم', 'مثل اليوم', 'Sudanese proverb of the day'), style: const TextStyle(color: SD.sandDeep, fontWeight: FontWeight.w700, fontSize: 12.5)),
                 Text('«${p.$1}»', style: const TextStyle(fontFamily: 'Lalezar', color: Colors.white, fontSize: 21)),
-                Text(p.$2, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                Text(isEn ? p.$3 : p.$2, style: const TextStyle(color: Colors.white70, fontSize: 13)),
               ]),
             ),
           ]),

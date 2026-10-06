@@ -8,6 +8,7 @@ import 'tools_screen.dart';
 import 'prayer_screen.dart';
 import 'points_screen.dart';
 import 'settings_screen.dart';
+import '../core/i18n.dart';
 
 /// الهيكل الرئيسي مع الشريط السفلي العائم
 class Shell extends StatefulWidget {
@@ -24,13 +25,13 @@ class Shell extends StatefulWidget {
 }
 
 class _ShellState extends State<Shell> {
-  static const _items = [
-    (Icons.home_rounded, 'البيت'),
-    (Icons.grid_view_rounded, 'العِدّة'),
-    (Icons.mosque_rounded, 'الصلاة'),
-    (Icons.emoji_events_rounded, 'نقاطي'),
-    (Icons.tune_rounded, 'الضبط'),
-  ];
+  static List<(IconData, String)> get _items => [
+        (Icons.home_rounded, t('البيت', 'الرئيسية', 'Home')),
+        (Icons.grid_view_rounded, t('العِدّة', 'الأدوات', 'Tools')),
+        (Icons.mosque_rounded, tr('الصلاة', 'Prayer')),
+        (Icons.emoji_events_rounded, t('نقاطي', 'نقاطي', 'Points')),
+        (Icons.tune_rounded, t('الضبط', 'الإعدادات', 'Settings')),
+      ];
 
   @override
   Widget build(BuildContext context) {

@@ -1,32 +1,74 @@
 import 'dart:math' as math;
+import 'package:timezone/timezone.dart' as tz;
+import '../core/i18n.dart';
 
 /// مواقيت الصلاة والقبلة — حساب محلي كامل (منقول من خوارزمية PrayTimes)
-/// التوقيت المعتمد: السودان UTC+2 (Africa/Khartoum، بلا توقيت صيفي)
-const sudanOffset = Duration(hours: 2);
+/// يعمل لأي مكان في العالم: المنطقة الزمنية للمكان المختار تُضبط في [placeTz].
 
-/// يحوّل لحظة زمنية مطلقة إلى «ساعة الحائط» في السودان (للعرض فقط)
-DateTime toSudan(DateTime t) => t.toUtc().add(sudanOffset);
+/// المنطقة الزمنية (IANA) للمكان الحالي — فارغة تعني توقيت الجهاز
+String placeTz = 'Africa/Khartoum';
 
-/// التاريخ الحالي في السودان
+/// فرق التوقيت عن UTC للمكان الحالي في لحظة معيّنة (مع التوقيت الصيفي)
+Duration placeOffset(DateTime instant) {
+  if (placeTz.isNotEmpty) {
+    try {
+      return tz.getLocation(placeTz).timeZone(instant.millisecondsSinceEpoch).offset;
+    } catch (_) {}
+  }
+  return instant.toLocal().timeZoneOffset;
+}
+
+/// يحوّل لحظة زمنية مطلقة إلى «ساعة الحائط» في المكان المختار (للعرض فقط).
+/// الاسم تاريخي من نسخة السودان فقط؛ يعمل الآن لأي مكان.
+DateTime toSudan(DateTime t) => t.toUtc().add(placeOffset(t));
+DateTime toPlace(DateTime t) => toSudan(t);
+
+/// التاريخ والوقت الحاليان في المكان المختار
 DateTime sudanNow() => toSudan(DateTime.now());
+DateTime placeNow() => sudanNow();
 
 class PrayerMethod {
-  final String id, name;
+  final String id, ar, en;
   final double fajr;
   final double? isha;
   final int? ishaMinutes;
-  const PrayerMethod(this.id, this.name, this.fajr, {this.isha, this.ishaMinutes});
+  const PrayerMethod(this.id, this.ar, this.en, this.fajr, {this.isha, this.ishaMinutes});
+  String get name => isEn ? en : ar;
 }
 
 const prayerMethods = [
-  PrayerMethod('egypt', 'الهيئة المصرية العامة للمساحة (المعتمدة في السودان)', 19.5, isha: 17.5),
-  PrayerMethod('mwl', 'رابطة العالم الإسلامي', 18, isha: 17),
-  PrayerMethod('makkah', 'أم القرى', 18.5, ishaMinutes: 90),
-  PrayerMethod('karachi', 'جامعة العلوم الإسلامية بكراتشي', 18, isha: 18),
+  PrayerMethod('egypt', 'الهيئة المصرية العامة للمساحة (السودان ومصر)', 'Egyptian General Authority (Sudan, Egypt)', 19.5, isha: 17.5),
+  PrayerMethod('mwl', 'رابطة العالم الإسلامي', 'Muslim World League', 18, isha: 17),
+  PrayerMethod('makkah', 'أم القرى (السعودية)', 'Umm al-Qura (Saudi Arabia)', 18.5, ishaMinutes: 90),
+  PrayerMethod('dubai', 'الإمارات', 'UAE (Dubai)', 18.2, isha: 18.2),
+  PrayerMethod('kuwait', 'الكويت', 'Kuwait', 18, isha: 17.5),
+  PrayerMethod('qatar', 'قطر', 'Qatar', 18, ishaMinutes: 90),
+  PrayerMethod('turkey', 'رئاسة الشؤون الدينية التركية', 'Diyanet (Turkey)', 18, isha: 17),
+  PrayerMethod('karachi', 'جامعة العلوم الإسلامية بكراتشي', 'University of Islamic Sciences, Karachi', 18, isha: 18),
+  PrayerMethod('isna', 'الجمعية الإسلامية لأمريكا الشمالية', 'ISNA (North America)', 15, isha: 15),
+  PrayerMethod('singapore', 'سنغافورة وماليزيا', 'Singapore / Malaysia', 20, isha: 18),
+  PrayerMethod('france', 'اتحاد المنظمات الإسلامية بفرنسا', 'UOIF (France)', 12, isha: 12),
 ];
 
+/// طريقة الحساب المناسبة لدولة (تُختار تلقائيًا عند تغيير المكان)
+String methodForCountry(String c) => switch (c.toUpperCase()) {
+      'SA' || 'YE' => 'makkah',
+      'AE' => 'dubai',
+      'KW' => 'kuwait',
+      'QA' || 'BH' => 'qatar',
+      'TR' => 'turkey',
+      'PK' || 'IN' || 'BD' || 'AF' => 'karachi',
+      'US' || 'CA' => 'isna',
+      'SG' || 'MY' || 'ID' || 'BN' => 'singapore',
+      'FR' => 'france',
+      'SD' || 'EG' || 'SS' || 'LY' || 'SY' || 'IQ' || 'LB' || 'JO' || 'PS' => 'egypt',
+      _ => 'mwl',
+    };
+
 const prayerKeys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-const prayerNames = {'fajr': 'الفجر', 'sunrise': 'الشروق', 'dhuhr': 'الظهر', 'asr': 'العصر', 'maghrib': 'المغرب', 'isha': 'العشاء'};
+Map<String, String> get prayerNames => isEn
+    ? const {'fajr': 'Fajr', 'sunrise': 'Sunrise', 'dhuhr': 'Dhuhr', 'asr': 'Asr', 'maghrib': 'Maghrib', 'isha': 'Isha'}
+    : const {'fajr': 'الفجر', 'sunrise': 'الشروق', 'dhuhr': 'الظهر', 'asr': 'العصر', 'maghrib': 'المغرب', 'isha': 'العشاء'};
 const fardKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 double _rad(double d) => d * math.pi / 180;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../../core/i18n.dart';
 import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
@@ -33,7 +34,7 @@ class _TextToolState extends State<TextTool> {
   double _rate = .5;
   final _stt = SpeechToText();
   bool _sttReady = false, _listening = false;
-  String _sttLocale = '';
+  List<LocaleName> _sttLocales = const [];
   String _partial = '';
   String _prefix = '';
 
@@ -45,12 +46,12 @@ class _TextToolState extends State<TextTool> {
 
   Future<void> _initTts() async {
     try {
-      final t = FlutterTts();
-      t.setStartHandler(() => mounted ? setState(() => _speaking = true) : null);
-      t.setCompletionHandler(() => mounted ? setState(() => _speaking = false) : null);
-      t.setCancelHandler(() => mounted ? setState(() => _speaking = false) : null);
-      t.setErrorHandler((_) => mounted ? setState(() => _speaking = false) : null);
-      _tts = t;
+      final tts = FlutterTts();
+      tts.setStartHandler(() => mounted ? setState(() => _speaking = true) : null);
+      tts.setCompletionHandler(() => mounted ? setState(() => _speaking = false) : null);
+      tts.setCancelHandler(() => mounted ? setState(() => _speaking = false) : null);
+      tts.setErrorHandler((_) => mounted ? setState(() => _speaking = false) : null);
+      _tts = tts;
     } catch (_) {}
   }
 
@@ -68,9 +69,9 @@ class _TextToolState extends State<TextTool> {
 
   void _apply(String Function(String) f, String msg) {
     final old = _c.text;
-    if (old.isEmpty) return toast('أكتب نص أول');
+    if (old.isEmpty) return toast(t('أكتب نص أول', 'اكتب نصاً أولاً', 'Enter some text first'));
     final n = f(old);
-    if (n == old) return toast('ما في حاجة اتغيّرت');
+    if (n == old) return toast(t('ما في حاجة اتغيّرت', 'لم يتغيّر شيء', 'Nothing changed'));
     _undo.add(old);
     if (_undo.length > 30) _undo.removeAt(0);
     setState(() => _c.text = n);
@@ -78,28 +79,31 @@ class _TextToolState extends State<TextTool> {
   }
 
   Future<void> _speak() async {
-    final t = _tts;
-    if (t == null) return toast('القراءة الصوتية ما متاحة في الجهاز ده');
+    final tts = _tts;
+    if (tts == null) return toast(t('القراءة الصوتية ما متاحة في الجهاز ده', 'القراءة الصوتية غير متاحة في هذا الجهاز', 'Text-to-speech is not available on this device'));
     if (_speaking) {
-      await t.stop();
+      await tts.stop();
       setState(() => _speaking = false);
       return;
     }
-    if (_c.text.trim().isEmpty) return toast('أكتب نص عشان نقراهو');
+    if (_c.text.trim().isEmpty) return toast(t('أكتب نص عشان نقراهو', 'اكتب نصاً لنقرأه', 'Enter some text to read aloud'));
     try {
-      final hasAr = _arLetter.hasMatch(_c.text);
-      if (hasAr) {
-        var ok = await t.isLanguageAvailable('ar-SA');
-        await t.setLanguage(ok == true ? 'ar-SA' : 'ar');
+      // بالإنجليزي: صوت إنجليزي إلا لو النص أغلبه عربي. بالعربي: صوت عربي لو في أي حرف عربي.
+      final arN = _arLetter.allMatches(_c.text).length, laN = _latin.allMatches(_c.text).length;
+      final useAr = isEn ? arN > laN : arN > 0;
+      if (useAr) {
+        var ok = await tts.isLanguageAvailable('ar-SA');
+        await tts.setLanguage(ok == true ? 'ar-SA' : 'ar');
       } else {
-        await t.setLanguage('en-US');
+        await tts.setLanguage('en-US');
       }
-      await t.setSpeechRate(_rate);
+      await tts.setSpeechRate(_rate);
       setState(() => _speaking = true);
-      await t.speak(_c.text);
+      await tts.speak(_c.text);
     } catch (_) {
       setState(() => _speaking = false);
-      toast('ما قدرنا نشغّل القراءة. يمكن محتاج تنزّل الصوت العربي من إعدادات الجهاز.');
+      toast(t('ما قدرنا نشغّل القراءة. يمكن محتاج تنزّل حزمة الصوت من إعدادات الجهاز.', 'تعذّر تشغيل القراءة. ربما تحتاج إلى تنزيل حزمة الصوت من إعدادات الجهاز.',
+          "Couldn't start speech. You may need to download the voice pack in your device settings."));
     }
   }
 
@@ -117,14 +121,22 @@ class _TextToolState extends State<TextTool> {
           },
           onError: (e) {
             if (mounted) setState(() => _listening = false);
-            if (e.permanent) toast('الإملاء وقف: ${e.errorMsg}');
+            if (e.permanent) toast('${t('الإملاء وقف', 'توقف الإملاء', 'Dictation stopped')}: ${e.errorMsg}');
           },
         );
-        if (!_sttReady) return toast('الإملاء الصوتي ما متاح — اسمح بالمايكروفون أو نزّل خدمة التعرف على الكلام');
-        final locs = await _stt.locales();
-        String? pick(String id) => locs.where((l) => l.localeId.replaceAll('-', '_').toLowerCase() == id).map((l) => l.localeId).firstOrNull;
-        _sttLocale = pick('ar_sd') ?? pick('ar_sa') ?? locs.where((l) => l.localeId.toLowerCase().startsWith('ar')).map((l) => l.localeId).firstOrNull ?? 'ar_SA';
+        if (!_sttReady) {
+          return toast(t('الإملاء الصوتي ما متاح — اسمح بالمايكروفون أو نزّل خدمة التعرف على الكلام', 'الإملاء الصوتي غير متاح — اسمح بالميكروفون أو نزّل خدمة التعرّف على الكلام',
+              'Dictation unavailable — allow the microphone or install a speech recognition service'));
+        }
+        _sttLocales = await _stt.locales();
       }
+      // لغة الإملاء تتبع لغة التطبيق: إنجليزي (en-US) أو عربي
+      final locs = _sttLocales;
+      String? pick(String id) => locs.where((l) => l.localeId.replaceAll('-', '_').toLowerCase() == id).map((l) => l.localeId).firstOrNull;
+      String? starts(String p) => locs.where((l) => l.localeId.toLowerCase().startsWith(p)).map((l) => l.localeId).firstOrNull;
+      final sttLocale = isEn
+          ? (pick('en_us') ?? starts('en') ?? 'en_US')
+          : (pick('ar_sd') ?? pick('ar_sa') ?? starts('ar') ?? 'ar_SA');
       _prefix = _c.text.isEmpty || _c.text.endsWith(' ') || _c.text.endsWith('\n') ? _c.text : '${_c.text} ';
       _partial = '';
       await _stt.listen(
@@ -139,29 +151,29 @@ class _TextToolState extends State<TextTool> {
             }
           });
         },
-        listenOptions: SpeechListenOptions(localeId: _sttLocale, partialResults: true, cancelOnError: true, listenFor: const Duration(minutes: 1), pauseFor: const Duration(seconds: 5)),
+        listenOptions: SpeechListenOptions(localeId: sttLocale, partialResults: true, cancelOnError: true, listenFor: const Duration(minutes: 1), pauseFor: const Duration(seconds: 5)),
       );
       setState(() => _listening = true);
     } catch (_) {
       setState(() => _listening = false);
-      toast('ما قدرنا نشغّل الإملاء في الجهاز ده');
+      toast(t('ما قدرنا نشغّل الإملاء في الجهاز ده', 'تعذّر تشغيل الإملاء في هذا الجهاز', "Couldn't start dictation on this device"));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = _c.text;
-    final words = RegExp(r'[^\s]+').allMatches(t).map((m) => m[0]!).toList();
-    final chars = t.characters.length;
-    final noSpace = t.replaceAll(RegExp(r'\s'), '').characters.length;
-    final lines = t.isEmpty ? 0 : t.split('\n').length;
-    final sentences = t.split(RegExp(r'[.!?؟…\n]+')).where((s) => s.trim().isNotEmpty).length;
-    final paragraphs = t.split(RegExp(r'\n\s*\n')).where((s) => s.trim().isNotEmpty).length;
-    final ar = _arLetter.allMatches(t).length;
-    final la = _latin.allMatches(t).length;
-    final digits = RegExp(r'[0-9٠-٩]').allMatches(t).length;
-    final tash = _tashkeel.allMatches(t).length;
-    final punct = RegExp(r'[.,;:!?؟،؛«»"()\-]').allMatches(t).length;
+    final txt = _c.text;
+    final words = RegExp(r'[^\s]+').allMatches(txt).map((m) => m[0]!).toList();
+    final chars = txt.characters.length;
+    final noSpace = txt.replaceAll(RegExp(r'\s'), '').characters.length;
+    final lines = txt.isEmpty ? 0 : txt.split('\n').length;
+    final sentences = txt.split(RegExp(r'[.!?؟…\n]+')).where((s) => s.trim().isNotEmpty).length;
+    final paragraphs = txt.split(RegExp(r'\n\s*\n')).where((s) => s.trim().isNotEmpty).length;
+    final ar = _arLetter.allMatches(txt).length;
+    final la = _latin.allMatches(txt).length;
+    final digits = RegExp(r'[0-9٠-٩]').allMatches(txt).length;
+    final tash = _tashkeel.allMatches(txt).length;
+    final punct = RegExp(r'[.,;:!?؟،؛«»"()\-]').allMatches(txt).length;
     final clean = words.map((w) => _normalize(w.replaceAll(_tashkeel, '').replaceAll(RegExp(r'[^\p{L}\p{N}]', unicode: true), '')).toLowerCase()).where((w) => w.length > 1).toList();
     final freq = <String, int>{};
     for (final w in clean) {
@@ -175,23 +187,25 @@ class _TextToolState extends State<TextTool> {
     final readWpm = ar >= la ? 180 : 230;
     Duration mins(double m) => Duration(seconds: (m * 60).round());
     final readT = mins(words.length / readWpm), speakT = mins(words.length / 130);
-    String dur(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} ثانية' : '${d.inMinutes} د ${d.inSeconds % 60} ث';
-    final dir = ar >= la ? 'عربي' : (la > 0 ? 'لاتيني' : '—');
+    String dur(Duration d) => d.inSeconds < 60
+        ? '${d.inSeconds} ${tr('ثانية', 'sec')}'
+        : '${d.inMinutes} ${tr('د', 'min')} ${d.inSeconds % 60} ${tr('ث', 's')}';
+    final dir = ar >= la ? tr('عربي', 'Arabic') : (la > 0 ? tr('لاتيني', 'Latin') : '—');
 
     return ToolList(children: [
       SCard(
-        title: 'النص',
+        title: tr('النص', 'Text'),
         icon: Icons.edit_note_rounded,
         color: SD.green,
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
           IconButton(
-            tooltip: 'تراجع',
+            tooltip: tr('تراجع', 'Undo'),
             onPressed: _undo.isEmpty ? null : () => setState(() => _c.text = _undo.removeLast()),
             icon: const Icon(Icons.undo_rounded),
           ),
           IconButton(
-            tooltip: 'امسح',
-            onPressed: t.isEmpty
+            tooltip: tr('امسح', 'Clear'),
+            onPressed: txt.isEmpty
                 ? null
                 : () => setState(() {
                       _undo.add(_c.text);
@@ -206,7 +220,7 @@ class _TextToolState extends State<TextTool> {
             minLines: 6,
             maxLines: 14,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(hintText: 'أكتب هنا أو الصق النص…', alignLabelWithHint: true),
+            decoration: InputDecoration(hintText: t('أكتب هنا أو الصق النص…', 'اكتب هنا أو الصق النص…', 'Type or paste text here…'), alignLabelWithHint: true),
           ),
           const SizedBox(height: 10),
           Row(children: [
@@ -214,7 +228,7 @@ class _TextToolState extends State<TextTool> {
               child: FilledButton.icon(
                 onPressed: _speak,
                 icon: Icon(_speaking ? Icons.stop_rounded : Icons.volume_up_rounded),
-                label: Text(_speaking ? 'وقّف' : 'اقرا لي'),
+                label: Text(_speaking ? t('وقّف', 'إيقاف', 'Stop') : t('اقرا لي', 'اقرأ لي', 'Read aloud')),
               ),
             ),
             const SizedBox(width: 10),
@@ -223,52 +237,60 @@ class _TextToolState extends State<TextTool> {
                 style: FilledButton.styleFrom(backgroundColor: _listening ? SD.red : SD.henna),
                 onPressed: _dictate,
                 icon: Icon(_listening ? Icons.mic_off_rounded : Icons.mic_rounded),
-                label: Text(_listening ? 'وقّف الإملاء' : 'أملي بصوتك'),
+                label: Text(_listening ? t('وقّف الإملاء', 'أوقف الإملاء', 'Stop dictation') : t('أملي بصوتك', 'أملِ بصوتك', 'Dictate')),
               ),
             ),
           ]),
           Row(children: [
             const Icon(Icons.speed_rounded, size: 18),
             const SizedBox(width: 6),
-            const Text('سرعة القراءة'),
+            Text(tr('سرعة القراءة', 'Speech rate')),
             Expanded(child: Slider(value: _rate, min: .2, max: 1, divisions: 8, label: _rate.toStringAsFixed(1), onChanged: (v) => setState(() => _rate = v))),
           ]),
-          if (_listening) const NoteBox('بنسمع ليك… اتكلم بوضوح، وبعد 5 ثواني سكات بنوقف براهو 🎙️', kind: NoteKind.info),
+          if (_listening)
+            NoteBox(
+                t('بنسمع ليك… اتكلم بوضوح، وبعد 5 ثواني سكات بنوقف براهو 🎙️', 'نستمع إليك… تحدّث بوضوح، وبعد 5 ثوانٍ من الصمت نتوقف تلقائياً 🎙️',
+                    'Listening… speak clearly. Stops automatically after 5 seconds of silence 🎙️'),
+                kind: NoteKind.info),
         ]),
       ),
-      if (t.isNotEmpty) ...[
+      if (txt.isNotEmpty) ...[
         StatGrid([
-          StatChip('${words.length}', 'كلمة', color: SD.green, icon: Icons.short_text_rounded),
-          StatChip('$chars', 'حرف بالمسافات', color: SD.nile, icon: Icons.text_fields_rounded),
-          StatChip('$noSpace', 'حرف بدون مسافات', color: SD.indigo, icon: Icons.abc_rounded),
-          StatChip('$sentences', 'جملة', color: SD.henna, icon: Icons.format_quote_rounded),
-          StatChip('$lines', 'سطر', color: SD.gold, icon: Icons.format_list_numbered_rtl_rounded),
-          StatChip('$paragraphs', 'فقرة', color: SD.coffee, icon: Icons.notes_rounded),
+          StatChip('${words.length}', tr('كلمة', 'Words'), color: SD.green, icon: Icons.short_text_rounded),
+          StatChip('$chars', tr('حرف بالمسافات', 'Chars (with spaces)'), color: SD.nile, icon: Icons.text_fields_rounded),
+          StatChip('$noSpace', tr('حرف بدون مسافات', 'Chars (no spaces)'), color: SD.indigo, icon: Icons.abc_rounded),
+          StatChip('$sentences', tr('جملة', 'Sentences'), color: SD.henna, icon: Icons.format_quote_rounded),
+          StatChip('$lines', tr('سطر', 'Lines'), color: SD.gold, icon: Icons.format_list_numbered_rounded),
+          StatChip('$paragraphs', tr('فقرة', 'Paragraphs'), color: SD.coffee, icon: Icons.notes_rounded),
         ]),
         const SizedBox(height: 14),
         SCard(
-          title: 'تفاصيل أكتر',
+          title: t('تفاصيل أكتر', 'تفاصيل أكثر', 'More details'),
           icon: Icons.analytics_rounded,
           color: SD.nile,
           child: Column(children: [
-            InfoRow('حروف عربية', '$ar', icon: Icons.translate_rounded),
-            InfoRow('حروف لاتينية', '$la', icon: Icons.abc_rounded),
-            InfoRow('أرقام', '$digits', icon: Icons.pin_rounded),
-            InfoRow('علامات التشكيل', '$tash', icon: Icons.format_color_text_rounded),
-            InfoRow('علامات الترقيم', '$punct', icon: Icons.more_horiz_rounded),
-            InfoRow('اللغة الغالبة', dir, icon: Icons.language_rounded),
-            InfoRow('كلمات مختلفة', '$unique', icon: Icons.fingerprint_rounded, hint: words.isEmpty ? null : 'التنوّع: ${(unique / clean.length.clamp(1, 1 << 30) * 100).toStringAsFixed(0)}%'),
-            InfoRow('متوسط طول الكلمة', '${avgLen.toStringAsFixed(1)} حرف', icon: Icons.straighten_rounded),
-            InfoRow('أطول كلمة', longest, icon: Icons.expand_rounded),
-            InfoRow('زمن القراءة الصامتة', dur(readT), icon: Icons.menu_book_rounded, hint: 'حوالي $readWpm كلمة في الدقيقة'),
-            InfoRow('زمن القراءة بصوت (خطبة/كلمة)', dur(speakT), icon: Icons.record_voice_over_rounded, hint: 'حوالي 130 كلمة في الدقيقة'),
-            InfoRow('رسائل SMS تقريباً', '${(chars / (ar > 0 ? 70 : 160)).ceil()}', icon: Icons.sms_rounded, hint: ar > 0 ? 'الرسالة العربية 70 حرف' : 'الرسالة اللاتينية 160 حرف'),
-            InfoRow('الحجم', fmtBytes(_utf8Len(t)), icon: Icons.sd_storage_rounded),
+            InfoRow(tr('حروف عربية', 'Arabic letters'), '$ar', icon: Icons.translate_rounded),
+            InfoRow(tr('حروف لاتينية', 'Latin letters'), '$la', icon: Icons.abc_rounded),
+            InfoRow(tr('أرقام', 'Digits'), '$digits', icon: Icons.pin_rounded),
+            InfoRow(tr('علامات التشكيل', 'Diacritics'), '$tash', icon: Icons.format_color_text_rounded),
+            InfoRow(tr('علامات الترقيم', 'Punctuation'), '$punct', icon: Icons.more_horiz_rounded),
+            InfoRow(tr('اللغة الغالبة', 'Main script'), dir, icon: Icons.language_rounded),
+            InfoRow(tr('كلمات مختلفة', 'Unique words'), '$unique', icon: Icons.fingerprint_rounded, hint: words.isEmpty ? null : '${tr('التنوّع', 'Variety')}: ${(unique / clean.length.clamp(1, 1 << 30) * 100).toStringAsFixed(0)}%'),
+            InfoRow(tr('متوسط طول الكلمة', 'Avg word length'), '${avgLen.toStringAsFixed(1)} ${tr('حرف', 'chars')}', icon: Icons.straighten_rounded),
+            InfoRow(tr('أطول كلمة', 'Longest word'), longest, icon: Icons.expand_rounded),
+            InfoRow(tr('زمن القراءة الصامتة', 'Silent reading time'), dur(readT),
+                icon: Icons.menu_book_rounded, hint: t('حوالي $readWpm كلمة في الدقيقة', 'نحو $readWpm كلمة في الدقيقة', '~$readWpm words per minute')),
+            InfoRow(tr('زمن القراءة بصوت (خطبة/كلمة)', 'Speaking time (speech/talk)'), dur(speakT),
+                icon: Icons.record_voice_over_rounded, hint: t('حوالي 130 كلمة في الدقيقة', 'نحو 130 كلمة في الدقيقة', '~130 words per minute')),
+            InfoRow(tr('رسائل SMS تقريباً', 'SMS messages (approx.)'), '${(chars / (ar > 0 ? 70 : 160)).ceil()}',
+                icon: Icons.sms_rounded,
+                hint: ar > 0 ? tr('الرسالة العربية 70 حرف', 'Arabic SMS = 70 chars') : tr('الرسالة اللاتينية 160 حرف', 'Latin SMS = 160 chars')),
+            InfoRow(tr('الحجم', 'Size'), fmtBytes(_utf8Len(txt)), icon: Icons.sd_storage_rounded),
           ]),
         ),
         if (top.isNotEmpty)
           SCard(
-            title: 'أكتر الكلمات تكراراً',
+            title: t('أكتر الكلمات تكراراً', 'أكثر الكلمات تكراراً', 'Most frequent words'),
             icon: Icons.leaderboard_rounded,
             color: SD.purple,
             child: Wrap(spacing: 8, runSpacing: 8, children: [
@@ -281,28 +303,42 @@ class _TextToolState extends State<TextTool> {
           ),
       ],
       SCard(
-        title: 'حوّل النص',
+        title: tr('حوّل النص', 'Transform text'),
         icon: Icons.auto_fix_high_rounded,
         color: SD.gold,
         child: Wrap(spacing: 8, runSpacing: 8, children: [
-          _btn('شيل التشكيل', Icons.format_clear_rounded, () => _apply((s) => s.replaceAll(_tashkeel, ''), 'التشكيل اتشال ✓')),
-          _btn('وحّد الحروف (أ إ آ ← ا، ى ← ي، ة ← ه)', Icons.spellcheck_rounded, () => _apply(_normalize, 'اتوحّدت ✓')),
-          _btn('أرقام عربية ← 123', Icons.looks_one_rounded, () => _apply((s) => s.replaceAllMapped(RegExp('[٠-٩]'), (m) => '${'٠١٢٣٤٥٦٧٨٩'.indexOf(m[0]!)}'), 'تمام ✓')),
-          _btn('123 ← ١٢٣', Icons.looks_two_rounded, () => _apply(toArabicDigits, 'تمام ✓')),
-          _btn('نضّف المسافات', Icons.space_bar_rounded, () => _apply(_cleanSpaces, 'المسافات اتنضّفت ✓')),
-          _btn('شيل الأسطر المكررة', Icons.filter_list_off_rounded, () => _apply((s) => s.split('\n').toSet().join('\n'), 'تمام ✓')),
-          _btn('رتّب الأسطر', Icons.sort_by_alpha_rounded, () => _apply((s) => (s.split('\n')..sort()).join('\n'), 'اترتّبت ✓')),
-          _btn('ABC كبيرة', Icons.text_increase_rounded, () => _apply((s) => s.toUpperCase(), 'تمام ✓')),
-          _btn('abc صغيرة', Icons.text_decrease_rounded, () => _apply((s) => s.toLowerCase(), 'تمام ✓')),
-          _btn('اعكس النص', Icons.swap_horiz_rounded, () => _apply((s) => s.characters.toList().reversed.join(), 'اتعكس ✓')),
+          _btn(t('شيل التشكيل', 'أزل التشكيل', 'Remove diacritics'), Icons.format_clear_rounded,
+              () => _apply((s) => s.replaceAll(_tashkeel, ''), t('التشكيل اتشال ✓', 'أُزيل التشكيل ✓', 'Diacritics removed ✓'))),
+          _btn(tr('وحّد الحروف (أ إ آ ← ا، ى ← ي، ة ← ه)', 'Normalize Arabic (أ إ آ → ا، ى → ي، ة → ه)'), Icons.spellcheck_rounded,
+              () => _apply(_normalize, t('اتوحّدت ✓', 'تم التوحيد ✓', 'Normalized ✓'))),
+          _btn(tr('أرقام عربية ← 123', '١٢٣ → 123'), Icons.looks_one_rounded, () => _apply((s) => s.replaceAllMapped(RegExp('[٠-٩]'), (m) => '${'٠١٢٣٤٥٦٧٨٩'.indexOf(m[0]!)}'), _done)),
+          _btn(tr('123 ← ١٢٣', '123 → ١٢٣'), Icons.looks_two_rounded, () => _apply(toArabicDigits, _done)),
+          _btn(t('نضّف المسافات', 'نظّف المسافات', 'Clean up spaces'), Icons.space_bar_rounded,
+              () => _apply(_cleanSpaces, t('المسافات اتنضّفت ✓', 'نُظّفت المسافات ✓', 'Spaces cleaned ✓'))),
+          _btn(t('شيل الأسطر المكررة', 'احذف الأسطر المكررة', 'Remove duplicate lines'), Icons.filter_list_off_rounded,
+              () => _apply((s) => s.split('\n').toSet().join('\n'), _done)),
+          _btn(tr('رتّب الأسطر', 'Sort lines'), Icons.sort_by_alpha_rounded,
+              () => _apply((s) => (s.split('\n')..sort()).join('\n'), t('اترتّبت ✓', 'رُتّبت ✓', 'Sorted ✓'))),
+          _btn(tr('ABC كبيرة', 'UPPERCASE'), Icons.text_increase_rounded, () => _apply((s) => s.toUpperCase(), _done)),
+          _btn(tr('abc صغيرة', 'lowercase'), Icons.text_decrease_rounded, () => _apply((s) => s.toLowerCase(), _done)),
+          _btn(tr('اعكس النص', 'Reverse text'), Icons.swap_horiz_rounded,
+              () => _apply((s) => s.characters.toList().reversed.join(), t('اتعكس ✓', 'عُكس النص ✓', 'Reversed ✓'))),
         ]),
       ),
-      if (t.isNotEmpty) ShareBar(() => _c.text),
+      if (txt.isNotEmpty) ShareBar(() => _c.text),
       const SizedBox(height: 10),
-      const NoteBox('القراءة الصوتية والإملاء بيعتمدوا على خدمات الجهاز (Google/Apple). لو ما اشتغلوا، نزّل حزمة اللغة العربية من إعدادات الجهاز. الإملاء ممكن يحتاج نت.', kind: NoteKind.info),
-      if (kIsWeb) const NoteBox('في نسخة الويب بعض المتصفحات ما بتدعم الإملاء الصوتي.', kind: NoteKind.warn),
+      NoteBox(
+          t('القراءة الصوتية والإملاء بيعتمدوا على خدمات الجهاز (Google/Apple). لو ما اشتغلوا، نزّل حزمة اللغة من إعدادات الجهاز. الإملاء ممكن يحتاج نت.',
+              'تعتمد القراءة الصوتية والإملاء على خدمات الجهاز (Google/Apple). إن لم تعمل، نزّل حزمة اللغة من إعدادات الجهاز. قد يحتاج الإملاء إلى إنترنت.',
+              'Speech and dictation rely on device services (Google/Apple). If they fail, download the language pack in device settings. Dictation may need internet.'),
+          kind: NoteKind.info),
+      if (kIsWeb)
+        NoteBox(t('في نسخة الويب بعض المتصفحات ما بتدعم الإملاء الصوتي.', 'في نسخة الويب، بعض المتصفحات لا تدعم الإملاء الصوتي.', "On the web, some browsers don't support dictation."),
+            kind: NoteKind.warn),
     ]);
   }
+
+  static String get _done => t('تمام ✓', 'تم ✓', 'Done ✓');
 
   static int _utf8Len(String s) {
     var n = 0;

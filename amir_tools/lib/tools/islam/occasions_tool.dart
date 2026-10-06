@@ -9,7 +9,10 @@ import '../../services/calendars.dart';
 import '../../services/prayer.dart';
 
 /// لحظة مطلقة من «ساعة حائط» السودان
-DateTime _sd(int y, int m, int d, [int h = 0, int mi = 0]) => DateTime.utc(y, m, d, h, mi).subtract(sudanOffset);
+DateTime _sd(int y, int m, int d, [int h = 0, int mi = 0]) {
+  final wall = DateTime.utc(y, m, d, h, mi);
+  return wall.subtract(placeOffset(wall));
+}
 
 class _Occ {
   final String name, emoji, note;

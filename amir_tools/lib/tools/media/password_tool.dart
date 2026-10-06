@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../core/i18n.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import 'media_common.dart';
@@ -115,21 +116,26 @@ class _PasswordToolState extends State<PasswordTool> {
   }
 
   static (String, Color, double) _level(double bits) {
-    if (bits < 28) return ('ضعيفة شديد', SD.red, .12);
-    if (bits < 36) return ('ضعيفة', SD.henna, .3);
-    if (bits < 60) return ('نص نص', SD.gold, .55);
-    if (bits < 80) return ('قوية', SD.green, .8);
-    return ('قوية شديد 💪', SD.teal, 1);
+    if (bits < 28) return (t('ضعيفة شديد', 'ضعيفة جداً', 'Very weak'), SD.red, .12);
+    if (bits < 36) return (tr('ضعيفة', 'Weak'), SD.henna, .3);
+    if (bits < 60) return (t('نص نص', 'متوسطة', 'Fair'), SD.gold, .55);
+    if (bits < 80) return (tr('قوية', 'Strong'), SD.green, .8);
+    return (t('قوية شديد 💪', 'قوية جداً 💪', 'Very strong 💪'), SD.teal, 1);
   }
 
   /// متوسط زمن الكسر = نص مساحة البحث ÷ المحاولات في الثانية
   static String _crack(double bits, double perSec) => humanTime(math.pow(2, bits - 1) / perSec);
 
   Widget _crackTable(double bits) => Column(children: [
-        InfoRow('هجوم عبر الإنترنت (100 محاولة/ث)', _crack(bits, 100), icon: Icons.public_rounded, hint: 'موقع ما بيقفل الحساب بعد المحاولات الغلط'),
-        InfoRow('جهاز عادي، تشفير قوي (10 آلاف/ث)', _crack(bits, 1e4), icon: Icons.computer_rounded, hint: 'لو اتسرقت قاعدة بيانات محمية كويس'),
-        InfoRow('كرت شاشة قوي (10 مليار/ث)', _crack(bits, 1e10), icon: Icons.memory_rounded, hint: 'تشفير ضعيف زي MD5'),
-        InfoRow('مزرعة أجهزة ضخمة (تريليون/ث)', _crack(bits, 1e12), icon: Icons.dns_rounded),
+        InfoRow(tr('هجوم عبر الإنترنت (100 محاولة/ث)', 'Online attack (100 guesses/s)'), _crack(bits, 100),
+            icon: Icons.public_rounded,
+            hint: t('موقع ما بيقفل الحساب بعد المحاولات الغلط', 'موقع لا يقفل الحساب بعد المحاولات الخاطئة', "A site that doesn't lock after wrong attempts")),
+        InfoRow(tr('جهاز عادي، تشفير قوي (10 آلاف/ث)', 'Normal PC, strong hashing (10k/s)'), _crack(bits, 1e4),
+            icon: Icons.computer_rounded,
+            hint: t('لو اتسرقت قاعدة بيانات محمية كويس', 'لو سُرقت قاعدة بيانات محمية جيداً', 'If a well-protected database leaks')),
+        InfoRow(tr('كرت شاشة قوي (10 مليار/ث)', 'Strong GPU (10 billion/s)'), _crack(bits, 1e10),
+            icon: Icons.memory_rounded, hint: t('تشفير ضعيف زي MD5', 'تشفير ضعيف مثل MD5', 'Weak hashing like MD5')),
+        InfoRow(tr('مزرعة أجهزة ضخمة (تريليون/ث)', 'Huge cracking farm (1 trillion/s)'), _crack(bits, 1e12), icon: Icons.dns_rounded),
       ]);
 
   @override
@@ -137,9 +143,9 @@ class _PasswordToolState extends State<PasswordTool> {
     final (lvl, col, frac) = _level(_bits);
     return ToolList(children: [
       SegmentedButton<bool>(
-        segments: const [
-          ButtonSegment(value: false, icon: Icon(Icons.password_rounded), label: Text('حروف عشوائية')),
-          ButtonSegment(value: true, icon: Icon(Icons.short_text_rounded), label: Text('عبارة مرور')),
+        segments: [
+          ButtonSegment(value: false, icon: const Icon(Icons.password_rounded), label: Text(tr('حروف عشوائية', 'Random characters'))),
+          ButtonSegment(value: true, icon: const Icon(Icons.short_text_rounded), label: Text(tr('عبارة مرور', 'Passphrase'))),
         ],
         selected: {_phrase},
         onSelectionChanged: (v) {
@@ -149,25 +155,25 @@ class _PasswordToolState extends State<PasswordTool> {
       ),
       const SizedBox(height: 14),
       ResultHero(
-        label: 'كلمة السر الجديدة (اضغط ضغطة طويلة للنسخ)',
+        label: t('كلمة السر الجديدة (اضغط ضغطة طويلة للنسخ)', 'كلمة السر الجديدة (اضغط مطوّلاً للنسخ)', 'New password (long-press to copy)'),
         value: _pw.isEmpty ? '—' : _pw,
-        sub: '${_bits.toStringAsFixed(0)} بت عشوائية • $lvl',
+        sub: '${_bits.toStringAsFixed(0)} ${tr('بت عشوائية', 'random bits')} • $lvl',
         colors: [col, SD.coffee],
       ),
       Row(children: [
-        Expanded(child: OutlinedButton.icon(onPressed: () => copyText(_pw), icon: const Icon(Icons.copy_rounded), label: const Text('انسخ'))),
+        Expanded(child: OutlinedButton.icon(onPressed: () => copyText(_pw), icon: const Icon(Icons.copy_rounded), label: Text(tr('انسخ', 'Copy')))),
         const SizedBox(width: 10),
-        Expanded(child: FilledButton.icon(onPressed: _generate, icon: const Icon(Icons.casino_rounded), label: const Text('ولّد تاني'))),
+        Expanded(child: FilledButton.icon(onPressed: _generate, icon: const Icon(Icons.casino_rounded), label: Text(t('ولّد تاني', 'ولّد مجدداً', 'Generate again')))),
       ]),
       const SizedBox(height: 14),
       SCard(
-        title: 'الإعدادات',
+        title: tr('الإعدادات', 'Settings'),
         icon: Icons.tune_rounded,
         color: SD.gold,
         child: _phrase ? _phraseOpts() : _charOpts(),
       ),
       SCard(
-        title: 'قوتها كم؟',
+        title: t('قوتها كم؟', 'ما مدى قوتها؟', 'How strong is it?'),
         icon: Icons.shield_rounded,
         color: col,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -177,24 +183,32 @@ class _PasswordToolState extends State<PasswordTool> {
           ),
           const SizedBox(height: 10),
           StatGrid([
-            StatChip('${_pw.length}', 'طول', color: SD.nile, icon: Icons.straighten_rounded),
-            StatChip(_bits.toStringAsFixed(0), 'بت إنتروبي', color: SD.purple, icon: Icons.functions_rounded),
-            StatChip(lvl, 'التقييم', color: col, icon: Icons.verified_rounded),
+            StatChip('${_pw.length}', tr('طول', 'Length'), color: SD.nile, icon: Icons.straighten_rounded),
+            StatChip(_bits.toStringAsFixed(0), tr('بت إنتروبي', 'Entropy bits'), color: SD.purple, icon: Icons.functions_rounded),
+            StatChip(lvl, tr('التقييم', 'Rating'), color: col, icon: Icons.verified_rounded),
           ]),
           const SizedBox(height: 8),
-          const Text('الزمن المتوقع عشان زول يخمّنها:', style: TextStyle(fontWeight: FontWeight.w700)),
+          Text(t('الزمن المتوقع عشان زول يخمّنها:', 'الزمن المتوقع لتخمينها:', 'Expected time to guess it:'), style: const TextStyle(fontWeight: FontWeight.w700)),
           _crackTable(_bits),
         ]),
       ),
       _checker(),
-      const NoteBox('كلمات السر دي بتتولّد في جهازك بمولّد عشوائي آمن (Random.secure)، وما بنحفظها ولا بنرسلها لأي مكان. احفظها في مكان آمن.', kind: NoteKind.info),
-      const NoteBox('نصايح: ما تكرر نفس كلمة السر في أكتر من موقع، وفعّل التحقق بخطوتين في الواتساب والفيسبوك والبنك.', kind: NoteKind.tip),
+      NoteBox(
+          t('كلمات السر دي بتتولّد في جهازك بمولّد عشوائي آمن (Random.secure)، وما بنحفظها ولا بنرسلها لأي مكان. احفظها في مكان آمن.',
+              'تُولَّد كلمات السر هذه في جهازك بمولّد عشوائي آمن (Random.secure)، ولا نحفظها ولا نرسلها لأي مكان. احفظها في مكان آمن.',
+              "These passwords are generated on your device with a secure random generator (Random.secure). We don't store or send them anywhere. Keep them somewhere safe."),
+          kind: NoteKind.info),
+      NoteBox(
+          t('نصايح: ما تكرر نفس كلمة السر في أكتر من موقع، وفعّل التحقق بخطوتين في الواتساب والفيسبوك والبنك.',
+              'نصائح: لا تكرر كلمة السر نفسها في أكثر من موقع، وفعّل التحقق بخطوتين في واتساب وفيسبوك والبنك.',
+              "Tips: don't reuse the same password on multiple sites, and turn on two-step verification for WhatsApp, Facebook and your bank."),
+          kind: NoteKind.tip),
     ]);
   }
 
   Widget _charOpts() => Column(children: [
         Row(children: [
-          const Text('الطول'),
+          Text(tr('الطول', 'Length')),
           Expanded(
             child: Slider(
               value: _len,
@@ -210,16 +224,16 @@ class _PasswordToolState extends State<PasswordTool> {
           ),
           Text('${_len.round()}', style: const TextStyle(fontWeight: FontWeight.w800)),
         ]),
-        _sw('حروف صغيرة (a-z)', _lo, (v) => _lo = v),
-        _sw('حروف كبيرة (A-Z)', _up, (v) => _up = v),
-        _sw('أرقام (0-9)', _di, (v) => _di = v),
-        _sw('رموز (!@#…)', _sy, (v) => _sy = v),
-        _sw('شيل الحروف المتشابهة (I l 1 O 0)', _noAmb, (v) => _noAmb = v),
+        _sw(tr('حروف صغيرة (a-z)', 'Lowercase (a-z)'), _lo, (v) => _lo = v),
+        _sw(tr('حروف كبيرة (A-Z)', 'Uppercase (A-Z)'), _up, (v) => _up = v),
+        _sw(tr('أرقام (0-9)', 'Digits (0-9)'), _di, (v) => _di = v),
+        _sw(tr('رموز (!@#…)', 'Symbols (!@#…)'), _sy, (v) => _sy = v),
+        _sw(t('شيل الحروف المتشابهة (I l 1 O 0)', 'استبعد الحروف المتشابهة (I l 1 O 0)', 'Exclude look-alikes (I l 1 O 0)'), _noAmb, (v) => _noAmb = v),
       ]);
 
   Widget _phraseOpts() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [
-          const Text('عدد الكلمات'),
+          Text(tr('عدد الكلمات', 'Number of words')),
           Expanded(
             child: Slider(
               value: _wordsN,
@@ -236,10 +250,10 @@ class _PasswordToolState extends State<PasswordTool> {
           Text('${_wordsN.round()}', style: const TextStyle(fontWeight: FontWeight.w800)),
         ]),
         Wrap(spacing: 8, children: [
-          const Padding(padding: EdgeInsets.only(top: 8), child: Text('الفاصل: ')),
+          Padding(padding: const EdgeInsetsDirectional.only(top: 8), child: Text(tr('الفاصل: ', 'Separator: '))),
           for (final s in const ['-', '.', '_', ' ', '#'])
             ChoiceChip(
-              label: Text(s == ' ' ? 'مسافة' : s),
+              label: Text(s == ' ' ? tr('مسافة', 'Space') : s),
               selected: _sep == s,
               onSelected: (_) {
                 _sep = s;
@@ -247,15 +261,19 @@ class _PasswordToolState extends State<PasswordTool> {
               },
             ),
         ]),
-        _sw('أول حرف كبير', _cap, (v) => _cap = v),
-        _sw('أضف رقم في الآخر', _addNum, (v) => _addNum = v),
-        NoteBox('عبارة المرور أسهل في الحفظ وقوية لو الكلمات كتيرة. كل كلمة من قائمة ${_words.length} كلمة = ${(math.log(_words.length) / math.ln2).toStringAsFixed(0)} بت.', kind: NoteKind.tip),
+        _sw(tr('أول حرف كبير', 'Capitalize words'), _cap, (v) => _cap = v),
+        _sw(t('أضف رقم في الآخر', 'أضف رقماً في النهاية', 'Add a number at the end'), _addNum, (v) => _addNum = v),
+        NoteBox(
+            t('عبارة المرور أسهل في الحفظ وقوية لو الكلمات كتيرة. كل كلمة من قائمة ${_words.length} كلمة = ${(math.log(_words.length) / math.ln2).toStringAsFixed(0)} بت.',
+                'عبارة المرور أسهل في الحفظ وقوية إذا كثرت كلماتها. كل كلمة من قائمة ${_words.length} كلمة = ${(math.log(_words.length) / math.ln2).toStringAsFixed(0)} بت.',
+                'Passphrases are easier to remember and strong with enough words. Each word from a ${_words.length}-word list = ${(math.log(_words.length) / math.ln2).toStringAsFixed(0)} bits.'),
+            kind: NoteKind.tip),
       ]);
 
-  Widget _sw(String t, bool v, void Function(bool) set) => SwitchListTile(
+  Widget _sw(String label, bool v, void Function(bool) set) => SwitchListTile(
         dense: true,
         contentPadding: EdgeInsets.zero,
-        title: Text(t),
+        title: Text(label),
         value: v,
         onChanged: (x) {
           set(x);
@@ -282,17 +300,17 @@ class _PasswordToolState extends State<PasswordTool> {
 
     final lowerP = p.toLowerCase();
     if (p.isNotEmpty) {
-      if (p.length < 8) issues.add('قصيرة شديد (أقل من 8)');
-      if (p.length >= 12) good.add('طولها كويس (${p.length})');
+      if (p.length < 8) issues.add(t('قصيرة شديد (أقل من 8)', 'قصيرة جداً (أقل من 8)', 'Too short (under 8)'));
+      if (p.length >= 12) good.add(t('طولها كويس (${p.length})', 'طولها جيد (${p.length})', 'Good length (${p.length})'));
       final kinds = [hasLo, hasUp, hasDi, hasSy, hasAr].where((x) => x).length;
-      if (kinds >= 3) good.add('فيها تنوّع ($kinds أنواع حروف)');
-      if (kinds == 1) issues.add('نوع واحد بس من الحروف');
+      if (kinds >= 3) good.add(t('فيها تنوّع ($kinds أنواع حروف)', 'فيها تنوّع ($kinds أنواع من الحروف)', 'Good variety ($kinds character types)'));
+      if (kinds == 1) issues.add(t('نوع واحد بس من الحروف', 'نوع واحد فقط من الحروف', 'Only one character type'));
       if (_common.any((c) => lowerP == c || (c.length >= 5 && lowerP.contains(c)))) {
-        issues.add('فيها كلمة سر مشهورة جداً — أول حاجة بيجربوها');
+        issues.add(t('فيها كلمة سر مشهورة جداً — أول حاجة بيجربوها', 'تحتوي كلمة سر شائعة جداً — أول ما يُجرَّب', 'Contains a very common password — tried first'));
         bits = math.min(bits, 10);
       }
       if (RegExp(r'(.)\1\1').hasMatch(p)) {
-        issues.add('حرف مكرر ورا بعض (زي aaa)');
+        issues.add(t('حرف مكرر ورا بعض (زي aaa)', 'حرف مكرر متتالٍ (مثل aaa)', 'Repeated characters (like aaa)'));
         bits -= 6;
       }
       const seqs = ['0123456789', 'abcdefghijklmnopqrstuvwxyz', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm', '9876543210'];
@@ -302,29 +320,29 @@ class _PasswordToolState extends State<PasswordTool> {
           if (lowerP.contains(s.substring(i, i + 4))) found = true;
         }
         if (found) {
-          issues.add('فيها تسلسل سهل (زي 1234 أو qwer)');
+          issues.add(t('فيها تسلسل سهل (زي 1234 أو qwer)', 'تحتوي تسلسلاً سهلاً (مثل 1234 أو qwer)', 'Contains an easy sequence (like 1234 or qwer)'));
           bits -= 10;
           break;
         }
       }
       if (RegExp(r'(19[5-9]\d|20[0-3]\d)').hasMatch(p)) {
-        issues.add('فيها سنة (يمكن سنة ميلادك؟)');
+        issues.add(t('فيها سنة (يمكن سنة ميلادك؟)', 'تحتوي سنة (ربما سنة ميلادك؟)', 'Contains a year (your birth year?)'));
         bits -= 5;
       }
       if (RegExp(r'0?(9|1)\d{8}').hasMatch(p)) {
-        issues.add('شكلها فيها رقم تلفون — ده أول حاجة بيجربوها');
+        issues.add(t('شكلها فيها رقم تلفون — ده أول حاجة بيجربوها', 'يبدو أنها تحتوي رقم هاتف — وهذا أول ما يُجرَّب', 'Looks like it has a phone number — tried early'));
         bits -= 15;
       }
-      if (RegExp(r'^\d+$').hasMatch(p)) issues.add('كلها أرقام بس');
+      if (RegExp(r'^\d+$').hasMatch(p)) issues.add(t('كلها أرقام بس', 'كلها أرقام فقط', 'Digits only'));
       if (RegExp(r'^[A-Z][a-z]+\d{1,4}[!@#.]?$').hasMatch(p)) {
-        issues.add('النمط المشهور: كلمة + أرقام في الآخر');
+        issues.add(t('النمط المشهور: كلمة + أرقام في الآخر', 'النمط الشائع: كلمة + أرقام في النهاية', 'Common pattern: word + digits at the end'));
         bits -= 8;
       }
     }
     bits = math.max(0, bits);
     final (lvl, col, frac) = _level(bits);
     return SCard(
-      title: 'اختبر كلمة سرك',
+      title: tr('اختبر كلمة سرك', 'Test your password'),
       icon: Icons.fact_check_rounded,
       color: SD.henna,
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -336,13 +354,16 @@ class _PasswordToolState extends State<PasswordTool> {
           onChanged: (_) => setState(() {}),
           textDirection: TextDirection.ltr,
           decoration: InputDecoration(
-            labelText: 'أكتب كلمة السر هنا',
+            labelText: t('أكتب كلمة السر هنا', 'اكتب كلمة السر هنا', 'Type a password here'),
             prefixIcon: const Icon(Icons.lock_rounded),
             suffixIcon: IconButton(icon: Icon(_show ? Icons.visibility_off_rounded : Icons.visibility_rounded), onPressed: () => setState(() => _show = !_show)),
           ),
         ),
         const SizedBox(height: 6),
-        const Text('🔒 ما بنحفظها ولا بترسل لأي مكان — الفحص كلو في جهازك.', style: TextStyle(fontSize: 12)),
+        Text(
+            t('🔒 ما بنحفظها ولا بترسل لأي مكان — الفحص كلو في جهازك.', '🔒 لا نحفظها ولا تُرسل لأي مكان — الفحص كله في جهازك.',
+                "🔒 Not stored or sent anywhere — checked entirely on your device."),
+            style: const TextStyle(fontSize: 12)),
         if (p.isNotEmpty) ...[
           const SizedBox(height: 12),
           ClipRRect(
@@ -350,15 +371,19 @@ class _PasswordToolState extends State<PasswordTool> {
             child: LinearProgressIndicator(value: frac, minHeight: 12, color: col, backgroundColor: col.withValues(alpha: .15)),
           ),
           const SizedBox(height: 8),
-          InfoRow('التقييم', lvl, valueColor: col, icon: Icons.verified_rounded),
-          InfoRow('القوة التقديرية', '${bits.toStringAsFixed(0)} بت', icon: Icons.functions_rounded),
-          InfoRow('الطول', '${p.length} حرف', icon: Icons.straighten_rounded),
-          InfoRow('حروف صغيرة / كبيرة', '${hasLo ? '✓' : '✗'} / ${hasUp ? '✓' : '✗'}'),
-          InfoRow('أرقام / رموز / عربي', '${hasDi ? '✓' : '✗'} / ${hasSy ? '✓' : '✗'} / ${hasAr ? '✓' : '✗'}'),
-          InfoRow('زمن الكسر (جهاز قوي)', _crack(bits, 1e10), icon: Icons.timer_rounded),
-          for (final g in good) Padding(padding: const EdgeInsets.only(top: 6), child: Text('✅ $g')),
-          for (final i in issues) Padding(padding: const EdgeInsets.only(top: 6), child: Text('⚠️ $i', style: const TextStyle(color: SD.henna))),
-          const NoteBox('ده تقدير تقريبي: المهاجمين بيستعملوا قواميس وأنماط ذكية، فالأحسن دايماً كلمة سر عشوائية من المولّد فوق.', kind: NoteKind.warn),
+          InfoRow(tr('التقييم', 'Rating'), lvl, valueColor: col, icon: Icons.verified_rounded),
+          InfoRow(tr('القوة التقديرية', 'Estimated strength'), '${bits.toStringAsFixed(0)} ${tr('بت', 'bits')}', icon: Icons.functions_rounded),
+          InfoRow(tr('الطول', 'Length'), '${p.length} ${tr('حرف', 'chars')}', icon: Icons.straighten_rounded),
+          InfoRow(tr('حروف صغيرة / كبيرة', 'Lower / upper'), '${hasLo ? '✓' : '✗'} / ${hasUp ? '✓' : '✗'}'),
+          InfoRow(tr('أرقام / رموز / عربي', 'Digits / symbols / Arabic'), '${hasDi ? '✓' : '✗'} / ${hasSy ? '✓' : '✗'} / ${hasAr ? '✓' : '✗'}'),
+          InfoRow(tr('زمن الكسر (جهاز قوي)', 'Crack time (strong GPU)'), _crack(bits, 1e10), icon: Icons.timer_rounded),
+          for (final g in good) Padding(padding: const EdgeInsetsDirectional.only(top: 6), child: Text('✅ $g')),
+          for (final i in issues) Padding(padding: const EdgeInsetsDirectional.only(top: 6), child: Text('⚠️ $i', style: const TextStyle(color: SD.henna))),
+          NoteBox(
+              t('ده تقدير تقريبي: المهاجمين بيستعملوا قواميس وأنماط ذكية، فالأحسن دايماً كلمة سر عشوائية من المولّد فوق.',
+                  'هذا تقدير تقريبي: يستخدم المهاجمون قواميس وأنماطاً ذكية، فالأفضل دائماً كلمة سر عشوائية من المولّد أعلاه.',
+                  'A rough estimate: attackers use dictionaries and smart patterns, so a random password from the generator above is always best.'),
+              kind: NoteKind.warn),
         ],
       ]),
     );

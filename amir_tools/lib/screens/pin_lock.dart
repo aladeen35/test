@@ -5,6 +5,7 @@ import '../core/pattern.dart';
 import '../core/state.dart';
 import '../core/theme.dart';
 import 'settings_screen.dart';
+import '../core/i18n.dart';
 
 /// شاشة القفل برمز من 4 أرقام
 class PinLock extends StatefulWidget {
@@ -48,7 +49,7 @@ class _PinLockState extends State<PinLock> {
               const SizedBox(height: 30),
               const AmirLogo(size: 110),
               const SizedBox(height: 20),
-              Text(_wrong ? 'الرمز غلط، جرّب تاني' : 'أدخل رمز القفل',
+              Text(_wrong ? t('الرمز غلط، جرّب تاني', 'الرمز خاطئ، حاول مرة أخرى', 'Wrong PIN, try again') : t('أدخل رمز القفل', 'أدخل رمز القفل', 'Enter your PIN'),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _wrong ? SD.red : null)),
               const SizedBox(height: 14),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [

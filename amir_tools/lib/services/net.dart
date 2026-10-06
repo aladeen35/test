@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/data.dart';
+import '../core/i18n.dart';
 import '../core/state.dart';
 import 'prayer.dart';
 
@@ -47,8 +48,8 @@ class Weather {
   ({bool severe, String text})? get dustAlert {
     final v = pm10 ?? dust;
     if (v == null) return null;
-    if (v >= 400) return (severe: true, text: 'هبوب وغبار كثيف — خليك في البيت وقفّل الشبابيك');
-    if (v >= 150) return (severe: false, text: 'في غبار — الكمامة مفيدة لو عندك حساسية');
+    if (v >= 400) return (severe: true, text: t('هبوب وغبار كثيف — خليك في البيت وقفّل الشبابيك', 'عاصفة ترابية وغبار كثيف — ابقَ في المنزل وأغلق النوافذ', 'Heavy dust storm — stay indoors and close the windows'));
+    if (v >= 150) return (severe: false, text: t('في غبار — الكمامة مفيدة لو عندك حساسية', 'يوجد غبار — الكمامة مفيدة لمرضى الحساسية', 'Dusty air — a mask helps if you have allergies'));
     return null;
   }
 }
@@ -69,16 +70,17 @@ class WeatherHour {
 
 /// وصف ورمز حالة الطقس (رموز WMO)
 (String, String) weatherDesc(int code) => switch (code) {
-      0 => ('صحو', '☀️'),
-      1 => ('صحو غالبًا', '🌤️'),
-      2 => ('غيم متفرق', '⛅'),
-      3 => ('غيم', '☁️'),
-      45 || 48 => ('ضباب', '🌫️'),
-      51 || 53 || 55 => ('رذاذ', '🌦️'),
-      61 || 80 => ('مطرة خفيفة', '🌦️'),
-      63 || 81 => ('مطرة', '🌧️'),
-      65 || 82 => ('مطرة شديدة', '🌧️'),
-      95 || 96 || 99 => ('رعد وبرق', '⛈️'),
+      0 => (t('صحو', 'صافٍ', 'Clear'), '☀️'),
+      1 => (t('صحو غالبًا', 'صافٍ غالبًا', 'Mostly clear'), '🌤️'),
+      2 => (t('غيم متفرق', 'غائم جزئيًا', 'Partly cloudy'), '⛅'),
+      3 => (t('غيم', 'غائم', 'Cloudy'), '☁️'),
+      45 || 48 => (tr('ضباب', 'Fog'), '🌫️'),
+      51 || 53 || 55 => (tr('رذاذ', 'Drizzle'), '🌦️'),
+      61 || 80 => (t('مطرة خفيفة', 'مطر خفيف', 'Light rain'), '🌦️'),
+      63 || 81 => (t('مطرة', 'مطر', 'Rain'), '🌧️'),
+      65 || 82 => (t('مطرة شديدة', 'مطر غزير', 'Heavy rain'), '🌧️'),
+      71 || 73 || 75 || 77 || 85 || 86 => (tr('ثلج', 'Snow'), '❄️'),
+      95 || 96 || 99 => (t('رعد وبرق', 'عاصفة رعدية', 'Thunderstorm'), '⛈️'),
       _ => ('—', '🌡️'),
     };
 
@@ -94,7 +96,7 @@ Future<Weather?> getWeather(AppState s, City c, {bool force = false}) async {
   }
   if (!force && old != null && DateTime.now().difference(old.at).inMinutes < 30) return old;
   try {
-    final q = 'latitude=${c.lat}&longitude=${c.lng}&timezone=Africa%2FKhartoum';
+    final q = 'latitude=${c.lat}&longitude=${c.lng}&timezone=auto';
     final res = await Future.wait([
       http.get(Uri.parse('https://api.open-meteo.com/v1/forecast?$q&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m'
           '&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_sum,sunrise,sunset&forecast_days=7')),
@@ -135,5 +137,41 @@ Future<Weather?> getWeather(AppState s, City c, {bool force = false}) async {
     return w;
   } catch (_) {
     return old;
+  }
+}
+
+
+/// البحث عن أي مدينة في العالم (Open-Meteo Geocoding، بلا مفاتيح)
+Future<List<City>> searchPlaces(String query) async {
+  final q = query.trim();
+  if (q.length < 2) return [];
+  final lang = isEn ? 'en' : 'ar';
+  final r = await http
+      .get(Uri.parse('https://geocoding-api.open-meteo.com/v1/search?name=${Uri.encodeComponent(q)}&count=15&language=$lang&format=json'))
+      .timeout(const Duration(seconds: 12));
+  final j = jsonDecode(r.body);
+  return [
+    for (final e in (j['results'] as List? ?? []))
+      City.place(
+        'geo_${e['id']}',
+        e['name'] ?? '',
+        [e['admin1'], e['country']].whereType<String>().where((x) => x.isNotEmpty).join('، '),
+        (e['latitude'] as num).toDouble(),
+        (e['longitude'] as num).toDouble(),
+        country: e['country_code'] ?? '',
+        tz: e['timezone'] ?? '',
+      ),
+  ];
+}
+
+/// المنطقة الزمنية لإحداثيات (للـ GPS) — فارغة إن تعذّر الاتصال
+Future<String> timezoneFor(double lat, double lng) async {
+  try {
+    final r = await http
+        .get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&timezone=auto&forecast_days=1&daily=sunrise'))
+        .timeout(const Duration(seconds: 10));
+    return (jsonDecode(r.body)['timezone'] as String?) ?? '';
+  } catch (_) {
+    return '';
   }
 }

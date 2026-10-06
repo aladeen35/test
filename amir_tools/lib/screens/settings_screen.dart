@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../core/data.dart';
+import '../core/format.dart';
+import '../core/i18n.dart';
+import 'place_picker.dart';
 import '../core/pattern.dart';
 import '../core/state.dart';
 import '../core/theme.dart';
@@ -40,52 +42,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return ListView(
       padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 16, 16, 120),
       children: [
-        const Center(child: GoldText('الضبط', size: 34)),
+        Center(child: GoldText(t('الضبط', 'الإعدادات', 'Settings'), size: 34)),
         const GoldDivider(),
         SCard(
-          title: 'إنت منو؟',
+          title: t('اللغة', 'اللغة', 'Language'),
+          icon: Icons.translate_rounded,
+          color: SD.gold,
+          child: SegmentedButton<Lang>(
+            segments: [for (final l in Lang.values) ButtonSegment(value: l, label: Text('${l.flag} ${l.label}'))],
+            selected: {s.lang},
+            showSelectedIcon: false,
+            onSelectionChanged: (v) {
+              s.lang = v.first;
+              PrayerNotifications.reschedule(s);
+            },
+          ),
+        ),
+        SCard(
+          title: t('إنت منو؟', 'من أنت؟', 'About you'),
           icon: Icons.person_rounded,
-          child: Column(children: [
-            TextField(
-              controller: _name,
-              decoration: const InputDecoration(labelText: 'اسمك', hintText: 'مثلًا: أمير', prefixIcon: Icon(Icons.badge_rounded)),
-              onChanged: (v) => s.name = v,
+          child: TextField(
+            controller: _name,
+            decoration: InputDecoration(labelText: t('اسمك', 'اسمك', 'Your name'), hintText: t('مثلًا: أمير', 'مثلًا: أمير', 'e.g. Amir'), prefixIcon: const Icon(Icons.badge_rounded)),
+            onChanged: (v) => s.name = v,
+          ),
+        ),
+        SCard(
+          title: t('مكانك', 'موقعك', 'Your location'),
+          icon: Icons.public_rounded,
+          color: SD.nile,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Text(flagOf(s.city.country), style: const TextStyle(fontSize: 30)),
+              title: Text(s.city.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+              subtitle: Text([
+                if (s.city.state.isNotEmpty) s.city.state,
+                '${fmt(s.city.lat, 3)}, ${fmt(s.city.lng, 3)}',
+                if (placeTz.isNotEmpty) placeTz,
+              ].join(' • ')),
             ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: s.cityId,
-              isExpanded: true,
-              decoration: const InputDecoration(labelText: 'مدينتك', prefixIcon: Icon(Icons.location_city_rounded)),
-              items: [for (final c in cities) DropdownMenuItem(value: c.id, child: Text('${c.name} — ${c.state}'))],
-              onChanged: (v) {
-                if (v == null) return;
-                s.cityId = v;
-                PrayerNotifications.reschedule(s);
-              },
+            FilledButton.icon(
+              onPressed: () => showPlacePicker(context),
+              icon: const Icon(Icons.travel_explore_rounded),
+              label: Text(t('غيّر المكان (أي حتة في العالم)', 'تغيير الموقع (أي مكان في العالم)', 'Change location (anywhere)')),
             ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => s.gps != null ? s.clearGps() : _gps(s),
-              icon: Icon(s.gps != null ? Icons.location_off_rounded : Icons.my_location_rounded),
-              label: Text(s.gps != null ? 'ألغِ موقعي الدقيق' : 'استخدم موقعي الدقيق (GPS)'),
-            ),
+            const SizedBox(height: 6),
+            Text(
+                t('المواقيت والقبلة والطقس والساعة بتتظبط على المكان دا، وطريقة حساب الصلاة بتتغيّر براها حسب البلد.',
+                    'تُضبط المواقيت والقبلة والطقس والوقت على هذا الموقع، وتُختار طريقة حساب الصلاة تلقائيًا حسب الدولة.',
+                    'Prayer times, qibla, weather and clock follow this place; the prayer method is picked automatically by country.'),
+                style: const TextStyle(fontSize: 12.5)),
           ]),
         ),
         SCard(
-          title: 'الشكل',
+          title: t('الشكل', 'المظهر', 'Appearance'),
           icon: Icons.palette_rounded,
           child: SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment(value: ThemeMode.dark, label: Text('تراثي بُني'), icon: Icon(Icons.coffee_rounded)),
-              ButtonSegment(value: ThemeMode.light, label: Text('رملي فاتح'), icon: Icon(Icons.wb_sunny_rounded)),
-              ButtonSegment(value: ThemeMode.system, label: Text('زي الجهاز'), icon: Icon(Icons.phone_android_rounded)),
+            segments: [
+              ButtonSegment(value: ThemeMode.dark, label: Text(t('تراثي بُني', 'تراثي بني', 'Heritage')), icon: const Icon(Icons.coffee_rounded)),
+              ButtonSegment(value: ThemeMode.light, label: Text(t('رملي فاتح', 'رملي فاتح', 'Sand')), icon: const Icon(Icons.wb_sunny_rounded)),
+              ButtonSegment(value: ThemeMode.system, label: Text(t('زي الجهاز', 'حسب الجهاز', 'System')), icon: const Icon(Icons.phone_android_rounded)),
             ],
             selected: {s.themeMode},
             onSelectionChanged: (v) => s.themeMode = v.first,
           ),
         ),
         SCard(
-          title: 'نظام النقاط',
+          title: t('نظام النقاط', 'نظام النقاط', 'Points system'),
           icon: Icons.emoji_events_rounded,
           color: SD.gold,
           child: Column(children: [
@@ -93,21 +117,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               contentPadding: EdgeInsets.zero,
               value: s.pointsEnabled,
               onChanged: (v) => s.pointsEnabled = v,
-              title: const Text('فعّل النقاط والمستويات', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('اكسب نقاط لما تستعمل الأدوات وتسجّل صلواتك وأذكارك'),
+              title: Text(t('فعّل النقاط والمستويات', 'تفعيل النقاط والمستويات', 'Enable points & levels'), style: const TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text(t('اكسب نقاط لما تستعمل الأدوات وتسجّل صلواتك وأذكارك', 'اكسب نقاطًا باستخدام الأدوات وتسجيل صلواتك وأذكارك', 'Earn points by using tools and logging prayers and adhkar')),
             ),
-            if (s.pointsEnabled) InfoRow('مستواك الحالي', '${s.level} — ${s.levelTitle} (${s.xp} نقطة)'),
+            if (s.pointsEnabled) InfoRow(tr('مستواك الحالي', 'Current level'), '${s.level} — ${s.levelTitle} (${s.xp} ${tr('نقطة', 'XP')})'),
           ]),
         ),
         SCard(
-          title: 'الصلاة',
+          title: tr('الصلاة', 'Prayer'),
           icon: Icons.mosque_rounded,
           color: SD.green,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             DropdownButtonFormField<String>(
               initialValue: s.prayerMethod,
               isExpanded: true,
-              decoration: const InputDecoration(labelText: 'طريقة الحساب'),
+              decoration: InputDecoration(labelText: tr('طريقة الحساب', 'Calculation method')),
               items: [for (final m in prayerMethods) DropdownMenuItem(value: m.id, child: Text(m.name, overflow: TextOverflow.ellipsis))],
               onChanged: (v) {
                 s.prayerMethod = v!;
@@ -116,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 10),
             SegmentedButton<bool>(
-              segments: const [ButtonSegment(value: false, label: Text('عصر الجمهور')), ButtonSegment(value: true, label: Text('عصر الحنفية'))],
+              segments: [ButtonSegment(value: false, label: Text(tr('عصر الجمهور', 'Asr: Standard'))), ButtonSegment(value: true, label: Text(tr('عصر الحنفية', 'Asr: Hanafi')))],
               selected: {s.hanafi},
               onSelectionChanged: (v) {
                 s.hanafi = v.first;
@@ -124,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             const SizedBox(height: 12),
-            const Text('تعديل بالدقائق عشان يطابق مسجد حيّك:', style: TextStyle(fontWeight: FontWeight.w700)),
+            Text(t('تعديل بالدقائق عشان يطابق مسجد حيّك:', 'تعديل بالدقائق لمطابقة مسجد حيّك:', 'Adjust minutes to match your mosque:'), style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
             for (final k in prayerKeys)
               Row(children: [
@@ -135,7 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ]),
             const Divider(),
             Row(children: [
-              const Expanded(child: Text('فرق التاريخ الهجري (حسب رؤية الهلال)')),
+              Expanded(child: Text(tr('فرق التاريخ الهجري (حسب رؤية الهلال)', 'Hijri date offset (moon sighting)'))),
               IconButton(onPressed: () => s.hijriShift = (s.hijriShift - 1).clamp(-2, 2), icon: const Icon(Icons.remove_circle_outline)),
               Text('${s.hijriShift}', style: const TextStyle(fontWeight: FontWeight.w800)),
               IconButton(onPressed: () => s.hijriShift = (s.hijriShift + 1).clamp(-2, 2), icon: const Icon(Icons.add_circle_outline)),
@@ -143,51 +167,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: s.prayerNotify,
-              title: const Text('نبّهني وقت الأذان', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: Text(PrayerNotifications.supported ? 'بيشتغل حتى لو التطبيق مقفول' : 'متاح في تطبيق الموبايل بس'),
+              title: Text(t('نبّهني وقت الأذان', 'نبّهني عند الأذان', 'Notify me at adhan'), style: const TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text(PrayerNotifications.supported ? t('بيشتغل حتى لو التطبيق مقفول', 'يعمل حتى لو كان التطبيق مغلقًا', 'Works even when the app is closed') : t('متاح في تطبيق الموبايل بس', 'متاح في تطبيق الجوال فقط', 'Mobile app only')),
               onChanged: (v) async {
                 if (v && !await PrayerNotifications.requestPermission()) {
-                  toast('ما اتدّى إذن التنبيهات');
+                  toast(t('ما اتدّى إذن التنبيهات', 'لم يُمنح إذن التنبيهات', 'Notification permission denied'));
                   return;
                 }
                 s.prayerNotify = v;
                 await PrayerNotifications.reschedule(s);
-                if (v) toast('تمام — حننبّهك وقت كل صلاة 🕌');
+                if (v) toast(t('تمام — حننبّهك وقت كل صلاة 🕌', 'تم — سننبّهك عند كل صلاة 🕌', "Done — we'll alert you at each prayer 🕌"));
               },
             ),
           ]),
         ),
         SCard(
-          title: 'القفل والخصوصية',
+          title: t('القفل والخصوصية', 'القفل والخصوصية', 'Lock & privacy'),
           icon: Icons.lock_rounded,
           color: SD.red,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('كل بياناتك محفوظة في جهازك بس، ما بنرسلها لأي زول.'),
+            Text(t('كل بياناتك محفوظة في جهازك بس، ما بنرسلها لأي زول.', 'كل بياناتك محفوظة على جهازك فقط ولا نرسلها لأحد.', 'All your data stays on your device; we never send it anywhere.')),
             const SizedBox(height: 10),
             if (s.pinHash == null)
-              FilledButton.icon(onPressed: () => _setPin(s), icon: const Icon(Icons.pin_rounded), label: const Text('اعمل رمز قفل للتطبيق'))
+              FilledButton.icon(onPressed: () => _setPin(s), icon: const Icon(Icons.pin_rounded), label: Text(t('اعمل رمز قفل للتطبيق', 'إنشاء رمز قفل للتطبيق', 'Set an app PIN')))
             else
-              OutlinedButton.icon(onPressed: () => s.pinHash = null, icon: const Icon(Icons.lock_open_rounded), label: const Text('شيل رمز القفل')),
+              OutlinedButton.icon(onPressed: () => s.pinHash = null, icon: const Icon(Icons.lock_open_rounded), label: Text(t('شيل رمز القفل', 'إزالة رمز القفل', 'Remove PIN'))),
           ]),
         ),
         SCard(
-          title: 'النسخة الاحتياطية',
+          title: tr('النسخة الاحتياطية', 'Backup'),
           icon: Icons.backup_rounded,
           color: SD.nile,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             OutlinedButton.icon(
-              onPressed: () => SharePlus.instance.share(ShareParams(text: s.exportJson(), subject: 'نسخة أدوات أمير')),
+              onPressed: () => SharePlus.instance.share(ShareParams(text: s.exportJson(), subject: tr('نسخة أدوات أمير', 'Amir Tools backup'))),
               icon: const Icon(Icons.upload_rounded),
-              label: const Text('صدّر بياناتك (شاركها أو احفظها)'),
+              label: Text(t('صدّر بياناتك (شاركها أو احفظها)', 'تصدير بياناتك (مشاركة أو حفظ)', 'Export your data (share or save)')),
             ),
             const SizedBox(height: 8),
-            OutlinedButton.icon(onPressed: () => _import(s), icon: const Icon(Icons.download_rounded), label: const Text('استرجع من نسخة')),
+            OutlinedButton.icon(onPressed: () => _import(s), icon: const Icon(Icons.download_rounded), label: Text(t('استرجع من نسخة', 'استعادة من نسخة', 'Restore from backup'))),
             const SizedBox(height: 8),
             TextButton.icon(
               style: TextButton.styleFrom(foregroundColor: SD.red),
               onPressed: () => _reset(s),
               icon: const Icon(Icons.delete_forever_rounded),
-              label: const Text('امسح كل البيانات'),
+              label: Text(t('امسح كل البيانات', 'مسح كل البيانات', 'Erase all data')),
             ),
           ]),
         ),
@@ -195,12 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(children: [
             const AmirLogo(size: 96),
             const SizedBox(height: 8),
-            const Text('الإصدار 1.0.0', style: TextStyle(fontWeight: FontWeight.w700)),
+            Text('${tr('الإصدار', 'Version')} 1.1.0', style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/images/icon-512.png', width: 26)),
               const SizedBox(width: 8),
-              const Text('من إنتاج البشري للتكنولوجيا', style: TextStyle(fontWeight: FontWeight.w700)),
+              Text(tr('من إنتاج البشري للتكنولوجيا', 'Made by Al-Bushra Technology'), style: const TextStyle(fontWeight: FontWeight.w700)),
             ]),
             const Text('Building meaningful digital products', style: TextStyle(fontSize: 12)),
           ]),
@@ -214,30 +238,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     PrayerNotifications.reschedule(s);
   }
 
-  Future<void> _gps(AppState s) async {
-    try {
-      var p = await Geolocator.checkPermission();
-      if (p == LocationPermission.denied) p = await Geolocator.requestPermission();
-      if (p == LocationPermission.denied || p == LocationPermission.deniedForever) {
-        toast('ما اتدّى إذن الموقع');
-        return;
-      }
-      toast('بنحدّد موقعك…');
-      final pos = await Geolocator.getCurrentPosition();
-      s.setGps(pos.latitude, pos.longitude);
-      PrayerNotifications.reschedule(s);
-      toast('تمام — قريب من ${cityById(s.cityId).name}');
-    } catch (_) {
-      toast('ما قدرنا نحدّد الموقع — اتأكد إنو الـ GPS شغّال');
-    }
-  }
-
   Future<void> _setPin(AppState s) async {
     final c = TextEditingController();
     final pin = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('رمز القفل (4 أرقام)'),
+        title: Text(t('رمز القفل (4 أرقام)', 'رمز القفل (4 أرقام)', 'PIN (4 digits)')),
         content: TextField(
           controller: c,
           autofocus: true,
@@ -249,14 +255,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: const TextStyle(fontSize: 28, letterSpacing: 12),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('خلّيها')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('احفظ')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('خلّيها', 'إلغاء', 'Cancel'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: Text(t('احفظ', 'حفظ', 'Save'))),
         ],
       ),
     );
     if (pin == null || pin.length != 4) return;
     s.pinHash = await hashPin(pin);
-    toast('اتعمل القفل 🔒 — ما تنسى الرمز');
+    toast(t('اتعمل القفل 🔒 — ما تنسى الرمز', 'تم إنشاء القفل 🔒 — لا تنسَ الرمز', "PIN set 🔒 — don't forget it"));
   }
 
   Future<void> _import(AppState s) async {
@@ -264,11 +270,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ألصق النسخة هنا'),
+        title: Text(t('ألصق النسخة هنا', 'الصق النسخة هنا', 'Paste the backup here')),
         content: TextField(controller: c, maxLines: 6, decoration: const InputDecoration(hintText: '{ ... }')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('استرجع')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('إلغاء', 'Cancel'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(t('استرجع', 'استعادة', 'Restore'))),
         ],
       ),
     );
@@ -276,9 +282,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       s.importJson(c.text);
       _name.text = s.name;
-      toast('اترجعت بياناتك ✓');
+      toast(t('اترجعت بياناتك ✓', 'تمت استعادة بياناتك ✓', 'Data restored ✓'));
     } catch (_) {
-      toast('النص دا ما نسخة صحيحة');
+      toast(t('النص دا ما نسخة صحيحة', 'هذا النص ليس نسخة صحيحة', 'Not a valid backup'));
     }
   }
 
@@ -286,11 +292,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('متأكد؟'),
-        content: const Text('حتمسح كل بياناتك: النقاط، المفضلة، الملاحظات المشفّرة، والإعدادات. ما بترجع.'),
+        title: Text(t('متأكد؟', 'هل أنت متأكد؟', 'Are you sure?')),
+        content: Text(t('حتمسح كل بياناتك: النقاط، المفضلة، الملاحظات المشفّرة، والإعدادات. ما بترجع.', 'سيتم مسح كل بياناتك: النقاط والمفضلة والملاحظات المشفّرة والإعدادات، ولا يمكن استرجاعها.', 'This erases everything: points, favorites, encrypted notes and settings. It cannot be undone.')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('لا، خلّيها')),
-          FilledButton(style: FilledButton.styleFrom(backgroundColor: SD.red, foregroundColor: Colors.white), onPressed: () => Navigator.pop(ctx, true), child: const Text('أيوا امسح')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('لا، خلّيها', 'لا، إلغاء', 'No, keep it'))),
+          FilledButton(style: FilledButton.styleFrom(backgroundColor: SD.red, foregroundColor: Colors.white), onPressed: () => Navigator.pop(ctx, true), child: Text(t('أيوا امسح', 'نعم، امسح', 'Yes, erase'))),
         ],
       ),
     );

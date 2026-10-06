@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'theme.dart';
+import 'i18n.dart';
 
 /// خلفية تراثية: تدرّج بني دافئ، شبكة سداسيات بخط ذهبي خافت، وشريط بألوان العلم أعلى وأسفل الشاشة.
 class SudanBackground extends StatelessWidget {
@@ -259,12 +260,12 @@ class AmirLogo extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(size * .18),
-            child: Image.asset('assets/images/amir_logo.png', fit: BoxFit.cover, semanticLabel: 'شعار أدوات أمير'),
+            child: Image.asset('assets/images/amir_logo.png', fit: BoxFit.cover, semanticLabel: tr('شعار أدوات أمير', 'Amir Tools logo')),
           ),
         ),
         if (withText) ...[
           const SizedBox(height: 8),
-          Text('عِدّتك السودانية في جيبك 🇸🇩',
+          Text(t('عِدّتك السودانية في جيبك 🇸🇩', 'أدواتك السودانية في جيبك 🇸🇩', 'Your Sudanese toolkit 🇸🇩'),
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .85))),
         ],
       ]);

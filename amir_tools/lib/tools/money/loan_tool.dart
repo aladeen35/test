@@ -2,10 +2,14 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import 'money_common.dart';
+
+String _flatL() => tr('مرابحة ثابتة', 'Flat murabaha');
+String _decL() => tr('قرض متناقص', 'Declining loan');
 
 class _Row {
   final int m;
@@ -109,39 +113,39 @@ class _LoanToolState extends State<LoanTool> {
     final irr = _irr(fin, plan.monthly, n);
     final effAnnual = (math.pow(1 + irr, 12) - 1) * 100;
     final grand = down + plan.total;
-    final modeName = _flatMode ? 'مرابحة ثابتة' : 'قرض متناقص';
+    final modeName = _flatMode ? _flatL() : _decL();
 
     String summary() => [
-          '🏦 حساب الأقساط ($modeName)',
-          'السعر: ${fmt(price, 0)} • المقدم: ${fmt(down, 0)} • المموَّل: ${fmt(fin, 0)}',
-          'النسبة: $rate% سنويًا لمدة $n شهر',
-          'القسط الشهري: ${fmt(plan.monthly, 0)}',
-          'جملة الأرباح: ${fmt(plan.profit, 0)}',
-          'جملة المدفوع (مع المقدم): ${fmt(grand, 0)}',
-          'التكلفة الفعلية السنوية ≈ ${fmt(effAnnual, 2)}%',
+          '🏦 ${tr('حساب الأقساط', 'Installment plan')} ($modeName)',
+          tr('السعر: ${fmt(price, 0)} • المقدم: ${fmt(down, 0)} • المموَّل: ${fmt(fin, 0)}', 'Price: ${fmt(price, 0)} • Down: ${fmt(down, 0)} • Financed: ${fmt(fin, 0)}'),
+          tr('النسبة: $rate% سنويًا لمدة $n شهر', 'Rate: $rate% per year for $n months'),
+          '${tr('القسط الشهري', 'Monthly payment')}: ${fmt(plan.monthly, 0)}',
+          '${tr('جملة الأرباح', 'Total profit')}: ${fmt(plan.profit, 0)}',
+          '${tr('جملة المدفوع (مع المقدم)', 'Total paid (incl. down payment)')}: ${fmt(grand, 0)}',
+          '${tr('التكلفة الفعلية السنوية', 'Effective annual cost')} ≈ ${fmt(effAnnual, 2)}%',
         ].join('\n');
 
     return ToolList(children: [
       SCard(
-        title: 'بيانات التمويل',
+        title: tr('بيانات التمويل', 'Financing details'),
         icon: Icons.request_quote_rounded,
         color: SD.indigo,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          ChoiceRow<bool>(const [(true, 'مرابحة ثابتة'), (false, 'قرض متناقص')], _flatMode, (x) {
+          ChoiceRow<bool>([(true, _flatL()), (false, _decL())], _flatMode, (x) {
             _flatMode = x;
             _save();
           }, color: SD.indigo),
-          NumField('سعر السلعة / مبلغ التمويل', _price, suffix: 'ج.س', onChanged: (_) => _save()),
-          NumField('المقدّم (الدفعة الأولى)', _down, suffix: 'ج.س', onChanged: (_) => _save()),
+          NumField(tr('سعر السلعة / مبلغ التمويل', 'Item price / financed amount'), _price, onChanged: (_) => _save()),
+          NumField(tr('المقدّم (الدفعة الأولى)', 'Down payment'), _down, onChanged: (_) => _save()),
           Row(children: [
-            Expanded(child: NumField('نسبة الربح السنوية', _rate, suffix: '%', onChanged: (_) => _save())),
+            Expanded(child: NumField(tr('نسبة الربح السنوية', 'Annual profit rate'), _rate, suffix: '%', onChanged: (_) => _save())),
             const SizedBox(width: 10),
-            Expanded(child: NumField('عدد الشهور', _months, suffix: 'شهر', decimal: false, onChanged: (_) => _save())),
+            Expanded(child: NumField(t('عدد الشهور', 'عدد الأشهر', 'Months'), _months, suffix: tr('شهر', 'mo'), decimal: false, onChanged: (_) => _save())),
           ]),
           Wrap(spacing: 6, children: [
             for (final m in [6, 12, 18, 24, 36, 48, 60])
               ActionChip(
-                  label: Text('$m شهر'),
+                  label: Text(tr('$m شهر', '$m mo')),
                   onPressed: () {
                     _months.text = '$m';
                     _save();
@@ -150,45 +154,45 @@ class _LoanToolState extends State<LoanTool> {
           const SizedBox(height: 6),
           NoteBox(
             _flatMode
-                ? 'المرابحة الثابتة: الربح بيتحسب على كامل المبلغ المموَّل طول المدة، والقسط ثابت.'
-                : 'القرض المتناقص: الربح بيتحسب على الرصيد المتبقي بس، فبيقل مع كل قسط.',
+                ? t('المرابحة الثابتة: الربح بيتحسب على كامل المبلغ المموَّل طول المدة، والقسط ثابت.', 'المرابحة الثابتة: يُحسب الربح على كامل المبلغ المموَّل طوال المدة، والقسط ثابت.', 'Flat murabaha: profit is charged on the full financed amount for the whole term; the payment is fixed.')
+                : t('القرض المتناقص: الربح بيتحسب على الرصيد المتبقي بس، فبيقل مع كل قسط.', 'القرض المتناقص: يُحسب الربح على الرصيد المتبقي فقط، فيقل مع كل قسط.', 'Declining-balance loan: profit is charged only on the remaining balance, so it shrinks with each payment.'),
             kind: NoteKind.info,
           ),
         ]),
       ),
-      ResultHero(label: 'القسط الشهري', value: '${fmt(plan.monthly, 0)} ج.س', sub: '$modeName • $n شهر • $rate% سنويًا'),
+      ResultHero(label: tr('القسط الشهري', 'Monthly payment'), value: fmt(plan.monthly, 0), sub: tr('$modeName • $n شهر • $rate% سنويًا', '$modeName • $n months • $rate% / year')),
       SCard(
-        title: 'الخلاصة',
+        title: tr('الخلاصة', 'Summary'),
         icon: Icons.summarize_rounded,
         color: SD.green,
         child: Column(children: [
-          InfoRow('المبلغ المموَّل', '${fmt(fin, 0)} ج.س', icon: Icons.account_balance_rounded,
-              hint: price > 0 ? 'المقدم ${fmt(down / price * 100, 1)}% من السعر' : null),
-          InfoRow('جملة الأقساط', '${fmt(plan.total, 0)} ج.س', icon: Icons.stacked_bar_chart_rounded),
-          InfoRow('جملة الأرباح', '${fmt(plan.profit, 0)} ج.س', icon: Icons.trending_up_rounded, valueColor: SD.red,
-              hint: fin > 0 ? '${fmt(plan.profit / fin * 100, 2)}% من المبلغ المموَّل' : null),
-          InfoRow('جملة المدفوع مع المقدّم', '${fmt(grand, 0)} ج.س', icon: Icons.payments_rounded,
-              hint: price > 0 ? 'يعني بتدفع ${fmt((grand - price) / price * 100, 1)}% زيادة على السعر' : null),
-          InfoRow('التكلفة الفعلية السنوية', '${fmt(effAnnual, 2)}%', icon: Icons.insights_rounded, valueColor: SD.henna,
-              hint: 'معدّل شهري ${fmt(irr * 100, 3)}% (المعدل الحقيقي حسب الأقساط)'),
-          InfoRow('أول قسط: أصل / ربح', '${fmt(plan.rows.first.principal, 0)} / ${fmt(plan.rows.first.profit, 0)}', icon: Icons.looks_one_rounded),
-          InfoRow('دخلك المناسب', '≥ ${fmt(plan.monthly * 3, 0)} ج.س/شهر', icon: Icons.work_rounded,
-              hint: 'عشان القسط ما يزيد عن تلت الدخل'),
+          InfoRow(tr('المبلغ المموَّل', 'Financed amount'), fmt(fin, 0), icon: Icons.account_balance_rounded,
+              hint: price > 0 ? tr('المقدم ${fmt(down / price * 100, 1)}% من السعر', 'Down payment is ${fmt(down / price * 100, 1)}% of the price') : null),
+          InfoRow(tr('جملة الأقساط', 'Total installments'), fmt(plan.total, 0), icon: Icons.stacked_bar_chart_rounded),
+          InfoRow(tr('جملة الأرباح', 'Total profit'), fmt(plan.profit, 0), icon: Icons.trending_up_rounded, valueColor: SD.red,
+              hint: fin > 0 ? tr('${fmt(plan.profit / fin * 100, 2)}% من المبلغ المموَّل', '${fmt(plan.profit / fin * 100, 2)}% of the financed amount') : null),
+          InfoRow(tr('جملة المدفوع مع المقدّم', 'Total paid incl. down payment'), fmt(grand, 0), icon: Icons.payments_rounded,
+              hint: price > 0 ? t('يعني بتدفع ${fmt((grand - price) / price * 100, 1)}% زيادة على السعر', 'أي أنك تدفع ${fmt((grand - price) / price * 100, 1)}% زيادة على السعر', 'You pay ${fmt((grand - price) / price * 100, 1)}% over the price') : null),
+          InfoRow(tr('التكلفة الفعلية السنوية', 'Effective annual cost'), '${fmt(effAnnual, 2)}%', icon: Icons.insights_rounded, valueColor: SD.henna,
+              hint: tr('معدّل شهري ${fmt(irr * 100, 3)}% (المعدل الحقيقي حسب الأقساط)', 'Monthly rate ${fmt(irr * 100, 3)}% (true rate implied by the payments)')),
+          InfoRow(tr('أول قسط: أصل / ربح', 'First payment: principal / profit'), '${fmt(plan.rows.first.principal, 0)} / ${fmt(plan.rows.first.profit, 0)}', icon: Icons.looks_one_rounded),
+          InfoRow(tr('دخلك المناسب', 'Suggested income'), '≥ ${fmt(plan.monthly * 3, 0)} / ${tr('شهر', 'mo')}', icon: Icons.work_rounded,
+              hint: t('عشان القسط ما يزيد عن تلت الدخل', 'كي لا يتجاوز القسط ثلث الدخل', 'So the payment stays under a third of income')),
         ]),
       ),
       SCard(
-        title: 'مقارنة الطريقتين',
+        title: tr('مقارنة الطريقتين', 'Comparing both methods'),
         icon: Icons.compare_arrows_rounded,
         color: SD.gold,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           MiniTable(
-            ['', 'مرابحة ثابتة', 'قرض متناقص'],
+            ['', _flatL(), _decL()],
             [
-              ['القسط', fmt(flat.monthly, 0), fmt(dec.monthly, 0)],
-              ['الأرباح', fmt(flat.profit, 0), fmt(dec.profit, 0)],
-              ['الجملة', fmt(flat.total, 0), fmt(dec.total, 0)],
+              [tr('القسط', 'Payment'), fmt(flat.monthly, 0), fmt(dec.monthly, 0)],
+              [tr('الأرباح', 'Profit'), fmt(flat.profit, 0), fmt(dec.profit, 0)],
+              [tr('الجملة', 'Total'), fmt(flat.total, 0), fmt(dec.total, 0)],
               [
-                'الفعلي السنوي',
+                tr('الفعلي السنوي', 'Effective annual'),
                 '${fmt((math.pow(1 + _irr(fin, flat.monthly, n), 12) - 1) * 100, 2)}%',
                 '${fmt((math.pow(1 + _irr(fin, dec.monthly, n), 12) - 1) * 100, 2)}%',
               ],
@@ -197,7 +201,7 @@ class _LoanToolState extends State<LoanTool> {
           ),
           const SizedBox(height: 8),
           if (flat.profit > dec.profit)
-            NoteBox('بنفس النسبة، المرابحة الثابتة أغلى بـ ${fmt(flat.profit - dec.profit, 0)} ج.س. قارن دايمًا بالتكلفة الفعلية مش بالنسبة المكتوبة.',
+            NoteBox(t('بنفس النسبة، المرابحة الثابتة أغلى بـ ${fmt(flat.profit - dec.profit, 0)}. قارن دايمًا بالتكلفة الفعلية مش بالنسبة المكتوبة.', 'بالنسبة نفسها، المرابحة الثابتة أغلى بـ ${fmt(flat.profit - dec.profit, 0)}. قارن دائمًا بالتكلفة الفعلية لا بالنسبة المعلنة.', 'At the same rate, flat murabaha costs ${fmt(flat.profit - dec.profit, 0)} more. Always compare the effective cost, not the quoted rate.'),
                 kind: NoteKind.tip),
         ]),
       ),
@@ -208,15 +212,15 @@ class _LoanToolState extends State<LoanTool> {
         color: SD.nile,
         child: ExpansionTile(
           leading: const Icon(Icons.table_view_rounded, color: SD.nile),
-          title: const Text('جدول السداد بالتفصيل', style: TextStyle(fontWeight: FontWeight.w800)),
-          subtitle: Text('$n قسط — دوس عشان تفتحو'),
+          title: Text(tr('جدول السداد بالتفصيل', 'Full repayment schedule'), style: const TextStyle(fontWeight: FontWeight.w800)),
+          subtitle: Text(t('$n قسط — دوس عشان تفتحو', '$n قسطًا — اضغط للفتح', '$n payments — tap to expand')),
           shape: const Border(),
           children: [
             MiniTable(
-              ['الشهر', 'القسط', 'الأصل', 'الربح', 'المتبقي'],
+              [tr('الشهر', 'Month'), tr('القسط', 'Payment'), tr('الأصل', 'Principal'), tr('الربح', 'Profit'), tr('المتبقي', 'Balance')],
               [
                 for (final r in plan.rows) ['${r.m}', fmt(r.pay, 0), fmt(r.principal, 0), fmt(r.profit, 0), fmt(r.remain, 0)],
-                ['المجموع', fmt(plan.total, 0), fmt(fin, 0), fmt(plan.profit, 0), '—'],
+                [tr('المجموع', 'Total'), fmt(plan.total, 0), fmt(fin, 0), fmt(plan.profit, 0), '—'],
               ],
               color: SD.nile,
               highlight: plan.rows.length,
@@ -225,7 +229,7 @@ class _LoanToolState extends State<LoanTool> {
           ],
         ),
       ),
-      const NoteBox('الحساب تقديري. البنوك ممكن تضيف رسوم إدارية وتأمين ودمغة. اتأكد من العقد. والمرابحة الشرعية بتشترط تملّك البنك للسلعة قبل بيعها — اسأل أهل العلم لو عندك شك.',
+      NoteBox(t('الحساب تقديري. البنوك ممكن تضيف رسوم إدارية وتأمين ودمغة. اتأكد من العقد. والمرابحة الشرعية بتشترط تملّك البنك للسلعة قبل بيعها — اسأل أهل العلم لو عندك شك.', 'الحساب تقديري. قد تضيف البنوك رسومًا إدارية وتأمينًا ودمغة، فتحقّق من العقد. والمرابحة الشرعية تشترط تملّك البنك للسلعة قبل بيعها — اسأل أهل العلم إن كان لديك شك.', 'Estimate only. Banks may add admin fees, insurance and stamp duty — check the contract. A valid Islamic murabaha requires the bank to own the item before selling it; ask a scholar if unsure.'),
           kind: NoteKind.warn),
     ]);
   }

@@ -3,6 +3,7 @@
 library;
 
 import 'package:hijri/hijri_calendar.dart';
+import '../core/i18n.dart';
 
 class CalDate {
   final int y, m, d;
@@ -11,9 +12,15 @@ class CalDate {
   String toString() => '$d/$m/$y';
 }
 
-const hijriMonths = ['محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
-const copticMonths = ['توت', 'بابه', 'هاتور', 'كيهك', 'طوبة', 'أمشير', 'برمهات', 'برمودة', 'بشنس', 'بؤونة', 'أبيب', 'مسرى', 'النسيء'];
-const ethiopianMonths = ['مسكرم', 'تقمت', 'هدار', 'تاهساس', 'تر', 'يكاتيت', 'مجابيت', 'ميازيا', 'جنبوت', 'سني', 'هملي', 'نهاسي', 'باجمي'];
+List<String> get hijriMonths => isEn
+    ? const ['Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Akhir', 'Jumada al-Ula', 'Jumada al-Akhirah', 'Rajab', "Sha'ban", 'Ramadan', 'Shawwal', "Dhu al-Qa'dah", 'Dhu al-Hijjah']
+    : const ['محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
+List<String> get copticMonths => isEn
+    ? const ['Thout', 'Paopi', 'Hathor', 'Koiak', 'Tobi', 'Meshir', 'Paremhat', 'Parmouti', 'Pashons', 'Paoni', 'Epip', 'Mesori', 'Nesi']
+    : const ['توت', 'بابه', 'هاتور', 'كيهك', 'طوبة', 'أمشير', 'برمهات', 'برمودة', 'بشنس', 'بؤونة', 'أبيب', 'مسرى', 'النسيء'];
+List<String> get ethiopianMonths => isEn
+    ? const ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazya', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagume']
+    : const ['مسكرم', 'تقمت', 'هدار', 'تاهساس', 'تر', 'يكاتيت', 'مجابيت', 'ميازيا', 'جنبوت', 'سني', 'هملي', 'نهاسي', 'باجمي'];
 
 int _fdiv(int a, int b) => (a / b).floor();
 
@@ -54,7 +61,7 @@ int hijriMonthLength(int y, int m) => HijriCalendar().getDaysInMonth(y, m);
 
 String hijriText(DateTime g, {int shift = 0}) {
   final h = toHijri(g, shift: shift);
-  return '${h.d} ${hijriMonths[h.m - 1]} ${h.y} هـ';
+  return '${h.d} ${hijriMonths[h.m - 1]} ${h.y} ${tr('هـ', 'AH')}';
 }
 
 /* ── القبطي والإثيوبي (نفس البنية مع اختلاف البداية) ── */
@@ -77,10 +84,10 @@ DateTime fromEthiopian(int y, int m, int d) => jdnToGregorian(_fixedToJdn(_ethio
 
 String copticText(DateTime g) {
   final c = toCoptic(g);
-  return '${c.d} ${copticMonths[c.m - 1]} ${c.y} ش';
+  return '${c.d} ${copticMonths[c.m - 1]} ${c.y} ${tr('ش', 'AM')}';
 }
 
 String ethiopianText(DateTime g) {
   final e = toEthiopian(g);
-  return '${e.d} ${ethiopianMonths[e.m - 1]} ${e.y} (إثيوبي)';
+  return '${e.d} ${ethiopianMonths[e.m - 1]} ${e.y} ${tr('(إثيوبي)', '(Ethiopian)')}';
 }
