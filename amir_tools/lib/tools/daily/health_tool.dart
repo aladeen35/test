@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -22,7 +23,13 @@ class _HealthToolState extends State<HealthTool> {
   late bool _male = _s.getData<bool>('health_male') ?? true;
   double _act = 1.375;
 
-  static final _acts = <double, String>{1.2: 'قاعد ساي (شغل مكتب)', 1.375: 'حركة خفيفة', 1.55: 'رياضة 3–5 مرات', 1.725: 'رياضة كل يوم', 1.9: 'شغل بدني شاق'};
+  static Map<double, String> get _acts => {
+        1.2: t('قاعد ساي (شغل مكتب)', 'خامل (عمل مكتبي)', 'Sedentary (desk job)'),
+        1.375: tr('حركة خفيفة', 'Lightly active'),
+        1.55: t('رياضة 3–5 مرات', 'رياضة 3–5 مرات أسبوعيًا', 'Exercise 3–5 times a week'),
+        1.725: t('رياضة كل يوم', 'رياضة يومية', 'Exercise every day'),
+        1.9: t('شغل بدني شاق', 'عمل بدني شاق', 'Hard physical work'),
+      };
 
   @override
   void dispose() {
@@ -46,30 +53,33 @@ class _HealthToolState extends State<HealthTool> {
     final m = h / 100;
     final bmi = ok ? w / (m * m) : 0.0;
     final (cat, catColor) = bmi < 18.5
-        ? ('نحافة', SD.nileLight)
+        ? (tr('نحافة', 'Underweight'), SD.nileLight)
         : bmi < 25
-            ? ('وزن طبيعي ✅', SD.green)
+            ? (tr('وزن طبيعي ✅', 'Normal weight ✅'), SD.green)
             : bmi < 30
-                ? ('زيادة وزن', SD.gold)
+                ? (tr('زيادة وزن', 'Overweight'), SD.gold)
                 : bmi < 35
-                    ? ('سمنة درجة أولى', SD.orange)
-                    : ('سمنة متقدمة', SD.red);
+                    ? (tr('سمنة درجة أولى', 'Obesity class I'), SD.orange)
+                    : (tr('سمنة متقدمة', 'Severe obesity'), SD.red);
     final bmr = 10 * w + 6.25 * h - 5 * age + (_male ? 5 : -161);
     final tdee = bmr * _act;
     final inches = h / 2.54;
     final devine = (_male ? 50 : 45.5) + 2.3 * (inches - 60);
     final bsa = math.sqrt(h * w / 3600);
     final maxHr = 220 - age;
-    final water = w * 0.035 + .5; // زيادة لحر السودان
+    final water = w * 0.035 + .5; // زيادة للجو الحار
 
     return ToolList(children: [
       SCard(
-        title: 'بياناتك',
+        title: tr('بياناتك', 'Your details'),
         icon: Icons.person_rounded,
         color: SD.red,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           SegmentedButton<bool>(
-            segments: const [ButtonSegment(value: true, label: Text('راجل')), ButtonSegment(value: false, label: Text('مرة'))],
+            segments: [
+              ButtonSegment(value: true, label: Text(t('راجل', 'ذكر', 'Male'))),
+              ButtonSegment(value: false, label: Text(t('مرة', 'أنثى', 'Female'))),
+            ],
             selected: {_male},
             onSelectionChanged: (v) => setState(() {
               _male = v.first;
@@ -78,26 +88,26 @@ class _HealthToolState extends State<HealthTool> {
           ),
           const SizedBox(height: 10),
           Row(children: [
-            Expanded(child: NumField('الوزن', _w, suffix: 'كجم', onChanged: (_) => setState(_persist))),
+            Expanded(child: NumField(tr('الوزن', 'Weight'), _w, suffix: tr('كجم', 'kg'), onChanged: (_) => setState(_persist))),
             const SizedBox(width: 8),
-            Expanded(child: NumField('الطول', _h, suffix: 'سم', onChanged: (_) => setState(_persist))),
+            Expanded(child: NumField(tr('الطول', 'Height'), _h, suffix: tr('سم', 'cm'), onChanged: (_) => setState(_persist))),
             const SizedBox(width: 8),
-            Expanded(child: NumField('العمر', _a, suffix: 'سنة', decimal: false, onChanged: (_) => setState(_persist))),
+            Expanded(child: NumField(tr('العمر', 'Age'), _a, suffix: tr('سنة', 'yrs'), decimal: false, onChanged: (_) => setState(_persist))),
           ]),
-          NumField('محيط الوسط (اختياري)', _waist, suffix: 'سم', onChanged: (_) => setState(() {})),
+          NumField(tr('محيط الوسط (اختياري)', 'Waist (optional)'), _waist, suffix: tr('سم', 'cm'), onChanged: (_) => setState(() {})),
           DropdownButtonFormField<double>(
             initialValue: _act,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'نشاطك اليومي'),
+            decoration: InputDecoration(labelText: tr('نشاطك اليومي', 'Daily activity')),
             items: [for (final e in _acts.entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
             onChanged: (v) => setState(() => _act = v!),
           ),
         ]),
       ),
       if (ok) ...[
-        ResultHero(label: 'مؤشر كتلة الجسم (BMI)', value: fmt(bmi, 1), sub: cat),
+        ResultHero(label: tr('مؤشر كتلة الجسم (BMI)', 'Body mass index (BMI)'), value: fmt(bmi, 1), sub: cat),
         SCard(
-          title: 'وين إنت في المقياس؟',
+          title: t('وين إنت في المقياس؟', 'أين أنت على المقياس؟', 'Where are you on the scale?'),
           icon: Icons.speed_rounded,
           color: catColor,
           child: Column(children: [
@@ -112,7 +122,8 @@ class _HealthToolState extends State<HealthTool> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        gradient: const LinearGradient(colors: [SD.nileLight, SD.green, SD.gold, SD.orange, SD.red]),
+                        gradient: const LinearGradient(
+                            begin: AlignmentDirectional.centerStart, end: AlignmentDirectional.centerEnd, colors: [SD.nileLight, SD.green, SD.gold, SD.orange, SD.red]),
                       ),
                     ),
                   ),
@@ -124,50 +135,63 @@ class _HealthToolState extends State<HealthTool> {
           ]),
         ),
         SCard(
-          title: 'الوزن',
+          title: tr('الوزن', 'Weight'),
           icon: Icons.monitor_weight_rounded,
           color: SD.green,
           child: Column(children: [
-            InfoRow('الوزن الصحي لطولك', '${fmt(18.5 * m * m, 0)} – ${fmt(24.9 * m * m, 0)} كجم'),
-            InfoRow('الوزن المثالي (معادلة ديفاين)', '${fmt(devine, 1)} كجم'),
-            InfoRow(bmi > 25 ? 'محتاج تنزّل عشان توصل الطبيعي' : bmi < 18.5 ? 'محتاج تزيد' : 'وزنك', bmi > 25
-                ? '${fmt(w - 24.9 * m * m, 1)} كجم'
-                : bmi < 18.5
-                    ? '${fmt(18.5 * m * m - w, 1)} كجم'
-                    : 'تمام في الطبيعي 👌'),
-            InfoRow('مساحة سطح الجسم', '${fmt(bsa, 2)} م²', hint: 'معادلة Mosteller'),
-            if (waist > 0) InfoRow('نسبة الوسط للطول', fmt(waist / h, 2), hint: 'أقل من 0.5 = كويس', valueColor: waist / h < .5 ? SD.green : SD.red),
+            InfoRow(tr('الوزن الصحي لطولك', 'Healthy weight for your height'), '${fmt(18.5 * m * m, 0)} – ${fmt(24.9 * m * m, 0)} ${tr('كجم', 'kg')}'),
+            InfoRow(tr('الوزن المثالي (معادلة ديفاين)', 'Ideal weight (Devine formula)'), '${fmt(devine, 1)} ${tr('كجم', 'kg')}'),
+            InfoRow(
+                bmi > 25
+                    ? t('محتاج تنزّل عشان توصل الطبيعي', 'تحتاج إلى خسارة للوصول للطبيعي', 'To lose to reach normal')
+                    : bmi < 18.5
+                        ? t('محتاج تزيد', 'تحتاج إلى زيادة', 'To gain')
+                        : tr('وزنك', 'Your weight'),
+                bmi > 25
+                    ? '${fmt(w - 24.9 * m * m, 1)} ${tr('كجم', 'kg')}'
+                    : bmi < 18.5
+                        ? '${fmt(18.5 * m * m - w, 1)} ${tr('كجم', 'kg')}'
+                        : t('تمام في الطبيعي 👌', 'ضمن الطبيعي 👌', 'In the normal range 👌')),
+            InfoRow(tr('مساحة سطح الجسم', 'Body surface area'), '${fmt(bsa, 2)} ${tr('م²', 'm²')}', hint: tr('معادلة Mosteller', 'Mosteller formula')),
+            if (waist > 0)
+              InfoRow(tr('نسبة الوسط للطول', 'Waist-to-height ratio'), fmt(waist / h, 2),
+                  hint: t('أقل من 0.5 = كويس', 'أقل من 0.5 = جيد', 'Below 0.5 = good'), valueColor: waist / h < .5 ? SD.green : SD.red),
           ]),
         ),
         SCard(
-          title: 'السعرات الحرارية في اليوم',
+          title: tr('السعرات الحرارية في اليوم', 'Daily calories'),
           icon: Icons.local_fire_department_rounded,
           color: SD.orange,
           child: Column(children: [
-            InfoRow('معدّل الحرق وإنت قاعد (BMR)', '${fmt(bmr, 0)} سعرة', hint: 'معادلة Mifflin-St Jeor'),
-            InfoRow('عشان تحافظ على وزنك', '${fmt(tdee, 0)} سعرة'),
-            InfoRow('عشان تنزّل نص كيلو في الأسبوع', '${fmt(tdee - 500, 0)} سعرة'),
-            InfoRow('عشان تزيد نص كيلو في الأسبوع', '${fmt(tdee + 500, 0)} سعرة'),
-            InfoRow('بروتين (30%)', '${fmt(tdee * .3 / 4, 0)} جم'),
-            InfoRow('نشويات (40%)', '${fmt(tdee * .4 / 4, 0)} جم'),
-            InfoRow('دهون (30%)', '${fmt(tdee * .3 / 9, 0)} جم'),
+            InfoRow(t('معدّل الحرق وإنت قاعد (BMR)', 'معدّل الأيض الأساسي (BMR)', 'Resting burn (BMR)'), '${fmt(bmr, 0)} ${tr('سعرة', 'kcal')}', hint: tr('معادلة Mifflin-St Jeor', 'Mifflin-St Jeor formula')),
+            InfoRow(t('عشان تحافظ على وزنك', 'للمحافظة على وزنك', 'To maintain your weight'), '${fmt(tdee, 0)} ${tr('سعرة', 'kcal')}'),
+            InfoRow(t('عشان تنزّل نص كيلو في الأسبوع', 'لخسارة نصف كيلو أسبوعيًا', 'To lose 0.5 kg a week'), '${fmt(tdee - 500, 0)} ${tr('سعرة', 'kcal')}'),
+            InfoRow(t('عشان تزيد نص كيلو في الأسبوع', 'لزيادة نصف كيلو أسبوعيًا', 'To gain 0.5 kg a week'), '${fmt(tdee + 500, 0)} ${tr('سعرة', 'kcal')}'),
+            InfoRow(tr('بروتين (30%)', 'Protein (30%)'), '${fmt(tdee * .3 / 4, 0)} ${tr('جم', 'g')}'),
+            InfoRow(tr('نشويات (40%)', 'Carbs (40%)'), '${fmt(tdee * .4 / 4, 0)} ${tr('جم', 'g')}'),
+            InfoRow(tr('دهون (30%)', 'Fat (30%)'), '${fmt(tdee * .3 / 9, 0)} ${tr('جم', 'g')}'),
           ]),
         ),
         SCard(
-          title: 'الموية والنبض',
+          title: t('الموية والنبض', 'الماء والنبض', 'Water & heart rate'),
           icon: Icons.favorite_rounded,
           color: SD.nileLight,
           child: Column(children: [
-            InfoRow('الموية المقترحة يوميًا', '${fmt(water, 1)} لتر', hint: 'في حرّ السودان زِيد أكتر'),
-            InfoRow('أقصى نبض تقريبي', '${fmt(maxHr, 0)} نبضة/د'),
-            InfoRow('حرق دهون (60–70%)', '${fmt(maxHr * .6, 0)} – ${fmt(maxHr * .7, 0)}'),
-            InfoRow('لياقة قلب (70–80%)', '${fmt(maxHr * .7, 0)} – ${fmt(maxHr * .8, 0)}'),
-            InfoRow('مجهود عالي (80–90%)', '${fmt(maxHr * .8, 0)} – ${fmt(maxHr * .9, 0)}'),
+            InfoRow(t('الموية المقترحة يوميًا', 'الماء المقترح يوميًا', 'Suggested daily water'), '${fmt(water, 1)} ${tr('لتر', 'L')}',
+                hint: t('في الحر زِيد أكتر', 'في الجو الحار زِد أكثر', 'Drink more in hot weather')),
+            InfoRow(tr('أقصى نبض تقريبي', 'Approx. max heart rate'), '${fmt(maxHr, 0)} ${tr('نبضة/د', 'bpm')}'),
+            InfoRow(tr('حرق دهون (60–70%)', 'Fat burn (60–70%)'), '${fmt(maxHr * .6, 0)} – ${fmt(maxHr * .7, 0)}'),
+            InfoRow(tr('لياقة قلب (70–80%)', 'Cardio (70–80%)'), '${fmt(maxHr * .7, 0)} – ${fmt(maxHr * .8, 0)}'),
+            InfoRow(tr('مجهود عالي (80–90%)', 'High intensity (80–90%)'), '${fmt(maxHr * .8, 0)} – ${fmt(maxHr * .9, 0)}'),
           ]),
         ),
-        ShareBar(() => 'BMI: ${fmt(bmi, 1)} ($cat)\nالسعرات للمحافظة: ${fmt(tdee, 0)}\nالوزن الصحي: ${fmt(18.5 * m * m, 0)}–${fmt(24.9 * m * m, 0)} كجم'),
+        ShareBar(() => tr('BMI: ${fmt(bmi, 1)} ($cat)\nالسعرات للمحافظة: ${fmt(tdee, 0)}\nالوزن الصحي: ${fmt(18.5 * m * m, 0)}–${fmt(24.9 * m * m, 0)} كجم',
+            'BMI: ${fmt(bmi, 1)} ($cat)\nMaintenance calories: ${fmt(tdee, 0)}\nHealthy weight: ${fmt(18.5 * m * m, 0)}–${fmt(24.9 * m * m, 0)} kg')),
       ],
-      const NoteBox('أرقام إرشادية عامة بس، وما بتغني عن الدكتور — خصوصًا لو عندك سكري أو ضغط أو حامل.', kind: NoteKind.warn),
+      NoteBox(
+          t('أرقام إرشادية عامة بس، وما بتغني عن الدكتور — خصوصًا لو عندك سكري أو ضغط أو حامل.', 'أرقام إرشادية عامة فقط، ولا تغني عن الطبيب — خصوصًا مع السكري أو الضغط أو الحمل.',
+              "General guidance only — not a substitute for a doctor, especially if you have diabetes, high blood pressure or are pregnant."),
+          kind: NoteKind.warn),
     ]);
   }
 }

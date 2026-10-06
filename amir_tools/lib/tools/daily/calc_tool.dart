@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -26,12 +27,12 @@ class CalcParser {
 
   static double eval(String s, {bool deg = true, double ans = 0}) {
     final p = CalcParser(s, deg: deg, ans: ans);
-    if (s.trim().isEmpty) throw CalcError('فاضي');
+    if (s.trim().isEmpty) throw CalcError(t('فاضي', 'فارغ', 'Empty'));
     final v = p._expr();
     p._ws();
-    if (p._i < p.src.length) throw CalcError('في حاجة غلط في «${p.src.substring(p._i)}»');
-    if (v.isNaN) throw CalcError('غير معرّف');
-    if (v.isInfinite) throw CalcError('لا نهاية ∞');
+    if (p._i < p.src.length) throw CalcError(t('في حاجة غلط في «${p.src.substring(p._i)}»', 'يوجد خطأ في «${p.src.substring(p._i)}»', 'Something is wrong at «${p.src.substring(p._i)}»'));
+    if (v.isNaN) throw CalcError(tr('غير معرّف', 'Undefined'));
+    if (v.isInfinite) throw CalcError(tr('لا نهاية ∞', 'Infinity ∞'));
     return v;
   }
 
@@ -86,7 +87,7 @@ class CalcParser {
       } else if (c == '÷' || c == '/') {
         _i++;
         final r = _unary();
-        if (r == 0) throw CalcError('ما بنقسم على صفر 🙅');
+        if (r == 0) throw CalcError(t('ما بنقسم على صفر 🙅', 'لا يمكن القسمة على صفر 🙅', "Can't divide by zero 🙅"));
         v /= r;
         p = false;
       } else if (c != null && _startChars.contains(c)) {
@@ -144,8 +145,8 @@ class CalcParser {
   }
 
   double _fact(double v) {
-    if (v < 0 || v != v.roundToDouble()) throw CalcError('المضروب (!) للأعداد الصحيحة الموجبة بس');
-    if (v > 170) throw CalcError('الرقم كبير شديد للمضروب');
+    if (v < 0 || v != v.roundToDouble()) throw CalcError(t('المضروب (!) للأعداد الصحيحة الموجبة بس', 'المضروب (!) للأعداد الصحيحة الموجبة فقط', 'Factorial (!) is for non-negative integers only'));
+    if (v > 170) throw CalcError(t('الرقم كبير شديد للمضروب', 'العدد كبير جدًا للمضروب', 'Number too large for factorial'));
     var r = 1.0;
     for (var k = 2; k <= v; k++) {
       r *= k;
@@ -167,7 +168,7 @@ class CalcParser {
 
   double _primary() {
     _ws();
-    if (_i >= src.length) throw CalcError('التعبير ناقص');
+    if (_i >= src.length) throw CalcError(t('التعبير ناقص', 'التعبير ناقص', 'Incomplete expression'));
     final c = src[_i];
     if (c == '(') {
       _i++;
@@ -182,7 +183,7 @@ class CalcParser {
     if (_eat('Ans')) return ans;
     if (_eat('√')) {
       final v = _postfixNoPct();
-      if (v < 0) throw CalcError('ما في جذر لعدد سالب');
+      if (v < 0) throw CalcError(t('ما في جذر لعدد سالب', 'لا يوجد جذر لعدد سالب', 'No square root of a negative number'));
       return math.sqrt(v);
     }
     // الدوال
@@ -196,27 +197,27 @@ class CalcParser {
           case 'cos':
             return _clean(math.cos(_toRad(x)));
           case 'tan':
-            if (deg && ((x - 90) % 180).abs() < 1e-12) throw CalcError('ظل 90° غير معرّف');
+            if (deg && ((x - 90) % 180).abs() < 1e-12) throw CalcError(tr('ظل 90° غير معرّف', 'tan 90° is undefined'));
             return _clean(math.tan(_toRad(x)));
           case 'asin':
-            if (x.abs() > 1) throw CalcError('asin بين -1 و 1 بس');
+            if (x.abs() > 1) throw CalcError(t('asin بين -1 و 1 بس', 'asin بين -1 و 1 فقط', 'asin only takes -1 to 1'));
             return _clean(_fromRad(math.asin(x)));
           case 'acos':
-            if (x.abs() > 1) throw CalcError('acos بين -1 و 1 بس');
+            if (x.abs() > 1) throw CalcError(t('acos بين -1 و 1 بس', 'acos بين -1 و 1 فقط', 'acos only takes -1 to 1'));
             return _clean(_fromRad(math.acos(x)));
           case 'atan':
             return _clean(_fromRad(math.atan(x)));
           case 'log':
-            if (x <= 0) throw CalcError('اللوغاريتم للأعداد الموجبة بس');
+            if (x <= 0) throw CalcError(t('اللوغاريتم للأعداد الموجبة بس', 'اللوغاريتم للأعداد الموجبة فقط', 'Logarithm needs a positive number'));
             return math.log(x) / math.ln10;
           case 'ln':
-            if (x <= 0) throw CalcError('ln للأعداد الموجبة بس');
+            if (x <= 0) throw CalcError(t('ln للأعداد الموجبة بس', 'ln للأعداد الموجبة فقط', 'ln needs a positive number'));
             return math.log(x);
         }
       }
     }
     if (_eat('e')) return math.e;
-    throw CalcError('ما فهمت «$c»');
+    throw CalcError(t('ما فهمت «$c»', 'لم أفهم «$c»', "Didn't understand «$c»"));
   }
 
   double _postfixNoPct() {
@@ -245,7 +246,7 @@ class CalcParser {
     }
     final t = src.substring(st, _i);
     final v = double.tryParse(t);
-    if (v == null) throw CalcError('رقم غلط «$t»');
+    if (v == null) throw CalcError(tr('رقم غلط «$t»', 'Invalid number «$t»'));
     return v;
   }
 }
@@ -359,7 +360,7 @@ class _CalcToolState extends State<CalcTool> {
     } on CalcError catch (er) {
       error = er.msg;
     } catch (_) {
-      error = 'في حاجة غلط في الحساب';
+      error = t('في حاجة غلط في الحساب', 'يوجد خطأ في العملية', 'Something went wrong in the calculation');
     }
   }
 
@@ -405,7 +406,7 @@ class _CalcToolState extends State<CalcTool> {
       ),
       _keypad(),
       if (justEvaluated) _extras(ans),
-      SectionTitle('السجل', icon: Icons.history_rounded, trailing: hist.isEmpty
+      SectionTitle(tr('السجل', 'History'), icon: Icons.history_rounded, trailing: hist.isEmpty
           ? null
           : TextButton.icon(
               onPressed: () {
@@ -413,10 +414,14 @@ class _CalcToolState extends State<CalcTool> {
                 context.read<AppState>().setData('calc_hist', hist);
               },
               icon: const Icon(Icons.delete_sweep_rounded),
-              label: const Text('امسح'),
+              label: Text(t('امسح', 'امسح', 'Clear')),
             )),
       if (hist.isEmpty)
-        const NoteBox('لسه ما حسبت حاجة. أي عملية تعملها بتتحفظ هنا — دوس عليها عشان تستخدم النتيجة، ودوسة طويلة ترجّع العملية كلها.', kind: NoteKind.tip)
+        NoteBox(
+            t('لسه ما حسبت حاجة. أي عملية تعملها بتتحفظ هنا — دوس عليها عشان تستخدم النتيجة، ودوسة طويلة ترجّع العملية كلها.',
+                'لم تحسب شيئًا بعد. كل عملية تُحفظ هنا — اضغط عليها لاستخدام النتيجة، والضغط المطوّل يعيد العملية كاملة.',
+                'Nothing calculated yet. Every calculation is saved here — tap one to use its result, long-press to bring back the whole expression.'),
+            kind: NoteKind.tip)
       else
         SCard(
           color: SD.teal,
@@ -448,7 +453,9 @@ class _CalcToolState extends State<CalcTool> {
               ),
           ]),
         ),
-      const NoteBox('النسبة: «200+10%» = 220 و«200×10%» = 20 زي آلة الدكان. والدوال المثلثية بالدرجات أو الراديان حسب زر DEG/RAD.'),
+      NoteBox(t('النسبة: «200+10%» = 220 و«200×10%» = 20 زي آلة الدكان. والدوال المثلثية بالدرجات أو الراديان حسب زر DEG/RAD.',
+          'النسبة: «200+10%» = 220 و«200×10%» = 20 مثل آلة المتجر. والدوال المثلثية بالدرجات أو الراديان حسب زر DEG/RAD.',
+          'Percent: «200+10%» = 220 and «200×10%» = 20, like a shop calculator. Trig functions use degrees or radians per the DEG/RAD button.')),
     ]);
   }
 
@@ -461,20 +468,20 @@ class _CalcToolState extends State<CalcTool> {
   Widget _extras(double v) {
     final isInt = v == v.roundToDouble() && v.abs() < 9e15;
     return SCard(
-      title: 'النتيجة بأشكال تانية',
+      title: t('النتيجة بأشكال تانية', 'النتيجة بصيغ أخرى', 'Result in other forms'),
       icon: Icons.auto_awesome_rounded,
       color: SD.gold,
       child: Column(children: [
-        InfoRow('بالصيغة العلمية', v.toStringAsExponential(6), valueColor: SD.gold),
-        InfoRow('مقرّبة لرقمين', fmt(v, 2)),
-        if (!isInt && v.abs() < 1e12) InfoRow('كنسبة مئوية', '${fmt(v * 100, 4)}%'),
+        InfoRow(tr('بالصيغة العلمية', 'Scientific notation'), v.toStringAsExponential(6), valueColor: SD.gold),
+        InfoRow(tr('مقرّبة لرقمين', 'Rounded to 2 places'), fmt(v, 2)),
+        if (!isInt && v.abs() < 1e12) InfoRow(tr('كنسبة مئوية', 'As a percentage'), '${fmt(v * 100, 4)}%'),
         if (isInt && v.abs() < 1e12) ...[
-          InfoRow('بالثنائي (Binary)', v.toInt().toRadixString(2)),
-          InfoRow('بالسداسي عشري (Hex)', v.toInt().toRadixString(16).toUpperCase()),
+          InfoRow(tr('بالثنائي (Binary)', 'Binary'), v.toInt().toRadixString(2)),
+          InfoRow(tr('بالسداسي عشري (Hex)', 'Hexadecimal'), v.toInt().toRadixString(16).toUpperCase()),
         ],
-        if (v != 0) InfoRow('المقلوب 1/x', calcFmt(1 / v)),
-        if (v >= 0) InfoRow('الجذر التربيعي', calcFmt(math.sqrt(v))),
-        InfoRow('المربع', calcFmt(v * v)),
+        if (v != 0) InfoRow(tr('المقلوب 1/x', 'Reciprocal 1/x'), calcFmt(1 / v)),
+        if (v >= 0) InfoRow(tr('الجذر التربيعي', 'Square root'), calcFmt(math.sqrt(v))),
+        InfoRow(tr('المربع', 'Square'), calcFmt(v * v)),
       ]),
     );
   }
