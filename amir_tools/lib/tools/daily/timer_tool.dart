@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -16,15 +17,15 @@ class _Preset {
   const _Preset(this.name, this.emoji, this.secs, this.done, this.color);
 }
 
-const _presets = [
-  _Preset('كباية شاي', '☕', 180, 'الشاي جاهز! أشرب بالعافية ☕', SD.henna),
-  _Preset('جبنة', '🫖', 300, 'الجبنة استوت — صبّ للجماعة', SD.coffee),
-  _Preset('بيضة مسلوقة', '🥚', 600, 'البيض استوى — خليهو في موية باردة شوية', SD.gold),
-  _Preset('قيلولة', '😴', 1200, 'قوم يا زول! القيلولة خلصت', SD.indigo),
-  _Preset('رز', '🍚', 1200, 'الرز استوى — طفّي النار', SD.teal),
-  _Preset('فول', '🫘', 1800, 'الفول استوى — جيب الزيت والشمار والجبنة 😋', SD.green),
-  _Preset('عجين يخمّر', '🍞', 3600, 'العجين خمّر — يلا أخبز', SD.orange),
-];
+List<_Preset> get _presets => [
+      _Preset(t('كباية شاي', 'كوب شاي', 'Cup of tea'), '☕', 180, t('الشاي جاهز! أشرب بالعافية ☕', 'الشاي جاهز! بالهناء والعافية ☕', 'Tea is ready! Enjoy ☕'), SD.henna),
+      _Preset(t('جبنة', 'قهوة الجَبَنة', 'Jebena coffee'), '🫖', 300, t('الجبنة استوت — صبّ للجماعة', 'القهوة جاهزة — صبّ للحاضرين', 'Coffee is ready — pour for everyone'), SD.coffee),
+      _Preset(tr('بيضة مسلوقة', 'Boiled egg'), '🥚', 600, t('البيض استوى — خليهو في موية باردة شوية', 'البيض نضج — ضعه في ماء بارد قليلًا', 'Eggs are done — cool them in cold water for a bit'), SD.gold),
+      _Preset(tr('قيلولة', 'Nap'), '😴', 1200, t('قوم يا زول! القيلولة خلصت', 'استيقظ! انتهت القيلولة', 'Wake up! Nap time is over'), SD.indigo),
+      _Preset(tr('رز', 'Rice'), '🍚', 1200, t('الرز استوى — طفّي النار', 'الأرز نضج — أطفئ النار', 'Rice is done — turn off the heat'), SD.teal),
+      _Preset(tr('فول', 'Fava beans (ful)'), '🫘', 1800, t('الفول استوى — جيب الزيت والشمار والجبنة 😋', 'الفول نضج — أحضر الزيت والكمون والجبن 😋', 'Ful is ready — bring the oil, cumin and cheese 😋'), SD.green),
+      _Preset(t('عجين يخمّر', 'تخمير العجين', 'Dough rising'), '🍞', 3600, t('العجين خمّر — يلا أخبز', 'تخمّر العجين — هيا اخبز', 'Dough has risen — time to bake'), SD.orange),
+    ];
 
 class TimerTool extends StatefulWidget {
   const TimerTool({super.key});
@@ -44,7 +45,7 @@ class _TimerToolState extends State<TimerTool> {
   Duration total = const Duration(minutes: 3);
   Duration left = const Duration(minutes: 3);
   DateTime? endAt;
-  String label = 'كباية شاي', doneMsg = 'الشاي جاهز! أشرب بالعافية ☕', emoji = '☕';
+  String label = _presets.first.name, doneMsg = _presets.first.done, emoji = '☕';
   Color cdColor = SD.henna;
   final minC = TextEditingController(), secC = TextEditingController();
 
@@ -56,9 +57,9 @@ class _TimerToolState extends State<TimerTool> {
     final last = context.read<AppState>().getData<int>('timer_last');
     if (last != null && last > 0) {
       total = left = Duration(seconds: last);
-      label = 'مؤقت مخصّص';
+      label = tr('مؤقت مخصّص', 'Custom timer');
       emoji = '⏳';
-      doneMsg = 'الوقت خلص!';
+      doneMsg = t('الوقت خلص!', 'انتهى الوقت!', "Time's up!");
       cdColor = SD.nile;
     }
   }
@@ -99,8 +100,8 @@ class _TimerToolState extends State<TimerTool> {
   }
 
   void _finished() {
-    Alarm.ring(doneMsg.replaceAll(RegExp(r'[^؀-ۿ\s!،]'), ''));
-    context.read<AppState>().awardDaily('timer_done', 3, 'مؤقت خلص');
+    Alarm.ring(doneMsg.replaceAll(isEn ? RegExp(r"[^A-Za-z0-9\s!,.'—-]") : RegExp(r'[^؀-ۿ\s!،]'), ''));
+    context.read<AppState>().awardDaily('timer_done', 3, t('مؤقت خلص', 'انتهى مؤقت', 'Timer finished'));
     showDialog(
       context: context,
       builder: (c) => AlertDialog(
@@ -113,7 +114,7 @@ class _TimerToolState extends State<TimerTool> {
               Navigator.pop(c);
               setState(() => left = total);
             },
-            child: const Text('تمام'),
+            child: Text(t('تمام', 'حسنًا', 'OK')),
           ),
           FilledButton(
             onPressed: () {
@@ -121,7 +122,7 @@ class _TimerToolState extends State<TimerTool> {
               Navigator.pop(c);
               _startCd(total);
             },
-            child: const Text('أعده تاني'),
+            child: Text(t('أعده تاني', 'أعده مرة أخرى', 'Repeat')),
           ),
         ],
       ),
@@ -169,15 +170,15 @@ class _TimerToolState extends State<TimerTool> {
     final m = parseNum(minC.text).round(), sec = parseNum(secC.text).round();
     final d = Duration(minutes: m, seconds: sec);
     if (d <= Duration.zero) {
-      toast('أكتب الدقايق أو الثواني الأول');
+      toast(t('أكتب الدقايق أو الثواني الأول', 'اكتب الدقائق أو الثواني أولًا', 'Enter minutes or seconds first'));
       return;
     }
     context.read<AppState>().setData('timer_last', d.inSeconds);
     setState(() {
       total = left = d;
-      label = 'مؤقت مخصّص';
+      label = tr('مؤقت مخصّص', 'Custom timer');
       emoji = '⏳';
-      doneMsg = 'الوقت خلص!';
+      doneMsg = t('الوقت خلص!', 'انتهى الوقت!', "Time's up!");
       cdColor = SD.nile;
     });
     FocusScope.of(context).unfocus();
@@ -199,9 +200,9 @@ class _TimerToolState extends State<TimerTool> {
   Widget build(BuildContext context) {
     return ToolList(children: [
       SegmentedButton<int>(
-        segments: const [
-          ButtonSegment(value: 0, label: Text('ساعة الإيقاف'), icon: Icon(Icons.timer_rounded)),
-          ButtonSegment(value: 1, label: Text('العد التنازلي'), icon: Icon(Icons.hourglass_bottom_rounded)),
+        segments: [
+          ButtonSegment(value: 0, label: Text(tr('ساعة الإيقاف', 'Stopwatch')), icon: const Icon(Icons.timer_rounded)),
+          ButtonSegment(value: 1, label: Text(tr('العد التنازلي', 'Countdown')), icon: const Icon(Icons.hourglass_bottom_rounded)),
         ],
         selected: {tab},
         onSelectionChanged: (v) => setState(() => tab = v.first),
@@ -209,7 +210,7 @@ class _TimerToolState extends State<TimerTool> {
       const SizedBox(height: 14),
       if (tab == 0) ..._stopwatch() else ..._countdown(),
       if (_sw.isRunning || cdRunning)
-        const NoteBox('الشاشة حتفضل شغالة طول ما المؤقت شغال 💡', kind: NoteKind.tip),
+        NoteBox(t('الشاشة حتفضل شغالة طول ما المؤقت شغال 💡', 'ستبقى الشاشة مضاءة ما دام المؤقت يعمل 💡', 'The screen stays on while the timer runs 💡'), kind: NoteKind.tip),
     ]);
   }
 
@@ -235,7 +236,7 @@ class _TimerToolState extends State<TimerTool> {
                   textDirection: TextDirection.ltr,
                   style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800, fontFeatures: [FontFeature.tabularFigures()])),
               if (laps.isNotEmpty)
-                Text('اللفة ${laps.length + 1}: ${clock(currentLap, cs: true)}',
+                Text('${tr('اللفة', 'Lap')} ${laps.length + 1}: ${clock(currentLap, cs: true)}',
                     style: const TextStyle(color: SD.gold, fontWeight: FontWeight.w700, fontFeatures: [FontFeature.tabularFigures()])),
             ]),
           ),
@@ -255,7 +256,7 @@ class _TimerToolState extends State<TimerTool> {
                             })
                         : null),
                 icon: Icon(_sw.isRunning ? Icons.flag_rounded : Icons.restart_alt_rounded),
-                label: Text(_sw.isRunning ? 'لفّة' : 'صفّر'),
+                label: Text(_sw.isRunning ? tr('لفّة', 'Lap') : tr('صفّر', 'Reset')),
               ),
             ),
             const SizedBox(width: 10),
@@ -268,7 +269,7 @@ class _TimerToolState extends State<TimerTool> {
                   _ensureTick();
                 },
                 icon: Icon(_sw.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded),
-                label: Text(_sw.isRunning ? 'وقّف' : (el > Duration.zero ? 'واصل' : 'يلا ابدأ')),
+                label: Text(_sw.isRunning ? t('وقّف', 'إيقاف', 'Stop') : (el > Duration.zero ? t('واصل', 'استمر', 'Resume') : t('يلا ابدأ', 'ابدأ', 'Start'))),
               ),
             ),
           ]),
@@ -276,16 +277,16 @@ class _TimerToolState extends State<TimerTool> {
       ),
       if (laps.isNotEmpty) ...[
         StatGrid([
-          StatChip('${laps.length}', 'لفّات', color: SD.nile, icon: Icons.flag_rounded),
-          StatChip(best == null ? '—' : clock(best, cs: true), 'أسرع لفّة', color: SD.green, icon: Icons.bolt_rounded),
-          StatChip(worst == null ? '—' : clock(worst, cs: true), 'أبطأ لفّة', color: SD.red, icon: Icons.slow_motion_video_rounded),
+          StatChip('${laps.length}', tr('لفّات', 'Laps'), color: SD.nile, icon: Icons.flag_rounded),
+          StatChip(best == null ? '—' : clock(best, cs: true), tr('أسرع لفّة', 'Fastest lap'), color: SD.green, icon: Icons.bolt_rounded),
+          StatChip(worst == null ? '—' : clock(worst, cs: true), tr('أبطأ لفّة', 'Slowest lap'), color: SD.red, icon: Icons.slow_motion_video_rounded),
         ]),
         const SizedBox(height: 10),
         SCard(
-          title: 'اللفّات',
+          title: tr('اللفّات', 'Laps'),
           icon: Icons.format_list_numbered_rounded,
           color: SD.nile,
-          trailing: Text('المتوسط ${clock(Duration(microseconds: laps.last.inMicroseconds ~/ laps.length), cs: true)}',
+          trailing: Text('${tr('المتوسط', 'Avg')} ${clock(Duration(microseconds: laps.last.inMicroseconds ~/ laps.length), cs: true)}',
               style: const TextStyle(fontSize: 12)),
           child: Column(children: [
             for (var i = laps.length - 1; i >= 0; i--)
@@ -306,16 +307,17 @@ class _TimerToolState extends State<TimerTool> {
                             color: lapTimes[i] == best ? SD.green : (lapTimes[i] == worst ? SD.red : null),
                             fontFeatures: const [FontFeature.tabularFigures()])),
                   ),
-                  if (lapTimes[i] == best) const Text('الأسرع ', style: TextStyle(color: SD.green, fontSize: 11)),
-                  if (lapTimes[i] == worst) const Text('الأبطأ ', style: TextStyle(color: SD.red, fontSize: 11)),
-                  Text('المجموع ${clock(laps[i], cs: true)}', style: const TextStyle(fontSize: 12, fontFeatures: [FontFeature.tabularFigures()])),
+                  if (lapTimes[i] == best) Text('${tr('الأسرع', 'Fastest')} ', style: const TextStyle(color: SD.green, fontSize: 11)),
+                  if (lapTimes[i] == worst) Text('${tr('الأبطأ', 'Slowest')} ', style: const TextStyle(color: SD.red, fontSize: 11)),
+                  Text('${tr('المجموع', 'Total')} ${clock(laps[i], cs: true)}', style: const TextStyle(fontSize: 12, fontFeatures: [FontFeature.tabularFigures()])),
                 ]),
               ),
           ]),
         ),
         ShareBar(() => [
-              '⏱️ ساعة الإيقاف — الزمن الكلي ${clock(el, cs: true)}',
-              for (var i = 0; i < laps.length; i++) 'لفة ${i + 1}: ${clock(lapTimes[i], cs: true)} (المجموع ${clock(laps[i], cs: true)})',
+              tr('⏱️ ساعة الإيقاف — الزمن الكلي ${clock(el, cs: true)}', '⏱️ Stopwatch — total ${clock(el, cs: true)}'),
+              for (var i = 0; i < laps.length; i++)
+                tr('لفة ${i + 1}: ${clock(lapTimes[i], cs: true)} (المجموع ${clock(laps[i], cs: true)})', 'Lap ${i + 1}: ${clock(lapTimes[i], cs: true)} (total ${clock(laps[i], cs: true)})'),
             ].join('\n')),
       ],
     ];
@@ -338,19 +340,20 @@ class _TimerToolState extends State<TimerTool> {
               Text(clock(shown),
                   textDirection: TextDirection.ltr,
                   style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w800, fontFeatures: [FontFeature.tabularFigures()])),
-              Text(cdRunning ? 'بيخلص ${fmtTimeAr(endAt!)}' : 'من ${clock(total)}', style: const TextStyle(fontSize: 12.5)),
+              Text(cdRunning ? t('بيخلص ${fmtTimeAr(endAt!)}', 'ينتهي ${fmtTimeAr(endAt!)}', 'Ends ${fmtTimeAr(endAt!)}') : tr('من ${clock(total)}', 'of ${clock(total)}'),
+                  style: const TextStyle(fontSize: 12.5)),
             ]),
           ),
           const SizedBox(height: 12),
           Wrap(spacing: 8, alignment: WrapAlignment.center, children: [
             for (final m in [1, 5])
-              ActionChip(label: Text('+$m د'), avatar: const Icon(Icons.add_rounded, size: 16), onPressed: () => _add(Duration(minutes: m))),
-            ActionChip(label: const Text('+30 ث'), avatar: const Icon(Icons.add_rounded, size: 16), onPressed: () => _add(const Duration(seconds: 30))),
+              ActionChip(label: Text('+$m ${tr('د', 'min')}'), avatar: const Icon(Icons.add_rounded, size: 16), onPressed: () => _add(Duration(minutes: m))),
+            ActionChip(label: Text('+30 ${tr('ث', 's')}'), avatar: const Icon(Icons.add_rounded, size: 16), onPressed: () => _add(const Duration(seconds: 30))),
           ]),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(
-              child: OutlinedButton.icon(onPressed: _resetCd, icon: const Icon(Icons.restart_alt_rounded), label: const Text('صفّر')),
+              child: OutlinedButton.icon(onPressed: _resetCd, icon: const Icon(Icons.restart_alt_rounded), label: Text(tr('صفّر', 'Reset'))),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -358,18 +361,18 @@ class _TimerToolState extends State<TimerTool> {
                 style: FilledButton.styleFrom(backgroundColor: cdRunning ? SD.red : SD.green),
                 onPressed: cdRunning ? _pauseCd : () => _startCd(left > Duration.zero ? left : total),
                 icon: Icon(cdRunning ? Icons.pause_rounded : Icons.play_arrow_rounded),
-                label: Text(cdRunning ? 'وقّف' : 'يلا ابدأ'),
+                label: Text(cdRunning ? t('وقّف', 'إيقاف', 'Pause') : t('يلا ابدأ', 'ابدأ', 'Start')),
               ),
             ),
           ]),
         ]),
       ),
-      SectionTitle('جاهزات سودانية', icon: Icons.local_cafe_rounded),
+      SectionTitle(t('جاهزات سودانية', 'مؤقتات سودانية جاهزة', 'Sudanese kitchen presets'), icon: Icons.local_cafe_rounded),
       Wrap(spacing: 8, runSpacing: 8, children: [
         for (final p in _presets)
           ActionChip(
             avatar: Text(p.emoji),
-            label: Text('${p.name} ${p.secs ~/ 60} د'),
+            label: Text('${p.name} ${p.secs ~/ 60} ${tr('د', 'min')}'),
             backgroundColor: p.color.withValues(alpha: .12),
             side: BorderSide(color: p.color.withValues(alpha: .4)),
             onPressed: () => _choose(p),
@@ -377,22 +380,23 @@ class _TimerToolState extends State<TimerTool> {
       ]),
       const SizedBox(height: 14),
       SCard(
-        title: 'وقت على كيفك',
+        title: t('وقت على كيفك', 'وقت مخصّص', 'Custom time'),
         icon: Icons.tune_rounded,
         color: SD.nile,
         child: Column(children: [
           Row(children: [
-            Expanded(child: NumField('دقايق', minC, decimal: false, hint: '0')),
+            Expanded(child: NumField(t('دقايق', 'دقائق', 'Minutes'), minC, decimal: false, hint: '0')),
             const SizedBox(width: 10),
-            Expanded(child: NumField('ثواني', secC, decimal: false, hint: '0')),
+            Expanded(child: NumField(t('ثواني', 'ثوانٍ', 'Seconds'), secC, decimal: false, hint: '0')),
           ]),
           SizedBox(
             width: double.infinity,
-            child: FilledButton.icon(onPressed: _custom, icon: const Icon(Icons.play_circle_rounded), label: const Text('شغّل المؤقت')),
+            child: FilledButton.icon(onPressed: _custom, icon: const Icon(Icons.play_circle_rounded), label: Text(tr('شغّل المؤقت', 'Start timer'))),
           ),
         ]),
       ),
-      const NoteBox('لمن الوقت يخلص الجوال بيهتز ويطلع صوت ويقول ليك. خلي التطبيق مفتوح عشان المنبّه يشتغل.'),
+      NoteBox(t('لمن الوقت يخلص الجوال بيهتز ويطلع صوت ويقول ليك. خلي التطبيق مفتوح عشان المنبّه يشتغل.', 'عند انتهاء الوقت يهتز الهاتف ويصدر صوتًا وينطق التنبيه. أبقِ التطبيق مفتوحًا ليعمل المنبّه.',
+          "When time's up the phone vibrates, beeps and reads the alert aloud. Keep the app open for the alarm to work.")),
     ];
   }
 }

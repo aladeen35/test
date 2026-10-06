@@ -49,6 +49,7 @@ final achievements = <Achievement>[
   Achievement('streak7', 'ما بتغيب', 'افتح التطبيق 7 أيام متتالية', '🔥', (s) => s.streak >= 7, 'Never misses', 'Open the app 7 days in a row'),
   Achievement('habit7', 'صاحب عادة', 'حافظ على عادة 7 أيام ورا بعض', '🌱', (s) => s.counter('habit_streak7') >= 1, 'Habit builder', 'Keep a habit 7 days in a row'),
   Achievement('tasks10', 'زول إنجاز', 'خلّص 10 مهام', '✅', (s) => s.counter('tasks_done') >= 10, 'Getting things done', 'Complete 10 tasks'),
+  Achievement('khatma', 'ختمتها', 'أكمل ختمة القرآن', '📖', (s) => s.counter('khatma_done') >= 1, 'Khatma complete', 'Finish a full Quran khatma'),
   Achievement('night', 'سهّار', 'استخدم التطبيق بعد نص الليل', '🌙', (s) => s.counter('night_use') >= 1, 'Night owl', 'Use the app after midnight'),
 ];
 

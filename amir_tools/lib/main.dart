@@ -11,6 +11,7 @@ import 'screens/onboarding.dart';
 import 'screens/pin_lock.dart';
 import 'services/net.dart';
 import 'services/notifications.dart';
+import 'tools/more/med_notify.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ Future<void> main() async {
   runApp(ChangeNotifierProvider.value(value: state, child: const AmirApp()));
   // مهام خلفية لا تؤخّر فتح التطبيق
   refreshRates(state);
-  PrayerNotifications.reschedule(state);
+  PrayerNotifications.reschedule(state).then((_) => MedNotifications.reschedule(state));
 }
 
 class AmirApp extends StatelessWidget {

@@ -245,10 +245,10 @@ class _MedicineToolState extends State<MedicineTool> {
       ),
       if (meds.isNotEmpty) ...[
         StatGrid([
-          StatChip(due7 == 0 ? '—' : '${fmt(taken7 * 100 / due7, 0)}%', t('التزامك (7 أيام)', 'الالتزام (7 أيام)', 'Adherence (7d)'),
+          StatChip(due7 == 0 ? '—' : '${fmt(taken7 * 100 / due7, 0)}%', t('التزام 7 أيام', 'التزام 7 أيام', '7-day rate'),
               color: due7 == 0 || taken7 / due7 >= .8 ? SD.green : SD.henna, icon: Icons.verified_rounded),
-          StatChip('${meds.where((m) => _activeOn(m, today)).length}', t('أدوية شغالة', 'أدوية حالية', 'Active meds'), color: SD.teal, icon: Icons.medication_rounded),
-          StatChip('${s.counter('med_doses')}', t('جرعات مسجّلة', 'جرعات مسجّلة', 'Doses logged'), color: SD.nile, icon: Icons.task_alt_rounded),
+          StatChip('${meds.where((m) => _activeOn(m, today)).length}', t('أدوية شغالة', 'أدوية حالية', 'Active'), color: SD.teal, icon: Icons.medication_rounded),
+          StatChip('${s.counter('med_doses')}', t('جرعات مسجّلة', 'جرعات مسجّلة', 'Logged'), color: SD.nile, icon: Icons.task_alt_rounded),
         ]),
         const SizedBox(height: 12),
         SCard(
