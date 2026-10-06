@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../core/date_input.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
 import '../../core/theme.dart';
@@ -156,7 +157,7 @@ class _LinePainter extends CustomPainter {
 
 /// اختيار تاريخ ووقت معًا
 Future<DateTime?> pickDateTime(BuildContext context, DateTime initial, {DateTime? first}) async {
-  final d = await showDatePicker(
+  final d = await pickDate(
     context: context,
     initialDate: initial,
     firstDate: first ?? DateTime(2000),

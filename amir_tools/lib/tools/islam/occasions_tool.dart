@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/date_input.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
 import '../../core/state.dart';
@@ -186,7 +187,7 @@ class _OccasionsToolState extends State<OccasionsTool> {
                   icon: const Icon(Icons.event_rounded),
                   label: Text(fmtDateAr(date)),
                   onPressed: () async {
-                    final d = await showDatePicker(context: ctx, initialDate: date, firstDate: DateTime(1900), lastDate: DateTime(2100));
+                    final d = await pickDate(context: ctx, initialDate: date, firstDate: DateTime(1900), lastDate: DateTime(2100));
                     if (d != null) setM(() => date = d);
                   },
                 ),

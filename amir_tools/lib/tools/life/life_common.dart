@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../core/date_input.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
 import '../../core/state.dart';
@@ -170,7 +171,7 @@ class LifeDateButton extends StatelessWidget {
         var init = value ?? now;
         if (init.isBefore(f)) init = f;
         if (init.isAfter(l)) init = l;
-        final d = await showDatePicker(
+        final d = await pickDate(
           context: context,
           initialDate: init,
           firstDate: f,

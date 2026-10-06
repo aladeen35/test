@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../core/date_input.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
 import '../../core/theme.dart';
@@ -29,7 +30,7 @@ class DateButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       onTap: () async {
         final init = value ?? (last.isBefore(DateTime.now()) ? last : DateTime.now());
-        final d = await showDatePicker(
+        final d = await pickDate(
           context: context,
           initialDate: init.isBefore(first) ? first : (init.isAfter(last) ? last : init),
           firstDate: first,

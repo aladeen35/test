@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/date_input.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
 import '../../core/state.dart';
@@ -77,7 +78,7 @@ class _FastingToolState extends State<FastingTool> {
     final today = deenToday();
     var d = today;
     if (pick) {
-      final r = await showDatePicker(context: context, initialDate: today, firstDate: DateTime(today.year - 5), lastDate: today);
+      final r = await pickDate(context: context, initialDate: today, firstDate: DateTime(today.year - 5), lastDate: today);
       if (r == null || !mounted) return;
       d = r;
     }

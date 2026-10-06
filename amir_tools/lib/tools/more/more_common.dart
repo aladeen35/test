@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../core/date_input.dart';
 import '../../core/data.dart';
 import '../../core/format.dart';
 import '../../core/i18n.dart';
@@ -163,7 +164,7 @@ class MDateButton extends StatelessWidget {
         var init = value ?? now;
         if (init.isBefore(first)) init = first;
         if (init.isAfter(last)) init = last;
-        final d = await showDatePicker(context: context, initialDate: init, firstDate: first, lastDate: last, helpText: label);
+        final d = await pickDate(context: context, initialDate: init, firstDate: first, lastDate: last, helpText: label);
         if (d != null) onPick(d);
       },
       child: Container(

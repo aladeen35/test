@@ -237,7 +237,7 @@ By Al-Bushra Technology.
 
 ## 6) بيانات التواصل (Store settings → Contact details)
 
-- **البريد الإلكتروني:** إلزامي ويظهر للناس. استخدم بريد الدعم الخاص بك.
+- **البريد الإلكتروني:** `aladeen35@gmail.com` (إلزامي ويظهر للناس في المتجر)
 - **الموقع:** اختياري.
 - **رابط سياسة الخصوصية:** إلزامي (شوف القسم 9).
 
@@ -296,7 +296,7 @@ Tools, Productivity, Calculator, Religion (Islam), Utilities.
 1. **Google Sites** (مجاني وسريع): أنشئ موقعًا، والصق النص، ثم انشر وخذ الرابط.
 2. **GitHub Pages**: انقل الملف لمستودع عام وفعّل Pages، فيصير الرابط مثل `https://<اسمك>.github.io/ameer-tools/privacy-policy.html`.
 
-> قبل النشر، **استبدل `[YOUR_EMAIL]` في الملف ببريد الدعم الخاص بك.**
+> البريد `aladeen35@gmail.com` مكتوب في الملف جاهز.
 
 ---
 
