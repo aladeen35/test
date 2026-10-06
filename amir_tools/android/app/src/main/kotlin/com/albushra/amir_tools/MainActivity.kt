@@ -1,5 +1,51 @@
 package com.albushra.amir_tools
 
+import android.os.Handler
+import android.os.Looper
+import com.googlecode.tesseract.android.TessBaseAPI
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+import java.io.File
+import java.util.concurrent.Executors
 
-class MainActivity : FlutterActivity()
+class MainActivity : FlutterActivity() {
+    // قناة استخراج النص (OCR) عبر Tesseract4Android — تعمل على الجهاز بالكامل
+    private val ocrExecutor = Executors.newSingleThreadExecutor()
+    private val main = Handler(Looper.getMainLooper())
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "ameer/ocr").setMethodCallHandler { call, result ->
+            if (call.method != "extractText") {
+                result.notImplemented()
+                return@setMethodCallHandler
+            }
+            val imagePath = call.argument<String>("imagePath")
+            val dataPath = call.argument<String>("dataPath")
+            val lang = call.argument<String>("lang") ?: "ara+eng"
+            if (imagePath == null || dataPath == null) {
+                result.error("args", "missing imagePath/dataPath", null)
+                return@setMethodCallHandler
+            }
+            ocrExecutor.execute {
+                val tess = TessBaseAPI()
+                try {
+                    if (!tess.init(dataPath, lang)) {
+                        main.post { result.error("init", "Tesseract init failed for $lang", null) }
+                        return@execute
+                    }
+                    tess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO)
+                    tess.setVariable("preserve_interword_spaces", "1")
+                    tess.setImage(File(imagePath))
+                    val text = tess.getUTF8Text() ?: ""
+                    main.post { result.success(text) }
+                } catch (e: Throwable) {
+                    main.post { result.error("ocr", e.message, null) }
+                } finally {
+                    tess.recycle()
+                }
+            }
+        }
+    }
+}

@@ -74,5 +74,7 @@ flutter {
 }
 
 dependencies {
+    // محرك استخراج النص (عربي + إنجليزي) — ملفات اللغة تُنزَّل عند أول استخدام
+    implementation("cz.adaptech.tesseract4android:tesseract4android:4.9.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

@@ -62,8 +62,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   hijri: ^3.0.1
-  flutter_tesseract_ocr: ^0.4.31
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -88,8 +86,6 @@ flutter:
 
   assets:
     - assets/images/
-    # إعداد Tesseract فارغ: بيانات اللغات تُنزَّل عند أول استخدام بدل تضمينها في التطبيق
-    - assets/tessdata_config.json
 
   fonts:
     - family: Tajawal

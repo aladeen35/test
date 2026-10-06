@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +16,12 @@ import '../../core/widgets.dart';
 /// لغات التعرّف: ملفات tessdata_fast تُنزَّل مرة واحدة عند أول استخدام (لا تُضمَّن في التطبيق لتقليل الحجم)
 const _langFiles = {'ara': 'ara.traineddata', 'eng': 'eng.traineddata'};
 const _tessBase = 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/';
+
+/// قناة Android الأصلية (MainActivity.kt) التي تشغّل Tesseract4Android
+const _ocr = MethodChannel('ameer/ocr');
+
+/// مجلد بيانات Tesseract: <المستندات>/tesseract وبداخله tessdata/
+Future<String> _dataPath() async => '${(await getApplicationDocumentsDirectory()).path}/tesseract';
 
 /// تجهيز الصورة: تدرّج رمادي، تكبير الصور الصغيرة، تحسين التباين — يرفع دقة التعرّف
 Future<String> _prepare(String path) async {
@@ -57,11 +63,11 @@ class _OcrToolState extends State<OcrTool> {
     super.dispose();
   }
 
-  bool get _supported => !kIsWeb && (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
+  bool get _supported => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   /// يتأكد من وجود ملفات اللغة المطلوبة وينزّل الناقص منها
   Future<bool> _ensureLangs() async {
-    final dir = Directory(await FlutterTesseractOcr.getTessdataPath());
+    final dir = Directory('${await _dataPath()}/tessdata');
     if (!await dir.exists()) await dir.create(recursive: true);
     for (final code in _lang.split('+')) {
       final f = File('${dir.path}/${_langFiles[code]}');
@@ -100,7 +106,7 @@ class _OcrToolState extends State<OcrTool> {
   }
 
   Future<void> _pick(ImageSource src) async {
-    if (!_supported) return toast(t('استخراج النص شغّال في تطبيق الموبايل بس', 'استخراج النص متاح في تطبيق الجوال فقط', 'Text extraction works in the mobile app only'));
+    if (!_supported) return toast(t('استخراج النص شغّال في تطبيق الأندرويد بس', 'استخراج النص متاح في تطبيق أندرويد فقط', 'Text extraction works in the Android app only'));
     try {
       final x = await ImagePicker().pickImage(source: src, requestFullMetadata: false);
       if (x == null) return;
@@ -122,7 +128,7 @@ class _OcrToolState extends State<OcrTool> {
       if (!await _ensureLangs()) return;
       setState(() => _status = t('بنقرا النص…', 'جارٍ قراءة النص…', 'Reading text…'));
       final prepared = await _prepare(_imagePath!);
-      final text = await FlutterTesseractOcr.extractText(prepared, language: _lang, args: {'psm': '3', 'preserve_interword_spaces': '1'});
+      final text = await _ocr.invokeMethod<String>('extractText', {'imagePath': prepared, 'dataPath': await _dataPath(), 'lang': _lang}) ?? '';
       _text.text = text.trim();
       sw.stop();
       if (!mounted) return;
@@ -145,7 +151,7 @@ class _OcrToolState extends State<OcrTool> {
     final words = RegExp(r'\S+').allMatches(_text.text).length;
     return ToolList(children: [
       if (!_supported)
-        NoteBox(t('الأداة دي شغّالة في تطبيق الموبايل (أندرويد وآيفون) بس.', 'هذه الأداة تعمل في تطبيق الجوال (أندرويد وآيفون) فقط.', 'This tool works in the mobile app (Android & iPhone) only.'),
+        NoteBox(t('الأداة دي شغّالة في تطبيق الأندرويد بس حاليًا.', 'هذه الأداة تعمل حاليًا في تطبيق أندرويد فقط.', 'This tool currently works in the Android app only.'),
             kind: NoteKind.warn),
       SCard(
         title: t('لغة النص', 'لغة النص', 'Text language'),
