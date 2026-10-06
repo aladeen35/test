@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -37,33 +38,38 @@ _Ymd _diff(DateTime a, DateTime b) {
   return _Ymd(y, m, d);
 }
 
-const _planets = [
-  ('عطارد', '☿️', 0.2408467, SD.orange),
-  ('الزُّهرة', '♀️', 0.61519726, SD.gold),
-  ('المريخ', '🔴', 1.8808158, SD.red),
-  ('المشتري', '🪐', 11.862615, SD.henna),
-  ('زحل', '🪐', 29.447498, SD.coffee),
-  ('أورانوس', '🔵', 84.016846, SD.teal),
-  ('نبتون', '🔷', 164.79132, SD.indigo),
+const _planetsData = [
+  ('عطارد', 'Mercury', '☿️', 0.2408467, SD.orange),
+  ('الزُّهرة', 'Venus', '♀️', 0.61519726, SD.gold),
+  ('المريخ', 'Mars', '🔴', 1.8808158, SD.red),
+  ('المشتري', 'Jupiter', '🪐', 11.862615, SD.henna),
+  ('زحل', 'Saturn', '🪐', 29.447498, SD.coffee),
+  ('أورانوس', 'Uranus', '🔵', 84.016846, SD.teal),
+  ('نبتون', 'Neptune', '🔷', 164.79132, SD.indigo),
 ];
+
+/// (الاسم حسب اللغة، الرمز، طول السنة بالسنين الأرضية، اللون)
+List<(String, String, double, Color)> get _planets => [for (final p in _planetsData) (tr(p.$1, p.$2), p.$3, p.$4, p.$5)];
 
 const _zodiac = [
   // (شهر البداية، يوم البداية، الاسم، الرمز)
-  (1, 20, 'الدلو', '♒'),
-  (2, 19, 'الحوت', '♓'),
-  (3, 21, 'الحمل', '♈'),
-  (4, 20, 'الثور', '♉'),
-  (5, 21, 'الجوزاء', '♊'),
-  (6, 21, 'السرطان', '♋'),
-  (7, 23, 'الأسد', '♌'),
-  (8, 23, 'العذراء', '♍'),
-  (9, 23, 'الميزان', '♎'),
-  (10, 23, 'العقرب', '♏'),
-  (11, 22, 'القوس', '♐'),
-  (12, 22, 'الجدي', '♑'),
+  (1, 20, 'الدلو', '♒', 'Aquarius'),
+  (2, 19, 'الحوت', '♓', 'Pisces'),
+  (3, 21, 'الحمل', '♈', 'Aries'),
+  (4, 20, 'الثور', '♉', 'Taurus'),
+  (5, 21, 'الجوزاء', '♊', 'Gemini'),
+  (6, 21, 'السرطان', '♋', 'Cancer'),
+  (7, 23, 'الأسد', '♌', 'Leo'),
+  (8, 23, 'العذراء', '♍', 'Virgo'),
+  (9, 23, 'الميزان', '♎', 'Libra'),
+  (10, 23, 'العقرب', '♏', 'Scorpio'),
+  (11, 22, 'القوس', '♐', 'Sagittarius'),
+  (12, 22, 'الجدي', '♑', 'Capricorn'),
 ];
 
-const _chinese = ['الفأر', 'الثور', 'النمر', 'الأرنب', 'التنين', 'الأفعى', 'الحصان', 'الماعز', 'القرد', 'الديك', 'الكلب', 'الخنزير'];
+List<String> get _chinese => isEn
+    ? const ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig']
+    : const ['الفأر', 'الثور', 'النمر', 'الأرنب', 'التنين', 'الأفعى', 'الحصان', 'الماعز', 'القرد', 'الديك', 'الكلب', 'الخنزير'];
 
 class _AgeToolState extends State<AgeTool> {
   DateTime? birth;
@@ -77,8 +83,8 @@ class _AgeToolState extends State<AgeTool> {
     final s = context.read<AppState>();
     final b = s.getData<String>('age_birth');
     if (b != null) birth = DateTime.tryParse(b);
-    final t = s.getData<int>('age_time');
-    if (t != null) birthTime = TimeOfDay(hour: t ~/ 60, minute: t % 60);
+    final tm = s.getData<int>('age_time');
+    if (tm != null) birthTime = TimeOfDay(hour: tm ~/ 60, minute: tm % 60);
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && birth != null) setState(() {});
     });
@@ -106,32 +112,41 @@ class _AgeToolState extends State<AgeTool> {
   }
 
   String _generation(int y) {
-    if (y < 1928) return 'الجيل الأعظم (Greatest Generation)';
-    if (y <= 1945) return 'الجيل الصامت (Silent Generation) 1928–1945';
-    if (y <= 1964) return 'جيل الطفرة (Baby Boomers) 1946–1964';
-    if (y <= 1980) return 'الجيل إكس (Gen X) 1965–1980';
-    if (y <= 1996) return 'جيل الألفية (Millennials / Gen Y) 1981–1996';
-    if (y <= 2012) return 'جيل زد (Gen Z) 1997–2012';
-    if (y <= 2024) return 'جيل ألفا (Gen Alpha) 2013–2024';
-    return 'جيل بيتا (Gen Beta) 2025+';
+    if (y < 1928) return tr('الجيل الأعظم (Greatest Generation)', 'Greatest Generation');
+    if (y <= 1945) return tr('الجيل الصامت (Silent Generation) 1928–1945', 'Silent Generation 1928–1945');
+    if (y <= 1964) return tr('جيل الطفرة (Baby Boomers) 1946–1964', 'Baby Boomers 1946–1964');
+    if (y <= 1980) return tr('الجيل إكس (Gen X) 1965–1980', 'Gen X 1965–1980');
+    if (y <= 1996) return tr('جيل الألفية (Millennials / Gen Y) 1981–1996', 'Millennials / Gen Y 1981–1996');
+    if (y <= 2012) return tr('جيل زد (Gen Z) 1997–2012', 'Gen Z 1997–2012');
+    if (y <= 2024) return tr('جيل ألفا (Gen Alpha) 2013–2024', 'Gen Alpha 2013–2024');
+    return tr('جيل بيتا (Gen Beta) 2025+', 'Gen Beta 2025+');
   }
 
   (String, String) _season(int m) => switch (m) {
-        12 || 1 || 2 => ('الشتاء ❄️', 'برد الشتاء ونسمة الشمال — موسم الدفا والشاي باللبن'),
-        11 => ('بداية الشتاء 🍂', 'الجو بقى يبرد والحصاد شغّال'),
-        3 || 4 || 5 || 6 => ('الصيف ☀️', 'حر السودان المعروف وموسم الهبوب والليمون بالنعناع'),
-        7 || 8 || 9 => ('الخريف 🌧️', 'موسم المطر في السودان — الأرض خضراء والوديان مليانة'),
-        _ => ('نهاية الخريف 🌾', 'آخر المطر وبداية موسم الحصاد'),
+        12 || 1 || 2 => (
+            tr('الشتاء ❄️', 'Winter ❄️'),
+            t('برد الشتاء ونسمة الشمال — موسم الدفا والشاي باللبن', 'برد الشتاء ونسيم الشمال — موسم الدفء والشاي بالحليب', 'Cool northerly breeze — the season of warmth and milk tea (Sudan seasons)')
+          ),
+        11 => (tr('بداية الشتاء 🍂', 'Early winter 🍂'), t('الجو بقى يبرد والحصاد شغّال', 'بدأ الجو يبرد والحصاد جارٍ', 'Weather cooling down and harvest under way (Sudan seasons)')),
+        3 || 4 || 5 || 6 => (
+            tr('الصيف ☀️', 'Summer ☀️'),
+            t('حر السودان المعروف وموسم الهبوب والليمون بالنعناع', 'حرّ السودان المعروف وموسم العواصف الترابية والليمون بالنعناع', "Sudan's famous heat, haboob dust storms and lemon-mint season")
+          ),
+        7 || 8 || 9 => (
+            t('الخريف 🌧️', 'موسم الأمطار 🌧️', 'Rainy season 🌧️'),
+            t('موسم المطر في السودان — الأرض خضراء والوديان مليانة', 'موسم المطر في السودان — الأرض خضراء والأودية ممتلئة', 'Rainy season in Sudan — green land and full valleys')
+          ),
+        _ => (t('نهاية الخريف 🌾', 'نهاية موسم الأمطار 🌾', 'End of rainy season 🌾'), tr('آخر المطر وبداية موسم الحصاد', 'Last rains and start of the harvest')),
       };
 
   (String, String) _zodiacOf(DateTime d) {
-    var r = (_zodiac.last.$3, _zodiac.last.$4); // الجدي افتراضيًا
+    var z0 = _zodiac.last; // الجدي افتراضيًا
     for (final z in _zodiac) {
-      if (d.month > z.$1 || (d.month == z.$1 && d.day >= z.$2)) r = (z.$3, z.$4);
+      if (d.month > z.$1 || (d.month == z.$1 && d.day >= z.$2)) z0 = z;
     }
     // قبل 20 يناير = الجدي
-    if (d.month == 1 && d.day < 20) r = ('الجدي', '♑');
-    return r;
+    if (d.month == 1 && d.day < 20) z0 = _zodiac.last;
+    return (tr(z0.$3, z0.$5), z0.$4);
   }
 
   int _countWeekday(DateTime from, DateTime to, int wd) {
@@ -188,22 +203,22 @@ class _AgeToolState extends State<AgeTool> {
     final b = _birthInstant;
     final out = <(String, DateTime)>[];
     for (final d in [1000, 5000, 10000, 12345, 15000, 20000, 25000, 30000]) {
-      out.add(('${fmt(d, 0)} يوم', b.add(Duration(days: d))));
+      out.add((tr('${fmt(d, 0)} يوم', '${fmt(d, 0)} days'), b.add(Duration(days: d))));
     }
     for (final w in [500, 1000, 2000, 3000, 4000]) {
-      out.add(('${fmt(w, 0)} أسبوع', b.add(Duration(days: w * 7))));
+      out.add((tr('${fmt(w, 0)} أسبوع', '${fmt(w, 0)} weeks'), b.add(Duration(days: w * 7))));
     }
     for (final m in [100, 250, 500, 750, 1000]) {
-      out.add(('${fmt(m, 0)} شهر', DateTime(b.year, b.month + m, b.day, b.hour, b.minute)));
+      out.add((tr('${fmt(m, 0)} شهر', '${fmt(m, 0)} months'), DateTime(b.year, b.month + m, b.day, b.hour, b.minute)));
     }
     for (final h in [100000, 250000, 500000]) {
-      out.add(('${fmt(h, 0)} ساعة', b.add(Duration(hours: h))));
+      out.add((tr('${fmt(h, 0)} ساعة', '${fmt(h, 0)} hours'), b.add(Duration(hours: h))));
     }
     for (final mi in [1000000, 10000000, 20000000, 30000000]) {
-      out.add(('${fmt(mi, 0)} دقيقة', b.add(Duration(minutes: mi))));
+      out.add((tr('${fmt(mi, 0)} دقيقة', '${fmt(mi, 0)} minutes'), b.add(Duration(minutes: mi))));
     }
     for (final s in [100000000, 500000000, 1000000000, 1500000000, 2000000000]) {
-      out.add(('${fmt(s, 0)} ثانية${s == 1000000000 ? ' (مليار!)' : ''}', b.add(Duration(seconds: s))));
+      out.add((tr('${fmt(s, 0)} ثانية${s == 1000000000 ? ' (مليار!)' : ''}', '${fmt(s, 0)} seconds${s == 1000000000 ? ' (a billion!)' : ''}'), b.add(Duration(seconds: s))));
     }
     out.sort((a, c) => a.$2.compareTo(c.$2));
     return out.where((e) => e.$2.year <= b.year + 100).toList();
@@ -218,27 +233,29 @@ class _AgeToolState extends State<AgeTool> {
     var nb = _birthdayIn(now.year);
     if (!nb.isAfter(now)) nb = _birthdayIn(now.year + 1);
     return [
-      '🎂 حاسبة العمر',
-      'تاريخ الميلاد: ${fmtDateAr(birth!)}${birthTime != null ? ' — ${fmtTimeAr(_birthInstant)}' : ''}',
-      'العمر: ${a.y} سنة و${a.m} شهر و${a.d} يوم',
-      'يعني: ${fmt(el.inDays, 0)} يوم = ${fmt(el.inHours, 0)} ساعة = ${fmt(el.inMinutes, 0)} دقيقة',
-      if (h != null) 'الميلاد بالهجري: $h',
-      'بالقبطي: ${copticText(birth!)}',
-      'العيد الجاي: ${fmtDateAr(nb)} (بعد ${daysBetween(now, nb)} يوم)',
-      'عمرك على المريخ: ${fmt(el.inSeconds / (365.25 * 86400) / 1.8808158, 2)} سنة مريخية',
+      tr('🎂 حاسبة العمر', '🎂 Age calculator'),
+      '${tr('تاريخ الميلاد', 'Date of birth')}: ${fmtDateAr(birth!)}${birthTime != null ? ' — ${fmtTimeAr(_birthInstant)}' : ''}',
+      tr('العمر: ${a.y} سنة و${a.m} شهر و${a.d} يوم', 'Age: ${a.y} years, ${a.m} months, ${a.d} days'),
+      t('يعني: ${fmt(el.inDays, 0)} يوم = ${fmt(el.inHours, 0)} ساعة = ${fmt(el.inMinutes, 0)} دقيقة', 'أي: ${fmt(el.inDays, 0)} يوم = ${fmt(el.inHours, 0)} ساعة = ${fmt(el.inMinutes, 0)} دقيقة',
+          'That is: ${fmt(el.inDays, 0)} days = ${fmt(el.inHours, 0)} hours = ${fmt(el.inMinutes, 0)} minutes'),
+      if (h != null) '${tr('الميلاد بالهجري', 'Hijri birth date')}: $h',
+      '${tr('بالقبطي', 'Coptic')}: ${copticText(birth!)}',
+      t('العيد الجاي: ${fmtDateAr(nb)} (بعد ${daysBetween(now, nb)} يوم)', 'عيد الميلاد القادم: ${fmtDateAr(nb)} (بعد ${daysBetween(now, nb)} يوم)',
+          'Next birthday: ${fmtDateAr(nb)} (in ${daysBetween(now, nb)} days)'),
+      tr('عمرك على المريخ: ${fmt(el.inSeconds / (365.25 * 86400) / 1.8808158, 2)} سنة مريخية', 'Age on Mars: ${fmt(el.inSeconds / (365.25 * 86400) / 1.8808158, 2)} Martian years'),
     ].join('\n');
   }
 
   Future<void> _pickTime() async {
-    final t = await showTimePicker(
+    final picked = await showTimePicker(
       context: context,
       initialTime: birthTime ?? const TimeOfDay(hour: 12, minute: 0),
-      helpText: 'ساعة الميلاد (لو عارفها)',
-      cancelText: 'خلاص',
-      confirmText: 'تمام',
+      helpText: t('ساعة الميلاد (لو عارفها)', 'وقت الميلاد (إن كنت تعرفه)', 'Birth time (if you know it)'),
+      cancelText: t('خلاص', 'إلغاء', 'Cancel'),
+      confirmText: t('تمام', 'موافق', 'OK'),
     );
-    if (t != null) {
-      setState(() => birthTime = t);
+    if (picked != null) {
+      setState(() => birthTime = picked);
       _save();
     }
   }
@@ -249,19 +266,19 @@ class _AgeToolState extends State<AgeTool> {
     final now = DateTime.now();
     return ToolList(children: [
       SCard(
-        title: 'ميلادك متين؟',
+        title: t('ميلادك متين؟', 'متى ميلادك؟', 'When were you born?'),
         icon: Icons.cake_rounded,
         color: SD.henna,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           DateButton(
-            label: 'تاريخ الميلاد',
+            label: tr('تاريخ الميلاد', 'Date of birth'),
             value: birth,
             first: DateTime(1900),
             last: now,
             onPick: (d) {
               setState(() => birth = d);
               _save();
-              s.awardDaily('age_calc', 3, 'حسبت عمرك');
+              s.awardDaily('age_calc', 3, t('حسبت عمرك', 'حسبت عمرك', 'Calculated your age'));
             },
           ),
           const SizedBox(height: 10),
@@ -270,12 +287,14 @@ class _AgeToolState extends State<AgeTool> {
               child: OutlinedButton.icon(
                 onPressed: _pickTime,
                 icon: const Icon(Icons.schedule_rounded),
-                label: Text(birthTime == null ? 'ساعة الميلاد (اختياري)' : 'الساعة: ${fmtTimeAr(DateTime(2000, 1, 1, birthTime!.hour, birthTime!.minute))}'),
+                label: Text(birthTime == null
+                    ? t('ساعة الميلاد (اختياري)', 'وقت الميلاد (اختياري)', 'Birth time (optional)')
+                    : '${tr('الساعة', 'Time')}: ${fmtTimeAr(DateTime(2000, 1, 1, birthTime!.hour, birthTime!.minute))}'),
               ),
             ),
             if (birthTime != null)
               IconButton(
-                tooltip: 'شيل الساعة',
+                tooltip: t('شيل الساعة', 'أزل الوقت', 'Clear time'),
                 onPressed: () {
                   setState(() => birthTime = null);
                   _save();
@@ -286,7 +305,10 @@ class _AgeToolState extends State<AgeTool> {
         ]),
       ),
       if (birth == null)
-        const NoteBox('أختار تاريخ ميلادك فوق، ونحسب ليك عمرك بالتفصيل الممل: بالثواني، بالهجري، على المريخ، والعيد الجاي… كلو 😄',
+        NoteBox(
+            t('أختار تاريخ ميلادك فوق، ونحسب ليك عمرك بالتفصيل الممل: بالثواني، بالهجري، على المريخ، والعيد الجاي… كلو 😄',
+                'اختر تاريخ ميلادك في الأعلى، وسنحسب عمرك بكل التفاصيل: بالثواني، بالهجري، على المريخ، وعيد ميلادك القادم… كل شيء 😄',
+                'Pick your birth date above and we\'ll work out your age in every detail: in seconds, in Hijri, on Mars, your next birthday… everything 😄'),
             kind: NoteKind.tip)
       else
         ..._results(s, now),
@@ -323,38 +345,43 @@ class _AgeToolState extends State<AgeTool> {
 
     return [
       if (todayBirthday)
-        const NoteBox('🎉 عيد ميلادك الليلة! كل سنة وانت طيب، ربنا يديك العمر والصحة والعافية 🎂', kind: NoteKind.tip),
+        NoteBox(
+            t('🎉 عيد ميلادك الليلة! كل سنة وانت طيب، ربنا يديك العمر والصحة والعافية 🎂', '🎉 اليوم عيد ميلادك! كل عام وأنت بخير، أطال الله عمرك في صحة وعافية 🎂',
+                '🎉 Happy birthday! Wishing you a long life full of health and wellbeing 🎂'),
+            kind: NoteKind.tip),
       ResultHero(
-        label: 'عمرك بالضبط',
-        value: '${a.y} سنة',
-        sub: '${a.m} شهر و ${a.d} يوم${birthTime != null ? ' و ${el.inHours % 24} ساعة' : ''}',
+        label: tr('عمرك بالضبط', 'Your exact age'),
+        value: tr('${a.y} سنة', '${a.y} years'),
+        sub: tr('${a.m} شهر و ${a.d} يوم${birthTime != null ? ' و ${el.inHours % 24} ساعة' : ''}',
+            '${a.m} months, ${a.d} days${birthTime != null ? ', ${el.inHours % 24} hours' : ''}'),
         colors: const [SD.henna, SD.pink, SD.purple],
       ),
-      SectionTitle('العدّاد الحي', icon: Icons.timer_rounded, trailing: _liveDot()),
+      SectionTitle(tr('العدّاد الحي', 'Live counter'), icon: Icons.timer_rounded, trailing: _liveDot()),
       StatGrid([
-        StatChip(fmt(totalMonths, 0), 'شهر', color: SD.henna, icon: Icons.calendar_view_month_rounded),
-        StatChip(fmt(el.inDays ~/ 7, 0), 'أسبوع', color: SD.gold, icon: Icons.view_week_rounded),
-        StatChip(fmt(el.inDays, 0), 'يوم', color: SD.teal, icon: Icons.today_rounded),
-        StatChip(fmt(el.inHours, 0), 'ساعة', color: SD.nile, icon: Icons.hourglass_bottom_rounded),
-        StatChip(fmt(el.inMinutes, 0), 'دقيقة', color: SD.purple, icon: Icons.av_timer_rounded),
-        StatChip(fmt(secs, 0), 'ثانية', color: SD.pink, icon: Icons.bolt_rounded),
+        StatChip(fmt(totalMonths, 0), tr('شهر', 'months'), color: SD.henna, icon: Icons.calendar_view_month_rounded),
+        StatChip(fmt(el.inDays ~/ 7, 0), tr('أسبوع', 'weeks'), color: SD.gold, icon: Icons.view_week_rounded),
+        StatChip(fmt(el.inDays, 0), tr('يوم', 'days'), color: SD.teal, icon: Icons.today_rounded),
+        StatChip(fmt(el.inHours, 0), tr('ساعة', 'hours'), color: SD.nile, icon: Icons.hourglass_bottom_rounded),
+        StatChip(fmt(el.inMinutes, 0), tr('دقيقة', 'minutes'), color: SD.purple, icon: Icons.av_timer_rounded),
+        StatChip(fmt(secs, 0), tr('ثانية', 'seconds'), color: SD.pink, icon: Icons.bolt_rounded),
       ]),
       const SizedBox(height: 6),
-      Text('العمر بالكسور: ${earthYears.toStringAsFixed(8)} سنة',
+      Text(tr('العمر بالكسور: ${earthYears.toStringAsFixed(8)} سنة', 'Decimal age: ${earthYears.toStringAsFixed(8)} years'),
           textAlign: TextAlign.center, style: TextStyle(color: muted, fontFeatures: const [FontFeature.tabularFigures()])),
       if (birthTime == null)
-        Text('(من نص الليل — لو ضفت ساعة الميلاد بتبقى أدق)', textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
+        Text(t('(من نص الليل — لو ضفت ساعة الميلاد بتبقى أدق)', '(من منتصف الليل — إضافة وقت الميلاد تجعلها أدق)', '(from midnight — add your birth time for more accuracy)'),
+            textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
       const SizedBox(height: 14),
       SCard(
-        title: 'عيد ميلادك الجاي',
+        title: t('عيد ميلادك الجاي', 'عيد ميلادك القادم', 'Your next birthday'),
         icon: Icons.celebration_rounded,
         color: SD.pink,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            _cd(toNb.inDays, 'يوم'),
-            _cd(toNb.inHours % 24, 'ساعة'),
-            _cd(toNb.inMinutes % 60, 'دقيقة'),
-            _cd(toNb.inSeconds % 60, 'ثانية'),
+            _cd(toNb.inDays, tr('يوم', 'days')),
+            _cd(toNb.inHours % 24, tr('ساعة', 'hours')),
+            _cd(toNb.inMinutes % 60, tr('دقيقة', 'min')),
+            _cd(toNb.inSeconds % 60, tr('ثانية', 'sec')),
           ]),
           const SizedBox(height: 12),
           ClipRRect(
@@ -362,75 +389,91 @@ class _AgeToolState extends State<AgeTool> {
             child: LinearProgressIndicator(value: yearProg, minHeight: 10, color: SD.pink, backgroundColor: SD.pink.withValues(alpha: .12)),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text('قطعت ${fmt(yearProg * 100, 1)}% من سنتك الحالية', textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
+            padding: const EdgeInsetsDirectional.only(top: 4),
+            child: Text(t('قطعت ${fmt(yearProg * 100, 1)}% من سنتك الحالية', 'أنهيت ${fmt(yearProg * 100, 1)}% من سنتك الحالية', "You're ${fmt(yearProg * 100, 1)}% through your current year"),
+                textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
           ),
-          InfoRow('التاريخ', fmtDateAr(nb), icon: Icons.event_rounded),
-          InfoRow('يوافق يوم', weekdaysAr[nb.weekday - 1], icon: Icons.calendar_today_rounded, valueColor: SD.pink),
-          InfoRow('حتكمّل', '$turning سنة', icon: Icons.cake_rounded),
-          if (b.month == 2 && b.day == 29) const NoteBox('مولود في 29 فبراير! في السنين العادية بنحسب عيدك يوم 28 فبراير 😉'),
+          InfoRow(tr('التاريخ', 'Date'), fmtDateAr(nb), icon: Icons.event_rounded),
+          InfoRow(tr('يوافق يوم', 'Falls on'), weekdaysAr[nb.weekday - 1], icon: Icons.calendar_today_rounded, valueColor: SD.pink),
+          InfoRow(t('حتكمّل', 'ستُكمل', "You'll turn"), tr('$turning سنة', '$turning'), icon: Icons.cake_rounded),
+          if (b.month == 2 && b.day == 29)
+            NoteBox(t('مولود في 29 فبراير! في السنين العادية بنحسب عيدك يوم 28 فبراير 😉', 'مولود في 29 فبراير! في السنوات العادية نحسب عيد ميلادك يوم 28 فبراير 😉',
+                'Born on 29 February! In common years we count your birthday on 28 February 😉')),
           ..._nextWeekdays(nb),
         ]),
       ),
       SCard(
-        title: 'يوم ميلادك',
+        title: tr('يوم ميلادك', 'The day you were born'),
         icon: Icons.child_care_rounded,
         color: SD.teal,
         child: Column(children: [
-          InfoRow('اتولدت يوم', weekdaysAr[b.weekday - 1], icon: Icons.wb_twilight_rounded, valueColor: SD.teal),
-          InfoRow('بالهجري', hb ?? 'خارج نطاق تقويم أم القرى (1937–2077)', icon: Icons.nightlight_round),
-          if (ha != null) InfoRow('عمرك بالهجري', '${ha.y} سنة و${ha.m} شهر و${ha.d} يوم', icon: Icons.mosque_rounded, valueColor: SD.green),
-          InfoRow('بالقبطي', copticText(b), icon: Icons.wb_sunny_outlined, hint: 'تقويم الشهور الزراعية (توت، بابه…)'),
-          InfoRow('بالإثيوبي', ethiopianText(b), icon: Icons.public_rounded),
-          InfoRow('رقم اليوم في سنتها', '$dayOfYear من ${_leap(b.year) ? 366 : 365}', icon: Icons.format_list_numbered_rounded),
-          InfoRow('سنة كبيسة؟', _leap(b.year) ? 'أيوه، ${b.year} كبيسة' : 'لا، ${b.year} سنة عادية', icon: Icons.event_repeat_rounded),
-          InfoRow('جيلك', _generation(b.year), icon: Icons.groups_rounded),
-          InfoRow('موسم ميلادك', season.$1, hint: season.$2, icon: Icons.thermostat_rounded, valueColor: SD.henna),
+          InfoRow(t('اتولدت يوم', 'وُلدت يوم', 'Born on a'), weekdaysAr[b.weekday - 1], icon: Icons.wb_twilight_rounded, valueColor: SD.teal),
+          InfoRow(tr('بالهجري', 'Hijri'), hb ?? tr('خارج نطاق تقويم أم القرى (1937–2077)', 'Outside the Umm al-Qura range (1937–2077)'), icon: Icons.nightlight_round),
+          if (ha != null)
+            InfoRow(tr('عمرك بالهجري', 'Age in Hijri years'), tr('${ha.y} سنة و${ha.m} شهر و${ha.d} يوم', '${ha.y} years, ${ha.m} months, ${ha.d} days'),
+                icon: Icons.mosque_rounded, valueColor: SD.green),
+          InfoRow(tr('بالقبطي', 'Coptic'), copticText(b), icon: Icons.wb_sunny_outlined, hint: tr('تقويم الشهور الزراعية (توت، بابه…)', 'The agricultural calendar (Thout, Paopi…)')),
+          InfoRow(tr('بالإثيوبي', 'Ethiopian'), ethiopianText(b), icon: Icons.public_rounded),
+          InfoRow(tr('رقم اليوم في سنتها', 'Day of that year'), tr('$dayOfYear من ${_leap(b.year) ? 366 : 365}', '$dayOfYear of ${_leap(b.year) ? 366 : 365}'),
+              icon: Icons.format_list_numbered_rounded),
+          InfoRow(tr('سنة كبيسة؟', 'Leap year?'),
+              _leap(b.year) ? t('أيوه، ${b.year} كبيسة', 'نعم، ${b.year} كبيسة', 'Yes, ${b.year} is a leap year') : tr('لا، ${b.year} سنة عادية', 'No, ${b.year} is a common year'),
+              icon: Icons.event_repeat_rounded),
+          InfoRow(tr('جيلك', 'Your generation'), _generation(b.year), icon: Icons.groups_rounded),
+          InfoRow(tr('موسم ميلادك', 'Birth season'), season.$1, hint: season.$2, icon: Icons.thermostat_rounded, valueColor: SD.henna),
         ]),
       ),
       SCard(
-        title: 'عمرك في الكواكب',
+        title: tr('عمرك في الكواكب', 'Your age on other planets'),
         icon: Icons.public_rounded,
         color: SD.indigo,
         child: Column(children: [
           for (final p in _planets) _planetRow(p, earthYears, bi),
-          InfoRow('بالأيام المريخية (سول)', fmt(secs / 88775.244, 1), icon: Icons.brightness_3_rounded, hint: 'السول = 24 ساعة و39 دقيقة و35 ثانية'),
-          InfoRow('لفّات حول الشمس', fmt(earthYears, 3), icon: Icons.sync_rounded),
-          InfoRow('مسافة سفرك مع الأرض حول الشمس', '${fmt(earthYears * 940, 0)} مليون كم', icon: Icons.rocket_launch_rounded, hint: 'حوالي 940 مليون كم كل سنة'),
-          InfoRow('أقمار كاملة (بدر) شفتها', fmt(days / 29.530589, 0), icon: Icons.brightness_2_rounded),
+          InfoRow(tr('بالأيام المريخية (سول)', 'Martian days (sols)'), fmt(secs / 88775.244, 1), icon: Icons.brightness_3_rounded,
+              hint: tr('السول = 24 ساعة و39 دقيقة و35 ثانية', 'A sol = 24 h 39 min 35 s')),
+          InfoRow(tr('لفّات حول الشمس', 'Trips around the Sun'), fmt(earthYears, 3), icon: Icons.sync_rounded),
+          InfoRow(tr('مسافة سفرك مع الأرض حول الشمس', 'Distance travelled with Earth around the Sun'), tr('${fmt(earthYears * 940, 0)} مليون كم', '${fmt(earthYears * 940, 0)} million km'),
+              icon: Icons.rocket_launch_rounded, hint: tr('حوالي 940 مليون كم كل سنة', 'About 940 million km a year')),
+          InfoRow(t('أقمار كاملة (بدر) شفتها', 'أقمار مكتملة (بدر) رأيتها', 'Full moons seen'), fmt(days / 29.530589, 0), icon: Icons.brightness_2_rounded),
         ]),
       ),
       SCard(
-        title: 'حياتك بالأرقام',
+        title: tr('حياتك بالأرقام', 'Your life in numbers'),
         icon: Icons.favorite_rounded,
         color: SD.red,
         child: Column(children: [
-          const NoteBox('الأرقام دي تقديرية (متوسطات عامة) للتسلية والمعلومة، مش قياس طبي.', kind: NoteKind.warn),
-          InfoRow('دقات قلبك', '≈ ${fmt(minutes * 80, 0)}', icon: Icons.monitor_heart_rounded, hint: 'على متوسط 80 دقة في الدقيقة', valueColor: SD.red),
-          InfoRow('أنفاسك', '≈ ${fmt(minutes * 16, 0)}', icon: Icons.air_rounded, hint: 'حوالي 16 نفس في الدقيقة'),
-          InfoRow('الدم الضخّه قلبك', '≈ ${fmt(minutes * 5 / 1000, 0)} ألف لتر', icon: Icons.bloodtype_rounded, hint: 'حوالي 5 لتر في الدقيقة'),
-          InfoRow('نمت حوالي', '${fmt(earthYears / 3, 1)} سنة', icon: Icons.bedtime_rounded, hint: 'لو تلت عمرك نوم (${fmt(el.inHours / 3, 0)} ساعة)'),
-          InfoRow('رمشة عين', '≈ ${fmt(minutes * 2 / 3 * 15, 0)}', icon: Icons.remove_red_eye_rounded, hint: '15 رمشة في الدقيقة وانت صاحي'),
-          InfoRow('وجبات أكلتها', '≈ ${fmt(days * 3, 0)}', icon: Icons.restaurant_rounded, hint: '3 وجبات في اليوم — فطور وغدا وعشا'),
-          InfoRow('شعرك طوّل', '≈ ${fmt(totalMonths * 1.25 / 100, 1)} متر', icon: Icons.content_cut_rounded, hint: 'لو ما حلقته أبدًا (حوالي 1.25 سم في الشهر)'),
-          InfoRow('جُمَع عشتها', fmt(_countWeekday(b, now, DateTime.friday), 0), icon: Icons.mosque_rounded, valueColor: SD.green),
-          InfoRow('رمضانات عاصرتها', '≈ ${fmt(ha?.y ?? (days / 354.367).floor(), 0)}', icon: Icons.nights_stay_rounded),
-          InfoRow('أيام 29 فبراير عشتها', fmt(_leapDaysLived(b, now), 0), icon: Icons.event_available_rounded),
+          NoteBox(t('الأرقام دي تقديرية (متوسطات عامة) للتسلية والمعلومة، مش قياس طبي.', 'هذه الأرقام تقديرية (متوسطات عامة) للتسلية والمعلومة، وليست قياسًا طبيًا.',
+              'These are rough estimates (general averages) for fun and trivia, not medical measurements.'), kind: NoteKind.warn),
+          InfoRow(tr('دقات قلبك', 'Heartbeats'), '≈ ${fmt(minutes * 80, 0)}', icon: Icons.monitor_heart_rounded, hint: tr('على متوسط 80 دقة في الدقيقة', 'At an average of 80 bpm'), valueColor: SD.red),
+          InfoRow(tr('أنفاسك', 'Breaths'), '≈ ${fmt(minutes * 16, 0)}', icon: Icons.air_rounded, hint: tr('حوالي 16 نفس في الدقيقة', 'About 16 breaths a minute')),
+          InfoRow(t('الدم الضخّه قلبك', 'الدم الذي ضخّه قلبك', 'Blood pumped by your heart'), tr('≈ ${fmt(minutes * 5 / 1000, 0)} ألف لتر', '≈ ${fmt(minutes * 5 / 1000, 0)} thousand liters'),
+              icon: Icons.bloodtype_rounded, hint: tr('حوالي 5 لتر في الدقيقة', 'About 5 liters a minute')),
+          InfoRow(t('نمت حوالي', 'نمت حوالي', 'Time asleep'), tr('${fmt(earthYears / 3, 1)} سنة', '${fmt(earthYears / 3, 1)} years'), icon: Icons.bedtime_rounded,
+              hint: t('لو تلت عمرك نوم (${fmt(el.inHours / 3, 0)} ساعة)', 'إن كان ثلث عمرك نومًا (${fmt(el.inHours / 3, 0)} ساعة)', 'If a third of your life is sleep (${fmt(el.inHours / 3, 0)} hours)')),
+          InfoRow(tr('رمشة عين', 'Blinks'), '≈ ${fmt(minutes * 2 / 3 * 15, 0)}', icon: Icons.remove_red_eye_rounded,
+              hint: t('15 رمشة في الدقيقة وانت صاحي', '15 رمشة في الدقيقة أثناء اليقظة', '15 blinks a minute while awake')),
+          InfoRow(tr('وجبات أكلتها', 'Meals eaten'), '≈ ${fmt(days * 3, 0)}', icon: Icons.restaurant_rounded,
+              hint: t('3 وجبات في اليوم — فطور وغدا وعشا', '3 وجبات في اليوم — فطور وغداء وعشاء', '3 meals a day — breakfast, lunch and dinner')),
+          InfoRow(t('شعرك طوّل', 'طول شعرك', 'Hair grown'), tr('≈ ${fmt(totalMonths * 1.25 / 100, 1)} متر', '≈ ${fmt(totalMonths * 1.25 / 100, 1)} m'), icon: Icons.content_cut_rounded,
+              hint: t('لو ما حلقته أبدًا (حوالي 1.25 سم في الشهر)', 'لو لم تحلقه أبدًا (حوالي 1.25 سم في الشهر)', 'If never cut (about 1.25 cm a month)')),
+          InfoRow(t('جُمَع عشتها', 'أيام الجمعة التي عشتها', 'Fridays lived'), fmt(_countWeekday(b, now, DateTime.friday), 0), icon: Icons.mosque_rounded, valueColor: SD.green),
+          InfoRow(t('رمضانات عاصرتها', 'رمضانات عاصرتها', 'Ramadans lived'), '≈ ${fmt(ha?.y ?? (days / 354.367).floor(), 0)}', icon: Icons.nights_stay_rounded),
+          InfoRow(t('أيام 29 فبراير عشتها', 'أيام 29 فبراير التي عشتها', '29 Februaries lived'), fmt(_leapDaysLived(b, now), 0), icon: Icons.event_available_rounded),
         ]),
       ),
       SCard(
-        title: 'محطات عمرك',
+        title: tr('محطات عمرك', 'Life milestones'),
         icon: Icons.flag_rounded,
         color: SD.gold,
         child: Column(children: [for (final m in _milestones()) _milestoneRow(m, now)]),
       ),
       SCard(
-        title: 'عمرك في تاريخ معيّن',
+        title: tr('عمرك في تاريخ معيّن', 'Your age on a given date'),
         icon: Icons.event_note_rounded,
         color: SD.nile,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           DateButton(
-            label: 'التاريخ (ماضي أو جاي)',
+            label: t('التاريخ (ماضي أو جاي)', 'التاريخ (ماضٍ أو قادم)', 'Date (past or future)'),
             value: atDate,
             first: b,
             last: DateTime(b.year + 150),
@@ -442,22 +485,23 @@ class _AgeToolState extends State<AgeTool> {
             Builder(builder: (_) {
               final x = _diff(b, atDate!);
               return Column(children: [
-                InfoRow('عمرك يومها', '${x.y} سنة و${x.m} شهر و${x.d} يوم', valueColor: SD.nile),
-                InfoRow('بالأيام', fmt(daysBetween(b, atDate!), 0)),
-                InfoRow(atDate!.isAfter(now) ? 'باقي ليهو' : 'فات عليهو', '${fmt(daysBetween(now, atDate!).abs(), 0)} يوم'),
+                InfoRow(t('عمرك يومها', 'عمرك يومها', 'Your age then'), tr('${x.y} سنة و${x.m} شهر و${x.d} يوم', '${x.y} years, ${x.m} months, ${x.d} days'), valueColor: SD.nile),
+                InfoRow(tr('بالأيام', 'In days'), fmt(daysBetween(b, atDate!), 0)),
+                InfoRow(atDate!.isAfter(now) ? t('باقي ليهو', 'متبقٍ عليه', 'Days to go') : t('فات عليهو', 'مضى عليه', 'Days since'),
+                    tr('${fmt(daysBetween(now, atDate!).abs(), 0)} يوم', '${fmt(daysBetween(now, atDate!).abs(), 0)} days')),
               ]);
             }),
           ],
         ]),
       ),
       SCard(
-        title: 'معلومة فلكية بس',
+        title: t('معلومة فلكية بس', 'معلومة فلكية فقط', 'Astronomical trivia only'),
         icon: Icons.stars_rounded,
         color: SD.red,
         child: NoteBox(
-          'البرج حسب التاريخ: ${zod.$1} ${zod.$2}\n'
-          'الحيوان في التقويم الصيني: $chinese (${b.month <= 2 ? 'تقريبي لأن رأس السنة الصينية بين يناير وفبراير' : 'حسب السنة'})\n\n'
-          'التنجيم وادّعاء معرفة الحظ والمستقبل من الأبراج كذب وشرك ومحرّم شرعًا؛ نعرضها للمعلومة الفلكية فقط ولا علاقة لها بشخصيتك أو مستقبلك.',
+          '${tr('البرج حسب التاريخ', 'Zodiac sign by date')}: ${zod.$1} ${zod.$2}\n'
+          '${tr('الحيوان في التقويم الصيني', 'Chinese zodiac animal')}: $chinese (${b.month <= 2 ? tr('تقريبي لأن رأس السنة الصينية بين يناير وفبراير', 'approximate, since Chinese New Year falls between January and February') : tr('حسب السنة', 'by year')})\n\n'
+          '${t('التنجيم وادّعاء معرفة الحظ والمستقبل من الأبراج كذب وشرك ومحرّم شرعًا؛ نعرضها للمعلومة الفلكية بس ولا علاقة ليها بشخصيتك أو مستقبلك.', 'التنجيم وادّعاء معرفة الحظ والمستقبل من الأبراج كذب وشرك ومحرّم شرعًا؛ نعرضها للمعلومة الفلكية فقط ولا علاقة لها بشخصيتك أو مستقبلك.', 'Astrology and claiming to know fate or the future from zodiac signs is false and shirk (forbidden in Islam); shown only as astronomical trivia, unrelated to your personality or future.')}',
           kind: NoteKind.danger,
         ),
       ),
@@ -469,7 +513,7 @@ class _AgeToolState extends State<AgeTool> {
     final ys = [for (var i = 1; i <= 4; i++) _birthdayIn(nb.year + i)];
     return [
       Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsetsDirectional.only(top: 10),
         child: Wrap(spacing: 6, runSpacing: 6, alignment: WrapAlignment.center, children: [
           for (final d in ys)
             Chip(
@@ -487,7 +531,7 @@ class _AgeToolState extends State<AgeTool> {
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.circle, size: 9, color: DateTime.now().second.isEven ? SD.red : SD.red.withValues(alpha: .3)),
           const SizedBox(width: 5),
-          const Text('مباشر', style: TextStyle(color: SD.red, fontWeight: FontWeight.w700, fontSize: 12)),
+          Text(tr('مباشر', 'Live'), style: const TextStyle(color: SD.red, fontWeight: FontWeight.w700, fontSize: 12)),
         ]),
       );
 
@@ -510,9 +554,11 @@ class _AgeToolState extends State<AgeTool> {
     final age = earthYears / p.$3;
     final next = bi.add(Duration(seconds: ((age.floor() + 1) * p.$3 * 365.25 * 86400).round()));
     return InfoRow(
-      '${p.$2} على ${p.$1}',
-      '${fmt(age, 2)} سنة',
-      hint: 'سنتها = ${fmt(p.$3 * 365.25, 1)} يوم أرضي • عيدك الجاي هناك: ${next.year > 9999 ? '—' : fmtDateAr(next, weekday: false)}',
+      tr('${p.$2} على ${p.$1}', '${p.$2} On ${p.$1}'),
+      tr('${fmt(age, 2)} سنة', '${fmt(age, 2)} years'),
+      hint: t('سنتها = ${fmt(p.$3 * 365.25, 1)} يوم أرضي • عيدك الجاي هناك: ${next.year > 9999 ? '—' : fmtDateAr(next, weekday: false)}',
+          'سنته = ${fmt(p.$3 * 365.25, 1)} يومًا أرضيًا • عيد ميلادك القادم هناك: ${next.year > 9999 ? '—' : fmtDateAr(next, weekday: false)}',
+          'One year = ${fmt(p.$3 * 365.25, 1)} Earth days • next birthday there: ${next.year > 9999 ? '—' : fmtDateAr(next, weekday: false)}'),
       valueColor: p.$4,
     );
   }
@@ -525,7 +571,9 @@ class _AgeToolState extends State<AgeTool> {
       m.$1,
       fmtDateAr(m.$2, weekday: false),
       icon: past ? Icons.check_circle_rounded : (soon ? Icons.notifications_active_rounded : Icons.radio_button_unchecked_rounded),
-      hint: past ? 'فات من ${fmt(-dd, 0)} يوم ✓' : (dd == 0 ? 'الليلة! 🎉' : 'باقي ${fmt(dd, 0)} يوم'),
+      hint: past
+          ? t('فات من ${fmt(-dd, 0)} يوم ✓', 'مضى منذ ${fmt(-dd, 0)} يوم ✓', '${fmt(-dd, 0)} days ago ✓')
+          : (dd == 0 ? t('الليلة! 🎉', 'اليوم! 🎉', 'Today! 🎉') : t('باقي ${fmt(dd, 0)} يوم', 'متبقٍ ${fmt(dd, 0)} يوم', 'in ${fmt(dd, 0)} days')),
       valueColor: past ? SD.green : (soon ? SD.pink : SD.gold),
     );
   }

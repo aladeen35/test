@@ -234,7 +234,7 @@ class _CurrencyToolState extends State<CurrencyTool> {
           if (gap != null)
             NoteBox(
               gap > 0
-                  ? t('الموازي أعلى من الرسمي بـ ${fmt(gap, 1)}% — يعني الدولار في السوق بيجيب ${fmt(parSdg! - offSdg)} جنيه زيادة.', 'السعر الموازي أعلى من الرسمي بـ ${fmt(gap, 1)}% — أي أن الدولار في السوق يجلب ${fmt(parSdg! - offSdg)} جنيهًا إضافية.', 'Parallel is ${fmt(gap, 1)}% above official — a dollar fetches ${fmt(parSdg! - offSdg)} SDG more in the market.')
+                  ? t('الموازي أعلى من الرسمي بـ ${fmt(gap, 1)}% — يعني الدولار في السوق بيجيب ${fmt(parSdg! - offSdg)} جنيه زيادة.', 'السعر الموازي أعلى من الرسمي بـ ${fmt(gap, 1)}% — أي أن الدولار في السوق يجلب ${fmt(parSdg - offSdg)} جنيهًا إضافية.', 'Parallel is ${fmt(gap, 1)}% above official — a dollar fetches ${fmt(parSdg - offSdg)} SDG more in the market.')
                   : t('الموازي قريب أو أقل من الرسمي (${fmt(gap, 1)}%).', 'السعر الموازي قريب من الرسمي أو أقل منه (${fmt(gap, 1)}%).', 'Parallel is close to or below official (${fmt(gap, 1)}%).'),
               kind: gap > 20 ? NoteKind.warn : NoteKind.tip,
             ),

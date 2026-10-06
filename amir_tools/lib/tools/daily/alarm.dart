@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import '../../core/i18n.dart';
 
 /// منبّه بسيط: اهتزاز + صوت النظام + (اختياريًا) نطق رسالة
 class Alarm {
@@ -28,7 +29,7 @@ class Alarm {
     if (kIsWeb) return;
     try {
       _tts ??= FlutterTts();
-      await _tts!.setLanguage('ar');
+      await _tts!.setLanguage(isEn ? 'en-US' : 'ar');
       await _tts!.speak(speech);
     } catch (_) {/* لا يوجد محرك نطق */}
   }

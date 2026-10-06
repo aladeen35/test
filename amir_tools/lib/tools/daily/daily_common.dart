@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/theme.dart';
 
 /// زر اختيار تاريخ بشكل موحّد
@@ -34,8 +35,8 @@ class DateButton extends StatelessWidget {
           firstDate: first,
           lastDate: last,
           helpText: label,
-          cancelText: 'خلاص',
-          confirmText: 'تمام',
+          cancelText: t('خلاص', 'إلغاء', 'Cancel'),
+          confirmText: t('تمام', 'موافق', 'OK'),
           initialEntryMode: DatePickerEntryMode.calendar,
         );
         if (d != null) onPick(d);
@@ -54,7 +55,7 @@ class DateButton extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(label, style: TextStyle(fontSize: 12, color: readable(context, color), fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
-              Text(value == null ? 'دوس هنا واختار التاريخ' : fmtDateAr(value!),
+              Text(value == null ? t('دوس هنا واختار التاريخ', 'اضغط هنا واختر التاريخ', 'Tap here to pick a date') : fmtDateAr(value!),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
             ]),
           ),
@@ -117,7 +118,7 @@ class _BarPainter extends CustomPainter {
   void _text(Canvas c, String s, Offset center, double size, Color col, {FontWeight w = FontWeight.w600}) {
     final tp = TextPainter(
       text: TextSpan(text: s, style: TextStyle(fontSize: size, color: col, fontWeight: w, fontFamily: 'Tajawal')),
-      textDirection: TextDirection.rtl,
+      textDirection: dir,
     )..layout();
     tp.paint(c, center - Offset(tp.width / 2, tp.height / 2));
   }
@@ -272,4 +273,6 @@ String clock(Duration d, {bool cs = false}) {
 }
 
 /// أسماء الأيام المختصرة (DateTime.weekday 1..7)
-const shortDays = ['اثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت', 'أحد'];
+List<String> get shortDays => isEn
+    ? const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    : const ['اثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت', 'أحد'];

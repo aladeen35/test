@@ -49,7 +49,7 @@ class MedNotifications {
   /// أقرب موعد قادم لوقت يومي (دقائق من منتصف الليل) بتوقيت الجهاز، لا يسبق [notBefore]
   static DateTime nextOccurrence(int minutes, {DateTime? notBefore}) {
     final now = DateTime.now();
-    var base = notBefore != null && notBefore.isAfter(now) ? notBefore : now;
+    final base = notBefore != null && notBefore.isAfter(now) ? notBefore : now;
     var at = DateTime(base.year, base.month, base.day, minutes ~/ 60, minutes % 60);
     if (!at.isAfter(base)) at = at.add(const Duration(days: 1));
     // تصحيح ساعة الحائط إذا تغيّر التوقيت الصيفي

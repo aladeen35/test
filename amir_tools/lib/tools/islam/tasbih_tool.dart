@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -89,14 +90,14 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
     s.setData('tasbih_all', all);
     s.setData('tasbih_session', _count);
     s.bump('tasbih');
-    if (all % 100 == 0) s.award(3, 'تسبيح ${fmt(all, 0)} مرة');
+    if (all % 100 == 0) s.award(3, tr('تسبيح ${fmt(all, 0)} مرة', '${fmt(all, 0)} tasbih'));
 
     final hitTarget = _target > 0 && _count % _target == 0;
     if (hitTarget) {
       _rounds++;
       s.setData('tasbih_rounds', _rounds);
       if (_vibrate) HapticFeedback.heavyImpact();
-      toast('تمّت $_target ✓ — الدورة رقم $_rounds، ما شاء الله', icon: Icons.verified_rounded);
+      toast(tr('تمّت $_target ✓ — الدورة رقم $_rounds، ما شاء الله', '$_target done ✓ — round $_rounds, MashaAllah'), icon: Icons.verified_rounded);
     } else if (_vibrate) {
       HapticFeedback.selectionClick();
     }
@@ -134,11 +135,12 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
     final r = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ذكر جديد'),
-        content: TextField(controller: ctrl, autofocus: true, maxLines: 3, decoration: const InputDecoration(hintText: 'أكتب الذكر هنا…')),
+        title: Text(tr('ذكر جديد', 'New dhikr')),
+        content: TextField(
+            controller: ctrl, autofocus: true, maxLines: 3, decoration: InputDecoration(hintText: t('أكتب الذكر هنا…', 'اكتب الذكر هنا…', 'Type the dhikr here…'))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('تمام، ضيفو')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('إلغاء', 'Cancel'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: Text(t('تمام، ضيفو', 'أضفه', 'Add'))),
         ],
       ),
     );
@@ -192,7 +194,7 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
         child: Column(children: [
           Text(_dhikr, textAlign: TextAlign.center, style: TextStyle(fontSize: 22, height: 1.7, fontWeight: FontWeight.w700, color: cs.onSurface)),
           const SizedBox(height: 4),
-          Text('مجموعو عندك: ${fmt(totals[_dhikr] ?? 0, 0)} مرة', style: TextStyle(fontSize: 12.5, color: cs.onSurface.withValues(alpha: .6))),
+          Text(t('مجموعو عندك: ${fmt(totals[_dhikr] ?? 0, 0)} مرة', 'مجموعه لديك: ${fmt(totals[_dhikr] ?? 0, 0)} مرة', 'Your total: ${fmt(totals[_dhikr] ?? 0, 0)} times'), style: TextStyle(fontSize: 12.5, color: cs.onSurface.withValues(alpha: .6))),
           const SizedBox(height: 14),
           LayoutBuilder(builder: (ctx, bc) {
             final size = math.min(bc.maxWidth, 290.0);
@@ -226,10 +228,10 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
                       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                         Text(fmt(_count, 0), style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
                         const SizedBox(height: 6),
-                        Text(_target > 0 ? '$inRound / $_target' : 'بلا حد ∞', style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w700)),
-                        if (_rounds > 0) Text('الدورات: $_rounds', style: const TextStyle(color: SD.sand, fontSize: 13)),
+                        Text(_target > 0 ? '$inRound / $_target' : tr('بلا حد ∞', 'No limit ∞'), style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w700)),
+                        if (_rounds > 0) Text('${tr('الدورات', 'Rounds')}: $_rounds', style: const TextStyle(color: SD.sand, fontSize: 13)),
                         const SizedBox(height: 6),
-                        const Text('اضغط هنا', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                        Text(tr('اضغط هنا', 'Tap here'), style: const TextStyle(color: Colors.white60, fontSize: 12)),
                       ]),
                     ),
                   ),
@@ -246,7 +248,7 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
           }),
           const SizedBox(height: 14),
           Row(children: [
-            Expanded(child: OutlinedButton.icon(onPressed: _count == 0 ? null : _reset, icon: const Icon(Icons.restart_alt_rounded), label: const Text('صفّر الجلسة'))),
+            Expanded(child: OutlinedButton.icon(onPressed: _count == 0 ? null : _reset, icon: const Icon(Icons.restart_alt_rounded), label: Text(t('صفّر الجلسة', 'صفّر الجلسة', 'Reset session')))),
             const SizedBox(width: 10),
             Expanded(
               child: OutlinedButton.icon(
@@ -255,33 +257,33 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
                   s.setData('tasbih_vibrate', _vibrate);
                 },
                 icon: Icon(_vibrate ? Icons.vibration_rounded : Icons.mobile_off_rounded),
-                label: Text(_vibrate ? 'الهزّاز شغّال' : 'الهزّاز مقفول'),
+                label: Text(_vibrate ? t('الهزّاز شغّال', 'الاهتزاز مفعّل', 'Vibration on') : t('الهزّاز مقفول', 'الاهتزاز متوقف', 'Vibration off')),
               ),
             ),
           ]),
         ]),
       ),
       SCard(
-        title: 'الهدف',
+        title: tr('الهدف', 'Target'),
         icon: Icons.flag_rounded,
         color: SD.gold,
         child: Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final t in _targets)
+          for (final n in _targets)
             ChoiceChip(
-              label: Text(t == 0 ? '∞ مفتوح' : '$t'),
-              selected: _target == t,
+              label: Text(n == 0 ? tr('∞ مفتوح', '∞ Open') : '$n'),
+              selected: _target == n,
               onSelected: (_) {
-                setState(() => _target = t);
-                s.setData('tasbih_target', t);
+                setState(() => _target = n);
+                s.setData('tasbih_target', n);
               },
             ),
         ]),
       ),
       SCard(
-        title: 'اختار الذكر',
+        title: t('اختار الذكر', 'اختر الذكر', 'Choose a dhikr'),
         icon: Icons.format_list_bulleted_rounded,
         color: SD.teal,
-        trailing: IconButton(onPressed: _addCustom, icon: const Icon(Icons.add_circle_rounded, color: SD.teal), tooltip: 'ضيف ذكر'),
+        trailing: IconButton(onPressed: _addCustom, icon: const Icon(Icons.add_circle_rounded, color: SD.teal), tooltip: t('ضيف ذكر', 'أضف ذكرًا', 'Add dhikr')),
         child: Column(children: [
           for (final d in [..._presets, ...custom])
             ListTile(
@@ -290,26 +292,26 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
               selected: d == _dhikr,
               leading: Icon(d == _dhikr ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded, color: SD.teal),
               title: Text(d, style: const TextStyle(fontSize: 15.5, height: 1.5)),
-              subtitle: (totals[d] ?? 0) > 0 ? Text('المجموع: ${fmt(totals[d], 0)}') : null,
+              subtitle: (totals[d] ?? 0) > 0 ? Text('${tr('المجموع', 'Total')}: ${fmt(totals[d], 0)}') : null,
               trailing: custom.contains(d) && !_presets.contains(d)
-                  ? IconButton(icon: const Icon(Icons.delete_outline_rounded), onPressed: () => _removeCustom(d))
+                  ? IconButton(icon: const Icon(Icons.delete_outline_rounded), tooltip: t('امسح', 'احذف', 'Delete'), onPressed: () => _removeCustom(d))
                   : null,
               onTap: () => _pick(d),
             ),
         ]),
       ),
-      const SectionTitle('إحصاءاتك', icon: Icons.insights_rounded),
+      SectionTitle(tr('إحصاءاتك', 'Your stats'), icon: Icons.insights_rounded),
       StatGrid([
-        StatChip(fmt(today, 0), 'النهارده', color: SD.green, icon: Icons.today_rounded),
-        StatChip(fmt(week, 0), 'آخر 7 أيام', color: SD.nile, icon: Icons.date_range_rounded),
-        StatChip(fmt(allTime, 0), 'من البداية', color: SD.gold, icon: Icons.all_inclusive_rounded),
-        StatChip('$streak', 'أيام متتالية', color: SD.henna, icon: Icons.local_fire_department_rounded),
-        StatChip(fmt(s.counter('tasbih'), 0), 'عدّاد الإنجازات', color: SD.indigo, icon: Icons.emoji_events_rounded),
-        StatChip(fmt(100 - allTime % 100, 0), 'باقي للنقاط الجاية', color: SD.teal, icon: Icons.stars_rounded),
+        StatChip(fmt(today, 0), t('النهارده', 'اليوم', 'Today'), color: SD.green, icon: Icons.today_rounded),
+        StatChip(fmt(week, 0), tr('آخر 7 أيام', 'Last 7 days'), color: SD.nile, icon: Icons.date_range_rounded),
+        StatChip(fmt(allTime, 0), tr('من البداية', 'All time'), color: SD.gold, icon: Icons.all_inclusive_rounded),
+        StatChip('$streak', tr('أيام متتالية', 'Day streak'), color: SD.henna, icon: Icons.local_fire_department_rounded),
+        StatChip(fmt(s.counter('tasbih'), 0), tr('عدّاد الإنجازات', 'Achievement counter'), color: SD.indigo, icon: Icons.emoji_events_rounded),
+        StatChip(fmt(100 - allTime % 100, 0), t('باقي للنقاط الجاية', 'المتبقي للنقاط القادمة', 'To next bonus'), color: SD.teal, icon: Icons.stars_rounded),
       ]),
       const SizedBox(height: 12),
       SCard(
-        title: 'آخر 7 أيام',
+        title: tr('آخر 7 أيام', 'Last 7 days'),
         icon: Icons.bar_chart_rounded,
         color: SD.nile,
         child: SizedBox(
@@ -330,7 +332,7 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(weekdaysAr[now.subtract(Duration(days: 6 - i)).weekday - 1].replaceFirst('ال', ''), style: const TextStyle(fontSize: 10)),
+                    Text(_shortDay(now.subtract(Duration(days: 6 - i)).weekday), style: const TextStyle(fontSize: 10)),
                   ]),
                 ),
               ),
@@ -339,17 +341,28 @@ class _TasbihToolState extends State<TasbihTool> with SingleTickerProviderStateM
       ),
       if (sorted.isNotEmpty)
         SCard(
-          title: 'مجموع كل ذكر',
+          title: tr('مجموع كل ذكر', 'Total per dhikr'),
           icon: Icons.leaderboard_rounded,
           color: SD.henna,
           child: Column(children: [
             for (final e in sorted.take(12)) InfoRow(e.key, fmt(e.value, 0)),
           ]),
         ),
-      ShareBar(() => '📿 المسبحة\nالذكر: $_dhikr\nالجلسة: $_count${_target > 0 ? ' (الدورات: $_rounds × $_target)' : ''}\nالنهارده: $today\nآخر 7 أيام: $week\nمن البداية: $allTime'),
-      const NoteBox('«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ» [الرعد: 28]. كل 100 تسبيحة بتديك نقاط إضافية، والأهم الأجر إن شاء الله.', kind: NoteKind.tip),
+      ShareBar(() => isEn
+          ? '📿 Tasbih\nDhikr: $_dhikr\nSession: $_count${_target > 0 ? ' (rounds: $_rounds × $_target)' : ''}\nToday: $today\nLast 7 days: $week\nAll time: $allTime'
+          : '📿 المسبحة\nالذكر: $_dhikr\nالجلسة: $_count${_target > 0 ? ' (الدورات: $_rounds × $_target)' : ''}\n${t('النهارده', 'اليوم', '')}: $today\nآخر 7 أيام: $week\nمن البداية: $allTime'),
+      NoteBox(
+          t('«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ» [الرعد: 28]. كل 100 تسبيحة بتديك نقاط إضافية، والأهم الأجر إن شاء الله.',
+              '«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ» [الرعد: 28]. كل 100 تسبيحة تمنحك نقاطًا إضافية، والأهم الأجر إن شاء الله.',
+              '«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ» [Ar-Ra\'d: 28]. Every 100 tasbih earns bonus points — and above all, the reward, in sha Allah.'),
+          kind: NoteKind.tip),
     ]);
   }
+}
+
+String _shortDay(int weekday) {
+  final w = weekdaysAr[weekday - 1];
+  return isEn ? w.substring(0, 3) : w.replaceFirst('ال', '');
 }
 
 class _Ripple {
