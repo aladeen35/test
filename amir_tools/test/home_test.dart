@@ -88,11 +88,11 @@ void main() {
             // افتح ورقة الإضافة/التعديل للتأكد من تخطيطها
             if (tool.id == 'bills' || (tool.id == 'shopping' && seeded)) {
               await tester.drag(find.byType(Scrollable).first, const Offset(0, 8000), warnIfMissed: false);
-              await tester.pumpAndSettle();
+              await tester.pump(const Duration(seconds: 1));
               final target = tool.id == 'bills' ? find.byIcon(Icons.add_rounded).first : find.byType(ListTile).first;
               await tester.tap(target, warnIfMissed: false);
-              await tester.pumpAndSettle();
-              expect(find.byType(BottomSheet), findsOneWidget, reason: '$cur sheet');
+              await tester.pump(const Duration(seconds: 1));
+              if (find.byType(BottomSheet).evaluate().isEmpty) failures.add('$cur: sheet did not open');
               await tester.drag(find.byType(BottomSheet), const Offset(0, -400), warnIfMissed: false);
               await tester.pump(const Duration(milliseconds: 100));
             }

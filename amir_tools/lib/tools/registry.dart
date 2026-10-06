@@ -10,6 +10,7 @@ import 'work/work_tools.dart';
 import 'home/home_tools.dart';
 import 'deen/deen_tools.dart';
 import 'plus/plus_tools.dart';
+import 'writer/writer_tools.dart';
 import '../core/i18n.dart';
 
 /// تصنيفات الأدوات
@@ -64,7 +65,7 @@ class ToolDef {
 /// تُبنى من جديد عند كل استدعاء حتى تتبع لغة التطبيق
 List<ToolDef> get allTools => [
       ...moneyTools, ...workTools, ...islamTools, ...deenTools, ...lifeTools, ...homeTools,
-      ...dailyTools, ...moreTools, ...plusTools, ...mediaTools, ...deviceTools,
+      ...dailyTools, ...moreTools, ...plusTools, ...writerTools, ...mediaTools, ...deviceTools,
     ];
 
 ToolDef? toolById(String id) {
