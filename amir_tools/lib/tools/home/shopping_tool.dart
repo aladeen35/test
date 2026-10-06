@@ -341,15 +341,23 @@ class _ShoppingToolState extends State<ShoppingTool> {
           IconButton.filled(onPressed: () => _submitAdd(s), icon: const Icon(Icons.add_rounded), tooltip: t('ضيف', 'إضافة', 'Add')),
         ]),
         const SizedBox(height: 10),
-        Wrap(spacing: 6, runSpacing: 6, children: [
-          for (final g in _sugs)
-            if (!names.contains(g.name))
-              ActionChip(
-                visualDensity: VisualDensity.compact,
-                label: Text('${g.emoji} ${g.name}'),
-                onPressed: () => _addItem(s, g.name, unit: g.unit),
-              ),
-        ]),
+        Text(t('مقترحات (دوس عشان تضيف)', 'مقترحات (اضغط للإضافة)', 'Suggestions (tap to add)'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 4),
+        SizedBox(
+          height: 44,
+          child: ListView(scrollDirection: Axis.horizontal, children: [
+            for (final g in _sugs)
+              if (!names.contains(g.name))
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 6),
+                  child: ActionChip(
+                    visualDensity: VisualDensity.compact,
+                    label: Text('${g.emoji} ${g.name}'),
+                    onPressed: () => _addItem(s, g.name, unit: g.unit),
+                  ),
+                ),
+          ]),
+        ),
         const SizedBox(height: 12),
         if (items.isEmpty)
           EmptyHint(Icons.checklist_rounded, t('القائمة فاضية — دوس على المقترحات فوق', 'القائمة فارغة — اختر من المقترحات أعلاه', 'The list is empty — tap a suggestion above'))

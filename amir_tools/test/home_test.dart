@@ -68,6 +68,7 @@ void main() {
           final orig = FlutterError.onError;
           String? cur;
           FlutterError.onError = (d) => failures.add('$cur: ${d.exceptionAsString().split('\n').first}');
+          try {
           for (final tool in allTools.where((t) => _ids.contains(t.id))) {
             cur = '${tool.id}${seeded ? ' (data)' : ''}';
             await tester.pumpWidget(ChangeNotifierProvider.value(
@@ -87,10 +88,12 @@ void main() {
             }
             // افتح ورقة الإضافة/التعديل للتأكد من تخطيطها
             if (tool.id == 'bills' || (tool.id == 'shopping' && seeded)) {
-              await tester.drag(find.byType(Scrollable).first, const Offset(0, 8000), warnIfMissed: false);
+              tester.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
               await tester.pump(const Duration(seconds: 1));
               final target = tool.id == 'bills' ? find.byIcon(Icons.add_rounded).first : find.byType(ListTile).first;
-              await tester.tap(target, warnIfMissed: false);
+              await tester.ensureVisible(target);
+              await tester.pump(const Duration(seconds: 1));
+              await tester.tap(target);
               await tester.pump(const Duration(seconds: 1));
               if (find.byType(BottomSheet).evaluate().isEmpty) failures.add('$cur: sheet did not open');
               await tester.drag(find.byType(BottomSheet), const Offset(0, -400), warnIfMissed: false);
@@ -99,7 +102,11 @@ void main() {
             await tester.pumpWidget(const SizedBox());
             await tester.pump(const Duration(seconds: 5));
           }
-          FlutterError.onError = orig;
+          } catch (e) {
+            failures.add('$cur: exception $e');
+          } finally {
+            FlutterError.onError = orig;
+          }
           expect(failures.toSet().toList(), isEmpty, reason: failures.toSet().join('\n'));
         }
       });

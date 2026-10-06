@@ -8,6 +8,7 @@ import '../../core/format.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
+import 'text_decor.dart';
 
 final _tashkeel = RegExp('[ً-ْٰـ]');
 final _arLetter = RegExp('[ء-يٱ-ۓ]');
@@ -37,6 +38,7 @@ class _TextToolState extends State<TextTool> {
   List<LocaleName> _sttLocales = const [];
   String _partial = '';
   String _prefix = '';
+  bool _decor = false;
 
   @override
   void initState() {
@@ -193,8 +195,17 @@ class _TextToolState extends State<TextTool> {
     final dir = ar >= la ? tr('عربي', 'Arabic') : (la > 0 ? tr('لاتيني', 'Latin') : '—');
 
     return ToolList(children: [
+      SegmentedButton<bool>(
+        segments: [
+          ButtonSegment(value: false, icon: const Icon(Icons.handyman_rounded), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tr('أدوات', 'Tools')))),
+          ButtonSegment(value: true, icon: const Icon(Icons.auto_awesome_rounded), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tr('زخرفة', 'Decorate')))),
+        ],
+        selected: {_decor},
+        onSelectionChanged: (v) => setState(() => _decor = v.first),
+      ),
+      const SizedBox(height: 12),
       SCard(
-        title: tr('النص', 'Text'),
+        title: _decor ? t('أكتب النص اللي داير تزخرفو', 'اكتب النص المراد زخرفته', 'Text to decorate') : tr('النص', 'Text'),
         icon: Icons.edit_note_rounded,
         color: SD.green,
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -217,13 +228,14 @@ class _TextToolState extends State<TextTool> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           TextField(
             controller: _c,
-            minLines: 6,
-            maxLines: 14,
+            minLines: _decor ? 2 : 6,
+            maxLines: _decor ? 5 : 14,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(hintText: t('أكتب هنا أو الصق النص…', 'اكتب هنا أو الصق النص…', 'Type or paste text here…'), alignLabelWithHint: true),
           ),
-          const SizedBox(height: 10),
-          Row(children: [
+          if (!_decor) ...[
+            const SizedBox(height: 10),
+            Row(children: [
             Expanded(
               child: FilledButton.icon(
                 onPressed: _speak,
@@ -252,9 +264,11 @@ class _TextToolState extends State<TextTool> {
                 t('بنسمع ليك… اتكلم بوضوح، وبعد 5 ثواني سكات بنوقف براهو 🎙️', 'نستمع إليك… تحدّث بوضوح، وبعد 5 ثوانٍ من الصمت نتوقف تلقائياً 🎙️',
                     'Listening… speak clearly. Stops automatically after 5 seconds of silence 🎙️'),
                 kind: NoteKind.info),
+          ],
         ]),
       ),
-      if (txt.isNotEmpty) ...[
+      if (_decor) TextDecorPanel(text: txt),
+      if (!_decor && txt.isNotEmpty) ...[
         StatGrid([
           StatChip('${words.length}', tr('كلمة', 'Words'), color: SD.green, icon: Icons.short_text_rounded),
           StatChip('$chars', tr('حرف بالمسافات', 'Chars (with spaces)'), color: SD.nile, icon: Icons.text_fields_rounded),
@@ -302,6 +316,7 @@ class _TextToolState extends State<TextTool> {
             ]),
           ),
       ],
+      if (!_decor) ...[
       SCard(
         title: tr('حوّل النص', 'Transform text'),
         icon: Icons.auto_fix_high_rounded,
@@ -335,6 +350,7 @@ class _TextToolState extends State<TextTool> {
       if (kIsWeb)
         NoteBox(t('في نسخة الويب بعض المتصفحات ما بتدعم الإملاء الصوتي.', 'في نسخة الويب، بعض المتصفحات لا تدعم الإملاء الصوتي.', "On the web, some browsers don't support dictation."),
             kind: NoteKind.warn),
+      ],
     ]);
   }
 

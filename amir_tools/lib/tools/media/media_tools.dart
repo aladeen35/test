@@ -36,6 +36,6 @@ List<ToolDef> get mediaTools => [
       color: SD.red, keywords: 'خزنة سر ملاحظات تشفير vault secret notes encrypt private pin', builder: (_) => const VaultTool()),
   ToolDef(id: 'image', name: tr('ضغط الصور', 'Image Compressor'), sub: t('وفّر الباقة', 'وفّر باقة الإنترنت', 'Save mobile data'), cat: ToolCat.media, icon: Icons.photo_size_select_large_rounded,
       color: SD.teal, sudan: true, keywords: 'صورة ضغط حجم باقة واتساب image photo compress resize size data', builder: (_) => const ImageTool()),
-  ToolDef(id: 'text', name: tr('أدوات النص', 'Text Tools'), sub: tr('عدّ، تنظيف، نطق', 'Count, clean, speak'), cat: ToolCat.media, icon: Icons.text_fields_rounded,
+  ToolDef(id: 'text', name: tr('أدوات النص', 'Text Tools'), sub: tr('عدّ، تنظيف، نطق، زخرفة', 'Count, clean, speak, decorate'), cat: ToolCat.media, icon: Icons.text_fields_rounded,
       color: SD.henna, keywords: 'نص كلمات تشكيل نطق املاء صوت text words count diacritics speech tts dictation voice', builder: (_) => const TextTool()),
 ];
