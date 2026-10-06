@@ -1,4 +1,4 @@
-name: أدوات أمير — بناء APK
+name: Ameer Tools — بناء APK و AAB
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
       - 'amir_tools/**'
       - '.github/workflows/amir-tools-apk.yml'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -36,12 +39,60 @@ jobs:
       - name: الاختبارات
         run: flutter test
 
-      - name: بناء APK
-        run: flutter build apk --release
+      # مفتاح النشر من أسرار المستودع (إن وُجدت)؛ بدونها يُستخدم مفتاح التجربة
+      - name: مفتاح التوقيع
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+            printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
+            echo "SIGNED=release" >> $GITHUB_ENV
+          else
+            echo "SIGNED=debug" >> $GITHUB_ENV
+          fi
 
-      - name: رفع الملف
+      - name: بناء APK لكل نوع معالج
+        run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=build/symbols
+
+      - name: بناء AAB لمتجر Google Play
+        run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
+
+      - name: تجهيز الملفات
+        run: |
+          mkdir -p ../dist
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ../dist/AmeerTools-arm64.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ../dist/AmeerTools-armv7-old-phones.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk ../dist/AmeerTools-x86_64-emulator.apk
+          cp build/app/outputs/bundle/release/app-release.aab ../dist/AmeerTools-GooglePlay.aab
+          ls -la ../dist
+          {
+            echo "## Ameer Tools 🔧 — الأحجام"
+            echo '| الملف | الحجم |'
+            echo '|---|---|'
+            for f in ../dist/*; do echo "| $(basename $f) | $(du -h $f | cut -f1) |"; done
+            echo ""
+            echo "التوقيع: $SIGNED"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: رفع الملفات (Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: amir-tools-apk
-          path: amir_tools/build/app/outputs/flutter-apk/app-release.apk
+          name: ameer-tools
+          path: dist/*
           retention-days: 30
+
+      # صفحة تنزيل ثابتة يتحدّث محتواها مع كل بناء
+      - name: صفحة التنزيل (latest)
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest-build --yes --cleanup-tag || true
+          gh release create latest-build dist/* \
+            --title "Ameer Tools 🔧 — آخر نسخة" \
+            --notes "آخر بناء من الفرع ${GITHUB_REF_NAME} (${GITHUB_SHA::7}). لأغلب التلفونات: AmeerTools-arm64.apk — للتلفونات القديمة: AmeerTools-armv7-old-phones.apk — للمتجر: AmeerTools-GooglePlay.aab. التوقيع: ${SIGNED}" \
+            --prerelease --target "${GITHUB_SHA}"

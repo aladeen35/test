@@ -58,7 +58,7 @@ class _OnboardingState extends State<Onboarding> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 TextField(
                   controller: _name,
-                  decoration: InputDecoration(labelText: t('اسمك شنو؟', 'ما اسمك؟', "What's your name?"), hintText: t('مثلًا: أمير', 'مثلًا: أمير', 'e.g. Amir'), prefixIcon: const Icon(Icons.person_rounded)),
+                  decoration: InputDecoration(labelText: t('اسمك شنو؟', 'ما اسمك؟', "What's your name?"), hintText: t('مثلًا: أمير', 'مثلًا: أمير', 'e.g. Ameer'), prefixIcon: const Icon(Icons.person_rounded)),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
@@ -94,7 +94,7 @@ class _OnboardingState extends State<Onboarding> {
                 if (_city.isNotEmpty) s.cityId = _city;
                 s.pointsEnabled = _points;
                 s.onboarded = true;
-                s.award(20, t('مرحب بيك في أدوات أمير', 'مرحبًا بك في أدوات أمير', 'Welcome to Amir Tools'));
+                s.award(20, t('مرحب بيك في أدوات أمير', 'مرحبًا بك في أدوات أمير', 'Welcome to Ameer Tools'));
               },
               icon: const Icon(Icons.arrow_back_rounded),
               label: Text(t('يلا نبدأ', 'لنبدأ', "Let's start")),

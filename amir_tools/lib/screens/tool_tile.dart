@@ -56,11 +56,8 @@ class ToolTile extends StatelessWidget {
                   child: Icon(tool.icon, color: Colors.white, size: 24),
                 ),
                 const SizedBox(height: 6),
-                Text(tool.name,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5, height: 1.15, color: dark ? SD.cream : SD.brownDeep)),
+                FitWordsText(tool.name, maxSize: 12.5, minSize: 9, maxLines: 2,
+                    style: TextStyle(fontWeight: FontWeight.w800, height: 1.15, color: dark ? SD.cream : SD.brownDeep)),
                 const SizedBox(height: 1),
                 Text(tool.sub,
                     textAlign: TextAlign.center,
@@ -95,9 +92,39 @@ class ToolGrid extends StatelessWidget {
             crossAxisCount: cols,
             mainAxisSpacing: 9,
             crossAxisSpacing: 9,
-            childAspectRatio: cols >= 5 ? .66 : .74,
+            // ارتفاع ثابت يسع الأيقونة وسطرين للاسم والوصف مهما ضاق العرض
+            mainAxisExtent: 122,
           ),
           itemBuilder: (_, i) => ToolTile(tools[i]),
         );
+      });
+}
+
+/// نص يصغّر خطه إن كانت أطول كلمة لا تسع العرض، بدل كسر الكلمة في نصفها
+class FitWordsText extends StatelessWidget {
+  final String text;
+  final double maxSize, minSize;
+  final int maxLines;
+  final TextStyle style;
+  const FitWordsText(this.text, {super.key, required this.maxSize, required this.minSize, required this.maxLines, required this.style});
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, c) {
+        final dir = Directionality.of(context);
+        double widest(double size) {
+          var w = 0.0;
+          for (final word in text.split(RegExp(r'\s+'))) {
+            final tp = TextPainter(text: TextSpan(text: word, style: DefaultTextStyle.of(context).style.merge(style).copyWith(fontSize: size)), textDirection: dir, maxLines: 1)
+              ..layout();
+            if (tp.width > w) w = tp.width;
+          }
+          return w;
+        }
+
+        var size = maxSize;
+        while (size > minSize && widest(size) > c.maxWidth) {
+          size -= .5;
+        }
+        return Text(text, textAlign: TextAlign.center, maxLines: maxLines, overflow: TextOverflow.ellipsis, style: style.copyWith(fontSize: size));
       });
 }

@@ -63,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.person_rounded,
           child: TextField(
             controller: _name,
-            decoration: InputDecoration(labelText: t('اسمك', 'اسمك', 'Your name'), hintText: t('مثلًا: أمير', 'مثلًا: أمير', 'e.g. Amir'), prefixIcon: const Icon(Icons.badge_rounded)),
+            decoration: InputDecoration(labelText: t('اسمك', 'اسمك', 'Your name'), hintText: t('مثلًا: أمير', 'مثلًا: أمير', 'e.g. Ameer'), prefixIcon: const Icon(Icons.badge_rounded)),
             onChanged: (v) => s.name = v,
           ),
         ),
@@ -200,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           color: SD.nile,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             OutlinedButton.icon(
-              onPressed: () => SharePlus.instance.share(ShareParams(text: s.exportJson(), subject: tr('نسخة أدوات أمير', 'Amir Tools backup'))),
+              onPressed: () => SharePlus.instance.share(ShareParams(text: s.exportJson(), subject: tr('نسخة أدوات أمير', 'Ameer Tools backup'))),
               icon: const Icon(Icons.upload_rounded),
               label: Text(t('صدّر بياناتك (شاركها أو احفظها)', 'تصدير بياناتك (مشاركة أو حفظ)', 'Export your data (share or save)')),
             ),
@@ -222,7 +222,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('${tr('الإصدار', 'Version')} 1.1.0', style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/images/icon-512.png', width: 26)),
+              ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/images/albushra.webp', width: 26)),
               const SizedBox(width: 8),
               Text(tr('من إنتاج البشري للتكنولوجيا', 'Made by Al-Bushra Technology'), style: const TextStyle(fontWeight: FontWeight.w700)),
             ]),

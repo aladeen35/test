@@ -3,12 +3,23 @@ import '../../core/theme.dart';
 import '../../core/i18n.dart';
 import '../registry.dart';
 import 'image_tool.dart';
+import 'ocr_tool.dart';
 import 'password_tool.dart';
 import 'qr_tool.dart';
 import 'text_tool.dart';
 import 'vault_tool.dart';
 
 List<ToolDef> get mediaTools => [
+  ToolDef(
+    id: 'ocr',
+    name: t('استخراج النص من الصور', 'استخراج النص من الصور', 'Text from Image (OCR)'),
+    sub: t('عربي وإنجليزي', 'عربي وإنجليزي', 'Arabic & English'),
+    cat: ToolCat.media,
+    icon: Icons.document_scanner_rounded,
+    color: SD.teal,
+    keywords: 'ocr نص صورة استخراج مسح كتابة text scan image extract',
+    builder: (_) => const OcrTool(),
+  ),
   ToolDef(
     id: 'qr',
     name: tr('رمز QR', 'QR Code'),

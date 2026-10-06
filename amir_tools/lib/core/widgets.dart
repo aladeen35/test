@@ -231,35 +231,44 @@ class StatChip extends StatelessWidget {
   const StatChip(this.value, this.label, {super.key, this.color = SD.green, this.icon});
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: .14),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: readable(context, color).withValues(alpha: .35)),
         ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
+        child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: [
           if (icon != null) Icon(icon, color: readable(context, color), size: 22),
-          FittedBox(child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: readable(context, color)))),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+          FittedBox(fit: BoxFit.scaleDown, child: Text(value, maxLines: 1, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: readable(context, color)))),
+          Text(label, textAlign: TextAlign.center, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, height: 1.2)),
         ]),
       );
 }
 
-/// شبكة شرائح إحصائية
+/// شبكة شرائح إحصائية — الارتفاع يتبع المحتوى (لا تجاوز للنصوص)
 class StatGrid extends StatelessWidget {
   final List<StatChip> items;
   final int columns;
   const StatGrid(this.items, {super.key, this.columns = 3});
   @override
-  Widget build(BuildContext context) => GridView.count(
-        crossAxisCount: columns,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 1.15,
-        children: items,
-      );
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, c) {
+        const gap = 8.0;
+        final w = (c.maxWidth - gap * (columns - 1)) / columns;
+        final rows = <Widget>[];
+        for (var i = 0; i < items.length; i += columns) {
+          final row = items.sublist(i, i + columns > items.length ? items.length : i + columns);
+          rows.add(IntrinsicHeight(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              for (var j = 0; j < columns; j++) ...[
+                if (j > 0) const SizedBox(width: gap),
+                SizedBox(width: w, child: j < row.length ? row[j] : const SizedBox()),
+              ],
+            ]),
+          ));
+          if (i + columns < items.length) rows.add(const SizedBox(height: gap));
+        }
+        return Column(mainAxisSize: MainAxisSize.min, children: rows);
+      });
 }
 
 /// زر مشاركة/نسخ ملخص النتيجة
@@ -274,7 +283,7 @@ class ShareBar extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: FilledButton.icon(
-            onPressed: () => SharePlus.instance.share(ShareParams(text: '${text()}\n\n— ${tr('من تطبيق أدوات أمير', 'via Amir Tools app')} 🇸🇩')),
+            onPressed: () => SharePlus.instance.share(ShareParams(text: '${text()}\n\n— ${tr('من تطبيق أدوات أمير', 'via Ameer Tools app')} 🇸🇩')),
             icon: const Icon(Icons.share_rounded),
             label: Text(t('شارك', 'مشاركة', 'Share')),
           ),

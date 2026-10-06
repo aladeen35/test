@@ -260,7 +260,7 @@ class AmirLogo extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(size * .18),
-            child: Image.asset('assets/images/amir_logo.png', fit: BoxFit.cover, semanticLabel: tr('شعار أدوات أمير', 'Amir Tools logo')),
+            child: Image.asset('assets/images/amir_logo.webp', fit: BoxFit.cover, semanticLabel: tr('شعار أدوات أمير', 'Ameer Tools logo')),
           ),
         ),
         if (withText) ...[

@@ -6,6 +6,10 @@ import 'media/media_tools.dart';
 import 'device/device_tools.dart';
 import 'life/life_tools.dart';
 import 'more/more_tools.dart';
+import 'work/work_tools.dart';
+import 'home/home_tools.dart';
+import 'deen/deen_tools.dart';
+import 'plus/plus_tools.dart';
 import '../core/i18n.dart';
 
 /// تصنيفات الأدوات
@@ -13,6 +17,8 @@ enum ToolCat {
   money('المال والسوق', 'المال والسوق', 'Money & Market', Icons.payments_rounded),
   islam('دين ودنيا', 'الدين', 'Faith', Icons.mosque_rounded),
   life('تنظيم حياتك', 'تنظيم الحياة', 'Organize', Icons.checklist_rounded),
+  work('الشغل والغربة', 'العمل والاغتراب', 'Work & Abroad', Icons.work_rounded),
+  home('البيت والزراعة', 'المنزل والزراعة', 'Home & Farm', Icons.cottage_rounded),
   daily('يومياتك', 'اليوميات', 'Daily', Icons.wb_sunny_rounded),
   health('صحتك', 'الصحة', 'Health', Icons.favorite_rounded),
   media('نصوص وصور', 'نصوص وصور', 'Text & Images', Icons.text_snippet_rounded),
@@ -56,7 +62,10 @@ class ToolDef {
 }
 
 /// تُبنى من جديد عند كل استدعاء حتى تتبع لغة التطبيق
-List<ToolDef> get allTools => [...moneyTools, ...islamTools, ...lifeTools, ...dailyTools, ...moreTools, ...mediaTools, ...deviceTools];
+List<ToolDef> get allTools => [
+      ...moneyTools, ...workTools, ...islamTools, ...deenTools, ...lifeTools, ...homeTools,
+      ...dailyTools, ...moreTools, ...plusTools, ...mediaTools, ...deviceTools,
+    ];
 
 ToolDef? toolById(String id) {
   for (final t in allTools) {

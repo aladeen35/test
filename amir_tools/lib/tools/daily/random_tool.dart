@@ -121,14 +121,10 @@ class _RandomToolState extends State<RandomTool> {
         icon: Icons.casino_rounded,
         color: SD.red,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Row(children: [
+          Wrap(spacing: 6, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
             Text(t('عدد الزهر:', 'عدد النرد:', 'Dice:')),
             for (final n in [1, 2, 3])
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: ChoiceChip(label: Text('$n'), selected: _dice == n, onSelected: (_) => setState(() => _dice = n)),
-              ),
-            const Spacer(),
+              ChoiceChip(label: Text('$n'), visualDensity: VisualDensity.compact, selected: _dice == n, onSelected: (_) => setState(() => _dice = n)),
             FilledButton(onPressed: () => setState(() => _diceOut = [for (var i = 0; i < _dice; i++) _rnd.nextInt(6) + 1]), child: Text(tr('🎲 ارمِ', '🎲 Roll'))),
           ]),
           if (_diceOut.isNotEmpty) ...[

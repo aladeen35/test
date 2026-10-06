@@ -31,7 +31,7 @@ class AmirApp extends StatelessWidget {
     final mode = context.select<AppState, ThemeMode>((s) => s.themeMode);
     final lang = context.select<AppState, Lang>((s) => s.lang);
     return MaterialApp(
-      title: tr('أدوات أمير', 'Amir Tools'),
+      title: tr('أدوات أمير', 'Ameer Tools'),
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: messengerKey,
       locale: Locale(lang == Lang.en ? 'en' : 'ar'),

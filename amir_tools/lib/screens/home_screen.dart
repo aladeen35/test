@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (recent.isNotEmpty) GoldFrame(title: t('استعملتها قريب', 'المستخدمة مؤخرًا', 'Recently used'), child: ToolGrid(recent)),
           const SizedBox(height: 16),
           Center(
-            child: Text(tr('أدوات أمير 🇸🇩 — من البشري للتكنولوجيا', 'Amir Tools 🇸🇩 — by Al-Bushra Technology'),
+            child: Text(tr('أدوات أمير 🇸🇩 — من البشري للتكنولوجيا', 'Ameer Tools 🇸🇩 — by Al-Bushra Technology'),
                 style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5))),
           ),
         ],
