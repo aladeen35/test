@@ -204,7 +204,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
           child: Stack(children: [
-            Positioned.fill(child: CustomPaint(painter: NileScenePainter(hour: now.hour))),
+            // في الإنجليزية (يسار←يمين) نعكس الرسمة حتى لا تغطي الساعة
+            Positioned.fill(child: Transform.flip(flipX: isEn, child: CustomPaint(painter: NileScenePainter(hour: now.hour)))),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

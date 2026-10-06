@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/format.dart';
+import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -85,8 +86,8 @@ class _WaterToolState extends State<WaterTool> {
     if (before < goal && after >= goal && s.getData<String>('water_bumped') != k) {
       s.setData('water_bumped', k);
       s.bump('water_goal_days');
-      s.awardDaily('water_goal', 15, 'وصلت هدف الموية');
-      toast('💧 روّيت! وصلت هدف الموية الليلة — +15 نقطة');
+      s.awardDaily('water_goal', 15, t('وصلت هدف الموية', 'وصلت هدف الماء', 'Reached water goal'));
+      toast(t('💧 روّيت! وصلت هدف الموية الليلة — +15 نقطة', '💧 أحسنت! وصلت هدف الماء اليوم — +15 نقطة', "💧 Hydrated! You hit today's water goal — +15 points"));
     }
     setState(() {});
   }
@@ -114,7 +115,7 @@ class _WaterToolState extends State<WaterTool> {
       weekTotal += v;
       if (v >= goal) metDays++;
       if (v > best) best = v;
-      bars.add(Bar(i == 0 ? 'الليلة' : shortDays[d.weekday - 1], v / 1000, color: v >= goal ? SD.teal : SD.nileLight));
+      bars.add(Bar(i == 0 ? t('الليلة', 'اليوم', 'Today') : shortDays[d.weekday - 1], v / 1000, color: v >= goal ? SD.teal : SD.nileLight));
     }
     var streak = 0;
     for (var i = today >= goal ? 0 : 1; i < 90; i++) {
@@ -138,40 +139,43 @@ class _WaterToolState extends State<WaterTool> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Text('💧', style: TextStyle(fontSize: 30)),
               Text(fmt(today / 1000, 2), style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, color: SD.nileLight)),
-              Text('من ${fmt(goal / 1000, 2)} لتر', style: const TextStyle(fontSize: 13)),
+              Text(tr('من ${fmt(goal / 1000, 2)} لتر', 'of ${fmt(goal / 1000, 2)} L'), style: const TextStyle(fontSize: 13)),
               Text('${fmt(p * 100, 0)}%', style: const TextStyle(fontWeight: FontWeight.w800, color: SD.gold)),
             ]),
           ),
           const SizedBox(height: 10),
           Text(
             p >= 1
-                ? 'روّيت يا زول! كمّلت هدف الليلة 🎉'
-                : (today >= shouldBe ? 'ماشي تمام، واصل كدا 👌' : 'متأخر شوية — المفروض تكون شربت حوالي ${fmt(shouldBe / 1000, 1)} لتر لحد هسي'),
+                ? t('روّيت يا زول! كمّلت هدف الليلة 🎉', 'أحسنت! أكملت هدف اليوم 🎉', "Well hydrated! Today's goal done 🎉")
+                : (today >= shouldBe
+                    ? t('ماشي تمام، واصل كدا 👌', 'أنت على المسار، واصل 👌', "You're on track, keep it up 👌")
+                    : t('متأخر شوية — المفروض تكون شربت حوالي ${fmt(shouldBe / 1000, 1)} لتر لحد هسي', 'متأخر قليلًا — كان ينبغي أن تشرب نحو ${fmt(shouldBe / 1000, 1)} لتر حتى الآن',
+                        "A bit behind — you should've had about ${fmt(shouldBe / 1000, 1)} L by now")),
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.w700, color: p >= 1 ? SD.teal : (today >= shouldBe ? SD.green : SD.henna)),
           ),
           const SizedBox(height: 14),
           Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center, children: [
-            _cup('كباية', 250, Icons.local_drink_rounded),
-            _cup('كوز', 400, Icons.coffee_rounded),
-            _cup('قزازة صغيرة', 500, Icons.water_drop_rounded),
-            _cup('قزازة كبيرة', 1500, Icons.liquor_rounded),
+            _cup(t('كباية', 'كوب', 'Glass'), 250, Icons.local_drink_rounded),
+            _cup(t('كوز', 'كوب كبير', 'Mug'), 400, Icons.coffee_rounded),
+            _cup(t('قزازة صغيرة', 'زجاجة صغيرة', 'Small bottle'), 500, Icons.water_drop_rounded),
+            _cup(t('قزازة كبيرة', 'زجاجة كبيرة', 'Large bottle'), 1500, Icons.liquor_rounded),
           ]),
           const SizedBox(height: 10),
           Row(children: [
-            Expanded(child: NumField('كمية تانية', customC, suffix: 'مل', decimal: false)),
+            Expanded(child: NumField(t('كمية تانية', 'كمية أخرى', 'Other amount'), customC, suffix: tr('مل', 'ml'), decimal: false)),
             const SizedBox(width: 8),
             Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsetsDirectional.only(bottom: 10),
               child: FilledButton(
                 onPressed: () {
                   final v = parseNum(customC.text).round();
-                  if (v <= 0) return toast('أكتب الكمية بالمل');
+                  if (v <= 0) return toast(t('أكتب الكمية بالمل', 'اكتب الكمية بالمل', 'Enter the amount in ml'));
                   _add(v);
                   customC.clear();
                   FocusScope.of(context).unfocus();
                 },
-                child: const Text('ضيف'),
+                child: Text(t('ضيف', 'أضف', 'Add')),
               ),
             ),
           ]),
@@ -179,71 +183,80 @@ class _WaterToolState extends State<WaterTool> {
             TextButton.icon(
               onPressed: () => _add(-items.last),
               icon: const Icon(Icons.undo_rounded),
-              label: Text('تراجع عن آخر ${items.last} مل'),
+              label: Text(tr('تراجع عن آخر ${items.last} مل', 'Undo last ${items.last} ml')),
             ),
         ]),
       ),
       StatGrid([
-        StatChip('${(left / 250).ceil()}', 'كبايات باقية', color: SD.nile, icon: Icons.local_drink_rounded),
-        StatChip(fmt(left / 1000, 2), 'لتر باقي', color: SD.nileLight, icon: Icons.water_rounded),
-        StatChip('${items.length}', 'مرات الشرب', color: SD.teal, icon: Icons.touch_app_rounded),
-        StatChip('$streak', 'أيام ورا بعض', color: SD.orange, icon: Icons.local_fire_department_rounded),
-        StatChip('$metDays/7', 'أيام الهدف', color: SD.green, icon: Icons.verified_rounded),
-        StatChip(fmt(weekTotal / 7000, 2), 'متوسط لتر/يوم', color: SD.gold, icon: Icons.timeline_rounded),
+        StatChip('${(left / 250).ceil()}', t('كبايات باقية', 'أكواب متبقية', 'Glasses left'), color: SD.nile, icon: Icons.local_drink_rounded),
+        StatChip(fmt(left / 1000, 2), t('لتر باقي', 'لتر متبقٍ', 'Liters left'), color: SD.nileLight, icon: Icons.water_rounded),
+        StatChip('${items.length}', tr('مرات الشرب', 'Drinks'), color: SD.teal, icon: Icons.touch_app_rounded),
+        StatChip('$streak', t('أيام ورا بعض', 'أيام متتالية', 'Day streak'), color: SD.orange, icon: Icons.local_fire_department_rounded),
+        StatChip('$metDays/7', tr('أيام الهدف', 'Goal days'), color: SD.green, icon: Icons.verified_rounded),
+        StatChip(fmt(weekTotal / 7000, 2), tr('متوسط لتر/يوم', 'Avg L/day'), color: SD.gold, icon: Icons.timeline_rounded),
       ]),
       const SizedBox(height: 12),
       SCard(
-        title: 'الأسبوع (باللتر)',
+        title: tr('الأسبوع (باللتر)', 'This week (liters)'),
         icon: Icons.bar_chart_rounded,
         color: SD.nile,
-        trailing: Text('أحسن يوم ${fmt(best / 1000, 1)} ل', style: const TextStyle(fontSize: 12)),
+        trailing: Text(t('أحسن يوم ${fmt(best / 1000, 1)} ل', 'أفضل يوم ${fmt(best / 1000, 1)} ل', 'Best day ${fmt(best / 1000, 1)} L'), style: const TextStyle(fontSize: 12)),
         child: Column(children: [
           BarChart(bars, goal: goal / 1000, color: SD.nileLight, valueText: (v) => v == 0 ? '' : fmt(v, 1)),
           const SizedBox(height: 6),
-          const Text('الخط الدهبي = هدفك اليومي', style: TextStyle(fontSize: 11.5)),
+          Text(t('الخط الدهبي = هدفك اليومي', 'الخط الذهبي = هدفك اليومي', 'Gold line = your daily goal'), style: const TextStyle(fontSize: 11.5)),
         ]),
       ),
       SCard(
-        title: 'هدفك كم؟',
+        title: t('هدفك كم؟', 'كم هدفك؟', "What's your goal?"),
         icon: Icons.tune_rounded,
         color: SD.teal,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          NumField('وزنك', wC, suffix: 'كجم', onChanged: (v) {
+          NumField(tr('وزنك', 'Your weight'), wC, suffix: tr('كجم', 'kg'), onChanged: (v) {
             final w = parseNum(v);
             if (w > 20 && w < 300) {
               setState(() => weight = w);
               _saveCfg();
             }
           }),
-          NumField('رياضة/شغل شاق في اليوم', aC, suffix: 'دقيقة', decimal: false, onChanged: (v) {
+          NumField(t('رياضة/شغل شاق في اليوم', 'رياضة/عمل شاق يوميًا', 'Exercise/hard work per day'), aC, suffix: tr('دقيقة', 'min'), decimal: false, onChanged: (v) {
             setState(() => activity = parseNum(v).round().clamp(0, 600));
             _saveCfg();
           }),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('الجو حار؟'),
-            subtitle: const Text('في السودان غالبًا أيوه 😅 — بنزيد 750 مل'),
+            title: Text(tr('الجو حار؟', 'Hot weather?')),
+            subtitle: Text(t('في السودان غالبًا أيوه 😅 — بنزيد 750 مل', 'في السودان غالبًا نعم 😅 — نضيف 750 مل', 'Adds 750 ml for hot climates (most of the year in Sudan 😅)')),
             value: hot,
             onChanged: (v) {
               setState(() => hot = v);
               _saveCfg();
             },
           ),
-          InfoRow('الهدف المقترح ليك', '${fmt(suggested / 1000, 2)} لتر', icon: Icons.auto_awesome_rounded, valueColor: SD.teal,
-              hint: '35 مل لكل كيلو${hot ? ' + 750 للحر' : ''}${activity > 0 ? ' + 350 لكل نص ساعة نشاط' : ''}'),
-          InfoRow('يعني بالكبايات', '${(suggested / 250).ceil()} كباية (250 مل)', icon: Icons.local_drink_rounded),
+          InfoRow(t('الهدف المقترح ليك', 'الهدف المقترح لك', 'Suggested goal'), tr('${fmt(suggested / 1000, 2)} لتر', '${fmt(suggested / 1000, 2)} L'),
+              icon: Icons.auto_awesome_rounded,
+              valueColor: SD.teal,
+              hint: tr('35 مل لكل كيلو${hot ? ' + 750 للحر' : ''}${activity > 0 ? ' + 350 لكل نص ساعة نشاط' : ''}',
+                  '35 ml per kg${hot ? ' + 750 for heat' : ''}${activity > 0 ? ' + 350 per half hour of activity' : ''}')),
+          InfoRow(t('يعني بالكبايات', 'أي بالأكواب', 'In glasses'), tr('${(suggested / 250).ceil()} كباية (250 مل)', '${(suggested / 250).ceil()} glasses (250 ml)'), icon: Icons.local_drink_rounded),
           const SizedBox(height: 8),
-          NumField('أو حدّد هدفك براك', gC, suffix: 'مل', decimal: false, hint: 'فاضي = المقترح', onChanged: (v) {
+          NumField(t('أو حدّد هدفك براك', 'أو حدّد هدفك بنفسك', 'Or set your own goal'), gC,
+              suffix: tr('مل', 'ml'), decimal: false, hint: t('فاضي = المقترح', 'فارغ = المقترح', 'Empty = suggested'), onChanged: (v) {
             final g = parseNum(v).round();
             setState(() => customGoal = g >= 500 ? g : null);
             _saveCfg();
           }),
         ]),
       ),
-      const NoteBox(
-          'نصايح للحر: أشرب على دفعات طول اليوم حتى لو ما عطشان، كتّر من الموية في الهبوب وبعد الشغل في الشمس، وعلامات قلة الموية: بول غامق، صداع، دوخة وتعب. المشروبات الغازية والسكرية ما بتحسب زي الموية.',
+      NoteBox(
+          t('نصايح للحر: أشرب على دفعات طول اليوم حتى لو ما عطشان، كتّر من الموية في الهبوب وبعد الشغل في الشمس، وعلامات قلة الموية: بول غامق، صداع، دوخة وتعب. المشروبات الغازية والسكرية ما بتحسب زي الموية.',
+              'نصائح للحر: اشرب على دفعات طوال اليوم حتى لو لم تكن عطشانًا، وأكثر من الماء في العواصف الترابية وبعد العمل في الشمس. علامات نقص الماء: بول داكن، صداع، دوخة وتعب. المشروبات الغازية والسكرية لا تُحسب كالماء.',
+              "Heat tips: sip through the day even if you're not thirsty, drink more during dust storms and after working in the sun. Signs of dehydration: dark urine, headache, dizziness and fatigue. Fizzy and sugary drinks don't count as water."),
           kind: NoteKind.tip),
-      const NoteBox('الهدف تقديري عام. مرضى الكلى أو القلب أو اللي عندهم توجيه طبي بتقليل السوائل يمشوا بكلام الدكتور.', kind: NoteKind.warn),
+      NoteBox(
+          t('الهدف تقديري عام. مرضى الكلى أو القلب أو اللي عندهم توجيه طبي بتقليل السوائل يمشوا بكلام الدكتور.', 'الهدف تقديري عام. مرضى الكلى أو القلب أو من لديهم توجيه طبي بتقليل السوائل يتبعون إرشادات الطبيب.',
+              'The goal is a general estimate. People with kidney or heart conditions, or told to limit fluids, should follow their doctor.'),
+          kind: NoteKind.warn),
     ]);
   }
 
