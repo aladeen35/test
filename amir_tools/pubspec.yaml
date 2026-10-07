@@ -66,6 +66,7 @@ dependencies:
   record: ^7.1.1
   audioplayers: ^6.8.1
   camera: ^0.12.1
+  home_widget: ^0.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
