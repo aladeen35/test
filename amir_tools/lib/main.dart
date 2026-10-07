@@ -9,6 +9,7 @@ import 'core/theme.dart';
 import 'screens/shell.dart';
 import 'screens/onboarding.dart';
 import 'screens/pin_lock.dart';
+import 'services/home_widgets.dart';
 import 'services/net.dart';
 import 'services/notifications.dart';
 import 'tools/more/med_notify.dart';
@@ -21,6 +22,8 @@ Future<void> main() async {
   // مهام خلفية لا تؤخّر فتح التطبيق
   refreshRates(state);
   PrayerNotifications.reschedule(state).then((_) => MedNotifications.reschedule(state));
+  // ودجات الشاشة الرئيسية (أندرويد فقط) وروابطها
+  HomeWidgets.attach(state);
 }
 
 class AmirApp extends StatelessWidget {
@@ -34,6 +37,7 @@ class AmirApp extends StatelessWidget {
       title: tr('أدوات أمير', 'Ameer Tools'),
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: messengerKey,
+      navigatorKey: HomeWidgets.navKey,
       locale: Locale(lang == Lang.en ? 'en' : 'ar'),
       supportedLocales: const [Locale('ar'), Locale('en')],
       localizationsDelegates: const [
@@ -70,6 +74,6 @@ class _RootGateState extends State<RootGate> {
     final s = context.watch<AppState>();
     if (!s.onboarded) return const Onboarding();
     if (s.pinHash != null && !_unlocked) return PinLock(onUnlock: () => setState(() => _unlocked = true));
-    return const Shell();
+    return const WidgetLinkGate(child: Shell());
   }
 }

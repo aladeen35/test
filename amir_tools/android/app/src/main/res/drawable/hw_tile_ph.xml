@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- بلاطة مكان فارغ (تظهر في معاينة المفضلة فقط؛ البلاطات الحقيقية صور يرسمها فلاتر) -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#FF8A5528"
+                android:endColor="#FF5E361B" />
+            <corners android:radius="14dp" />
+            <stroke android:width="1dp" android:color="#BFD4A017" />
+        </shape>
+    </item>
+    <item
+        android:width="22dp"
+        android:height="22dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_hw_star" />
+</layer-list>

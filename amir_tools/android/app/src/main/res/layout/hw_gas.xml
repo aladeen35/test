@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ودجت الغاز (2×2): رقم كبير للأيام الباقية، شريط ذهبي، تاريخ النفاد وآخر تعبئة -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gas_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/hw_bg"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/gas_flag"
+        android:layout_width="16dp"
+        android:layout_height="8dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/hw_flag" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/gas_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            android:text="@string/hw_pv_gas_title"
+            android:textColor="@color/hw_gold_light"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/gas_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/gas_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:includeFontPadding="false"
+                android:shadowColor="@color/hw_shadow"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:singleLine="true"
+                android:text="12"
+                android:textColor="@color/hw_gold_text"
+                android:textSize="38sp" />
+
+            <TextView
+                android:id="@+id/gas_days_l"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/hw_pv_gas_days"
+                android:textColor="@color/hw_cream"
+                android:textSize="11sp" />
+
+            <ProgressBar
+                android:id="@+id/gas_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="7dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="6dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:maxHeight="7dp"
+                android:minHeight="7dp"
+                android:progress="60"
+                android:progressDrawable="@drawable/hw_progress" />
+
+            <TextView
+                android:id="@+id/gas_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/hw_pv_gas_out"
+                android:textColor="@color/hw_cream"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/gas_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/hw_pv_gas_last"
+                android:textColor="@color/hw_cream_dim"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/gas_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/hw_open_app"
+            android:textColor="@color/hw_cream"
+            android:textSize="11sp"
+            android:visibility="gone" />
+    </LinearLayout>
+</FrameLayout>

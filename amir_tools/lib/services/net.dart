@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../core/data.dart';
 import '../core/i18n.dart';
 import '../core/state.dart';
+import 'home_widgets.dart';
 import 'prayer.dart';
 
 /// تحديث أسعار الصرف الرسمية (مجاني بلا مفتاح) — مرة كل 6 ساعات
@@ -14,6 +15,7 @@ Future<void> refreshRates(AppState s, {bool force = false}) async {
     final j = jsonDecode(r.body);
     if (j['result'] == 'success') {
       s.setRates((j['rates'] as Map).map((k, v) => MapEntry(k as String, (v as num).toDouble())));
+      HomeWidgets.refreshRates(s);
     }
   } catch (_) {/* دون اتصال: نستخدم المحفوظ */}
 }

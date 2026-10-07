@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- نصوص ودجات الشاشة الرئيسية (الإنجليزية الافتراضية). النصوص الحية يكتبها فلاتر بلغة التطبيق. -->
+<resources>
+    <string name="hw_app_name">Ameer Tools</string>
+    <string name="hw_open_app">Open Ameer Tools to set up this widget</string>
+
+    <string name="hw_fav_label">Ameer Tools · Favourites</string>
+    <string name="hw_fav_desc">Your favourite tools, one tap away</string>
+    <string name="hw_prayer_label">Next prayer</string>
+    <string name="hw_prayer_desc">Next prayer with a live countdown, city and Hijri date</string>
+    <string name="hw_gas_label">Gas cylinder</string>
+    <string name="hw_gas_desc">Days left before your gas cylinder runs out</string>
+    <string name="hw_power_label">Power cuts</string>
+    <string name="hw_power_desc">Power on/off by your cut schedule, with a countdown to the next change</string>
+    <string name="hw_fx_label">Dollar rate</string>
+    <string name="hw_fx_desc">Parallel and official SDG rate per US dollar</string>
+
+    <!-- نصوص المعاينة فقط -->
+    <string name="hw_pv_city">📍 Khartoum</string>
+    <string name="hw_pv_next">Next prayer</string>
+    <string name="hw_pv_prayer">Asr</string>
+    <string name="hw_pv_time">3:42 PM</string>
+    <string name="hw_pv_hijri">14 Rabi\' II 1448 AH</string>
+    <string name="hw_pv_gas_title">🔥 Gas cylinder</string>
+    <string name="hw_pv_gas_days">days left</string>
+    <string name="hw_pv_gas_out">Runs out: 19 October</string>
+    <string name="hw_pv_gas_last">Last refill: 20 September</string>
+    <string name="hw_pv_pw_title">⚡ Power cuts</string>
+    <string name="hw_pv_pw_status">Power is on ✅</string>
+    <string name="hw_pv_pw_sched">(by schedule)</string>
+    <string name="hw_pv_pw_next">Cut at 6:00 PM</string>
+    <string name="hw_pv_pw_today_l">Remaining cuts today</string>
+    <string name="hw_pv_pw_today">6:00 PM – 10:00 PM</string>
+    <string name="hw_pv_fx_title">💵 USD in SDG</string>
+    <string name="hw_pv_fx_par_l">Parallel</string>
+    <string name="hw_pv_fx_off_l">Official</string>
+    <string name="hw_pv_fx_upd">Updated: 7 October • 9:15 AM</string>
+</resources>

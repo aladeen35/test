@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ودجت الصلاة (3×2): المدينة، الصلاة القادمة ووقتها، عدّاد تنازلي في كبسولة ذهبية، والتاريخ الهجري -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pr_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/hw_bg"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/pr_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/pr_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/hw_pv_city"
+            android:textColor="@color/hw_cream_dim"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/pr_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:singleLine="true"
+            android:text="@string/hw_pv_next"
+            android:textColor="@color/hw_gold_light"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/pr_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:shadowColor="@color/hw_shadow"
+                android:shadowDy="1.5"
+                android:shadowRadius="3"
+                android:singleLine="true"
+                android:text="@string/hw_pv_prayer"
+                android:textColor="@color/hw_gold_text"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/pr_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:singleLine="true"
+                android:text="@string/hw_pv_time"
+                android:textColor="@color/hw_cream"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <Chronometer
+            android:id="@+id/pr_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/hw_pill"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/hw_gold_text"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/pr_flag"
+                android:layout_width="16dp"
+                android:layout_height="8dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/hw_flag" />
+
+            <TextView
+                android:id="@+id/pr_hijri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/hw_pv_hijri"
+                android:textColor="@color/hw_cream"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pr_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="6dp"
+        android:text="@string/hw_open_app"
+        android:textColor="@color/hw_cream"
+        android:textSize="12sp"
+        android:visibility="gone" />
+</FrameLayout>

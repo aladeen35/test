@@ -7,6 +7,7 @@ import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
+import '../../services/home_widgets.dart';
 import 'hp_common.dart';
 import 'hp_notify.dart';
 
@@ -186,12 +187,14 @@ class _PowerCutsToolState extends State<PowerCutsTool> {
       slots.add({'id': newId(), 'wd': d, 'from': from, 'to': to});
     }
     s.setData('cuts_slots', slots);
+    HomeWidgets.refreshPower(s);
     _reschedule(s);
     setState(() {});
   }
 
   void _delSlot(AppState s, Map sl) {
     s.setData('cuts_slots', _slots(s)..removeWhere((x) => x['id'] == sl['id']));
+    HomeWidgets.refreshPower(s);
     _reschedule(s);
     setState(() {});
   }

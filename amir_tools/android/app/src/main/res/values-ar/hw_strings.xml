@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hw_app_name">أدوات أمير</string>
+    <string name="hw_open_app">افتح أدوات أمير لإعداد الودجت</string>
+
+    <string name="hw_fav_label">أدوات أمير · المفضلة</string>
+    <string name="hw_fav_desc">أدواتك المفضلة بضغطة واحدة</string>
+    <string name="hw_prayer_label">الصلاة القادمة</string>
+    <string name="hw_prayer_desc">الصلاة القادمة مع عدّاد تنازلي والمدينة والتاريخ الهجري</string>
+    <string name="hw_gas_label">أنبوبة الغاز</string>
+    <string name="hw_gas_desc">كم يوم باقي قبل ما أنبوبة الغاز تكمل</string>
+    <string name="hw_power_label">قطوعات الكهرباء</string>
+    <string name="hw_power_desc">الكهرباء جاية ولا قاطعة حسب جدولك، مع عدّاد للتغيير الجاي</string>
+    <string name="hw_fx_label">سعر الدولار</string>
+    <string name="hw_fx_desc">سعر الدولار بالجنيه: الموازي والرسمي</string>
+
+    <string name="hw_pv_city">📍 الخرطوم</string>
+    <string name="hw_pv_next">الصلاة القادمة</string>
+    <string name="hw_pv_prayer">العصر</string>
+    <string name="hw_pv_time">3:42 م</string>
+    <string name="hw_pv_hijri">14 ربيع الآخر 1448 هـ</string>
+    <string name="hw_pv_gas_title">🔥 أنبوبة الغاز</string>
+    <string name="hw_pv_gas_days">يوم فاضل</string>
+    <string name="hw_pv_gas_out">بتكمل: 19 أكتوبر</string>
+    <string name="hw_pv_gas_last">آخر تعبئة: 20 سبتمبر</string>
+    <string name="hw_pv_pw_title">⚡ قطوعات الكهرباء</string>
+    <string name="hw_pv_pw_status">الكهرباء جاية ✅</string>
+    <string name="hw_pv_pw_sched">(حسب الجدول)</string>
+    <string name="hw_pv_pw_next">بتقطع 6:00 م</string>
+    <string name="hw_pv_pw_today_l">قطوعات الليلة الفاضلة</string>
+    <string name="hw_pv_pw_today">6:00 م – 10:00 م</string>
+    <string name="hw_pv_fx_title">💵 الدولار بالجنيه</string>
+    <string name="hw_pv_fx_par_l">الموازي</string>
+    <string name="hw_pv_fx_off_l">الرسمي</string>
+    <string name="hw_pv_fx_upd">آخر تحديث: 7 أكتوبر • 9:15 ص</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="hw_gold">#FFD4A017</color>
+    <color name="hw_gold_light">#FFF6D58B</color>
+    <color name="hw_gold_text">#FFFFE7A8</color>
+    <color name="hw_cream">#FFF8E9CF</color>
+    <color name="hw_cream_dim">#B3F8E9CF</color>
+    <color name="hw_shadow">#99000000</color>
+</resources>

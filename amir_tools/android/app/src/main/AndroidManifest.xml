@@ -42,7 +42,51 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- روابط ودجات الشاشة الرئيسية: ameertools://tool/<id> و ameertools://tab/<name> -->
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="ameertools" />
+            </intent-filter>
+            <!-- نعالج الروابط بأنفسنا (home_widget) بدل موجّه فلاتر الافتراضي -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
         </activity>
+
+        <!-- ودجات الشاشة الرئيسية -->
+        <receiver android:name=".widgets.FavoritesWidgetProvider" android:exported="true" android:label="@string/hw_fav_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hw_info_fav" />
+        </receiver>
+        <receiver android:name=".widgets.PrayerWidgetProvider" android:exported="true" android:label="@string/hw_prayer_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hw_info_prayer" />
+        </receiver>
+        <receiver android:name=".widgets.GasWidgetProvider" android:exported="true" android:label="@string/hw_gas_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hw_info_gas" />
+        </receiver>
+        <receiver android:name=".widgets.PowerCutsWidgetProvider" android:exported="true" android:label="@string/hw_power_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hw_info_power" />
+        </receiver>
+        <receiver android:name=".widgets.DollarWidgetProvider" android:exported="true" android:label="@string/hw_fx_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hw_info_fx" />
+        </receiver>
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>

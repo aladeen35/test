@@ -6,6 +6,7 @@ import '../../core/i18n.dart';
 import '../../core/state.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
+import '../../services/home_widgets.dart';
 import 'hp_common.dart';
 import 'hp_notify.dart';
 
@@ -75,7 +76,10 @@ class _GasToolState extends State<GasTool> {
   }
 
   Map<String, dynamic> _cfg(AppState s) => Map<String, dynamic>.from(s.getData<Map>('gas_cfg') ?? {});
-  void _setCfg(AppState s, Map<String, dynamic> m) => s.setData('gas_cfg', {..._cfg(s), ...m});
+  void _setCfg(AppState s, Map<String, dynamic> m) {
+    s.setData('gas_cfg', {..._cfg(s), ...m});
+    HomeWidgets.refreshGas(s);
+  }
 
   List<Map<String, dynamic>> _list(AppState s) {
     final l = mapList(s.getData<List>('gas_list'));
@@ -144,6 +148,7 @@ class _GasToolState extends State<GasTool> {
     }
     if (kg > 0) _setCfg(s, {'kg': kg});
     s.setData('gas_list', list);
+    HomeWidgets.refreshGas(s);
     _reschedule(s);
     setState(() {});
   }
@@ -154,11 +159,13 @@ class _GasToolState extends State<GasTool> {
     if (i < 0) return;
     final removed = list.removeAt(i);
     s.setData('gas_list', list);
+    HomeWidgets.refreshGas(s);
     _reschedule(s);
     setState(() {});
     undoSnack(t('اتمسحت التعبئة', 'حُذفت التعبئة', 'Refill deleted'), () {
       final l = mapList(s.getData<List>('gas_list'))..insert(i.clamp(0, list.length), removed);
       s.setData('gas_list', l);
+      HomeWidgets.refreshGas(s);
       _reschedule(s);
       if (mounted) setState(() {});
     });
