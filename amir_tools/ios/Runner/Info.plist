@@ -66,5 +66,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Ameer Tools uses the camera to scan QR codes, read text from photos, the mirror and the flashlight.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ameer Tools uses the microphone for the voice recorder, noise meter and voice typing.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Ameer Tools uses speech recognition for voice typing in the text tools.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ameer Tools uses your location to find your city for prayer times, qibla and weather.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ameer Tools lets you pick photos to compress, convert to PDF or read text from.</string>
 </dict>
 </plist>

@@ -63,10 +63,10 @@ class PrivacyScreen extends StatelessWidget {
           t('الموقع (اختياري): لمواقيت الصلاة والقبلة والطقس، وبس والتطبيق فاتح. وممكن تختار المدينة بإيدك.',
               'الموقع (اختياري): لتحديد مدينتك لمواقيت الصلاة والقبلة والطقس، فقط والتطبيق مفتوح. ويمكنك اختيار المدينة يدويًا.',
               'Location (optional): finds your city for prayer times, qibla and weather, only while the app is open. You can pick a city manually.'),
-          t('الكاميرا: لرمز QR واستخراج النص والكشاف. الصور بتتعالج في تلفونك وما بترفع.', 'الكاميرا: لمسح رمز QR والتصوير لاستخراج النص والكشاف. تُعالج الصور على الجهاز ولا تُرفع.',
-              'Camera: QR scanning, OCR photos and the flashlight. Images are processed on-device and never uploaded.'),
-          t('المايك: لمقياس الضوضاء (ما بيتسجّل) وللكتابة بالصوت عن طريق خدمة نظام تلفونك.', 'الميكروفون: لمقياس الضوضاء (يُحلَّل لحظيًا ولا يُسجَّل) وللكتابة بالصوت عبر خدمة نظام هاتفك.',
-              'Microphone: noise meter (analysed live, never recorded) and voice typing through your phone\'s system speech service.'),
+          t('الكاميرا: لرمز QR واستخراج النص وتحويل الصور لـ PDF والمراية والكشاف. الصور بتتعالج في تلفونك وما بترفع.', 'الكاميرا: لمسح رمز QR والتصوير لاستخراج النص أو التحويل إلى PDF والمرآة والكشاف. تُعالج الصور على الجهاز ولا تُرفع.',
+              'Camera: QR scanning, OCR and images-to-PDF photos, the mirror and the flashlight. Images are processed on-device and never uploaded.'),
+          t('المايك: لمسجّل الصوت (التسجيلات بتتحفظ في تلفونك بس)، ولمقياس الضوضاء (ما بيتسجّل) وللكتابة بالصوت عن طريق خدمة نظام تلفونك.', 'الميكروفون: لمسجّل الصوت (تُحفظ التسجيلات على جهازك فقط)، ولمقياس الضوضاء (يُحلَّل لحظيًا ولا يُسجَّل) وللكتابة بالصوت عبر خدمة نظام هاتفك.',
+              'Microphone: voice recorder (recordings stay on your device), noise meter (analysed live, never recorded) and voice typing through your phone\'s system speech service.'),
           t('الإشعارات: لتنبيهات الأذان والدواء والفواتير والأوراق والصيام، بتتجدول في تلفونك.', 'الإشعارات: لتنبيهات الأذان والدواء والفواتير والمستندات والصيام، وتُجدول على جهازك.',
               'Notifications: prayer, medicine, bill, document and fasting reminders, scheduled on your device.'),
         ]
@@ -96,7 +96,7 @@ class PrivacyScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(t('سياسة الخصوصية', 'سياسة الخصوصية', 'Privacy policy'))),
         body: ToolList(children: [
-          Text('${tr('آخر تحديث', 'Last updated')}: 2026-10-06 • Ameer Tools (com.albushra.amir_tools)',
+          Text('${tr('آخر تحديث', 'Last updated')}: 2026-10-07 • Ameer Tools (com.albushra.amir_tools)',
               textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
           const SizedBox(height: 10),
           for (final (icon, color, title, paras) in sections)

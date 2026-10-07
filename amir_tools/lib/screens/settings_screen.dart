@@ -234,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(children: [
             const AmirLogo(size: 96),
             const SizedBox(height: 8),
-            Text('${tr('الإصدار', 'Version')} 1.2.0', style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text('${tr('الإصدار', 'Version')} 1.3.0', style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/images/albushra.webp', width: 26)),
