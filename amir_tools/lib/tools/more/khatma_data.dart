@@ -36,12 +36,17 @@ const surahStartPage = [
 const quranPages = 604;
 
 /// صفحة بداية الجزء (1..30)
-int juzStartPage(int juz) => juz <= 1 ? 1 : 2 + 20 * (juz - 1);
+/// صفحة بداية كل جزء في مصحف المدينة (604 صفحات)
+const juzStarts = [1, 22, 42, 62, 82, 102, 121, 142, 162, 182, 201, 222, 242, 262, 282, 302, 322, 342, 362, 382, 402, 422, 442, 462, 482, 502, 522, 542, 562, 582];
+
+int juzStartPage(int juz) => juzStarts[juz.clamp(1, 30) - 1];
 
 /// الجزء الذي تقع فيه الصفحة
 int juzOfPage(int page) {
-  if (page < 22) return 1;
-  return (((page - 2) ~/ 20) + 1).clamp(1, 30);
+  for (var j = 30; j > 1; j--) {
+    if (page >= juzStarts[j - 1]) return j;
+  }
+  return 1;
 }
 
 /// الحزب التقريبي للصفحة (1..60) — كل جزء حزبان

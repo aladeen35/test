@@ -11,6 +11,10 @@ import 'home/home_tools.dart';
 import 'deen/deen_tools.dart';
 import 'plus/plus_tools.dart';
 import 'writer/writer_tools.dart';
+import 'homeplus/homeplus_tools.dart';
+import 'biz/biz_tools.dart';
+import 'learn/learn_tools.dart';
+import 'extra/extra_tools.dart';
 import '../core/i18n.dart';
 
 /// تصنيفات الأدوات
@@ -23,7 +27,9 @@ enum ToolCat {
   daily('يومياتك', 'اليوميات', 'Daily', Icons.wb_sunny_rounded),
   health('صحتك', 'الصحة', 'Health', Icons.favorite_rounded),
   media('نصوص وصور', 'نصوص وصور', 'Text & Images', Icons.text_snippet_rounded),
-  device('جهازك', 'الجهاز', 'Device', Icons.smartphone_rounded);
+  device('جهازك', 'الجهاز', 'Device', Icons.smartphone_rounded),
+  learn('القراية', 'التعليم', 'Learning', Icons.school_rounded),
+  fun('ونسة وقعدات', 'ترفيه', 'Fun & Games', Icons.casino_rounded);
 
   final String sd, ar, en;
   final IconData icon;
@@ -66,6 +72,7 @@ class ToolDef {
 List<ToolDef> get allTools => [
       ...moneyTools, ...workTools, ...islamTools, ...deenTools, ...lifeTools, ...homeTools,
       ...dailyTools, ...moreTools, ...plusTools, ...writerTools, ...mediaTools, ...deviceTools,
+      ...homeplusTools, ...bizTools, ...learnTools, ...extraTools,
     ];
 
 ToolDef? toolById(String id) {
