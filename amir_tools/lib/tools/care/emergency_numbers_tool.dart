@@ -137,7 +137,7 @@ class _EmergencyNumbersToolState extends State<EmergencyNumbersTool> {
             for (final n in country.numbers)
               CTile(
                 icon: n.kind.icon,
-                color: n.kind == EmKind.police ? SD.nile : (n.kind == EmKind.fire ? SD.orange : (n.kind == EmKind.health || n.kind == EmKind.crisis ? SD.teal : SD.red)),
+                color: switch (n.kind) { EmKind.police || EmKind.traffic => SD.nile, EmKind.fire => SD.orange, EmKind.health || EmKind.crisis => SD.teal, EmKind.power => SD.gold, EmKind.relief => SD.green, _ => SD.red },
                 title: n.kind.label,
                 sub: n.note,
                 onTap: () => callNumber(n.number),
