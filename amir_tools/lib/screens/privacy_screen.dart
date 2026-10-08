@@ -50,8 +50,8 @@ class PrivacyScreen extends StatelessWidget {
               'Open-Meteo: weather, air quality and city search. Only the city name or its approximate coordinates are sent.'),
           t('ExchangeRate-API: لأسعار العملات الرسمية. ما بنرسل ليها أي حاجة عنك.', 'ExchangeRate-API: لجلب أسعار العملات الرسمية. لا تُرسل إليها أي بيانات عنك.',
               'ExchangeRate-API: official currency rates. No data about you is sent.'),
-          t('GitHub: لتنزيل ملفات اللغة لاستخراج النص من الصور، مرة واحدة بس.', 'GitHub: لتنزيل ملفات اللغة الخاصة باستخراج النص من الصور، مرة واحدة فقط.',
-              'GitHub: one-time download of language data for text-from-image (OCR).'),
+          t('GitHub: لتنزيل ملفات اللغة لاستخراج النص، ونص المصحف والتفاسير والأحاديث، أول مرة بس.', 'GitHub: لتنزيل ملفات اللغة لاستخراج النص، ونص المصحف والتفاسير وكتب الحديث، عند أول استخدام فقط.',
+              'GitHub: one-time downloads of OCR language data and the Qur\'an, tafsir and hadith texts.'),
           t('كل الاتصالات مشفّرة (HTTPS).', 'كل الاتصالات مشفّرة عبر HTTPS.', 'All connections are encrypted with HTTPS.'),
         ]
       ),
@@ -96,7 +96,7 @@ class PrivacyScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(t('سياسة الخصوصية', 'سياسة الخصوصية', 'Privacy policy'))),
         body: ToolList(children: [
-          Text('${tr('آخر تحديث', 'Last updated')}: 2026-10-07 • Ameer Tools (com.albushra.amir_tools)',
+          Text('${tr('آخر تحديث', 'Last updated')}: 2026-10-08 • Ameer Tools (com.albushra.amir_tools)',
               textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
           const SizedBox(height: 10),
           for (final (icon, color, title, paras) in sections)
