@@ -9,8 +9,8 @@
 | البند | القيمة |
 |---|---|
 | اسم الحزمة (Package name) | `com.albushra.amir_tools` (لا يتغيّر بعد أول رفع) |
-| رقم النسخة (versionName) | **1.2.0** |
-| رمز النسخة (versionCode) | **3** (لازم يزيد مع كل رفع جديد: 4، 5، …) |
+| رقم النسخة (versionName) | **1.3.0** |
+| رمز النسخة (versionCode) | **4** (لازم يزيد مع كل رفع جديد: 5، 6، …) |
 | اسم التطبيق على الهاتف | `Ameer Tools 🔧` |
 | اسم التطبيق في المتجر (Title) | **`Ameer Tools - أدوات أمير`** (24 حرف) |
 | اسم المطوّر | البشرى للتقنية / Al-Bushra Technology |
@@ -27,20 +27,20 @@
 **بدائل للعنوان (كلها أقل من 30 حرف):**
 - `Ameer Tools - أدوات أمير` ← المقترح
 - `أدوات أمير - Ameer Tools`
-- `Ameer Tools: 68 أداة في جيبك`
+- `Ameer Tools: 90 أداة في جيبك`
 
 ---
 
 ## 2) الوصف المختصر (Short description, 80 حرف كحد أقصى)
 
-**عربي (70 حرف):**
+**عربي:**
 ```
-68 أداة في تطبيق واحد: صلاة، عملات، عمر، صحة، كتابة وزخرفة، بثلاث لغات
+90 أداة في تطبيق واحد: صلاة، عملات، غاز، قطوعات، صحة، ودجت، بثلاث لغات
 ```
 
-**English (78 characters):**
+**English:**
 ```
-68 handy tools in one app: prayer times, currency, age, health, writing & more
+90 handy tools in one app: prayer, currency, gas, power cuts, health & widgets
 ```
 
 ---
@@ -49,136 +49,112 @@
 
 ### عربي
 ```
-أدوات أمير: 68 أداة مفيدة في تطبيق واحد خفيف، بطابع سوداني أصيل وألوان التراث، وتشتغل في أي مكان في العالم.
+أدوات أمير: 90 أداة مفيدة في تطبيق واحد، بطابع سوداني أصيل وألوان التراث، وتشتغل في أي مكان في العالم.
+بثلاث لغات: سوداني، عربي فصيح، وإنجليزي. وأغلب الأدوات تشتغل بدون إنترنت.
 
-التطبيق بثلاث لغات: سوداني، عربي فصيح، وإنجليزي. وأغلب الأدوات تشتغل بدون إنترنت.
+🧩 ودجت للشاشة الرئيسية
+• أدواتك المفضلة • الصلاة القادمة مع عدّاد تنازلي • أسطوانة الغاز • قطوعات الكهرباء • سعر الدولار
 
-🕌 الدين والعبادة
-• مواقيت الصلاة لأي مدينة في العالم، مع 11 طريقة حساب وتنبيه الأذان
-• اتجاه القبلة بالبوصلة
-• الأذكار والمسبحة الإلكترونية ومكتبة الأدعية
-• أسماء الله الحسنى، وختمة القرآن، ومتتبع الصيام
-• المواقيت الشهرية، ومحوّل التواريخ (هجري، ميلادي، قبطي، إثيوبي)، والمناسبات الإسلامية
-• حاسبة المواريث وحاسبة الزكاة
+🕌 الدين
+• مواقيت الصلاة لأي مدينة (11 طريقة حساب) وتنبيه الأذان، والقبلة
+• الأذكار، والمسبحة، ومكتبة الأدعية، وأسماء الله الحسنى
+• ختمة القرآن، وحفظ القرآن ومراجعته، وثلث الليل الأخير
+• متتبع الصيام، والمواقيت الشهرية، ومحوّل التواريخ (هجري، قبطي، إثيوبي)، والمناسبات
+• المواريث، والزكاة، والأضحية والعقيقة، والفدية والكفارات
 
 💰 المال والسوق
-• الدولار والعملات بالسعر الموازي والرسمي، و17 عملة
-• تحويلات المغتربين: كم يصل لأهلك؟
-• الذهب بالعيارات، والأقساط والمرابحة، والنسب والضريبة
-• الكهرباء والطاقة الشمسية، ومحوّل الوحدات
-• تقسيم الحساب، وتفقيط المبالغ، وأيهما أوفر، وتكلفة الرحلة
+• الدولار والعملات بالسعر الموازي والرسمي، وتحويلات المغتربين، والذهب
+• ميزانية الشهر، وميزانية الزفاف، ودفتر المحل (المخزون والأرباح)
+• الأقساط والمرابحة، والنسب والضريبة، والكهرباء والطاقة الشمسية
+• تقسيم الحساب، وتفقيط المبالغ، وأيهما أوفر، وتكلفة الرحلة، ومحوّل الوحدات
+
+🏠 البيت والعربية
+• أسطوانة الغاز: متى تنفد وكم تكلّف
+• جدول انقطاع الكهرباء مع تنبيه قبل القطع
+• المولّد والوقود، وصيانة السيارة، وصلاحية مخزن البيت
+• قائمة المشتريات، والفواتير الشهرية، وحاسبة مواد البناء، وحاسبة الزراعة
 
 💼 الشغل والغربة
-• حاسبة الراتب ونهاية الخدمة
-• تنبيه انتهاء الأوراق الرسمية (جواز، إقامة، رخصة)
-• عبارات المغترب، وفاتورة سريعة
+• الراتب ونهاية الخدمة، وتذكير انتهاء المستندات، وعبارات المغترب، وفاتورة سريعة، وقائمة تجهيز السفر
 
 ❤️ الصحة والعائلة
-• حاسبة الصحة (الوزن المثالي، كتلة الجسم، السعرات)
-• حاسبة الحمل، ومتابعة نمو الطفل
-• مواعيد الدواء مع تنبيهات، وسجل السكر والضغط
-• شرب الماء، والنوم والمزاج
+• حاسبة الصحة، والحمل، ونمو الطفل، ومواعيد الدواء، وسجل السكر والضغط، والماء، والنوم والمزاج
 
-🏠 البيت والحياة اليومية
-• متتبع العادات، والمهام، والمصاريف اليومية، والديون، والصندوق
-• قائمة المشتريات، والفواتير الشهرية
-• حاسبة مواد البناء، وحاسبة الزراعة
-• حاسبة العمر بالتفصيل الدقيق: بالأيام والساعات والثواني، وبالتقويم الهجري والقبطي والإثيوبي، وعمرك على الكواكب الأخرى
-• الآلة الحاسبة العلمية، والمؤقت، وجلسات التركيز، والقرعة، وساعات العالم، والمعدل الدراسي، ومحوّل المقاسات
-• الطقس والغبار، والأمثال السودانية
+📚 التعليم والترفيه
+• نسبة الشهادة السودانية، وبطاقات المذاكرة، وجدول الضرب للأطفال
+• حاسبة نقاط الورق (كونكان وهاند)، والدومينو وتقسيم الفرق
 
-✍️ مساعد الكاتب
-• نظّم قصصك ورواياتك في مشاريع
-• بطاقات للشخصيات والعلاقات بينها
-• ترتيب الفصول والمشاهد، وبناء العالم
-• محفّزات للكتابة، وإحصائيات وهدف يومي
+☀️ اليوميات والتنظيم
+• حاسبة العمر بالتفصيل الدقيق، والآلة الحاسبة، والمؤقت، والتركيز، والقرعة، وساعات العالم، والمعدل الدراسي، والطقس والغبار، والأمثال السودانية
+• متتبع العادات، والمهام، والمصروفات، والديون، والصندوق، والعدّاد، والملاحظات السريعة
 
-🎨 النصوص والصور
-• استخراج النص من الصور (OCR) بالعربي والإنجليزي، على جهازك بدون رفع الصور
-• زخرفة النصوص: عشرات الزخارف العربية والخطوط الإنجليزية المميزة
-• أدوات النص: عدّ الكلمات، والتنظيف، والنطق، والكتابة بالصوت
-• رمز QR (قراءة وإنشاء)، ومولّد كلمات السر، والخزنة السرية، وضغط الصور
+✍️ النصوص والصور
+• مساعد الكاتب للقصص والشخصيات والفصول
+• استخراج النص من الصور، وزخرفة النصوص، والصور إلى PDF، ومسجّل الصوت
+• رمز QR، وكلمات السر، والخزنة السرية، وضغط الصور
 
-📱 أدوات الجهاز
-• الكشاف، والبوصلة والموقع، وميزان الماء، والمسطرة بطول الشاشة كاملة
-• مقياس الضوضاء، ومعلومات هاتفك
+📱 الجهاز
+• الكشاف، والبوصلة، وميزان الماء، والمسطرة، ومقياس الضوضاء، والمرآة، ومعلومات هاتفك
 
-⭐ مميزات إضافية
-• نظام نقاط ومستويات وإنجازات يشجّعك كل يوم
-• المفضلة: ثبّت أدواتك المهمة في الصفحة الرئيسية
-• قفل برقم سري، ونسخة احتياطية لبياناتك
-• وضع ليلي، وخلفيات مزخرفة بألوان التراث السوداني
+⭐ نقاط ومستويات وإنجازات، ومفضلة، وقفل برقم سري، ونسخة احتياطية، ووضع ليلي.
 
-🔒 خصوصيتك محفوظة
-لا يوجد تسجيل دخول، ولا إعلانات، ولا نجمع بياناتك. كل ما تكتبه يُحفظ على جهازك فقط.
+🔒 بلا تسجيل دخول، وبلا إعلانات، وبلا جمع بيانات. كل ما تكتبه يُحفظ على جهازك فقط.
 
 من البشرى للتقنية.
 ```
 
 ### English
 ```
-Ameer Tools: 68 useful tools in one light app, with a warm Sudanese heritage design, and it works anywhere in the world.
+Ameer Tools: 90 useful tools in one app, with a warm Sudanese heritage design, and it works anywhere in the world.
+Three languages: Sudanese Arabic, Standard Arabic and English. Most tools work offline.
 
-Available in three languages: Sudanese Arabic, Standard Arabic and English. Most tools work offline.
+🧩 HOME-SCREEN WIDGETS
+• Favourite tools • Next prayer with live countdown • Gas cylinder • Power cuts • Dollar rate
 
 🕌 FAITH
-• Prayer times for any city worldwide, 11 calculation methods and adhan alerts
-• Qibla compass
-• Adhkar, digital tasbih and a duas library
-• 99 Names of Allah, Qur'an khatma planner and fasting tracker
-• Monthly timetable, date converter (Hijri, Gregorian, Coptic, Ethiopian) and Islamic occasions
-• Inheritance and zakat calculators
+• Prayer times for any city (11 methods) with adhan alerts, and qibla
+• Adhkar, tasbih, duas library and the 99 Names of Allah
+• Qur'an khatma, Qur'an memorization & review, last third of the night
+• Fasting tracker, monthly timetable, date converter (Hijri, Coptic, Ethiopian), occasions
+• Inheritance, zakat, udhiya & aqiqa, fidya & kaffarat
 
 💰 MONEY
-• Currency converter with parallel and official rates, 17 currencies
-• Expat remittances: how much reaches home?
-• Gold karats, installments and murabaha, percent and tax
-• Power and solar sizing, unit converter
-• Bill splitter, amount in words, best price, trip cost
+• Currencies with parallel and official rates, expat remittances, gold
+• Monthly budget, wedding budget, shop ledger (stock & profit)
+• Installments & murabaha, percent & tax, power & solar
+• Bill splitter, amount in words, best price, trip cost, unit converter
+
+🏠 HOME & CAR
+• Gas cylinder: when it runs out and what it costs
+• Power-cut schedule with alerts before each cut
+• Generator & fuel, car maintenance, pantry expiry
+• Shopping list, monthly bills, building materials, farm calculator
 
 💼 WORK & ABROAD
-• Salary and end-of-service calculator
-• Document expiry reminders (passport, residency, licence)
-• Expat phrasebook and quick invoice
+• Salary & end of service, document expiry reminders, expat phrasebook, quick invoice, travel packing list
 
 ❤️ HEALTH & FAMILY
-• Health calculator (BMI, ideal weight, calories)
-• Pregnancy calculator and child growth tracker
-• Medicine reminders, glucose and blood pressure log
-• Water intake, sleep and mood
+• Health calculator, pregnancy, child growth, medicine reminders, glucose & BP log, water, sleep & mood
 
-🏠 HOME & DAILY LIFE
-• Habit tracker, tasks, daily expenses, debts and savings circle (sanduq)
-• Shopping list and monthly bills
-• Building materials and farm calculators
-• Age calculator in every detail: days, hours, seconds, Hijri, Coptic and Ethiopian dates, and your age on other planets
-• Scientific calculator, timer, focus sessions, random draw, world clock, GPA and size converter
-• Weather and dust, Sudanese proverbs
+📚 LEARNING & FUN
+• Sudan school certificate %, flashcards, times tables for kids
+• Card game scores (Konkan, Hand), dominoes & team split
 
-✍️ WRITER'S STUDIO
-• Organise stories and novels into projects
-• Character cards and relationships
-• Chapters, scenes and world-building
-• Writing prompts, statistics and a daily goal
+☀️ DAILY & ORGANISE
+• Detailed age calculator, calculator, timer, focus, random draw, world clock, GPA, weather & dust, Sudanese proverbs
+• Habits, tasks, expenses, debts, savings circle, tally counter, quick notes
 
-🎨 TEXT & IMAGES
-• Text from image (OCR) in Arabic and English, processed on your phone
-• Text decoration: dozens of Arabic ornaments and fancy Latin fonts
-• Text tools: word count, cleanup, read aloud and voice typing
-• QR code scanner and generator, password generator, secret vault and image compressor
+✍️ TEXT & IMAGES
+• Writer's Studio for stories, characters and chapters
+• Text from image (OCR), text decoration, images to PDF, voice recorder
+• QR codes, passwords, secret vault, image compressor
 
 📱 DEVICE
-• Flashlight, compass and location, spirit level, and a full-height ruler
-• Noise meter and phone info
+• Flashlight, compass, spirit level, ruler, noise meter, mirror, phone info
 
-⭐ EXTRAS
-• Points, levels and achievements to keep you going
-• Favourites: pin your key tools to the home screen
-• PIN lock and data backup
-• Dark mode and ornate backgrounds in Sudanese heritage colours
+⭐ Points, levels and achievements, favourites, PIN lock, backup and dark mode.
 
-🔒 YOUR PRIVACY
-No sign-in, no ads, and no data collection. Everything you enter stays on your device.
+🔒 No sign-in, no ads, no data collection. Everything you enter stays on your device.
 
 By Al-Bushra Technology.
 ```
@@ -190,20 +166,14 @@ By Al-Bushra Technology.
 ألصقها في Play Console بهذا الشكل (الوسوم مطلوبة):
 ```
 <ar>
-• 68 أداة بثلاث لغات: سوداني، عربي، إنجليزي
-• جديد: مساعد الكاتب للقصص والشخصيات والفصول
-• جديد: زخرفة النصوص العربية والإنجليزية
-• جديد: استخراج النص من الصور (OCR)
-• اختيار أي مدينة في العالم لمواقيت الصلاة والطقس
-• تحسين الشكل وتصغير حجم التطبيق
+• 22 أداة جديدة: الغاز، المولّد، صيانة السيارة، قطوعات الكهرباء، ميزانية الزفاف، دفتر المحل، حفظ القرآن، الكوتشينة وغيرها
+• ودجت للشاشة الرئيسية: المفضلة، الصلاة، الغاز، القطوعات، الدولار
+• الصور إلى PDF، ومسجّل الصوت، والملاحظات
 </ar>
 <en-US>
-• 68 tools in 3 languages: Sudanese, Arabic, English
-• New: Writer's Studio for stories, characters and chapters
-• New: Arabic and English text decoration
-• New: Text from image (OCR)
-• Pick any city worldwide for prayer times and weather
-• Cleaner design and a smaller app size
+• 22 new tools: gas cylinder, generator, car care, power cuts, wedding budget, shop ledger, Qur'an memorization, card scores and more
+• Home-screen widgets: favorites, prayer, gas, power cuts, dollar
+• Images to PDF, voice recorder and notes
 </en-US>
 ```
 
@@ -218,20 +188,20 @@ By Al-Bushra Technology.
 | أيقونة التطبيق (App icon) | `icon_512.png` | 512×512 |
 | صورة العرض (Feature graphic) – عربي | `ar/feature_graphic_1024x500.png` | 1024×500 |
 | صورة العرض – إنجليزي | `en/feature_graphic_1024x500.png` | 1024×500 |
-| لقطات الهاتف (Phone screenshots) – عربي | `ar/01_home.png` … `ar/08_points.png` | 1080×1920 (8 صور) |
-| لقطات الهاتف – إنجليزي | `en/01_home.png` … `en/08_points.png` | 1080×1920 (8 صور) |
+| لقطات الهاتف – عربي | `ar/01_home.png` … `ar/08_cards.png` | 1080×1920 (8 صور) |
+| لقطات الهاتف – إنجليزي | `en/01_home.png` … `en/08_cards.png` | 1080×1920 (8 صور) |
 
-**ترتيب اللقطات وعناوينها:**
-1. الرئيسية: «كل أدواتك في جيبك»
-2. كل الأدوات: «68 أداة مرتّبة في أقسام»
-3. الصلاة: «مواقيت الصلاة لأي مدينة»
-4. حاسبة العمر: «عمرك بالتفصيل الدقيق»
-5. العملات: «الدولار والعملات»
-6. مساعد الكاتب
-7. زخرفة النصوص
-8. النقاط والإنجازات
+**ترتيب اللقطات:**
+1. الرئيسية: «90 أداة في جيبك»
+2. كل الأدوات: «90 أداة في 11 قسم»
+3. ودجت الشاشة الرئيسية
+4. مواقيت الصلاة
+5. أسطوانة الغاز
+6. جدول انقطاع الكهرباء
+7. ميزانية الزفاف
+8. حاسبة الكوتشينة
 
-> لقطات التابلت **غير إجبارية**. لو طلبها Play Console لاحقًا، ممكن نجهّزها.
+> عند تحديث المتجر: احذف اللقطات القديمة (8 صور) وارفع الجديدة بنفس الترتيب، واستبدل صورة العرض.
 
 ---
 
@@ -264,7 +234,7 @@ Tools, Productivity, Calculator, Religion (Islam), Utilities.
 
 **ما عدا ذلك، اختر No لكل الأنواع** (الاسم، البريد، الصور، الصوت، الملفات، الصحة، المالية، الرسائل، جهات الاتصال…). السبب:
 - الصور (OCR وضغط الصور وQR) تُعالج على الجهاز ولا تخرج منه.
-- الصوت (مقياس الضوضاء) يُحلَّل لحظيًا ولا يُسجَّل.
+- الصوت: مقياس الضوضاء يُحلَّل لحظيًا ولا يُسجَّل، وتسجيلات «مسجّل الصوت» تُحفظ على الجهاز فقط ولا تُرفع (ما بتطلع من التلفون إلا لو المستخدم شاركها بنفسه).
 - الكتابة بالصوت تستعمل خدمة التعرّف على الكلام في نظام الأندرويد نفسه، والتطبيق لا يرسل الصوت لأي خادم.
 - بيانات الصحة والمصاريف والقصص والخزنة كلها تُحفظ محليًا فقط.
 
@@ -328,22 +298,14 @@ https://aladeen35.github.io/test/privacy-policy.html
 
 ## 11) خطوات الرفع بالترتيب
 
-### أ) توقيع ملف الـ AAB (مرة واحدة فقط)
-الملف الحالي في صفحة الإصدارات **موقّع بمفتاح debug، وقوقل بلي سيرفضه.** المطلوب:
-1. في GitHub افتح المستودع، ثم **Settings → Secrets and variables → Actions → New repository secret**.
-2. أضف 4 أسرار (القيم في الملف `README-signing.txt` الذي أرسلته لك سابقًا):
-
-   | الاسم | القيمة |
-   |---|---|
-   | `KEYSTORE_BASE64` | محتوى `ameer-upload.jks.base64.txt` كاملًا |
-   | `KEYSTORE_PASSWORD` | كلمة سر المفتاح |
-   | `KEY_PASSWORD` | نفس كلمة السر |
-   | `KEY_ALIAS` | `upload` |
-
-3. شغّل البناء من جديد: **Actions → «Ameer Tools — بناء APK و AAB» → Run workflow**، أو بأي دفعة جديدة.
-4. نزّل `AmeerTools-GooglePlay.aab` الجديد من صفحة الإصدارات.
-
-> 🔐 احتفظ بملف `ameer-upload.jks` وكلمة السر في مكان آمن (مثل Google Drive خاص). لو ضاع، تحتاج تطلب من قوقل إعادة تعيين مفتاح الرفع.
+### أ) الملف الموقّع الجاهز للرفع
+نزّل الملف الموقّع بمفتاح الرفع الثابت (`upload`) من هنا، وارفعه مباشرة:
+```
+https://github.com/aladeen35/test/raw/ccr-56d19381-tk4i0e/release/AmeerTools-1.3.0-4-signed.aab
+```
+> ملفات صفحة الإصدارات (latest-build) موقّعة بمفتاح التجربة، **لا ترفعها لقوقل**. لو أضفت الأسرار الأربعة في GitHub (`KEYSTORE_BASE64`، `KEYSTORE_PASSWORD`، `KEY_PASSWORD`، `KEY_ALIAS`) يصير كل بناء جديد موقّعًا تلقائيًا.
+>
+> 🔐 احتفظ بملف `ameer-upload.jks` وكلمة السر في مكان آمن.
 
 ### ب) في Play Console
 1. **Create app**: الاسم `Ameer Tools - أدوات أمير`، واللغة العربية، وApp، وFree، ثم وافق على الإقرارات.
