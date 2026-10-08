@@ -12,16 +12,20 @@ import 'know_common.dart';
 /// رابط رسمي موثوق
 class OLink {
   final String group, name, nameEn, url, descAr, descEn;
-  const OLink(this.group, this.name, this.nameEn, this.url, this.descAr, this.descEn);
+
+  /// حسابات التواصل الرسمية (اختيارية)
+  final String? x, fb;
+  const OLink(this.group, this.name, this.nameEn, this.url, this.descAr, this.descEn, {this.x, this.fb});
   String get title => isEn ? nameEn : name;
   String get desc => isEn ? descEn : descAr;
   String get host => Uri.parse(url).host;
 }
 
 /// المجموعات: intl = منظمات دولية، والبقية رموز الدول
-const linkGroups = ['intl', 'SA', 'AE', 'EG', 'QA', 'GB', 'US', 'CA'];
+const linkGroups = ['SD', 'intl', 'SA', 'AE', 'EG', 'QA', 'GB', 'US', 'CA'];
 
 String linkGroupName(String g) => switch (g) {
+      'SD' => t('السودان', 'السودان', 'Sudan'),
       'intl' => t('منظمات دولية وإنسانية', 'منظمات دولية وإنسانية', 'International & humanitarian'),
       'SA' => t('السعودية', 'السعودية', 'Saudi Arabia'),
       'AE' => t('الإمارات', 'الإمارات', 'UAE'),
@@ -37,6 +41,46 @@ String linkGroupFlag(String g) => g == 'intl' ? '🌐' : flagOf(g);
 
 /// روابط مختارة — فقط النطاقات الرسمية المعروفة بدقة
 const officialLinks = <OLink>[
+  // ── السودان (مراجعة 2026-10) ──
+  OLink('SD', 'جمعية الهلال الأحمر السوداني', 'Sudanese Red Crescent Society', 'https://srcs.sd',
+      'الإغاثة والإسعاف والدعم الإنساني داخل السودان.', 'Relief, first aid and humanitarian support inside Sudan.', x: 'https://x.com/SRCS_SD', fb: 'https://facebook.com/SRCS.SD'),
+  OLink('SD', 'الأمانة العامة لمجلس الوزراء', 'General Secretariat of the Council of Ministers', 'https://sudan.gov.sd',
+      'البوابة الحكومية وأخبار وقرارات مجلس الوزراء.', 'Government portal and Cabinet news and decisions.', x: 'https://x.com/SudanCabinet', fb: 'https://facebook.com/SudanCabinet'),
+  OLink('SD', 'وزارة الداخلية', 'Ministry of Interior', 'https://moi.gov.sd',
+      'الشرطة والجوازات والسجل المدني والمرور.', 'Police, passports, civil registry and traffic.', x: 'https://x.com/SudanPoliceHQ', fb: 'https://facebook.com/sudanesepolice'),
+  OLink('SD', 'وزارة الصحة الاتحادية', 'Federal Ministry of Health', 'https://fmoh.gov.sd',
+      'الخدمات الصحية والتوعية والأوبئة.', 'Health services, awareness and epidemics.', x: 'https://x.com/FMOH_SUDAN', fb: 'https://facebook.com/fmohsudan'),
+  OLink('SD', 'وزارة الخارجية', 'Ministry of Foreign Affairs', 'https://mofasudan.website',
+      'السفارات والقنصليات وخدمات السودانيين في الخارج.', 'Embassies, consulates and services for Sudanese abroad.', x: 'https://x.com/MofaSudan', fb: 'https://facebook.com/MofaSudan1'),
+  OLink('SD', 'وزارة التعليم العالي والبحث العلمي', 'Ministry of Higher Education & Scientific Research', 'https://mohe.gov.sd',
+      'القبول للجامعات وتوثيق الشهادات الجامعية.', 'University admission and certificate attestation.', x: 'https://x.com/mohesudan', fb: 'https://facebook.com/mohe.gov.sd'),
+  OLink('SD', 'وزارة المالية والتخطيط الاقتصادي', 'Ministry of Finance & Economic Planning', 'https://mof.gov.sd',
+      'الموازنة والسياسات المالية والاقتصادية.', 'Budget and fiscal and economic policy.', x: 'https://x.com/MoF_Sudan', fb: 'https://facebook.com/MoFSudan'),
+  OLink('SD', 'وزارة التربية والتعليم', 'Ministry of Education', 'https://moe.gov.sd',
+      'المدارس والامتحانات ونتائج الشهادة السودانية.', 'Schools, exams and Sudan School Certificate results.', x: 'https://x.com/MOEGOVSD', fb: 'https://facebook.com/moe.gov.sd'),
+  OLink('SD', 'وزارة العدل', 'Ministry of Justice', 'https://moj.gov.sd',
+      'التشريعات والتوثيق والشؤون القانونية.', 'Legislation, notarisation and legal affairs.', x: 'https://x.com/moj_sd', fb: 'https://facebook.com/moj.sd'),
+  OLink('SD', 'وزارة الثقافة والإعلام', 'Ministry of Culture & Information', 'https://moci.gov.sd',
+      'الإعلام الرسمي والثقافة.', 'Official media and culture.', x: 'https://x.com/MoCI_Sudan', fb: 'https://facebook.com/MoCI.Sudan'),
+  OLink('SD', 'وزارة الزراعة والغابات', 'Ministry of Agriculture & Forests', 'https://moaf.gov.sd',
+      'الزراعة والمواسم والغابات.', 'Agriculture, seasons and forests.', fb: 'https://facebook.com/moaf.sudan'),
+  OLink('SD', 'وزارة الطاقة والنفط', 'Ministry of Energy & Oil', 'https://mop.gov.sd',
+      'الكهرباء والنفط والوقود.', 'Electricity, oil and fuel.', x: 'https://x.com/mopsudan', fb: 'https://facebook.com/MoP.Sudan'),
+  OLink('SD', 'وزارة الري والموارد المائية', 'Ministry of Irrigation & Water Resources', 'https://mwri.gov.sd',
+      'الري ومياه النيل والفيضانات.', 'Irrigation, Nile waters and floods.', fb: 'https://facebook.com/mwri.gov.sd'),
+  OLink('SD', 'وزارة المعادن', 'Ministry of Minerals', 'https://minerals.gov.sd',
+      'التعدين والذهب والمعادن.', 'Mining, gold and minerals.', x: 'https://x.com/minerals_sd', fb: 'https://facebook.com/minerals.sudan'),
+  OLink('SD', 'وزارة التنمية الاجتماعية', 'Ministry of Social Development', 'https://mosd.gov.sd',
+      'الرعاية والدعم الاجتماعي.', 'Social welfare and support.', fb: 'https://facebook.com/mosdsudan'),
+  OLink('SD', 'وزارة الشؤون الدينية والأوقاف', 'Ministry of Religious Affairs & Endowments', 'https://mara.gov.sd',
+      'الحج والعمرة والأوقاف والشؤون الدينية.', 'Hajj, Umrah, endowments and religious affairs.', fb: 'https://facebook.com/mara.sudan'),
+  OLink('SD', 'وزارة الثروة الحيوانية', 'Ministry of Animal Resources', 'https://moar.gov.sd',
+      'الثروة الحيوانية والبيطرة والصادر.', 'Livestock, veterinary services and exports.', fb: 'https://facebook.com/moar.sudan'),
+  OLink('SD', 'وزارة الاستثمار والتعاون الدولي', 'Ministry of Investment & International Cooperation', 'https://moinv.gov.sd',
+      'فرص وإجراءات الاستثمار.', 'Investment opportunities and procedures.', fb: 'https://facebook.com/moinv.gov.sd'),
+  OLink('SD', 'المركز القومي للمعلومات', 'National Information Center', 'https://nic.gov.sd',
+      'الحكومة الإلكترونية والخدمات الرقمية.', 'E-government and digital services.', x: 'https://x.com/nicsudan', fb: 'https://facebook.com/nic.gov.sd'),
+
   // ── دولية وإنسانية ──
   OLink('intl', 'ريليف ويب — السودان', 'ReliefWeb — Sudan', 'https://reliefweb.int/country/sdn',
       'تقارير وأخبار إنسانية محدّثة عن السودان من الأمم المتحدة والمنظمات.', 'Up-to-date humanitarian reports and news on Sudan from the UN and NGOs.'),
@@ -121,9 +165,9 @@ class _LinksToolState extends State<LinksTool> {
     super.dispose();
   }
 
-  Future<void> _open(AppState s, OLink l) async {
+  Future<void> _open(AppState s, OLink l, [String? url]) async {
     try {
-      final ok = await launchUrl(Uri.parse(l.url), mode: LaunchMode.externalApplication);
+      final ok = await launchUrl(Uri.parse(url ?? l.url), mode: LaunchMode.externalApplication);
       if (!ok) throw Exception();
       s.awardDaily('official_links_open', 2, tr('فتح رابط رسمي', 'Opened an official link'));
     } catch (_) {
@@ -198,6 +242,19 @@ class _LinksToolState extends State<LinksTool> {
           ]),
         ),
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          if (l.x != null)
+            TextButton(
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 8)),
+              onPressed: () => _open(s, l, l.x),
+              child: const Text('𝕏', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            ),
+          if (l.fb != null)
+            TextButton(
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 8)),
+              onPressed: () => _open(s, l, l.fb),
+              child: const Text('Facebook', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
+            ),
+          const Spacer(),
           IconButton(
             visualDensity: VisualDensity.compact,
             tooltip: t('انسخ الرابط', 'نسخ الرابط', 'Copy link'),
