@@ -12,6 +12,8 @@ import 'package:amir_tools/tools/registry.dart';
 import 'package:amir_tools/screens/tool_tile.dart';
 import 'package:amir_tools/screens/home_screen.dart';
 import 'package:amir_tools/screens/tools_screen.dart';
+import 'package:amir_tools/screens/bundles.dart';
+import 'package:amir_tools/screens/category_screen.dart';
 import 'package:amir_tools/screens/prayer_screen.dart';
 import 'package:amir_tools/screens/points_screen.dart';
 import 'package:amir_tools/screens/settings_screen.dart';
@@ -74,6 +76,7 @@ void main() {
         ('settings_screen', const SettingsScreen()),
         ('privacy_screen', const PrivacyScreen()),
         ('onboarding', const Onboarding()),
+        for (final b in ToolBundle.values) ('bundle_${b.name}', CategoryScreen(b)),
       ]) {
         cur = id;
         await tester.pumpWidget(wrap(w));
