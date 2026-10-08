@@ -81,7 +81,7 @@ class _PhrasebookToolState extends State<PhrasebookTool> {
     final q = _norm(_q.trim());
     final List<Phrase> list;
     if (q.isNotEmpty) {
-      list = phrases.where((p) => _norm('${p.sd} ${p.ar} ${p.en}').contains(q)).toList();
+      list = phrases.where((p) => _norm('${p.sd} ${p.ar} ${p.en} ${p.pron}').contains(q)).toList();
     } else if (_cat == 'fav') {
       list = phrases.where((p) => favs.contains(p.id)).toList();
     } else {
@@ -125,6 +125,11 @@ class _PhrasebookToolState extends State<PhrasebookTool> {
               'يعتمد النطق على محرّك الجهاز — إن لم يعمل فثبّت حزمة اللغة من إعدادات الهاتف.',
               'Speech uses your device\'s engine — if it doesn\'t work, install the language pack in your phone settings.'),
           kind: NoteKind.tip),
+      NoteBox(
+          t('سطر 🗣️ «انطقها» هو الجملة الإنجليزية مكتوبة بحروف عربية عشان تقدر تقولها — النطق تقريبي، واسمع الصوت 🔊 للدقة.',
+              'سطر 🗣️ «النطق» هو الجملة الإنجليزية مكتوبة بحروف عربية لتستطيع قولها — النطق تقريبي، واستمع للصوت 🔊 للدقة.',
+              'The 🗣️ "Say it" line spells the English sentence in Arabic letters — it\'s approximate; tap 🔊 to hear it.'),
+          kind: NoteKind.info),
     ]);
   }
 
@@ -167,11 +172,12 @@ class _PhrasebookToolState extends State<PhrasebookTool> {
           line(p.en, 'EN', 'en-US', TextDirection.ltr, big: true),
           line(p.sd, tr('سو', 'SD'), 'ar', TextDirection.rtl),
           if (p.ar != p.sd) line(p.ar, tr('فص', 'MSA'), 'ar', TextDirection.rtl),
+          if (p.pron.isNotEmpty) _pron(context, p, cat.color),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             IconButton(
               visualDensity: VisualDensity.compact,
               tooltip: tr('نسخ', 'Copy'),
-              onPressed: () => copyText('${p.en}\n${p.sd}${p.ar != p.sd ? '\n${p.ar}' : ''}'),
+              onPressed: () => copyText('${p.en}\n${p.sd}${p.ar != p.sd ? '\n${p.ar}' : ''}${p.pron.isNotEmpty ? '\n🗣️ ${p.pron}' : ''}'),
               icon: const Icon(Icons.copy_rounded, size: 19),
             ),
             IconButton(
@@ -185,4 +191,30 @@ class _PhrasebookToolState extends State<PhrasebookTool> {
       ),
     );
   }
+
+  /// سطر النطق: الجملة الإنجليزية مكتوبة بحروف عربية
+  Widget _pron(BuildContext context, Phrase p, Color c) => Padding(
+        padding: const EdgeInsetsDirectional.only(top: 2, bottom: 2, end: 8),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            width: 30,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            decoration: BoxDecoration(color: SD.gold.withValues(alpha: .18), borderRadius: BorderRadius.circular(8)),
+            child: const Text('🗣️', style: TextStyle(fontSize: 12)),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text.rich(
+              TextSpan(children: [
+                TextSpan(
+                    text: '${t('انطقها', 'النطق', 'Say it')}: ',
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: readable(context, c))),
+                TextSpan(text: p.pron, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+              ]),
+              textDirection: TextDirection.rtl,
+            ),
+          ),
+        ]),
+      );
 }
