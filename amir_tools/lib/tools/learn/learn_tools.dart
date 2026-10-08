@@ -14,7 +14,7 @@ List<ToolDef> get learnTools => [
         id: 'hifz',
         name: tr('حفظ القرآن ومراجعته', "Qur'an Memorization"),
         sub: t('ورد يومي ومراجعة بالدور', 'ورد يومي ومراجعة دورية', 'Daily portion & spaced review'),
-        cat: ToolCat.islam,
+        cat: ToolCat.quran,
         icon: Icons.auto_stories_rounded,
         color: SD.green,
         keywords:

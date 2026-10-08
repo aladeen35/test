@@ -14,7 +14,7 @@ List<ToolDef> get moreTools => [
       icon: Icons.public_rounded, color: SD.nile,
       keywords: 'ساعة عالم توقيت فرق وقت مغترب اتصال اهل منطقة زمنية world clock time zone difference call family expat',
       builder: (_) => const WorldClockTool()),
-  ToolDef(id: 'khatma', name: tr('ختمة القرآن', 'Qur\'an Khatma'), sub: t('خطة وورد يومي', 'خطة وورد يومي', 'Plan & daily portion'), cat: ToolCat.islam,
+  ToolDef(id: 'khatma', name: tr('ختمة القرآن', 'Qur\'an Khatma'), sub: t('خطة وورد يومي', 'خطة وورد يومي', 'Plan & daily portion'), cat: ToolCat.quran,
       icon: Icons.auto_stories_rounded, color: SD.green,
       keywords: 'ختمة قرآن مصحف ورد جزء حزب صفحة رمضان تلاوة khatma quran juz hizb page ramadan reading plan',
       builder: (_) => const KhatmaTool()),

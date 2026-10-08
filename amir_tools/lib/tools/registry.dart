@@ -15,12 +15,18 @@ import 'homeplus/homeplus_tools.dart';
 import 'biz/biz_tools.dart';
 import 'learn/learn_tools.dart';
 import 'extra/extra_tools.dart';
+import 'plan/plan_tools.dart';
+import 'care/care_tools.dart';
+import 'know/know_tools.dart';
+import 'quran/quran_tools.dart';
+import 'safety/safety_tools.dart';
 import '../core/i18n.dart';
 
 /// تصنيفات الأدوات
 enum ToolCat {
   money('المال والسوق', 'المال والسوق', 'Money & Market', Icons.payments_rounded),
   islam('دين ودنيا', 'الدين', 'Faith', Icons.mosque_rounded),
+  quran('القرآن والحديث', 'القرآن والحديث', "Qur'an & Hadith", Icons.menu_book_rounded),
   life('تنظيم حياتك', 'تنظيم الحياة', 'Organize', Icons.checklist_rounded),
   work('الشغل والغربة', 'العمل والاغتراب', 'Work & Abroad', Icons.work_rounded),
   home('البيت والزراعة', 'المنزل والزراعة', 'Home & Farm', Icons.cottage_rounded),
@@ -29,7 +35,8 @@ enum ToolCat {
   media('نصوص وصور', 'نصوص وصور', 'Text & Images', Icons.text_snippet_rounded),
   device('جهازك', 'الجهاز', 'Device', Icons.smartphone_rounded),
   learn('القراية', 'التعليم', 'Learning', Icons.school_rounded),
-  fun('ونسة وقعدات', 'ترفيه', 'Fun & Games', Icons.casino_rounded);
+  fun('ونسة وقعدات', 'ترفيه', 'Fun & Games', Icons.casino_rounded),
+  safety('أمانك في النت', 'الأمان الرقمي', 'Digital Safety', Icons.shield_rounded);
 
   final String sd, ar, en;
   final IconData icon;
@@ -73,6 +80,7 @@ List<ToolDef> get allTools => [
       ...moneyTools, ...workTools, ...islamTools, ...deenTools, ...lifeTools, ...homeTools,
       ...dailyTools, ...moreTools, ...plusTools, ...writerTools, ...mediaTools, ...deviceTools,
       ...homeplusTools, ...bizTools, ...learnTools, ...extraTools,
+      ...planTools, ...careTools, ...knowTools, ...quranTools, ...safetyTools,
     ];
 
 ToolDef? toolById(String id) {
