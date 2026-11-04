@@ -50,7 +50,11 @@
   Object.assign(app, { crumbs, pageHead, btn });
 
   /* ---------- header / footer ---------- */
-  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["projects", "#/projects"], ["contact", "#/contact"]];
+  const ext = (u) => (/^mailto:/.test(u) ? "" : ' target="_blank" rel="noopener"');
+  const socialRow = () => S.links.social.map(([ic, n, u]) => `<a class="icon-btn" href="${u}"${ext(u)} aria-label="${esc(n)}" title="${esc(n)}">${I[ic]}</a>`).join("");
+  const linksGrid = () => S.links.groups.map((g) => `<div class="link-group"><h3>${esc(L(g.t))}</h3><div class="grid">${g.items.map((it) => `<a class="card hover link-card" href="${it.u}"${ext(it.u)}><span class="ic">${I[it.icon] || I.globe}</span><span class="lc-t"><b>${esc(L(it.n))}</b><small dir="ltr">${esc(it.d)}</small></span>${I.external}</a>`).join("")}</div></div>`).join("");
+  const videoBox = (b) => `<div class="video" data-yt="${b.video}"><img src="${b.cover}" alt="${esc(L(b.title))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"><button type="button" class="play" aria-label="${esc(t("books.play"))}">${I.play}</button></div>`;
+  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["books", "#/books"], ["projects", "#/projects"], ["contact", "#/contact"]];
   function renderChrome() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -69,10 +73,10 @@
     $("#ftr").innerHTML = `<div class="wrap"><div class="cols">
       <div><a class="brand" href="#/"><img src="assets/logo-mark.png" alt="" width="46" height="36"><span class="bt"><b>Eng. <span>Alaeldeen</span></b><small>QUALITY &amp; SAFETY</small></span></a>
         <p style="color:var(--muted);margin-top:14px;max-width:340px;font-size:14.5px">${esc(t("footerTag"))}</p>
-        <div class="social"><a class="icon-btn" href="mailto:${S.profile.email}" aria-label="${esc(t("email"))}">${I.mail}</a><a class="icon-btn" href="https://wa.me/${S.profile.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp">${I.wa}</a></div></div>
+        <div class="social">${socialRow()}</div></div>
       <div><h4>${esc(t("explore"))}</h4><ul><li><a href="#/about">${esc(t("nav.profile"))}</a></li><li><a href="#/experience">${esc(t("navLong.experience"))}</a></li><li><a href="#/certifications">${esc(t("navLong.certifications"))}</a></li><li><a href="#/projects">${esc(t("nav.projects"))}</a></li></ul></div>
-      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li></ul></div>
-      <div><h4>${esc(t("connect"))}</h4><ul><li><a href="#/contact">${esc(t("contactMe"))}</a></li><li><a href="#/privacy">${esc(t("privacyT"))}</a></li></ul></div>
+      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li><li><a href="#/books">${esc(t("books.t"))}</a></li></ul></div>
+      <div><h4>${esc(t("connect"))}</h4><ul><li><a href="#/contact">${esc(t("contactMe"))}</a></li><li><a href="#/links">${esc(t("linksT"))}</a></li><li><a href="#/privacy">${esc(t("privacyT"))}</a></li></ul></div>
     </div><div class="base"><span>© ${yr} Eng. Alaeldeen — ${esc(t("rights"))}</span><span>${esc(t("footerNote"))}</span></div></div>`;
     $("#searchDlg").innerHTML = `<div class="box" role="dialog" aria-modal="true" aria-label="${esc(t("search"))}"><div class="searchbar">${I.search}<input id="sq" type="search" placeholder="${esc(t("searchPh"))}" aria-label="${esc(t("search"))}" autocomplete="off"><button class="icon-btn" data-close aria-label="${esc(t("close"))}" style="border:0">${I.x}</button></div><div class="res" id="sres" role="listbox"><div class="hint">${esc(t("searchHint"))}</div></div></div>`;
   }
@@ -91,7 +95,7 @@
     return `
     <section class="hero"><div class="swoosh"></div><div class="wrap">
       <div class="hero-copy fade-in">
-        <h1 tabindex="-1">${esc(t("heroH1a"))}<span class="g">${esc(t("heroH1b"))}</span></h1>
+        <h1 tabindex="-1"><span class="l1">${esc(t("heroH1a"))}</span><span class="g">${esc(t("heroH1b"))}</span></h1>
         <p class="role">${esc(t("heroRole"))}</p><div class="rule"></div>
         <p class="lead">${esc(t("heroLead"))}</p>
         <div class="cta">${btn("#/about", t("ctaProfile"), "btn-gold")}${btn("#/tools", t("ctaTools"), "btn-line", "tools")}${btn("#/lamp", t("ctaLamp"), "btn-teal", "lamp")}</div>
@@ -114,6 +118,13 @@
         <div class="fact"><b>${S.profile.certs.length}</b><span>${esc(t("fCerts"))}</span></div>
         <div class="fact"><b>1</b><span>${esc(t("fPatent"))}</span></div>
       </div><p class="note">${esc(t("factsSub"))}</p></div></section>
+    ${(() => { const b = S.books.find((x) => x.featured); return `<section class="sec book-feature"><div class="wrap book-grid">
+      <a class="book-cover" href="#/books" aria-label="${esc(L(b.title))}"><img src="${b.cover}" alt="${esc(L(b.title))} — ${esc(L(b.subtitle))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"></a>
+      <div class="book-copy"><span class="eyebrow">${esc(t("books.feat"))} · ${esc(L(b.kind))}</span><h2 class="book-title">${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.subtitle))}</p>
+        <p style="color:#dcdcdc">${esc(L(b.blurb))}</p>
+        <div class="chain">${b.chain.map((c, i) => `<span>${esc(L(c))}</span>${i < b.chain.length - 1 ? I.arrow : ""}`).join("")}</div>
+        <div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="${b.url}" target="_blank" rel="noopener">${I.play}<span>${esc(L(b.cta))}</span></a>${btn("#/books", t("books.more"), "btn-line")}</div></div>
+    </div></section>`; })()}
     <section class="band"><div class="wrap"><q>${esc(t("quote"))}</q>${btn("#/contact", t("contactMe"), "btn-gold", "mail")}</div></section>`;
   };
 
@@ -126,7 +137,7 @@
   P.about = (sub) => {
     const pr = S.profile;
     const certs = (g) => pr.certs.filter((c) => c.g === g).map((c) => `<div class="card cert"><span class="ic">${I.award}</span><div><h4>${esc(L(c.n))}</h4>${c.by ? `<small>${esc(L(c.by))}</small>` : ""}</div></div>`).join("");
-    const html = `${pageHead(t("profileT"), t("profileSub"), [[t("nav.profile")]], "", { after: `<div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "AR" : "EN"}.pdf" download>${I.download}<span>${esc(t("downloadCV"))} — ${esc(lang === "ar" ? t("cvAr") : t("cvEn"))}</span></a><a class="btn btn-ghost" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "EN" : "AR"}.pdf" download>${I.download}<span>${esc(lang === "ar" ? t("cvEn") : t("cvAr"))}</span></a></div>` })}
+    const html = `${pageHead(t("profileT"), t("profileSub"), [[t("nav.profile")]], "", { after: `<div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "AR" : "EN"}.pdf" download>${I.download}<span>${esc(t("downloadCV"))} — ${esc(lang === "ar" ? t("cvAr") : t("cvEn"))}</span></a><a class="btn btn-ghost" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "EN" : "AR"}.pdf" download>${I.download}<span>${esc(lang === "ar" ? t("cvEn") : t("cvAr"))}</span></a><a class="btn btn-ghost" href="https://youtu.be/-ETJpZbi5O4" target="_blank" rel="noopener">${I.play}<span>${esc(t("aboutVideo"))}</span></a><a class="btn btn-ghost" href="https://linkedin.com/in/aladeen35/" target="_blank" rel="noopener">${I.linkedin}<span>LinkedIn</span></a></div>` })}
     <section class="sec" id="about"><div class="wrap profile-top">
       <div class="profile-photo"><img src="assets/fullbody.jpg" alt="${esc(L(pr.name))}" width="620" height="970"></div>
       <div>
@@ -325,6 +336,23 @@
   };
 
   /* ----- Projects ----- */
+  P.books = () => ({
+    html: `${pageHead(t("books.t"), t("books.sub"), [[t("nav.books")]])}
+    <section class="sec"><div class="wrap">${S.books.map((b) => b.featured ? `<article class="card book-hero" id="${b.id}">
+        ${videoBox(b)}
+        <div class="bh-body"><span class="eyebrow">${esc(L(b.kind))}</span><h2 class="book-title">${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.subtitle))} · ${esc(t("books.by"))}</p>
+          <p style="color:#dcdcdc">${esc(L(b.blurb))}</p>
+          <div class="chain">${b.chain.map((c, i) => `<span>${esc(L(c))}</span>${i < b.chain.length - 1 ? I.arrow : ""}`).join("")}</div>
+          <h3 style="font-size:16px;margin-top:18px">${esc(t("books.forWho"))}</h3><p>${esc(L(b.audience))}</p>
+          <div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="${b.url}" target="_blank" rel="noopener">${I.youtube}<span>${esc(L(b.cta))}</span></a></div><p class="note">${esc(t("books.vNote"))}</p></div></article>`
+      : `<article class="card book-row" id="${b.id}"><a href="${b.url}" target="_blank" rel="noopener" class="book-thumb"><img src="${b.cover}" alt="${esc(L(b.title))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"></a><div><span class="eyebrow">${esc(L(b.kind))}</span><h2 class="book-title" style="font-size:28px">${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.subtitle))}</p><p>${esc(L(b.blurb))}</p><a class="btn btn-line" href="${b.url}" target="_blank" rel="noopener">${I.book}<span>${esc(L(b.cta))}</span>${I.external}</a></div></article>`).join("")}
+    </div></section>`,
+    after: () => $$(".video[data-yt]").forEach((v) => v.querySelector(".play").addEventListener("click", () => {
+      v.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.dataset.yt}?autoplay=1&rel=0" title="${esc(t("books.play"))}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    })),
+  });
+  P.links = () => `${pageHead(t("linksT"), t("linksSub"), [[t("linksT")]])}<section class="sec"><div class="wrap">${linksGrid()}</div></section>`;
+
   P.projects = () => `${pageHead(t("projT"), t("projSub"), [[t("nav.projects")]])}
     <section class="sec"><div class="wrap grid g2">${S.projects.map((p) => `<article class="card proj"><span class="chip gold" style="justify-self:start">${esc(L(p.tag))}</span><h3 style="margin:4px 0 0">${esc(L(p.title))}</h3>
       <dl>${[["pProblem", p.problem], ["pRole", p.role], ["pMethod", p.method], ["pResult", p.result], ["pLearned", p.learned]].map(([k, v]) => `<dt>${esc(t(k))}</dt><dd>${esc(L(v))}</dd>`).join("")}</dl></article>`).join("")}</div></section>`;
@@ -347,7 +375,8 @@
           <a class="card hover cert" href="https://wa.me/${pr.whatsapp}" target="_blank" rel="noopener"><span class="ic">${I.wa}</span><div><h4>WhatsApp</h4><small dir="ltr">${pr.phone}</small></div></a>
           <div class="card cert"><span class="ic">${I.pin}</span><div><h4>${esc(t("location"))}</h4><small>${esc(L(pr.location))}</small></div></div>
           <div class="card cert"><span class="ic">${I.download}</span><div><h4>${esc(t("downloadCV"))}</h4><small><a href="cv/Alaeldeen_Omer_CV_AR.pdf" download>${esc(t("cvAr"))}</a> · <a href="cv/Alaeldeen_Omer_CV_EN.pdf" download>${esc(t("cvEn"))}</a></small></div></div>
-        </div></div></section>`,
+        </div></div></section>
+      <section class="sec" style="padding-top:0" id="links"><div class="wrap"><div class="sec-hd"><div><span class="eyebrow">Linktree</span><h2>${esc(t("linksT"))}</h2><p>${esc(t("linksSub"))}</p></div></div>${linksGrid()}</div></section>`,
       after: () => {
         const f = $("#cform");
         const val = () => {
@@ -399,9 +428,11 @@
     S.dict.forEach((d) => add("term", d.code + " — " + (lang === "ar" ? d.term_ar : d.term_en), lang === "ar" ? d.term_en : d.term_ar, "#/dictionary/" + encodeURIComponent(d.code), d.simple_explanation_ar + " " + d.simple_explanation_en));
     S.articles.forEach((a) => add("article", L(a.title), L(a.sum), "#/knowledge/" + a.id, a.body[lang].map((b) => [].concat(b[1]).join(" ")).join(" ")));
     S.projects.forEach((p) => add("project", L(p.title), L(p.tag), "#/projects"));
+    S.books.forEach((b) => add("book", L(b.title), L(b.subtitle), "#/books", L(b.blurb) + " Stolen Gold الذهب المسلوب"));
+    S.links.groups.forEach((g) => g.items.forEach((it) => add("link", L(it.n), it.d, "#/links")));
     return items;
   }
-  const typeLabel = { page: { ar: "صفحة", en: "Page" }, lesson: { ar: "درس", en: "Lesson" }, tool: { ar: "أداة", en: "Tool" }, term: { ar: "مصطلح", en: "Term" }, article: { ar: "مقال", en: "Article" }, project: { ar: "مشروع", en: "Project" } };
+  const typeLabel = { page: { ar: "صفحة", en: "Page" }, lesson: { ar: "درس", en: "Lesson" }, tool: { ar: "أداة", en: "Tool" }, term: { ar: "مصطلح", en: "Term" }, article: { ar: "مقال", en: "Article" }, project: { ar: "مشروع", en: "Project" }, book: { ar: "كتاب", en: "Book" }, link: { ar: "رابط", en: "Link" } };
   let lastFocus = null;
   function openSearch() {
     lastFocus = document.activeElement; const dlg = $("#searchDlg"); dlg.classList.add("open"); const q = $("#sq"); q.value = ""; $("#sres").innerHTML = `<div class="hint">${esc(t("searchHint"))}</div>`; q.focus();
@@ -432,10 +463,11 @@
     if (typeof out === "string") out = { html: out };
     const main = $("#app"); main.innerHTML = out.html;
     markNav(path || "");
-    const pageTitle = out.title || (name === "home" ? "" : (t("nav." + ({ about: "profile", experience: "profile", certifications: "profile" }[name] || name)) || ""));
+    const pageTitle = out.title || (name === "home" ? "" : ((name === "links" ? t("linksT") : t("nav." + ({ about: "profile", experience: "profile", certifications: "profile" }[name] || name))) || ""));
     document.title = (pageTitle && !String(pageTitle).startsWith("nav.") ? pageTitle + " | " : "") + "Eng. Alaeldeen | Quality & Safety";
     if (!sub || name === "dictionary") window.scrollTo(0, 0); else window.scrollTo(0, 0);
     out.after && out.after();
+    window.MOTION && window.MOTION.apply(main);
     const h1 = $("h1", main); if (h1 && app._navigated) h1.focus({ preventScroll: true });
     app._navigated = true;
     closeDrawer();

@@ -17,7 +17,10 @@ It's a static site with no build step: open `index.html` or serve the folder (Gi
 | Dictionary: 25 terms, AR/EN search with Arabic normalisation, category filters, favourites, pronunciation, suggest a term | `#/dictionary` | Done |
 | Knowledge Center: 3 articles/guides with author, dates and references, FAQ, official sources | `#/knowledge` | Done |
 | Projects: problem / role / method / result / lesson | `#/projects` | Done |
+| Books: "الذهب المسلوب / Stolen Gold" (featured on the home page too, with the YouTube presentation as click-to-play) and "عودة عهد الممالك" flipbook | `#/books` | Done, links from linktr.ee/aladeen35 |
+| All links from Linktree, grouped (professional, books, social, other ventures) + social icons in the footer | `#/links`, contact page | Done |
 | Contact (mailto + WhatsApp, no server), privacy & terms | `#/contact`, `#/privacy` | Done |
+| Cinematic scroll motion: hero entrance, parallax, staggered reveals, image curtain wipes, counters, timeline that grows, scroll progress bar, shrinking header (`js/motion.js`) | all pages | Done; off when the visitor's system prefers reduced motion |
 | Global search (`/` key) across pages, lessons, tools, terms, articles | header | Done |
 | PWA manifest + offline service worker | | Done (works on HTTPS) |
 | Accounts, admin panel, database (spec phase 4) | | Not built. Data stays in the visitor's browser (localStorage) |
@@ -35,7 +38,8 @@ After changing files, bump `VERSION` in `sw.js` so installed copies refresh.
 
 ## Before going live (from spec section 16)
 
-- LinkedIn / YouTube links weren't provided, so they're left out. Add them in the footer in `js/app.js`.
+- Social links and books live in `SITE.links` / `SITE.books` in `js/content.js`. Linktree lists two Instagram accounts (`ala_deen_35` as a button, `aladeen35` as an icon); the site uses `ala_deen_35`.
+- "Stolen Gold" has no download link on Linktree, only the YouTube presentation. If there's a PDF or store link, set `url` on the book in `content.js`.
 - Audit scores (98% / 100%) aren't in the current CV, so they aren't shown. Add them only with their audit context.
 - Lesson content is marked as a teaching draft pending technical review. Update `REVIEWED` in `content.js` after review.
 - Confirm you're happy publishing the phone number and email (shown on the profile and contact pages and in the CV PDFs).

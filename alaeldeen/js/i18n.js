@@ -2,7 +2,7 @@
 window.I18N = {
   ar: {
     skip: "تخطَّ إلى المحتوى",
-    nav: { home: "الرئيسية", profile: "من أنا", lamp: "مصباح الجودة", tools: "الأدوات", dictionary: "القاموس", knowledge: "المعرفة", projects: "المشاريع", contact: "تواصل" },
+    nav: { home: "الرئيسية", profile: "من أنا", lamp: "مصباح الجودة", tools: "الأدوات", dictionary: "القاموس", knowledge: "المعرفة", books: "مؤلفاتي", projects: "المشاريع", contact: "تواصل" },
     navLong: { experience: "الخبرات", certifications: "المؤهلات والشهادات" },
     search: "بحث", searchPh: "ابحث في الدروس والأدوات والقاموس والمقالات…", searchHint: "اكتب حرفين على الأقل. استخدم ↑ ↓ ثم Enter.", noResults: "لا توجد نتائج مطابقة.",
     menu: "القائمة", close: "إغلاق",
@@ -49,11 +49,13 @@ window.I18N = {
     pProblem: "المشكلة", pRole: "دوري", pMethod: "المنهجية", pResult: "النتيجة", pLearned: "ما تعلمته",
     contactT: "تواصل معي", contactSub: "للتعاون المهني، فرص العمل، أو اقتراحات المحتوى.", name: "الاسم", yourEmail: "بريدك الإلكتروني", subject: "الموضوع", message: "الرسالة", send: "إرسال عبر البريد", sendWa: "واتساب", formNote: "سيُفتح تطبيق البريد لديك برسالة جاهزة — لا تُخزَّن بياناتك على هذا الموقع.", badEmail: "أدخل بريدًا إلكترونيًا صحيحًا.",
     privacyT: "الخصوصية وشروط الاستخدام", footerTag: "هندسة الجودة… وضمان السلامة.", footerNote: "المحتوى تعليمي ولا يحل محل متطلبات الجهات الرقابية أو المعايير المعتمدة.", rights: "جميع الحقوق محفوظة", explore: "استكشف", platform: "المنصة", connect: "تواصل",
+    books: { t: "مؤلفاتي", sub: "كتب ألّفتها في الغذاء والتصنيع والتاريخ، متاحة للقراءة والمشاهدة أونلاين.", feat: "كتاب جديد", by: "بقلم م. علاء الدين البشرى", chain: "من الحقل إلى السوق", play: "تشغيل عرض الكتاب", vNote: "يُحمَّل الفيديو من يوتيوب عند الضغط فقط.", more: "كل المؤلفات", forWho: "لمن هذا الكتاب؟" },
+    linksT: "كل روابطي", linksSub: "جميع روابطي المهنية والاجتماعية ومؤلفاتي في مكان واحد.", aboutVideo: "فيديو تعريفي",
     notFound: "الصفحة غير موجودة", backHome: "العودة للرئيسية", lang: "English", langCode: "EN",
   },
   en: {
     skip: "Skip to content",
-    nav: { home: "Home", profile: "About", lamp: "Quality Lamp", tools: "Tools", dictionary: "Dictionary", knowledge: "Knowledge", projects: "Projects", contact: "Contact" },
+    nav: { home: "Home", profile: "About", lamp: "Quality Lamp", tools: "Tools", dictionary: "Dictionary", knowledge: "Knowledge", books: "Books", projects: "Projects", contact: "Contact" },
     navLong: { experience: "Experience", certifications: "Education & Certifications" },
     search: "Search", searchPh: "Search lessons, tools, dictionary and articles…", searchHint: "Type at least two characters. Use ↑ ↓ then Enter.", noResults: "No matching results.",
     menu: "Menu", close: "Close",
@@ -100,6 +102,8 @@ window.I18N = {
     pProblem: "Problem", pRole: "My role", pMethod: "Method", pResult: "Result", pLearned: "What I learned",
     contactT: "Contact Me", contactSub: "For professional collaboration, job opportunities or content suggestions.", name: "Name", yourEmail: "Your email", subject: "Subject", message: "Message", send: "Send by email", sendWa: "WhatsApp", formNote: "Your email app will open with the message ready — nothing is stored on this site.", badEmail: "Enter a valid email address.",
     privacyT: "Privacy & terms of use", footerTag: "Engineering Quality. Ensuring Safety.", footerNote: "Content is educational and does not replace regulatory requirements or approved standards.", rights: "All rights reserved", explore: "Explore", platform: "Platform", connect: "Connect",
+    books: { t: "Books", sub: "Books I've written on food, industry and history, to read or watch online.", feat: "New book", by: "By Eng. Alaeldeen Albushra", chain: "From field to market", play: "Play the book presentation", vNote: "The video loads from YouTube only when you press play.", more: "All books", forWho: "Who is it for?" },
+    linksT: "All my links", linksSub: "My professional, social and publishing links in one place.", aboutVideo: "About-me video",
     notFound: "Page not found", backHome: "Back to home", lang: "العربية", langCode: "AR",
   },
 };
@@ -150,6 +154,15 @@ window.ICONS = (function () {
     truck: s('<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>'),
     bug: s('<rect x="7" y="7" width="10" height="13" rx="5"/><path d="M12 7V4M9 4l1.5 2M15 4l-1.5 2M3 12h4M17 12h4M3 18h4M17 18h4"/>'),
     chart: s('<path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/>'),
+    linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4v11H3v-11Zm6.5 0h3.8v1.5h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1v5.45h-4v-4.83c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.85 1.25-1.85 2.55v4.91h-4v-11Z"/></svg>',
+    instagram: s('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>'),
+    facebook: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46H16.6V4.46A21 21 0 0 0 14.3 4.3c-2.3 0-3.8 1.4-3.8 3.95v2.25H8v3h2.5V21h3Z"/></svg>',
+    xlogo: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3c.3 2.1 1.6 3.6 3.9 3.8v3a7 7 0 0 1-3.9-1.2v6.2a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.1a2.7 2.7 0 1 0 1.8 2.5V3h3Z"/></svg>',
+    telegram: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 4.2 18.4 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L5.9 13 1 11.5c-1-.3-1-1 .2-1.5l19-7.3c.9-.3 1.6.2 1.4 1.5Z"/></svg>',
+    spark: s('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+    play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg>',
+    external: s('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', 'class="flip"'),
     youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg>',
   };
 })();

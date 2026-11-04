@@ -98,6 +98,8 @@ window.SITE = (function () {
       { n: { ar: "دورة الطائرات بدون طيار", en: "Drone Course" }, by: { ar: "جامعة الملك خالد", en: "King Khalid University" }, g: "pd" },
     ],
     achievements: [
+      { ar: "مؤلف كتاب «الذهب المسلوب — صناعة وتنافسية»: تحويل خامات السودان الزراعية والحيوانية إلى منتجات غذائية آمنة ومنافسة.", en: "Author of \"Stolen Gold — Industry & Competitiveness\": turning Sudan's agricultural and livestock raw materials into safe, competitive food products." },
+      { ar: "مؤلف كتاب «عودة عهد الممالك» (الجزء الأول).", en: "Author of \"The Return of the Kingdoms\" (part one)." },
       { ar: "شهادة براءة اختراع — وزارة الملكية الفكرية السودانية: إنتاج بسكويت العدس «هيمو».", en: "Patent Certificate — Sudanese Ministry of Intellectual Property: lentil-based biscuits (\"Hemo\")." },
       { ar: "المشاركة في جائزة هالت برايز الإقليمية — جامعة الزعيم الأزهري (تحدي ريادة الأعمال الاجتماعية).", en: "Hult Prize Regional participant, Al-Zaim Al-Azhari University — Social Entrepreneurship Challenge." },
     ],
@@ -509,5 +511,67 @@ window.SITE = (function () {
     },
   ];
 
-  return { REVIEWED, profile, modules, paths, cats, dict, articles, faq, sources, projects };
+
+  /* ---------------- Books & links (from linktr.ee/aladeen35) ---------------- */
+  const books = [
+    {
+      id: "stolen-gold", featured: true, cover: "assets/book-stolen-gold.webp", coverW: 1280, coverH: 720,
+      title: { ar: "الذهب المسلوب", en: "Stolen Gold" },
+      subtitle: { ar: "صناعة وتنافسية — الطبعة الأولى", en: "Industry & Competitiveness — First edition" },
+      kind: { ar: "كتاب إلكتروني", en: "Ebook" },
+      blurb: {
+        ar: "الذهب المسلوب كتاب عملي ملهم يناقش كيف يمكن تحويل خامات السودان الزراعية والحيوانية إلى منتجات غذائية آمنة ومنافسة. لا يقف الكتاب عند تشخيص مشكلة تصدير الخام واستيراد المنتج، بل يقدم رؤية عملية لبناء سلاسل قيمة تبدأ من الحقل، وتمر عبر الجودة والتصنيع والتعبئة، وتنتهي بعلامة تجارية قادرة على المنافسة.",
+        en: "Stolen Gold is a practical, inspiring book on how Sudan's agricultural and livestock raw materials can become safe, competitive food products. It goes beyond diagnosing the export-raw, import-finished problem and lays out a practical vision for value chains that start in the field, pass through quality, processing and packaging, and end in a brand able to compete.",
+      },
+      audience: { ar: "يخاطب الكتاب المستثمر المحلي، والمزارع، ومسؤول الجودة، والشباب الباحثين عن فرص إنتاج حقيقية.", en: "Written for local investors, farmers, quality officers, and young people looking for real production opportunities." },
+      chain: [{ ar: "خامة أولية", en: "Raw material" }, { ar: "تصنيع", en: "Processing" }, { ar: "تعبئة", en: "Packaging" }, { ar: "سوق", en: "Market" }],
+      video: "VtUYctTCCzo",
+      url: "https://youtu.be/VtUYctTCCzo",
+      cta: { ar: "شاهد عرض الكتاب", en: "Watch the book presentation" },
+    },
+    {
+      id: "kingdoms", cover: "assets/book-kingdoms.webp", coverW: 560, coverH: 792,
+      title: { ar: "عودة عهد الممالك", en: "The Return of the Kingdoms" },
+      subtitle: { ar: "الجزء الأول", en: "Part one" },
+      kind: { ar: "كتاب تفاعلي (Flipbook)", en: "Flipbook" },
+      blurb: { ar: "كتاب بقلم علاء الدين البشري، متاح للقراءة أونلاين بصيغة كتاب تفاعلي.", en: "A book by Alaeldeen Albushra, available to read online as an interactive flipbook." },
+      url: "https://heyzine.com/flip-book/b6d1febfe4.html",
+      cta: { ar: "اقرأ الكتاب", en: "Read the book" },
+    },
+  ];
+
+  const links = {
+    groups: [
+      { id: "pro", t: { ar: "مهني", en: "Professional" }, items: [
+        { n: "LinkedIn", icon: "linkedin", u: "https://linkedin.com/in/aladeen35/", d: "in/aladeen35" },
+        { n: { ar: "سيرة ذاتية متوافقة مع ATS (PDF)", en: "ATS-friendly CV (PDF)" }, icon: "download", u: "https://ugc.production.linktr.ee/5b271bcd-6c28-4093-a59f-09cdcab3d3c7_hand-ATS-CV.pdf", d: "Linktree" },
+        { n: { ar: "سيرة ذاتية ATS عبر واتساب", en: "ATS CV on WhatsApp" }, icon: "wa", u: "https://wa.me/p/3834966149940123/966591723483", d: "WhatsApp catalog" },
+        { n: { ar: "سيرة ذاتية تفاعلية (Flipbook)", en: "Flipbook CV" }, icon: "book", u: "https://heyzine.com/flip-book/ede912da11.html", d: "heyzine" },
+        { n: { ar: "فيديو تعريفي عني", en: "About-me video" }, icon: "youtube", u: "https://youtu.be/-ETJpZbi5O4", d: "YouTube" },
+      ] },
+      { id: "books", t: { ar: "كتب ومحتوى", en: "Books & content" }, items: [
+        { n: { ar: "الذهب المسلوب — عرض الكتاب", en: "Stolen Gold — book presentation" }, icon: "book", u: "https://youtu.be/VtUYctTCCzo", d: "YouTube" },
+        { n: { ar: "عودة عهد الممالك", en: "The Return of the Kingdoms" }, icon: "book", u: "https://heyzine.com/flip-book/b6d1febfe4.html", d: "Flipbook" },
+        { n: { ar: "قناة يوتيوب", en: "YouTube channel" }, icon: "youtube", u: "https://www.youtube.com/channel/UCaCs0I6mOb2lHWZ8ZCM5vew", d: "YouTube" },
+        { n: { ar: "تحدث مع جني علاء الدين", en: "Chat with Aladdin Genie" }, icon: "spark", u: "https://character.ai/chat/pGvYRq_Ryx-SLK_TFKDZPL1bq2_nAsLHki1xphUugY8", d: "character.ai" },
+      ] },
+      { id: "social", t: { ar: "تواصل اجتماعي", en: "Social" }, items: [
+        { n: "Instagram", icon: "instagram", u: "https://www.instagram.com/ala_deen_35/", d: "@ala_deen_35" },
+        { n: "X (Twitter)", icon: "xlogo", u: "https://x.com/aladeen35", d: "@aladeen35" },
+        { n: "Facebook", icon: "facebook", u: "https://www.facebook.com/drameer.ml", d: "drameer.ml" },
+        { n: "TikTok", icon: "tiktok", u: "https://tiktok.com/@aladeen35", d: "@aladeen35" },
+        { n: "Telegram", icon: "telegram", u: "https://t.me/aladee1995", d: "@aladee1995" },
+        { n: "WhatsApp", icon: "wa", u: "https://wa.me/966591723483", d: "+966 59 172 3483" },
+        { n: { ar: "البريد الإلكتروني", en: "Email" }, icon: "mail", u: "mailto:aladeen35@gmail.com", d: "aladeen35@gmail.com" },
+      ] },
+      { id: "biz", t: { ar: "أعمال أخرى", en: "Other ventures" }, items: [
+        { n: { ar: "البشري للسفر — albushra.sd", en: "Albushra Travel — albushra.sd" }, icon: "globe", u: "https://linktr.ee/albushra.sd", d: "Linktree" },
+        { n: { ar: "كل الروابط على Linktree", en: "All links on Linktree" }, icon: "globe", u: "https://linktr.ee/aladeen35", d: "linktr.ee/aladeen35" },
+      ] },
+    ],
+    // footer / header icon row
+    social: [["linkedin", "LinkedIn", "https://linkedin.com/in/aladeen35/"], ["youtube", "YouTube", "https://www.youtube.com/channel/UCaCs0I6mOb2lHWZ8ZCM5vew"], ["instagram", "Instagram", "https://www.instagram.com/ala_deen_35/"], ["xlogo", "X", "https://x.com/aladeen35"], ["facebook", "Facebook", "https://www.facebook.com/drameer.ml"], ["tiktok", "TikTok", "https://tiktok.com/@aladeen35"], ["telegram", "Telegram", "https://t.me/aladee1995"], ["wa", "WhatsApp", "https://wa.me/966591723483"], ["mail", "Email", "mailto:aladeen35@gmail.com"]],
+  };
+
+  return { REVIEWED, profile, modules, paths, cats, dict, articles, faq, sources, projects, books, links };
 })();
