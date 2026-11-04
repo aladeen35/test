@@ -482,7 +482,11 @@
   function page(sub) {
     if (!sub) return index();
     const map = { inspection: inspectionPage, ncr: ncr.page, rca: rca.page, risk: risk.page, temp: temp.page, dilution: dilutionPage, compliance: compliancePage };
-    return map[sub] ? map[sub]() : A.pages.notfound();
+    const fn = map[sub] || (extra[sub] && extra[sub].page);
+    return fn ? fn() : A.pages.notfound();
   }
-  window.TOOLS = { list, page };
+  // other files add tools through TOOLS.register(meta, pageFn); they get the shared helpers in TOOLS.h
+  const extra = {};
+  function register(meta, pageFn, at) { extra[meta.id] = { page: pageFn }; if (at == null) list.push(meta); else list.splice(at, 0, meta); }
+  window.TOOLS = { list, page, register, h: { printHtml, disclaimer, crumbsFor, kvTable, today, opt, readImage, store, esc, L, t, $, $$, toast, download, csv, uid, fmtDate, pageHead } };
 })();
