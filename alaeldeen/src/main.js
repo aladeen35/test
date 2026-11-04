@@ -5,6 +5,7 @@ import "../css/books.css";
 import "../css/tools-extra.css";
 import "../css/library.css";
 import "../css/assistant.css";
+import "../css/book.css";
 import "./styles/tailwind.css";
 import "./styles/cinema.css";
 
@@ -18,3 +19,4 @@ import "../js/tools.js";
 import "../js/tools-extra.js";
 import "./pages/library.js";
 import "./pages/assistant.js";
+import "./pages/book.js";

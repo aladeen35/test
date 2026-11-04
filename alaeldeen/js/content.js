@@ -516,10 +516,29 @@ window.SITE = (function () {
   /* ---------------- Books & links (from linktr.ee/aladeen35) ---------------- */
   const books = [
     {
-      id: "stolen-gold", featured: true, cover: "assets/book-stolen-gold.webp", coverW: 1280, coverH: 720,
+      id: "stolen-gold", featured: true, cover: "assets/book-stolen-gold-cover.webp", coverW: 768, coverH: 1024, spread: "assets/book-stolen-gold.webp",
+      question: { ar: "كيف نحوّل خامات السودان إلى صناعة غذائية آمنة ومنافسة؟", en: "How do we turn Sudan's raw materials into a safe, competitive food industry?" },
+      author: { ar: "المهندس علاء الدين البشري محمد الحسن", en: "Eng. Alaeldeen Albushra Mohamed Elhassan" }, // as printed in the book
+      fullSubtitle: { ar: "نحو نهضة صناعية للموارد السودانية — خارطة طريق لتطبيق نظم الجودة والتصنيع الحديث للمحاصيل والثروات الحيوانية", en: "Towards an industrial renaissance of Sudan's resources — a roadmap for quality systems and modern processing of crops and livestock" },
+      publisher: { ar: "دار النماء للمعرفة والتنمية للنشر والتوزيع — الخرطوم", en: "Dar Al-Namaa for Knowledge & Development — Khartoum" },
+      edition: { ar: "الطبعة الأولى 2026م", en: "First edition, 2026" },
+      pdf: "books/stolen-gold.pdf", pdfPages: 62, pageDir: "books/stolen-gold", pageOffset: 8,
+      // contents as printed in the book; p = PDF page (book page + 8)
+      toc: [
+        { t: "مقدمة الكتاب: صرخة من أجل القيمة المضافة", p: 9 }, { t: "مصفوفة التحوّل الاستراتيجي الشاملة", p: 11 },
+        { t: "الباب الأول: الفجوة المؤلمة — لماذا نخسر الذهب؟", p: 14 }, { t: "الفصل الأول: تشخيص واقع الموارد الاقتصادية في السودان", p: 15, lvl: 1 }, { t: "الفصل الثاني: سلاسل الإمداد المفقودة والفجوة بين الحقل والمنشأة", p: 18, lvl: 1 },
+        { t: "الباب الثاني: موارد السودان الخام — من المحصول إلى فرصة صناعية", p: 21 }, { t: "الفصل الثالث: السمسم والزيوت النباتية", p: 22, lvl: 1 }, { t: "الفصل الرابع: الصمغ العربي", p: 26, lvl: 1 }, { t: "الفصل الخامس: الثروة الحيوانية واللحوم", p: 29, lvl: 1 }, { t: "الفصل السادس: البستنة والفاكهة والخضروات", p: 33, lvl: 1 },
+        { t: "الباب الثالث: منظومة الجودة — كيف نحوّل الخام إلى منتج آمن؟", p: 36 }, { t: "الفصل السابع: عقلية التصنيع ومنظومة HACCP", p: 37, lvl: 1 },
+        { t: "الباب الرابع: من الفكرة إلى المصنع — الدليل التطبيقي", p: 41 }, { t: "الفصل الثامن: الدليل التطبيقي لبناء المصنع", p: 42, lvl: 1 },
+        { t: "الباب الخامس: خارطة التحوّل — من الذهب المسلوب إلى الصناعة الوطنية", p: 45 }, { t: "الفصل التاسع: الأدوار وخارطة الطريق", p: 46, lvl: 1 },
+        { t: "الخاتمة والتوصيات التنفيذية", p: 49 }, { t: "الملاحق العملية", p: 51 }, { t: "المراجع والمصادر", p: 61 },
+      ],
+      // product examples and HACCP points as printed on the real cover
+      products: ["زيت السمسم الطبيعي", "زبدة الفول السوداني", "الطحينة", "الكركدي المجفف", "الصمغ العربي"],
+      haccp: ["تحليل المخاطر", "نقاط التحكم الحرجة", "الجودة", "التتبع والشفافية"],
       title: { ar: "الذهب المسلوب", en: "Stolen Gold" },
       subtitle: { ar: "صناعة وتنافسية — الطبعة الأولى", en: "Industry & Competitiveness — First edition" },
-      kind: { ar: "كتاب إلكتروني", en: "Ebook" },
+      kind: { ar: "كتاب — 62 صفحة", en: "Book — 62 pages" },
       blurb: {
         ar: "الذهب المسلوب كتاب عملي ملهم يناقش كيف يمكن تحويل خامات السودان الزراعية والحيوانية إلى منتجات غذائية آمنة ومنافسة. لا يقف الكتاب عند تشخيص مشكلة تصدير الخام واستيراد المنتج، بل يقدم رؤية عملية لبناء سلاسل قيمة تبدأ من الحقل، وتمر عبر الجودة والتصنيع والتعبئة، وتنتهي بعلامة تجارية قادرة على المنافسة.",
         en: "Stolen Gold is a practical, inspiring book on how Sudan's agricultural and livestock raw materials can become safe, competitive food products. It goes beyond diagnosing the export-raw, import-finished problem and lays out a practical vision for value chains that start in the field, pass through quality, processing and packaging, and end in a brand able to compete.",
@@ -528,7 +547,7 @@ window.SITE = (function () {
       chain: [{ ar: "خامة أولية", en: "Raw material" }, { ar: "تصنيع", en: "Processing" }, { ar: "تعبئة", en: "Packaging" }, { ar: "سوق", en: "Market" }],
       video: "VtUYctTCCzo",
       url: "https://youtu.be/VtUYctTCCzo",
-      cta: { ar: "شاهد عرض الكتاب", en: "Watch the book presentation" },
+      cta: { ar: "شاهد عرض الكتاب", en: "Watch the book presentation" }, readCta: { ar: "اقرأ الكتاب", en: "Read the book" },
     },
     {
       id: "kingdoms", cover: "assets/book-kingdoms.webp", coverW: 560, coverH: 792,

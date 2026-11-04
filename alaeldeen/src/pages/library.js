@@ -100,8 +100,8 @@ const BOOKS = [
 ];
 
 function myBooks() {
-  return S.books.map((b) => ({ id: "mine-" + b.id, shelf: "mine", cat: "mine", mine: b, issuer: "Eng. Alaeldeen Albushra", year: b.id === "stolen-gold" ? { ar: "الطبعة الأولى", en: "1st ed." } : { ar: "الجزء الأول", en: "Part 1" },
-    title: b.title, desc: b.blurb, points: b.chain ? [{ ar: "من الحقل إلى السوق", en: "From field to market" }] : [], url: b.url, cover: b.cover, cta: b.cta }));
+  return S.books.map((b) => ({ id: "mine-" + b.id, shelf: "mine", cat: "mine", mine: b, issuer: "Eng. Alaeldeen Albushra", year: b.id === "stolen-gold" ? "2026" : { ar: "الجزء الأول", en: "Part 1" },
+    title: b.title, desc: b.fullSubtitle || b.blurb, points: b.toc ? [{ ar: `${b.pdfPages} صفحة، 9 فصول في 5 أبواب`, en: `${b.pdfPages} pages, 9 chapters in 5 parts` }, { ar: "من الحقل إلى السوق: سلاسل القيمة وHACCP", en: "Field to market: value chains and HACCP" }, b.edition] : [], url: b.url, cover: b.cover, cta: b.cta, pdf: b.pdf }));
 }
 const SHELVES = [["mine", { ar: "رف مؤلفاتي", en: "My books" }], ["intl", { ar: "مراجع سلامة الغذاء الدولية", en: "International food safety references" }], ["std", { ar: "المواصفات وأنظمة الإدارة", en: "Standards & management systems" }], ["lab", { ar: "المختبر والتشريعات والتغذية", en: "Lab, regulation & nutrition" }]];
 
@@ -121,8 +121,8 @@ function detailHtml(b) {
   const btns = [];
   if (b.pdf) btns.push(`<a class="btn btn-gold" href="${b.pdf}" target="_blank" rel="noopener">${I.download}<span>${esc(W("فتح PDF", "Open PDF"))}</span></a>`);
   if (b.mine) {
-    btns.push(`<a class="btn btn-gold" href="${b.url}" target="_blank" rel="noopener">${I.play}<span>${esc(L(b.cta))}</span></a>`);
-    btns.push(`<a class="btn btn-line" href="#/books">${I.book}<span>${esc(W("صفحة الكتاب", "Book page"))}</span></a>`);
+    if (b.mine.featured) btns.push(`<a class="btn btn-gold" href="#/books">${I.book}<span>${esc(W("اقرأ الكتاب", "Read the book"))}</span></a>`);
+    btns.push(`<a class="btn ${b.mine.featured ? "btn-line" : "btn-gold"}" href="${b.url}" target="_blank" rel="noopener">${I.play}<span>${esc(L(b.cta))}</span></a>`);
   } else btns.push(`<a class="btn ${b.pdf ? "btn-line" : "btn-gold"}" href="${b.url}" target="_blank" rel="noopener">${I.external}<span>${esc(b.paid ? W("صفحة المواصفة الرسمية", "Official standard page") : W("زيارة المصدر", "Visit source"))}</span></a>`);
   return `<div class="lb-detail-in" data-for="${b.id}">
     <div class="lb-stage"><div class="lb-book" style="--c1:${(b.c || ["#3a2a10", "#1a1206"])[0]};--c2:${(b.c || ["#3a2a10", "#1a1206"])[1]}"><span class="lb-front ${b.cover ? "bk-img" : ""}">${cover}</span><span class="lb-spine"></span><span class="lb-pages"></span></div></div>
