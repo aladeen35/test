@@ -488,5 +488,5 @@
   // other files add tools through TOOLS.register(meta, pageFn); they get the shared helpers in TOOLS.h
   const extra = {};
   function register(meta, pageFn, at) { extra[meta.id] = { page: pageFn }; if (at == null) list.push(meta); else list.splice(at, 0, meta); }
-  window.TOOLS = { list, page, register, h: { printHtml, disclaimer, crumbsFor, kvTable, today, opt, readImage, store, esc, L, t, $, $$, toast, download, csv, uid, fmtDate, pageHead } };
+  window.TOOLS = { list, page, register, h: { recordTool, printHtml, disclaimer, crumbsFor, kvTable, today, opt, readImage, store, esc, L, t, $, $$, toast, download, csv, uid, fmtDate, pageHead } };
 })();
