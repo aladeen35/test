@@ -12,6 +12,7 @@ window.SITE = (function () {
       en: "Quality Control & Food Safety Officer | Food Microbiology Specialist",
     },
     location: { ar: "مكة المكرمة، المملكة العربية السعودية", en: "Makkah, Saudi Arabia" },
+    careerStart: 2020,
     email: "aladeen35@gmail.com",
     phone: "+966 59 172 3483",
     whatsapp: "966591723483",
@@ -20,8 +21,8 @@ window.SITE = (function () {
       en: "Arabic (native), English (intermediate)",
     },
     summary: {
-      ar: "خريج علوم وتقنية الأغذية، ولدي أكثر من ثلاث سنوات من الخبرة العملية في مراقبة الجودة وسلامة الغذاء وميكروبيولوجيا الأغذية، في مجالات التموين وإنتاج الوجبات الصحية وخدمات المشروبات. أمتلك خبرة في تطبيق مبادئ الهاسب (HACCP) ومتطلبات المواصفتين ISO 22000:2018 وISO 9001، وفي الفحص الميكروبيولوجي ومتابعة النظافة العامة وتقييم الموردين. لدي سجل واضح في توحيد إجراءات العمل وتقليل الفاقد والحفاظ على توثيق جاهز للتدقيق في أي وقت، وأستخدم أدوات الذكاء الاصطناعي وصياغة الأوامر لتسريع إعداد التقارير والمواد التدريبية.",
-      en: "Food Science and Technology graduate with over three years of hands-on experience in quality control, food safety and food microbiology across catering, healthy-meal production and beverage service operations. Experienced in applying HACCP principles, ISO 22000:2018 and ISO 9001 requirements, microbiological testing, hygiene monitoring and supplier inspection. Strong record of standardizing processes, reducing waste and maintaining audit-ready documentation, and a practical user of AI tools and prompt writing to speed up reporting and training work.",
+      ar: "خريج علوم وتقنية الأغذية، ولدي خبرة عملية منذ عام 2020 في مراقبة الجودة وسلامة الغذاء وميكروبيولوجيا الأغذية، في مجالات التموين وإنتاج الوجبات الصحية وخدمات المشروبات. أمتلك خبرة في تطبيق مبادئ الهاسب (HACCP) ومتطلبات المواصفتين ISO 22000:2018 وISO 9001، وفي الفحص الميكروبيولوجي ومتابعة النظافة العامة وتقييم الموردين. لدي سجل واضح في توحيد إجراءات العمل وتقليل الفاقد والحفاظ على توثيق جاهز للتدقيق في أي وقت، وأستخدم أدوات الذكاء الاصطناعي وصياغة الأوامر لتسريع إعداد التقارير والمواد التدريبية.",
+      en: "Food Science and Technology graduate with hands-on experience since 2020 in quality control, food safety and food microbiology across catering, healthy-meal production and beverage service operations. Experienced in applying HACCP principles, ISO 22000:2018 and ISO 9001 requirements, microbiological testing, hygiene monitoring and supplier inspection. Strong record of standardizing processes, reducing waste and maintaining audit-ready documentation, and a practical user of AI tools and prompt writing to speed up reporting and training work.",
     },
     competencies: [
       { ar: "أنظمة إدارة سلامة الغذاء: HACCP وISO 22000:2018 وISO 9001", en: "Food safety management systems: HACCP, ISO 22000:2018, ISO 9001" },

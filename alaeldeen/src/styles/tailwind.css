@@ -1,0 +1,22 @@
+/* Tailwind v4: theme + utilities only. Preflight is left out on purpose so the
+   hand-written base styles in css/site.css (RTL, forms, print) stay intact. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../../js";
+@source "../cinema";
+
+@theme {
+  --color-ink: #171717;
+  --color-ink-2: #1d1d1d;
+  --color-gold: #ddb03f;
+  --color-gold-2: #f2c95a;
+  --color-gold-ink: #1a1405;
+  --color-mist: #c4c4c4;
+  --color-lamp: #153b46;
+  --color-teal: #53b9ad;
+  --font-ar: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-en: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --ease-cine: cubic-bezier(0.16, 0.84, 0.24, 1);
+}

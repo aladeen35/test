@@ -1,7 +1,7 @@
 /* Quality Toolkit — every tool runs in the browser and saves to localStorage only. */
 (function () {
   "use strict";
-  const A = window.APP, I = window.ICONS, S = window.SITE;
+  const A = window.APP, I = window.ICONS;
   const { esc, L, t, $, $$, store, toast, download, csv, uid, fmtDate, pageHead } = A;
   const ar = () => A.lang === "ar";
   const W = (a, e) => (ar() ? a : e);
@@ -113,7 +113,7 @@
       $("#rPrintCur").addEventListener("click", () => { const r = read(); cfg.compute && cfg.compute(r); doPrint(r); });
       $("#rList").addEventListener("click", (e) => {
         const ed = e.target.closest("[data-ed]"), pr = e.target.closest("[data-pr]"), del = e.target.closest("[data-del]");
-        if (ed) { fill(recs().find((r) => r.id === ed.dataset.ed)); form.scrollIntoView({ behavior: "smooth" }); }
+        if (ed) { fill(recs().find((r) => r.id === ed.dataset.ed)); A.scrollTo(form, true); }
         if (pr) doPrint(recs().find((r) => r.id === pr.dataset.pr));
         if (del && confirm(t("confirmDel"))) { store.set(key, recs().filter((r) => r.id !== del.dataset.del)); if (editing === del.dataset.del) fill(null); drawList(); toast(t("deleted")); }
       });
@@ -396,7 +396,7 @@
         });
         const drawList = () => { const all = store.get(recKey, []); $("#iList").innerHTML = all.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>${esc(W("التاريخ", "Date"))}</th><th>${esc(W("المنشأة", "Site"))}</th><th>${esc(W("المفتش", "Inspector"))}</th><th>%</th><th></th></tr></thead><tbody>${all.slice().reverse().map((r) => `<tr><td>${esc(fmtDate(r.date))}</td><td>${esc(r.site)}</td><td>${esc(r.by)}</td><td><span class="chip ${r.pct == null ? "" : r.pct >= 90 ? "ok" : r.pct >= 75 ? "warn" : "bad"}">${r.pct == null ? "—" : r.pct + "%"}</span></td><td style="white-space:nowrap"><button class="icon-btn" style="width:34px;height:34px" data-load="${r.id}" aria-label="${esc(t("edit"))}">${I.note}</button> <button class="icon-btn" style="width:34px;height:34px" data-ip="${r.id}" aria-label="${esc(t("print"))}">${I.printer}</button> <button class="icon-btn" style="width:34px;height:34px" data-idel="${r.id}" aria-label="${esc(t("del"))}">${I.trash}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${esc(t("none"))}</div>`; };
         $("#iList").addEventListener("click", (e) => { const all = store.get(recKey, []); const ld = e.target.closest("[data-load]"), ip = e.target.closest("[data-ip]"), dl = e.target.closest("[data-idel]");
-          if (ld) { d = JSON.parse(JSON.stringify(all.find((r) => r.id === ld.dataset.load))); save(); head(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+          if (ld) { d = JSON.parse(JSON.stringify(all.find((r) => r.id === ld.dataset.load))); save(); head(); draw(); A.scrollTo(0, true); }
           if (ip) { const r = all.find((x) => x.id === ip.dataset.ip); printHtml(`${L(tool.t)} — ${r.site}`, report(r)); }
           if (dl && confirm(t("confirmDel"))) { store.set(recKey, all.filter((r) => r.id !== dl.dataset.idel)); drawList(); toast(t("deleted")); } });
         head(); draw(); drawList();

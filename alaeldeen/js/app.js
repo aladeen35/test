@@ -8,7 +8,7 @@
   const store = {
     get(k, d) { try { const v = localStorage.getItem("ab:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem("ab:" + k, JSON.stringify(v)); return true; } catch (e) { toast(app.t("importFail"), "bad"); return false; } },
-    del(k) { try { localStorage.removeItem("ab:" + k); } catch (e) {} },
+    del(k) { try { localStorage.removeItem("ab:" + k); } catch (e) { /* storage unavailable */ } },
   };
   let lang = store.get("lang", null) || ((navigator.language || "").toLowerCase().startsWith("en") ? "en" : "ar");
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -54,6 +54,11 @@
   const socialRow = () => S.links.social.map(([ic, n, u]) => `<a class="icon-btn" href="${u}"${ext(u)} aria-label="${esc(n)}" title="${esc(n)}">${I[ic]}</a>`).join("");
   const linksGrid = () => S.links.groups.map((g) => `<div class="link-group"><h3>${esc(L(g.t))}</h3><div class="grid">${g.items.map((it) => `<a class="card hover link-card" href="${it.u}"${ext(it.u)}><span class="ic">${I[it.icon] || I.globe}</span><span class="lc-t"><b>${esc(L(it.n))}</b><small dir="ltr">${esc(it.d)}</small></span>${I.external}</a>`).join("")}</div></div>`).join("");
   const videoBox = (b) => `<div class="video" data-yt="${b.video}"><img src="${b.cover}" alt="${esc(L(b.title))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"><button type="button" class="play" aria-label="${esc(t("books.play"))}">${I.play}</button></div>`;
+  app.scrollTo = (target, smooth) => {
+    if (window.MOTION && window.MOTION.scrollTo) return window.MOTION.scrollTo(target, smooth);
+    if (target === 0) window.scrollTo(0, 0); else if (target) target.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "auto" });
+  };
+  const yearsExp = () => new Date().getFullYear() - S.profile.careerStart;
   const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["books", "#/books"], ["projects", "#/projects"], ["contact", "#/contact"]];
   function renderChrome() {
     document.documentElement.lang = lang;
@@ -90,42 +95,50 @@
 
   P.home = () => {
     const sp = t("spec"), icons = ["shield", "award", "gear", "hands", "flask", "leaf"];
-    const qa = (k, href, icon, cls) => { const v = t(k); return `<a class="card hover qa-card ${cls || ""}" href="${href}"><span class="ic">${I[icon]}</span><h3>${esc(v[0])}</h3><p>${esc(v[1])}</p><span class="btn btn-line btn-sm">${esc(v[2])} ${I.arrow}</span></a>`; };
-    const ab = t("qAbout");
+    const b = S.books.find((x) => x.featured);
+    const chapters = [
+      ["qAbout", "#/about", "user", "wide", true], ["qLamp", "#/lamp", "lamp", "teal"], ["qTools", "#/tools", "tools"],
+      ["qDict", "#/dictionary", "book"], ["qKnow", "#/knowledge", "stack"], ["qProj", "#/projects", "trophy"],
+    ];
+    const mq = sp.map((x, i) => `<span class="mq-item ${i % 2 ? "" : "solid"}">${I[icons[i]]}${esc(x[0])}<small>${esc(x[1])}</small></span>`).join("");
+    const nums = [[yearsExp(), "+", t("fYears")], [S.profile.experience.length, "", t("fOrgs")], [S.profile.certs.length, "", t("fCerts")], [S.books.length, "", t("books.t")], [1, "", t("fPatent")]];
     return `
-    <section class="hero"><div class="swoosh"></div><div class="wrap">
-      <div class="hero-copy fade-in">
-        <h1 tabindex="-1"><span class="l1">${esc(t("heroH1a"))}</span><span class="g">${esc(t("heroH1b"))}</span></h1>
-        <p class="role">${esc(t("heroRole"))}</p><div class="rule"></div>
-        <p class="lead">${esc(t("heroLead"))}</p>
-        <div class="cta">${btn("#/about", t("ctaProfile"), "btn-gold")}${btn("#/tools", t("ctaTools"), "btn-line", "tools")}${btn("#/lamp", t("ctaLamp"), "btn-teal", "lamp")}</div>
+    <section class="hero" data-scene="hero"><canvas class="hero-gl" aria-hidden="true"></canvas><div class="swoosh"></div><div class="wrap">
+      <div class="hero-copy">
+        <p class="hero-kicker" data-intro>ENG. ALAELDEEN — QUALITY &amp; SAFETY</p>
+        <h1 tabindex="-1"><span class="l1" data-split>${esc(t("heroH1a"))}</span><span class="g" data-split>${esc(t("heroH1b"))}</span></h1>
+        <p class="role" data-intro>${esc(t("heroRole"))}</p><div class="rule" data-intro-rule></div>
+        <p class="lead" data-intro>${esc(t("heroLead"))}</p>
+        <div class="cta" data-intro-cta>${btn("#/about", t("ctaProfile"), "btn-gold")}${btn("#/tools", t("ctaTools"), "btn-line", "tools")}${btn("#/lamp", t("ctaLamp"), "btn-teal", "lamp")}</div>
       </div>
-      <div class="hero-photo"><img src="assets/headshot.webp" alt="${esc(L(S.profile.name))}" width="640" height="916" fetchpriority="high">
-        <div class="hero-badge">${I.shield}<div><b>${esc(t("badgeT"))}</b><small>${esc(t("badgeS"))}</small></div></div></div>
-    </div></section>
-    <section class="strip" aria-label="specialties"><div class="wrap">${sp.map((x, i) => `<div class="it">${I[icons[i]]}<div><b>${esc(x[0])}</b><small>${esc(x[1])}</small></div></div>`).join("")}</div></section>
-    <section class="sec"><div class="wrap">
-      <div class="sec-hd"><div><span class="eyebrow">${esc(t("quick"))}</span><h2>${esc(t("quickSub"))}</h2></div></div>
-      <div class="grid quick-grid">
-        <a class="card hover qa-card qa-about" href="#/about"><img src="assets/fullbody.jpg" alt="" loading="lazy" width="620" height="970"><div class="bd"><span class="rule" style="width:40px;height:3px;background:var(--gold);border-radius:3px;margin-bottom:14px"></span><h3>${esc(ab[0])}</h3><p>${esc(ab[1])}</p><span class="btn btn-line btn-sm">${esc(ab[2])} ${I.arrow}</span></div></a>
-        ${qa("qLamp", "#/lamp", "lamp", "teal")}${qa("qDict", "#/dictionary", "book")}${qa("qTools", "#/tools", "tools")}${qa("qKnow", "#/knowledge", "stack")}${qa("qProj", "#/projects", "trophy")}
-      </div></div></section>
-    <section class="sec" style="padding-top:0"><div class="wrap">
-      <div class="sec-hd"><div><span class="eyebrow">${esc(t("facts"))}</span><h2>${esc(L(S.profile.title))}</h2></div></div>
-      <div class="facts">
-        <div class="fact"><b>3+</b><span>${esc(t("fYears"))}</span></div>
-        <div class="fact"><b>${S.profile.experience.length}</b><span>${esc(t("fOrgs"))}</span></div>
-        <div class="fact"><b>${S.profile.certs.length}</b><span>${esc(t("fCerts"))}</span></div>
-        <div class="fact"><b>1</b><span>${esc(t("fPatent"))}</span></div>
-      </div><p class="note">${esc(t("factsSub"))}</p></div></section>
-    ${(() => { const b = S.books.find((x) => x.featured); return `<section class="sec book-feature"><div class="wrap book-grid">
-      <a class="book-cover" href="#/books" aria-label="${esc(L(b.title))}"><img src="${b.cover}" alt="${esc(L(b.title))} — ${esc(L(b.subtitle))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"></a>
-      <div class="book-copy"><span class="eyebrow">${esc(t("books.feat"))} · ${esc(L(b.kind))}</span><h2 class="book-title">${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.subtitle))}</p>
+      <div class="hero-photo"><img src="assets/headshot.webp" alt="${esc(L(S.profile.name))}" width="640" height="916" fetchpriority="high" data-preload>
+        <div class="hero-badge">${I.shield}<div><b>${esc(t("badgeT").replace("{y}", yearsExp()))}</b><small>${esc(t("badgeS"))}</small></div></div></div>
+    </div><div class="scroll-cue" aria-hidden="true">SCROLL<i></i></div></section>
+
+    <section class="marquee" aria-label="specialties" data-scene="marquee"><div class="mq-track">${mq}${mq}</div></section>
+
+    <section class="chapters" data-scene="chapters">
+      <div class="wrap ch-head"><span class="eyebrow">${esc(t("quick"))}</span><h2 data-split-scrub>${esc(t("quickSub"))}</h2></div>
+      <div class="ch-pin"><div class="ch-track">${chapters.map(([k, href, icon, cls, photo], i) => { const v = t(k); return `
+        <a class="ch-panel ${cls || ""}" href="${href}">${photo ? `<span class="ch-bg"><img src="assets/fullbody.jpg" alt="" width="620" height="970" loading="lazy"></span>` : ""}<span class="ch-glow"></span>
+          <span class="ch-num">${String(i + 1).padStart(2, "0")}</span><span class="ch-ic">${I[icon]}</span>
+          <h3>${esc(v[0])}</h3><p>${esc(v[1])}</p><span class="ch-go">${esc(v[2])} ${I.arrow}</span></a>`; }).join("")}</div></div>
+    </section>
+
+    <section class="numbers" data-scene="numbers"><div class="wrap">
+      <span class="eyebrow">${esc(t("facts"))}</span><h2 class="mb-10 text-[clamp(26px,3vw,38px)]" data-split-scrub>${esc(L(S.profile.title))}</h2>
+      <div class="row-n">${nums.map(([n, suf, lab]) => `<div class="n"><b data-count="${n}" data-suffix="${suf}">${n}${suf}</b><span>${esc(lab)}</span></div>`).join("")}</div>
+      <p class="note mt-6">${esc(t("factsSub"))}</p></div></section>
+
+    <section class="sec book-feature" data-scene="book"><div class="wrap book-grid">
+      <div class="book-stage"><a class="book-cover" href="#/books" aria-label="${esc(L(b.title))}"><img src="${b.cover}" alt="${esc(L(b.title))} — ${esc(L(b.subtitle))}" loading="lazy" width="${b.coverW}" height="${b.coverH}"></a></div>
+      <div class="book-copy"><span class="eyebrow">${esc(t("books.feat"))} · ${esc(L(b.kind))}</span><h2 class="book-title" data-split>${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.subtitle))}</p>
         <p style="color:#dcdcdc">${esc(L(b.blurb))}</p>
         <div class="chain">${b.chain.map((c, i) => `<span>${esc(L(c))}</span>${i < b.chain.length - 1 ? I.arrow : ""}`).join("")}</div>
         <div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="${b.url}" target="_blank" rel="noopener">${I.play}<span>${esc(L(b.cta))}</span></a>${btn("#/books", t("books.more"), "btn-line")}</div></div>
-    </div></section>`; })()}
-    <section class="band"><div class="wrap"><q>${esc(t("quote"))}</q>${btn("#/contact", t("contactMe"), "btn-gold", "mail")}</div></section>`;
+    </div></section>
+
+    <section class="manifesto" data-scene="quote"><div class="wrap"><p class="mf-text" data-read>${esc(t("quote"))}</p>${btn("#/contact", t("contactMe"), "btn-gold", "mail")}</div></section>`;
   };
 
   function duration(from, to) {
@@ -170,7 +183,7 @@
         <div class="card"><h3>${esc(t("skills"))}</h3><div class="skills">${pr.skills.map((s) => `<span class="chip gold" dir="ltr">${esc(s)}</span>`).join("")}</div></div>
         <div class="card"><h3>${esc(t("achievements"))}</h3><ul class="ticks">${pr.achievements.map((a) => `<li>${esc(L(a))}</li>`).join("")}</ul></div>
       </div></div></section>`;
-    return { html, after: () => { if (sub) { const el = document.getElementById(sub); if (el) setTimeout(() => el.scrollIntoView({ block: "start" }), 30); } } };
+    return { html, after: () => { if (sub) { const el = document.getElementById(sub); if (el) setTimeout(() => app.scrollTo(el, false), 60); } } };
   };
   P.experience = () => P.about("experience");
   P.certifications = () => P.about("certifications");
@@ -243,7 +256,7 @@
     return {
       html, title: L(m.title),
       after: () => {
-        $$("[data-jump]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); document.getElementById(a.dataset.jump).scrollIntoView({ behavior: "smooth" }); }));
+        $$("[data-jump]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); app.scrollTo(document.getElementById(a.dataset.jump), true); }));
         $("#markDone").addEventListener("click", () => { const p = prog.get(); if (p.done[m.id]) delete p.done[m.id]; else p.done[m.id] = Date.now(); prog.save(p); toast(t("saved")); route(); });
         $("#favMod").addEventListener("click", () => { const p = prog.get(); const i = p.favMods.indexOf(m.id); i >= 0 ? p.favMods.splice(i, 1) : p.favMods.push(m.id); prog.save(p); route(); });
         $("#printCk").addEventListener("click", () => window.print());
@@ -303,7 +316,7 @@
           const s = e.target.closest("[data-say]"), f = e.target.closest("[data-fav]"), r = e.target.closest("[data-rel]");
           if (s) { if ("speechSynthesis" in window) { const u = new SpeechSynthesisUtterance(s.dataset.say); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); } else toast("Speech not supported", "bad"); }
           if (f) { const list = favTerms(); const i = list.indexOf(f.dataset.fav); i >= 0 ? list.splice(i, 1) : list.push(f.dataset.fav); store.set("favTerms", list); draw(); const nf = $(`[data-fav="${CSS.escape(f.dataset.fav)}"]`); nf && nf.focus(); }
-          if (r) { q.value = r.dataset.rel; cat = ""; $$(".filters .chip").forEach((x) => x.setAttribute("aria-pressed", x.dataset.cat === "")); draw(); q.scrollIntoView({ block: "center" }); }
+          if (r) { q.value = r.dataset.rel; cat = ""; $$(".filters .chip").forEach((x) => x.setAttribute("aria-pressed", x.dataset.cat === "")); draw(); app.scrollTo(q, true); }
         });
         $("#suggestBtn").addEventListener("click", (e) => { e.preventDefault(); const sub = lang === "ar" ? "اقتراح مصطلح لقاموس الجودة" : "Quality Dictionary — term suggestion"; const body = lang === "ar" ? "الرمز/الاختصار:\nالمصطلح الإنجليزي:\nالمقابل العربي:\nالشرح المبسط:\nالمرجع:\n" : "Code / abbreviation:\nEnglish term:\nArabic term:\nPlain explanation:\nReference:\n"; location.href = `mailto:${S.profile.email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`; });
         draw();
@@ -465,7 +478,7 @@
     markNav(path || "");
     const pageTitle = out.title || (name === "home" ? "" : ((name === "links" ? t("linksT") : t("nav." + ({ about: "profile", experience: "profile", certifications: "profile" }[name] || name))) || ""));
     document.title = (pageTitle && !String(pageTitle).startsWith("nav.") ? pageTitle + " | " : "") + "Eng. Alaeldeen | Quality & Safety";
-    if (!sub || name === "dictionary") window.scrollTo(0, 0); else window.scrollTo(0, 0);
+    app.scrollTo(0, false);
     out.after && out.after();
     window.MOTION && window.MOTION.apply(main);
     const h1 = $("h1", main); if (h1 && app._navigated) h1.focus({ preventScroll: true });
