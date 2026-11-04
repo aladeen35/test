@@ -2,7 +2,7 @@
 window.I18N = {
   ar: {
     skip: "تخطَّ إلى المحتوى",
-    nav: { home: "الرئيسية", profile: "من أنا", lamp: "مصباح الجودة", tools: "الأدوات", dictionary: "القاموس", knowledge: "المعرفة", books: "مؤلفاتي", projects: "المشاريع", contact: "تواصل" },
+    nav: { home: "الرئيسية", profile: "من أنا", lamp: "مصباح الجودة", tools: "الأدوات", dictionary: "القاموس", knowledge: "المعرفة", library: "المكتبة", books: "مؤلفاتي", projects: "المشاريع", contact: "تواصل" },
     navLong: { experience: "الخبرات", certifications: "المؤهلات والشهادات" },
     search: "بحث", searchPh: "ابحث في الدروس والأدوات والقاموس والمقالات…", searchHint: "اكتب حرفين على الأقل. استخدم ↑ ↓ ثم Enter.", noResults: "لا توجد نتائج مطابقة.",
     menu: "القائمة", close: "إغلاق",
@@ -55,7 +55,7 @@ window.I18N = {
   },
   en: {
     skip: "Skip to content",
-    nav: { home: "Home", profile: "About", lamp: "Quality Lamp", tools: "Tools", dictionary: "Dictionary", knowledge: "Knowledge", books: "Books", projects: "Projects", contact: "Contact" },
+    nav: { home: "Home", profile: "About", lamp: "Quality Lamp", tools: "Tools", dictionary: "Dictionary", knowledge: "Knowledge", library: "Library", books: "Books", projects: "Projects", contact: "Contact" },
     navLong: { experience: "Experience", certifications: "Education & Certifications" },
     search: "Search", searchPh: "Search lessons, tools, dictionary and articles…", searchHint: "Type at least two characters. Use ↑ ↓ then Enter.", noResults: "No matching results.",
     menu: "Menu", close: "Close",

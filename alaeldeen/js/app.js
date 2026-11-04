@@ -59,7 +59,7 @@
     if (target === 0) window.scrollTo(0, 0); else if (target) target.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "auto" });
   };
   const yearsExp = () => new Date().getFullYear() - S.profile.careerStart;
-  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["books", "#/books"], ["projects", "#/projects"], ["contact", "#/contact"]];
+  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["library", "#/library"], ["projects", "#/projects"], ["contact", "#/contact"]];
   function renderChrome() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -80,13 +80,17 @@
         <p style="color:var(--muted);margin-top:14px;max-width:340px;font-size:14.5px">${esc(t("footerTag"))}</p>
         <div class="social">${socialRow()}</div></div>
       <div><h4>${esc(t("explore"))}</h4><ul><li><a href="#/about">${esc(t("nav.profile"))}</a></li><li><a href="#/experience">${esc(t("navLong.experience"))}</a></li><li><a href="#/certifications">${esc(t("navLong.certifications"))}</a></li><li><a href="#/projects">${esc(t("nav.projects"))}</a></li></ul></div>
-      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li><li><a href="#/books">${esc(t("books.t"))}</a></li></ul></div>
+      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li><li><a href="#/library">${esc(t("nav.library"))}</a></li><li><a href="#/books">${esc(t("books.t"))}</a></li><li><a href="#/assistant">${esc(lang === "ar" ? "مساعد الجودة الذكي" : "AI assistant")}</a></li></ul></div>
       <div><h4>${esc(t("connect"))}</h4><ul><li><a href="#/contact">${esc(t("contactMe"))}</a></li><li><a href="#/links">${esc(t("linksT"))}</a></li><li><a href="#/privacy">${esc(t("privacyT"))}</a></li></ul></div>
-    </div><div class="base"><span>© ${yr} Eng. Alaeldeen — ${esc(t("rights"))}</span><span>${esc(t("footerNote"))}</span></div></div>`;
+    </div><div class="base"><span>© ${yr} Eng. Alaeldeen — ${esc(t("rights"))}</span><span>${esc(t("footerNote"))}</span>
+      <a class="credit" href="https://aladeen35.github.io/Games/bushra-tech/" target="_blank" rel="noopener"><img src="assets/bt-brand-mark.webp" alt="" width="30" height="29"><span>${esc(lang === "ar" ? "من إنتاج" : "Made by")} <b>${esc(lang === "ar" ? "البشري للتكنولوجيا" : "Al-Bushra Technology")}</b></span></a></div></div>`;
+    if (!document.getElementById("askFab")) { const f = document.createElement("a"); f.id = "askFab"; f.className = "ask-fab"; f.href = "#/assistant"; document.body.appendChild(f); }
+    const fab = document.getElementById("askFab"); fab.innerHTML = `${I.lamp}<span>${esc(lang === "ar" ? "اسأل المساعد" : "Ask the assistant")}</span>`; fab.setAttribute("aria-label", lang === "ar" ? "مساعد الجودة الذكي" : "Quality AI assistant");
     $("#searchDlg").innerHTML = `<div class="box" role="dialog" aria-modal="true" aria-label="${esc(t("search"))}"><div class="searchbar">${I.search}<input id="sq" type="search" placeholder="${esc(t("searchPh"))}" aria-label="${esc(t("search"))}" autocomplete="off"><button class="icon-btn" data-close aria-label="${esc(t("close"))}" style="border:0">${I.x}</button></div><div class="res" id="sres" role="listbox"><div class="hint">${esc(t("searchHint"))}</div></div></div>`;
   }
   function markNav(route) {
-    const key = { "": "home", about: "profile", experience: "profile", certifications: "profile" }[route] ?? route;
+    const key = { "": "home", about: "profile", experience: "profile", certifications: "profile", books: "library" }[route] ?? route;
+    const fab = document.getElementById("askFab"); if (fab) fab.hidden = route === "assistant";
     $$("[data-nav]").forEach((a) => { const on = a.dataset.nav === key; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
   }
 
@@ -411,20 +415,31 @@
 
   P.privacy = () => {
     const ar = lang === "ar";
-    const items = ar ? [
-      ["المحتوى التعليمي", "جميع الدروس والأدوات والقاموس لأغراض تعليمية ومساندة، ولا تحل محل التشريعات أو متطلبات الجهات الرقابية أو المعايير المعتمدة أو إجراءات منشأتك."],
-      ["بياناتك", "لا يجمع هذا الموقع بيانات شخصية ولا يستخدم ملفات تتبع. ما تدخله في الأدوات ولوحة المتعلم يُحفظ في متصفحك فقط (التخزين المحلي) ويمكنك حذفه بمسح بيانات الموقع أو من زر الحذف داخل كل أداة."],
-      ["الصور والتقارير", "لا ترفع صورًا أو تقارير لمنشأة دون موافقتها. الصور التي تضيفها في الأدوات تبقى على جهازك."],
-      ["نموذج التواصل", "يفتح تطبيق البريد أو واتساب لديك برسالة جاهزة؛ لا تُرسل الرسالة عبر خادم هذا الموقع."],
-      ["الدقة والمراجعة", "يُذكر تاريخ آخر مراجعة لكل محتوى فني. إن لاحظت خطأ فيرجى التواصل لتصحيحه."],
+    const eff = "2026-11-04";
+    const sec = ar ? [
+      ["من نحن", "هذا الموقع هو الموقع المهني للمهندس علاء الدين البشرى عمر، أخصائي جودة وسلامة الغذاء، ويضم منصة «مصباح الجودة» وأدوات الجودة والقاموس والمكتبة والمساعد الذكي. للتواصل في أي أمر يخص الخصوصية: aladeen35@gmail.com."],
+      ["البيانات التي نجمعها", "لا نطلب منك إنشاء حساب ولا نجمع اسمك أو بريدك أو موقعك. لا نستخدم ملفات تعريف الارتباط (Cookies) للتتبع ولا أدوات تحليلات أو إعلانات."],
+      ["ما يُحفظ على جهازك فقط", "ما تدخله في الأدوات (التفتيش، NCR، تحليل السبب الجذري، المخاطر، سجل الحرارة، خطط HACCP، نتائج CFU) وتقدمك في الدروس والمفضلة واللغة المختارة يُحفظ في متصفحك (التخزين المحلي) على جهازك فقط، ولا يصل إلينا. يمكنك حذفه من زر الحذف في كل أداة أو بمسح بيانات الموقع من إعدادات المتصفح."],
+      ["الصور والتقارير", "الصور التي تضيفها إلى تقارير عدم المطابقة تُصغَّر وتبقى على جهازك. لا تضف صور منشأة أو تقاريرها دون موافقتها، ولا تضف صورًا تُظهر وجوه أشخاص دون إذنهم."],
+      ["المساعد الذكي", "عند استخدام المساعد يُرسَل نص سؤالك ومحادثتك الحالية إلى مزود خدمة الذكاء الاصطناعي (Puter، أو خادم وسيط يتصل بخدمة Anthropic) لتوليد الرد، وتخضع لسياسات ذلك المزود. قد يطلب Puter موافقة أو تسجيل دخول مجاني. لا تكتب بيانات شخصية أو سرية أو معلومات داخلية لجهة عملك. تُحفظ المحادثة في متصفحك أثناء الجلسة فقط."],
+      ["خدمات وروابط خارجية", "تُحمَّل الخطوط من Google Fonts. فيديو عرض الكتاب يعمل من YouTube (youtube-nocookie) فقط عند الضغط على التشغيل. روابط المكتبة والمصادر تفتح مواقع رسمية خارجية لها سياساتها الخاصة. الموقع مستضاف على GitHub Pages، وقد تحتفظ GitHub بسجلات تقنية (مثل عنوان IP) وفق سياستها."],
+      ["نموذج التواصل", "نموذج التواصل يفتح تطبيق البريد أو واتساب لديك برسالة جاهزة؛ لا تمر الرسالة عبر خادم هذا الموقع."],
+      ["المحتوى التعليمي", "الدروس والأدوات والقاموس والمساعد لأغراض تعليمية ومساندة، ولا تحل محل التشريعات ومتطلبات الجهات الرقابية (مثل الهيئة العامة للغذاء والدواء) والمواصفات المعتمدة ودراسات المنشأة. لا تقترح الأدوات حدودًا حرجة أو جرعات تعقيم عامة."],
+      ["الأطفال", "الموقع موجه للمختصين والطلاب ولا يجمع أي بيانات عن الأطفال."],
+      ["التعديلات", "قد نحدّث هذه السياسة عند إضافة خدمات جديدة، ويظهر تاريخ آخر تحديث أدناه."],
     ] : [
-      ["Educational content", "All lessons, tools and dictionary entries are educational and supportive. They do not replace regulations, authority requirements, approved standards or your site's procedures."],
-      ["Your data", "This site collects no personal data and uses no tracking cookies. Anything you enter in the tools or learner dashboard stays in your browser (local storage); clear it via your browser's site data or each tool's delete button."],
-      ["Photos and reports", "Don't upload photos or reports of a facility without its consent. Photos added in the tools stay on your device."],
-      ["Contact form", "It opens your own email app or WhatsApp with the message ready; nothing passes through this site's server."],
-      ["Accuracy & review", "Technical content shows its last review date. If you spot an error, please get in touch so it can be corrected."],
+      ["Who we are", "This is the professional site of Eng. Alaeldeen Albushra Omer, a food quality & safety specialist. It includes the Quality Lamp platform, quality tools, dictionary, library and AI assistant. For any privacy question: aladeen35@gmail.com."],
+      ["What we collect", "No account is needed and we don't collect your name, email or location. We use no tracking cookies, analytics or advertising tools."],
+      ["What stays on your device", "What you enter in the tools (inspections, NCRs, root cause analysis, risks, temperature log, HACCP plans, CFU results), your lesson progress, favourites and language are kept in your browser's local storage on your device only and never reach us. Delete it with each tool's delete button or by clearing this site's data in your browser."],
+      ["Photos and reports", "Photos added to NCRs are resized and stay on your device. Don't add photos or reports of a facility without its consent, or photos showing people's faces without their permission."],
+      ["AI assistant", "When you use the assistant, your question and the current conversation are sent to the AI provider (Puter, or a relay server connected to Anthropic) to generate the reply, under that provider's policies. Puter may ask for approval or a free sign-in. Don't enter personal, confidential or internal company information. The conversation is kept in your browser for the session only."],
+      ["External services and links", "Fonts load from Google Fonts. The book video plays from YouTube (youtube-nocookie) only when you press play. Library and source links open official external sites with their own policies. The site is hosted on GitHub Pages, which may keep technical logs (such as IP addresses) under its own policy."],
+      ["Contact form", "The contact form opens your own email app or WhatsApp with the message ready; nothing passes through this site's server."],
+      ["Educational content", "Lessons, tools, dictionary and assistant are educational and supportive. They don't replace regulations, authority requirements (such as SFDA), approved standards or your site's own studies. The tools never suggest general critical limits or sanitiser doses."],
+      ["Children", "The site is meant for professionals and students and collects no data about children."],
+      ["Changes", "We may update this policy when new services are added; the last update date is shown below."],
     ];
-    return `${pageHead(t("privacyT"), "", [[t("privacyT")]])}<section class="sec"><div class="wrap article">${items.map(([h, p]) => `<h2>${esc(h)}</h2><p>${esc(p)}</p>`).join("")}<p class="note">${esc(t("lastReview"))}: ${esc(fmtDate(S.REVIEWED))}</p></div></section>`;
+    return `${pageHead(t("privacyT"), ar ? "كيف نتعامل مع بياناتك، باختصار ووضوح." : "How your data is handled, in plain words.", [[t("privacyT")]])}<section class="sec"><div class="wrap article">${sec.map(([h, p]) => `<h2>${esc(h)}</h2><p>${esc(p)}</p>`).join("")}<p class="note">${esc(t("lastReview"))}: ${esc(fmtDate(eff))}</p></div></section>`;
   };
 
   P.notfound = () => `${pageHead(t("notFound"), "", null)}<section class="sec"><div class="wrap">${btn("#/", t("backHome"))}</div></section>`;
@@ -441,6 +456,7 @@
     S.dict.forEach((d) => add("term", d.code + " — " + (lang === "ar" ? d.term_ar : d.term_en), lang === "ar" ? d.term_en : d.term_ar, "#/dictionary/" + encodeURIComponent(d.code), d.simple_explanation_ar + " " + d.simple_explanation_en));
     S.articles.forEach((a) => add("article", L(a.title), L(a.sum), "#/knowledge/" + a.id, a.body[lang].map((b) => [].concat(b[1]).join(" ")).join(" ")));
     S.projects.forEach((p) => add("project", L(p.title), L(p.tag), "#/projects"));
+    (app.searchExtra || []).forEach((f) => f(add));
     S.books.forEach((b) => add("book", L(b.title), L(b.subtitle), "#/books", L(b.blurb) + " Stolen Gold الذهب المسلوب"));
     S.links.groups.forEach((g) => g.items.forEach((it) => add("link", L(it.n), it.d, "#/links")));
     return items;

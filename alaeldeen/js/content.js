@@ -574,5 +574,9 @@ window.SITE = (function () {
     social: [["linkedin", "LinkedIn", "https://linkedin.com/in/aladeen35/"], ["youtube", "YouTube", "https://www.youtube.com/channel/UCaCs0I6mOb2lHWZ8ZCM5vew"], ["instagram", "Instagram", "https://www.instagram.com/ala_deen_35/"], ["xlogo", "X", "https://x.com/aladeen35"], ["facebook", "Facebook", "https://www.facebook.com/drameer.ml"], ["tiktok", "TikTok", "https://tiktok.com/@aladeen35"], ["telegram", "Telegram", "https://t.me/aladee1995"], ["wa", "WhatsApp", "https://wa.me/966591723483"], ["mail", "Email", "mailto:aladeen35@gmail.com"]],
   };
 
-  return { REVIEWED, profile, modules, paths, cats, dict, articles, faq, sources, projects, books, links };
+  // AI assistant: set proxyUrl to your Cloudflare Worker (cloudflare-worker-ai-proxy.js) to use your own Anthropic key;
+  // leave it null to use Puter's free provider.
+  const ai = { proxyUrl: null, model: "claude-sonnet-5-5", puterModel: "claude-sonnet-4-5" };
+
+  return { REVIEWED, profile, modules, paths, cats, dict, articles, faq, sources, projects, books, links, ai };
 })();
