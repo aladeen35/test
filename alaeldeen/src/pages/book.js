@@ -10,11 +10,32 @@ const W = (a, e) => (A.lang === "ar" ? a : e);
 const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const tr = (k) => A.t(k);
 
+function designed(b) {
+  const chain = b.chain.map((c, i) => `<span class="pg-step"><b>${i + 1}</b>${esc(c.ar)}</span>`).join(`<span class="pg-arr">←</span>`);
+  return [
+    { img: "assets/book-sg-author.webp", alt: "نبذة عن الكاتب", intro: true },
+    { img: "assets/book-sg-title.webp", alt: "صفحة العنوان ونبذة الكتاب", intro: true },
+    { intro: true, html: `<div class="pg-paper"><span class="pg-kicker">عن الكتاب</span><h3>${esc(b.title.ar)}</h3><p class="pg-q">${esc(b.question.ar)}</p><p>${esc(b.blurb.ar)}</p><p class="pg-aud">${esc(b.audience.ar)}</p></div>` },
+    { intro: true, html: `<div class="pg-paper"><span class="pg-kicker">من الخامة إلى المنتج</span><h3>سلسلة القيمة</h3><div class="pg-chain">${chain}</div>
+        <p>أمثلة من غلاف الكتاب لمنتجات سودانية يمكن أن تُصنَّع محليًا بجودة تنافسية:</p>
+        <ul class="pg-list">${b.products.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <p class="pg-hint">وكلها تمر عبر ضوابط سلامة الغذاء: ${b.haccp.map(esc).join("، ")}.</p></div>` },
+    { intro: true, video: true, html: `<div class="pg-paper pg-video"><span class="pg-kicker">عرض الكتاب</span><h3>شاهد المؤلف يقدّم الكتاب</h3>
+        <div class="pg-yt" data-yt="${b.video}"><img src="${b.spread}" alt="" loading="lazy"><button type="button" class="play" aria-label="تشغيل عرض الكتاب">${I.play}</button></div>
+        <a class="pg-link" href="${b.url}" target="_blank" rel="noopener">${I.external}<span>فتح على يوتيوب</span></a></div>` },
+    { intro: true, html: `<div class="pg-paper"><span class="pg-kicker">النسخة الكاملة</span><h3>الكتاب كاملًا يبدأ في الصفحة التالية</h3>
+        <p>${b.pdfPages} صفحة في خمسة أبواب وتسعة فصول، مع الخاتمة والتوصيات والملاحق العملية والمراجع. قلّب الصفحات أو انتقل إلى أي فصل من المحتويات.</p>
+        <a class="pg-full" href="${b.pdf}" download="${esc(b.title.ar)}.pdf">${I.download}<span>تحميل الكتاب PDF</span></a>
+        <p>للتعاون في النشر والتوزيع أو للتواصل مع المؤلف:</p>
+        <div class="pg-contact"><a href="https://wa.me/${S.profile.whatsapp}?text=${encodeURIComponent("السلام عليكم، بخصوص كتاب الذهب المسلوب")}" target="_blank" rel="noopener">${I.wa}<span>واتساب</span></a><a href="mailto:${S.profile.email}?subject=${encodeURIComponent("كتاب الذهب المسلوب")}">${I.mail}<span dir="ltr">${S.profile.email}</span></a></div></div>` },
+  ];
+}
 function pagesOf(b) {
-  const P = [{ img: b.cover, alt: "غلاف كتاب الذهب المسلوب", cls: "pg-cover" }];
+  const P = [{ img: b.cover, alt: "غلاف كتاب الذهب المسلوب", cls: "pg-cover" }, ...designed(b)];
   for (let i = 1; i <= b.pdfPages; i++) P.push({ img: `${b.pageDir}/p${String(i).padStart(2, "0")}.webp`, alt: `صفحة ${i}`, pdf: i });
   P.push({ html: `<div class="pg-backcover"><img src="assets/logo-mark.png" alt="" class="pg-logo"><h3>${esc(b.title.ar)}</h3><p class="pg-q">${esc(b.fullSubtitle.ar)}</p><p>${esc(b.blurb.ar)}</p><span class="pg-author">${esc(b.author.ar)}</span><small class="pg-pub">${esc(b.publisher.ar)} · ${esc(b.edition.ar)}</small></div>`, cls: "pg-bc" });
-  return P; // even count: leaf i = P[2i] (front) + P[2i+1] (back)
+  if (P.length % 2) P.splice(P.length - 1, 0, { html: `<div class="pg-paper"></div>` }); // keep an even page count
+  return P; // leaf i = P[2i] (front) + P[2i+1] (back)
 }
 const face = (p, side) => `<div class="face ${side} ${p.cls || ""}">${p.img ? `<img class="pg-img" data-src="${p.img}" alt="${esc(p.alt)}" decoding="async">` : p.html}</div>`;
 
@@ -32,7 +53,7 @@ A.pages.books = () => {
         <div class="rd-body">
           <div class="rd-main">
             <div class="rd-book" id="rdBook" dir="ltr"><div class="rd-stage" id="rdStage">${Array.from({ length: n }, (_, i) => `<div class="leaf" data-i="${i}">${face(P[2 * i], "front")}${face(P[2 * i + 1], "back")}</div>`).join("")}</div></div>
-            <div class="rd-single" id="rdSingle"><img id="rdOne" alt=""></div>
+            <div class="rd-single" id="rdSingle"><img id="rdOne" alt=""><div class="rd-html" id="rdHtml" hidden></div></div>
             <div class="rd-ctrl"><button type="button" class="btn btn-ghost btn-sm" id="rdPrev">→ <span>${esc(W("السابق", "Previous"))}</span></button>
               <span class="rd-pos" id="rdPos" aria-live="polite"></span>
               <button type="button" class="btn btn-gold btn-sm" id="rdNext"><span>${esc(W("قلّب الصفحة", "Turn the page"))}</span> ←</button></div>
@@ -62,11 +83,13 @@ function mount(P, b) {
   const load = (lf) => lf && $$("img[data-src]", lf).forEach((x) => { x.src = x.dataset.src; x.removeAttribute("data-src"); });
   const near = () => { for (let i = at - 2; i <= at + 2; i++) load(leavesEl[i]); };
   const pdfOf = (idx) => P[idx] && P[idx].pdf;
+  const off = P.findIndex((x) => x.pdf === 1) - 1; // P index of PDF page k is k + off
   const label = () => {
-    if (single()) { const pg = pdfOf(one); return pg ? W(`صفحة ${pg} من ${b.pdfPages}`, `Page ${pg} of ${b.pdfPages}`) : one === 0 ? W("الغلاف", "Cover") : W("الغلاف الخلفي", "Back cover"); }
+    if (single()) { const pg = pdfOf(one); return pg ? W(`صفحة ${pg} من ${b.pdfPages}`, `Page ${pg} of ${b.pdfPages}`) : one === 0 ? W("الغلاف", "Cover") : P[one].intro ? W("صفحات تعريفية", "Introduction pages") : W("الغلاف الخلفي", "Back cover"); }
     if (at === 0) return W("الغلاف", "Cover");
     if (at === n) return W("الغلاف الخلفي", "Back cover");
     const pr = [pdfOf(2 * at - 1), pdfOf(2 * at)].filter(Boolean);
+    if (!pr.length) return W("صفحات تعريفية", "Introduction pages");
     return W(`الصفحتان ${pr.join(" و")} من ${b.pdfPages}`, `Pages ${pr.join("–")} of ${b.pdfPages}`);
   };
   const current = () => (single() ? pdfOf(one) : pdfOf(2 * at - 1) || pdfOf(2 * at));
@@ -86,18 +109,19 @@ function mount(P, b) {
       if (instant || reduce() || was === turned) gsap.set(lf, { rotationY: turned ? -180 : 0, z: depth, zIndex: z });
       else gsap.to(lf, { rotationY: turned ? -180 : 0, z: depth, duration: 1.1, ease: "cineInOut", onStart: () => gsap.set(lf, { zIndex: n + 2 }), onComplete: () => gsap.set(lf, { zIndex: z }) });
     });
+    if (![2 * at - 1, 2 * at].includes(videoIdx)) stopVideo();
     gsap.to(stage, { xPercent: at === 0 ? 25 : at === n ? -25 : 0, duration: instant || reduce() ? 0 : 1, ease: "cineInOut" });
     upd();
   };
   const showOne = (dir) => {
     const p = P[one];
     const set = () => {
-      const bc = box.querySelector(".pg-backcover");
-      if (p.img) { im.src = p.img; im.alt = p.alt; im.hidden = false; if (bc) bc.remove(); box.classList.remove("bc"); }
-      else { im.hidden = true; if (!bc) box.insertAdjacentHTML("beforeend", p.html); box.classList.add("bc"); }
+      const h = $("#rdHtml");
+      if (p.img) { im.src = p.img; im.alt = p.alt; im.hidden = false; h.hidden = true; h.innerHTML = ""; }
+      else { im.hidden = true; h.className = "rd-html " + (p.cls || ""); h.innerHTML = p.html; h.hidden = false; bindVideo(h); }
     };
     if (reduce() || !dir) set();
-    else gsap.timeline().to(im, { rotationY: dir * 70, autoAlpha: 0, duration: 0.22, ease: "power2.in", onComplete: set }).fromTo(im, { rotationY: -dir * 70 }, { rotationY: 0, autoAlpha: 1, duration: 0.35, ease: "cine" });
+    else gsap.timeline().to([im, $("#rdHtml")], { rotationY: dir * 70, autoAlpha: 0, duration: 0.22, ease: "power2.in", onComplete: set }).fromTo([im, $("#rdHtml")], { rotationY: -dir * 70 }, { rotationY: 0, autoAlpha: 1, duration: 0.35, ease: "cine" });
     [one - 1, one + 1].forEach((k) => { if (P[k] && P[k].img) { const pre = new Image(); pre.src = P[k].img; } });
     upd();
   };
@@ -107,14 +131,15 @@ function mount(P, b) {
   };
   const goPdf = (pg) => {
     pg = Math.max(1, Math.min(b.pdfPages, pg | 0));
-    if (single()) { const d = pg >= (pdfOf(one) || 0) ? 1 : -1; one = pg; showOne(d); return; }
-    const target = Math.ceil(pg / 2); // P[pg] is on leaf floor(pg/2); that spread opens after ceil(pg/2) turns
+    const k = pg + off;
+    if (single()) { const d = k >= one ? 1 : -1; one = k; showOne(d); return; }
+    const target = Math.ceil(k / 2); // P[k] is on leaf floor(k/2); its spread opens after ceil(k/2) turns
     const far = Math.abs(target - at) > 2; at = target; sync(far);
   };
   $("#rdNext").addEventListener("click", () => go(1));
   $("#rdPrev").addEventListener("click", () => go(-1));
-  stage.addEventListener("click", (e) => { const lf = e.target.closest(".leaf"); if (lf) go(+lf.dataset.i < at ? -1 : 1); });
-  box.addEventListener("click", (e) => { const r = box.getBoundingClientRect(); go(e.clientX < r.left + r.width / 2 ? 1 : -1); }); // Arabic book: left side = next
+  stage.addEventListener("click", (e) => { if (e.target.closest("a, button, iframe")) return; const lf = e.target.closest(".leaf"); if (lf) go(+lf.dataset.i < at ? -1 : 1); });
+  box.addEventListener("click", (e) => { if (e.target.closest("a, button, iframe")) return; const r = box.getBoundingClientRect(); go(e.clientX < r.left + r.width / 2 ? 1 : -1); }); // Arabic book: left side = next
   let sx = null;
   box.addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
   box.addEventListener("touchend", (e) => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(dx > 0 ? 1 : -1); sx = null; }, { passive: true });
@@ -127,6 +152,16 @@ function mount(P, b) {
   $("#rdGoBtn").addEventListener("click", jump);
   $("#rdGo").addEventListener("keydown", (e) => { if (e.key === "Enter") jump(); });
   $("#rdGo").addEventListener("input", (e) => e.target.removeAttribute("aria-invalid"));
+  function bindVideo(root) {
+    $$(".pg-yt", root).forEach((vb) => {
+      if (!vb.dataset.poster) vb.dataset.poster = vb.innerHTML;
+      const btn = vb.querySelector(".play"); if (!btn) return;
+      btn.addEventListener("click", (e) => { e.stopPropagation(); vb.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vb.dataset.yt}?autoplay=1&rel=0" title="عرض كتاب الذهب المسلوب" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; });
+    });
+  }
+  const videoIdx = P.findIndex((x) => x.video);
+  const stopVideo = () => $$(".pg-yt", stage).forEach((vb) => { if (vb.querySelector("iframe")) { vb.innerHTML = vb.dataset.poster; bindVideo(vb.parentElement); } });
+  bindVideo(stage);
   $$(".video[data-yt]").forEach((v) => v.querySelector(".play").addEventListener("click", () => { v.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.dataset.yt}?autoplay=1&rel=0" title="${esc(tr("books.play"))}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; }));
   window.matchMedia("(max-width: 700px)").addEventListener("change", () => {
     if (single()) { one = Math.max(0, Math.min(P.length - 1, at ? 2 * at - 1 : 0)); showOne(0); } else { at = Math.max(0, Math.min(n, Math.ceil(one / 2))); sync(true); }
