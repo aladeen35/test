@@ -9,6 +9,7 @@ import "../css/tools-plans.css";
 import "../css/library.css";
 import "../css/assistant.css";
 import "../css/book.css";
+import "../css/share.css";
 import "./styles/tailwind.css";
 import "./styles/cinema.css";
 
@@ -26,3 +27,4 @@ import "../js/tools-plans.js";
 import "./pages/library.js";
 import "./pages/assistant.js";
 import "./pages/book.js";
+import "./pages/share.js";

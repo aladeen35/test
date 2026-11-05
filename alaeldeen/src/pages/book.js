@@ -49,7 +49,8 @@ A.pages.books = () => {
     <section class="sec"><div class="wrap">
       <div class="reader card">
         <div class="rd-top"><div><span class="eyebrow">${esc(W("الكتاب كاملًا", "The full book"))} · ${esc(L(b.edition))} · ${b.pdfPages} ${esc(W("صفحة", "pages"))}</span><h2 class="book-title">${esc(L(b.title))}</h2><p class="book-sub">${esc(L(b.fullSubtitle))}</p><p class="rd-by">${esc(W("تأليف", "By"))} ${esc(L(b.author))} · ${esc(L(b.publisher))}</p></div>
-          <div class="cta" style="margin:0"><a class="btn btn-gold" href="${b.pdf}" download="${esc(b.title.ar)}.pdf">${I.download}<span>${esc(W("تحميل PDF", "Download PDF"))}</span></a><a class="btn btn-line" href="${b.pdf}" target="_blank" rel="noopener">${I.external}<span>${esc(W("فتح PDF", "Open PDF"))}</span></a></div></div>
+          <div class="cta" style="margin:0"><a class="btn btn-gold" href="${b.pdf}" download="${esc(b.title.ar)}.pdf">${I.download}<span>${esc(W("تحميل PDF", "Download PDF"))}</span></a><a class="btn btn-line" href="${b.pdf}" target="_blank" rel="noopener">${I.external}<span>${esc(W("فتح PDF", "Open PDF"))}</span></a></div>
+          <div class="row" style="margin-top:10px;width:100%">${A.likeBtn("book:mine-" + b.id)}${A.shareBtn({ k: W("كتاب · الطبعة الأولى 2026", "Book · First edition 2026"), t: L(b.title), b: [L(b.fullSubtitle), L(b.question)], h: "#/books", img: b.cover })}</div></div>
         <div class="rd-body">
           <div class="rd-main">
             <div class="rd-book" id="rdBook" dir="ltr"><div class="rd-stage" id="rdStage">${Array.from({ length: n }, (_, i) => `<div class="leaf" data-i="${i}">${face(P[2 * i], "front")}${face(P[2 * i + 1], "back")}</div>`).join("")}</div></div>

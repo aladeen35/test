@@ -51,6 +51,7 @@ window.I18N = {
     contactT: "تواصل معي", contactSub: "للتعاون المهني، فرص العمل، أو اقتراحات المحتوى.", name: "الاسم", yourEmail: "بريدك الإلكتروني", subject: "الموضوع", message: "الرسالة", send: "إرسال عبر البريد", sendWa: "واتساب", formNote: "سيُفتح تطبيق البريد لديك برسالة جاهزة — لا تُخزَّن بياناتك على هذا الموقع.", badEmail: "أدخل بريدًا إلكترونيًا صحيحًا.",
     privacyT: "الخصوصية وشروط الاستخدام", footerTag: "هندسة الجودة… وضمان السلامة.", footerNote: "المحتوى تعليمي ولا يحل محل متطلبات الجهات الرقابية أو المعايير المعتمدة.", rights: "جميع الحقوق محفوظة", explore: "استكشف", platform: "المنصة", connect: "تواصل",
     books: { t: "مؤلفاتي", sub: "كتب ألّفتها في الغذاء والتصنيع والتاريخ، متاحة للقراءة والمشاهدة أونلاين.", feat: "كتاب جديد", by: "بقلم م. علاء الدين البشرى", chain: "من الحقل إلى السوق", play: "تشغيل عرض الكتاب", vNote: "يُحمَّل الفيديو من يوتيوب عند الضغط فقط.", more: "كل المؤلفات", forWho: "لمن هذا الكتاب؟" },
+    share: "مشاركة", lsShare: "مشاركة هذا الجزء",
     linksT: "كل روابطي", linksSub: "جميع روابطي المهنية والاجتماعية ومؤلفاتي في مكان واحد.", aboutVideo: "فيديو تعريفي",
     notFound: "الصفحة غير موجودة", backHome: "العودة للرئيسية", lang: "English", langCode: "EN",
   },
@@ -105,6 +106,7 @@ window.I18N = {
     contactT: "Contact Me", contactSub: "For professional collaboration, job opportunities or content suggestions.", name: "Name", yourEmail: "Your email", subject: "Subject", message: "Message", send: "Send by email", sendWa: "WhatsApp", formNote: "Your email app will open with the message ready — nothing is stored on this site.", badEmail: "Enter a valid email address.",
     privacyT: "Privacy & terms of use", footerTag: "Engineering Quality. Ensuring Safety.", footerNote: "Content is educational and does not replace regulatory requirements or approved standards.", rights: "All rights reserved", explore: "Explore", platform: "Platform", connect: "Connect",
     books: { t: "Books", sub: "Books I've written on food, industry and history, to read or watch online.", feat: "New book", by: "By Eng. Alaeldeen Albushra", chain: "From field to market", play: "Play the book presentation", vNote: "The video loads from YouTube only when you press play.", more: "All books", forWho: "Who is it for?" },
+    share: "Share", lsShare: "Share this part",
     linksT: "All my links", linksSub: "My professional, social and publishing links in one place.", aboutVideo: "About-me video",
     notFound: "Page not found", backHome: "Back to home", lang: "العربية", langCode: "AR",
   },
@@ -165,6 +167,7 @@ window.ICONS = (function () {
     spark: s('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
     play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg>',
     external: s('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', 'class="flip"'),
+    share: s('<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.8 7.4-4.4M8.3 13.2l7.4 4.4"/>'),
     shelf: s('<path d="M3 21h18M3 3h18"/><rect x="4.5" y="6" width="3" height="12" rx=".5"/><rect x="8.5" y="8" width="3" height="10" rx=".5"/><path d="m13 9.2 2.8-.8 2.9 9.6-2.8.8z"/>'),
     youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg>',
   };

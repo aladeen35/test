@@ -133,6 +133,7 @@ function detailHtml(b) {
       <p class="lb-desc">${esc(L(b.desc))}</p>
       ${b.points && b.points.length ? `<h3>${esc(W("أبرز ما فيه", "Key highlights"))}</h3><ul class="ticks">${b.points.map((p) => `<li>${esc(L(p))}</li>`).join("")}</ul>` : ""}
       <div class="cta" style="justify-content:flex-start;margin-top:18px">${btns.join("")}</div>
+      <div class="row" style="margin-top:12px">${A.likeBtn("book:" + b.id)}${A.shareBtn({ k: (A.lang === "ar" ? "المكتبة العلمية · " : "Digital Library · ") + L(CAT[b.cat]), t: L(b.title), b: [b.issuer + " · " + yearTxt(b), L(b.desc)], h: b.mine && b.mine.featured ? "#/books" : "#/library", img: b.cover || undefined })}</div>
     </div></div>`;
 }
 
