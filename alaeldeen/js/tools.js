@@ -16,7 +16,7 @@
     { id: "compliance", icon: "percent", t: { ar: "حاسبة نسبة الامتثال", en: "Compliance % calculator" }, d: { ar: "احسب نسبة الامتثال من عدد البنود المطابقة وغير المطابقة.", en: "Compute compliance % from conforming and non-conforming items." } },
   ];
   const planned = [
-    ["مصفوفة تقييم الموردين", "Supplier evaluation matrix"], ["سجل معايرة أجهزة القياس", "Instrument calibration log"], ["خطة أخذ العينات", "Sampling plan"], ["مولد خطة التنظيف والتطهير", "Cleaning & sanitation plan builder"], ["سجل مكافحة الآفات", "Pest control log"], ["نموذج تقييم مسببات الحساسية", "Allergen assessment form"], ["تمرين الاستدعاء التجريبي", "Mock recall exercise"], ["حاسبة العمر التخزيني (توثيقية)", "Shelf-life record (documentary)"], ["مولد محضر اجتماع الجودة", "Quality meeting minutes"], ["لوحة مؤشرات KPI", "KPI dashboard"], ["مخطط تدفق العمليات", "Process flow diagram"],
+    ["مصفوفة تقييم الموردين", "Supplier evaluation matrix"], ["خطة أخذ العينات", "Sampling plan"], ["مولد خطة التنظيف والتطهير", "Cleaning & sanitation plan builder"], ["نموذج تقييم مسببات الحساسية", "Allergen assessment form"], ["تمرين الاستدعاء التجريبي", "Mock recall exercise"], ["مولد محضر اجتماع الجودة", "Quality meeting minutes"], ["لوحة مؤشرات KPI", "KPI dashboard"], ["مخطط تدفق العمليات", "Process flow diagram"],
   ];
 
   const crumbsFor = (tool) => [[t("toolsT"), "#/tools"], [L(tool.t)]];

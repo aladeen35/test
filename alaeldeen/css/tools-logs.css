@@ -1,0 +1,24 @@
+/* Calibration, swab/ATP, pest, complaints, training matrix and shelf-life logs */
+.lg-sum { margin-bottom: 16px; }
+.lg-sum h3 { font-size: 16px; margin: 0 0 12px; }
+.lg-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 700px) { .lg-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.lg-tile { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); min-width: 0; }
+.lg-tile b { font-size: 28px; line-height: 1.1; font-family: var(--font-en); font-variant-numeric: tabular-nums; }
+.lg-tile span { font-size: 13px; color: var(--muted); }
+.lg-tile.ok b { color: var(--ok); }
+.lg-tile.warn b { color: var(--warn); }
+.lg-tile.bad b { color: var(--bad); }
+.lg-flag { min-height: 46px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.lg-legend { gap: 8px; }
+table.t tr.lg-hot td { background: rgba(229,100,90,.07); }
+.lg-matrix td.lg-c { text-align: center; white-space: nowrap; }
+.lg-matrix tbody th { white-space: normal; min-width: 120px; background: transparent; color: var(--text); }
+.lg-na { color: var(--dim); }
+.lg-sum .hb { grid-template-columns: minmax(90px, 34%) 1fr auto; }
+.lg-cp { min-width: 900px; }
+.lg-cp td { padding: 6px; }
+.lg-cp input, .lg-cp select { height: 38px; min-width: 70px; padding-block: 0; }
+.lg-cp input.lg-n { width: 84px; }
+.lg-addph { cursor: pointer; height: 96px; width: 96px; flex-direction: column; border-radius: 8px; white-space: normal; text-align: center; }
+.form > [data-custom="checkpoints"], .form > [data-custom="photos"] { min-width: 0; }

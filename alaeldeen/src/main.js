@@ -3,6 +3,7 @@
 import "../css/site.css";
 import "../css/books.css";
 import "../css/tools-extra.css";
+import "../css/tools-logs.css";
 import "../css/library.css";
 import "../css/assistant.css";
 import "../css/book.css";
@@ -17,6 +18,7 @@ import "../js/content.js";
 import "../js/app.js";
 import "../js/tools.js";
 import "../js/tools-extra.js";
+import "../js/tools-logs.js";
 import "./pages/library.js";
 import "./pages/assistant.js";
 import "./pages/book.js";
