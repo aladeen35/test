@@ -3,6 +3,7 @@
    bookcase leans towards the pointer and the shelves settle in as you scroll. */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { AR_BOOKS, AR_SHELVES } from "./library-ar.js";
 
 const A = window.APP, I = window.ICONS, S = window.SITE;
 const { esc, L, t, $, $$, pageHead } = A;
@@ -15,6 +16,7 @@ const CAT = {
   reg: { ar: "التشريعات والجهات الرقابية", en: "Regulation" },
   micro: { ar: "الميكروبيولوجيا والمختبر", en: "Microbiology & lab" },
   nut: { ar: "التغذية", en: "Nutrition" },
+  ohs: { ar: "السلامة المهنية", en: "Occupational safety" },
   mine: { ar: "مؤلفاتي", en: "My books" },
 };
 const CODEX_COP = "https://www.fao.org/fao-who-codexalimentarius/codex-texts/codes-of-practice/en/";
@@ -103,8 +105,9 @@ function myBooks() {
   return S.books.map((b) => ({ id: "mine-" + b.id, shelf: "mine", cat: "mine", mine: b, issuer: "Eng. Alaeldeen Albushra", year: b.id === "stolen-gold" ? "2026" : { ar: "الجزء الأول", en: "Part 1" },
     title: b.title, desc: b.fullSubtitle || b.blurb, points: b.toc ? [{ ar: `${b.pdfPages} صفحة، 9 فصول في 5 أبواب`, en: `${b.pdfPages} pages, 9 chapters in 5 parts` }, { ar: "من الحقل إلى السوق: سلاسل القيمة وHACCP", en: "Field to market: value chains and HACCP" }, b.edition] : [], url: b.url, cover: b.cover, cta: b.cta, pdf: b.pdf }));
 }
-const SHELVES = [["mine", { ar: "رف مؤلفاتي", en: "My books" }], ["intl", { ar: "مراجع سلامة الغذاء الدولية", en: "International food safety references" }], ["std", { ar: "المواصفات وأنظمة الإدارة", en: "Standards & management systems" }], ["lab", { ar: "المختبر والتشريعات والتغذية", en: "Lab, regulation & nutrition" }]];
+const SHELVES = [["mine", { ar: "رف مؤلفاتي", en: "My books" }], ["intl", { ar: "مراجع سلامة الغذاء الدولية", en: "International food safety references" }], ["std", { ar: "المواصفات وأنظمة الإدارة", en: "Standards & management systems" }], ["lab", { ar: "المختبر والتشريعات والتغذية", en: "Lab, regulation & nutrition" }], ...AR_SHELVES];
 
+BOOKS.push(...AR_BOOKS);
 const all = () => [...myBooks(), ...BOOKS];
 const yearTxt = (b) => (typeof b.year === "string" ? b.year : L(b.year));
 
@@ -123,13 +126,13 @@ function detailHtml(b) {
   if (b.mine) {
     if (b.mine.featured) btns.push(`<a class="btn btn-gold" href="#/books">${I.book}<span>${esc(W("اقرأ الكتاب", "Read the book"))}</span></a>`);
     btns.push(`<a class="btn ${b.mine.featured ? "btn-line" : "btn-gold"}" href="${b.url}" target="_blank" rel="noopener">${I.play}<span>${esc(L(b.cta))}</span></a>`);
-  } else btns.push(`<a class="btn ${b.pdf ? "btn-line" : "btn-gold"}" href="${b.url}" target="_blank" rel="noopener">${I.external}<span>${esc(b.paid ? W("صفحة المواصفة الرسمية", "Official standard page") : W("زيارة المصدر", "Visit source"))}</span></a>`);
+  } else btns.push(`<a class="btn ${b.pdf ? "btn-line" : "btn-gold"}" href="${b.url}" target="_blank" rel="noopener">${I.external}<span>${esc(b.buy ? W("صفحة الكتاب في المتجر", "Book page in store") : b.paid ? W("صفحة المواصفة الرسمية", "Official standard page") : W("زيارة المصدر", "Visit source"))}</span></a>`);
   return `<div class="lb-detail-in" data-for="${b.id}">
     <div class="lb-stage"><div class="lb-book" style="--c1:${(b.c || ["#3a2a10", "#1a1206"])[0]};--c2:${(b.c || ["#3a2a10", "#1a1206"])[1]}"><span class="lb-front ${b.cover ? "bk-img" : ""}">${cover}</span><span class="lb-spine"></span><span class="lb-pages"></span></div></div>
     <div class="lb-info">
       <h2>${esc(L(b.title))}</h2>
-      <div class="row" style="gap:8px;margin:10px 0 14px"><span class="chip gold">${esc(L(CAT[b.cat]))}</span>${b.paid ? `<span class="chip">${esc(W("مواصفة مدفوعة", "Paid standard"))}</span>` : `<span class="chip teal">${esc(b.mine ? W("من تأليفي", "My book") : W("مجاني", "Free"))}</span>`}</div>
-      <p class="lb-meta">${I.book}<span>${esc(b.issuer)}</span></p><p class="lb-meta">${I.clip}<span>${esc(W("سنة النشر", "Published"))}: ${esc(yearTxt(b))}</span></p>
+      <div class="row" style="gap:8px;margin:10px 0 14px"><span class="chip gold">${esc(L(CAT[b.cat]))}</span>${b.buy ? `<span class="chip">${esc(W("كتاب مدفوع", "Paid book"))}${b.price ? " · " + esc(L(b.price)) : ""}</span>` : b.paid ? `<span class="chip">${esc(W("مواصفة مدفوعة", "Paid standard"))}</span>` : `<span class="chip teal">${esc(b.mine ? W("من تأليفي", "My book") : W("مجاني", "Free"))}</span>`}${b.arabic ? `<span class="chip">${esc(W("باللغة العربية", "In Arabic"))}</span>` : ""}</div>
+      <p class="lb-meta">${I.book}<span>${esc(b.issuer)}</span></p>${b.store ? `<p class="lb-meta">${I.external}<span>${esc(W("يُباع في", "Sold at"))}: ${esc(L(b.store))}</span></p>` : ""}<p class="lb-meta">${I.clip}<span>${esc(W("سنة النشر", "Published"))}: ${esc(yearTxt(b))}</span></p>
       <p class="lb-desc">${esc(L(b.desc))}</p>
       ${b.points && b.points.length ? `<h3>${esc(W("أبرز ما فيه", "Key highlights"))}</h3><ul class="ticks">${b.points.map((p) => `<li>${esc(L(p))}</li>`).join("")}</ul>` : ""}
       <div class="cta" style="justify-content:flex-start;margin-top:18px">${btns.join("")}</div>
@@ -151,7 +154,7 @@ A.pages.library = () => {
           <div class="empty" id="lbEmpty" hidden>${esc(t("noResults"))}</div></div>
         <aside class="lb-detail card" id="lbDetail" aria-live="polite"></aside>
       </div>
-      <div class="lb-stats"><div><b>${books.length}</b><span>${esc(W("مرجع وكتاب", "references & books"))}</span></div><div><b>${Object.keys(CAT).length}</b><span>${esc(W("تصنيفات", "categories"))}</span></div><div><b>${BOOKS.filter((b) => !b.paid).length}</b><span>${esc(W("مرجع مجاني", "free references"))}</span></div><p class="note">${esc(W("الروابط تفتح المصادر الرسمية مباشرة. المواصفات الدولية (ISO) مدفوعة، فرابطها يفتح صفحتها الرسمية.", "Links open the official sources directly. ISO standards are paid, so their link opens the official standard page."))}</p></div>
+      <div class="lb-stats"><div><b>${books.length}</b><span>${esc(W("مرجع وكتاب", "references & books"))}</span></div><div><b>${Object.keys(CAT).length}</b><span>${esc(W("تصنيفات", "categories"))}</span></div><div><b>${BOOKS.filter((b) => !b.paid && !b.buy).length}</b><span>${esc(W("مرجع مجاني", "free references"))}</span></div><p class="note">${esc(W("الروابط تفتح المصادر الرسمية مباشرة. المواصفات الدولية (ISO) مدفوعة، فرابطها يفتح صفحتها الرسمية. الكتب المدفوعة تفتح صفحتها في المتجر، والأسعار تقريبية وقد تتغير.", "Links open the official sources directly. ISO standards are paid, so their link opens the official standard page. Paid books open their store page; prices are approximate and may change."))}</p></div>
     </div></section>`,
     after: () => mount(books),
   };
