@@ -24,6 +24,7 @@ import "../js/tools-extra.js";
 import "../js/tools-logs.js";
 import "../js/tools-calc.js";
 import "../js/tools-plans.js";
+import "./tools/practical-calc.js";
 import "./pages/library.js";
 import "./pages/assistant.js";
 import "./pages/book.js";
