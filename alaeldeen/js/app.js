@@ -102,7 +102,7 @@
     const b = S.books.find((x) => x.featured);
     const chapters = [
       ["qAbout", "#/about", "user", "wide", true], ["qLamp", "#/lamp", "lamp", "teal"], ["qTools", "#/tools", "tools"],
-      ["qDict", "#/dictionary", "book"], ["qKnow", "#/knowledge", "stack"], ["qProj", "#/projects", "trophy"],
+      ["qDict", "#/dictionary", "book"], ["qKnow", "#/knowledge", "stack"], ["qLib", "#/library", "shelf"], ["qProj", "#/projects", "trophy"],
     ];
     const mq = sp.map((x, i) => `<span class="mq-item ${i % 2 ? "" : "solid"}">${I[icons[i]]}${esc(x[0])}<small>${esc(x[1])}</small></span>`).join("");
     const nums = [[yearsExp(), "+", t("fYears")], [S.profile.experience.length, "", t("fOrgs")], [S.profile.certs.length, "", t("fCerts")], [S.books.length, "", t("books.t")], [1, "", t("fPatent")]];

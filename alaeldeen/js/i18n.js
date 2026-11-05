@@ -17,6 +17,7 @@ window.I18N = {
     qLamp: ["مصباح الجودة", "تعلّم. طبّق. تميّز.", "زُر المنصة"],
     qDict: ["قاموس الجودة", "المصطلحات والاختصارات بلغتين.", "استكشف"],
     qTools: ["الأدوات التفاعلية", "أدوات عملية للجودة والسلامة.", "جرّب الأدوات"],
+    qLib: ["المكتبة العلمية", "أهم مراجع الجودة وسلامة الغذاء الرسمية، وكتبي، في مكتبة ثلاثية الأبعاد.", "ادخل المكتبة"],
     qKnow: ["مركز المعرفة", "مقالات وأدلة وموارد.", "اقرأ"],
     qProj: ["المشاريع والإنجازات", "مشاريعي ومساهماتي.", "شاهد"],
     facts: "موجز موثّق", factsSub: "الأرقام من السيرة الذاتية، وسنوات الخبرة محسوبة من عام 2020.",
@@ -70,6 +71,7 @@ window.I18N = {
     qLamp: ["Quality Lamp", "Learn. Apply. Excel.", "Visit platform"],
     qDict: ["Quality Dictionary", "Key terms and abbreviations in two languages.", "Explore"],
     qTools: ["Interactive Tools", "Practical tools for quality & safety.", "Try tools"],
+    qLib: ["Digital Library", "The key official quality & food safety references, and my books, on a 3D bookshelf.", "Enter the library"],
     qKnow: ["Knowledge Center", "Articles, guides & resources.", "Read"],
     qProj: ["Projects & Achievements", "My projects and contributions.", "View"],
     facts: "Verified at a glance", factsSub: "Figures from the CV; years of experience counted from 2020.",
@@ -163,6 +165,7 @@ window.ICONS = (function () {
     spark: s('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
     play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg>',
     external: s('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', 'class="flip"'),
+    shelf: s('<path d="M3 21h18M3 3h18"/><rect x="4.5" y="6" width="3" height="12" rx=".5"/><rect x="8.5" y="8" width="3" height="10" rx=".5"/><path d="m13 9.2 2.8-.8 2.9 9.6-2.8.8z"/>'),
     youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg>',
   };
 })();
