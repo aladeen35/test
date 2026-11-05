@@ -132,7 +132,7 @@ function detailHtml(b) {
     <div class="lb-info">
       <h2>${esc(L(b.title))}</h2>
       <div class="row" style="gap:8px;margin:10px 0 14px"><span class="chip gold">${esc(L(CAT[b.cat]))}</span>${b.buy ? `<span class="chip">${esc(W("كتاب مدفوع", "Paid book"))}${b.price ? " · " + esc(L(b.price)) : ""}</span>` : b.paid ? `<span class="chip">${esc(W("مواصفة مدفوعة", "Paid standard"))}</span>` : `<span class="chip teal">${esc(b.mine ? W("من تأليفي", "My book") : W("مجاني", "Free"))}</span>`}${b.arabic ? `<span class="chip">${esc(W("باللغة العربية", "In Arabic"))}</span>` : ""}</div>
-      <p class="lb-meta">${I.book}<span>${esc(b.issuer)}</span></p>${b.store ? `<p class="lb-meta">${I.external}<span>${esc(W("يُباع في", "Sold at"))}: ${esc(L(b.store))}</span></p>` : ""}<p class="lb-meta">${I.clip}<span>${esc(W("سنة النشر", "Published"))}: ${esc(yearTxt(b))}</span></p>
+      <p class="lb-meta">${I.book}<span>${esc(b.issuer)}</span></p>${b.store ? `<p class="lb-meta">${I.external}<span>${esc(W("يُباع في", "Sold at"))}: ${esc(L(b.store))}</span></p>` : ""}${yearTxt(b) ? `<p class="lb-meta">${I.clip}<span>${esc(W("سنة النشر", "Published"))}: ${esc(yearTxt(b))}</span></p>` : ""}
       <p class="lb-desc">${esc(L(b.desc))}</p>
       ${b.points && b.points.length ? `<h3>${esc(W("أبرز ما فيه", "Key highlights"))}</h3><ul class="ticks">${b.points.map((p) => `<li>${esc(L(p))}</li>`).join("")}</ul>` : ""}
       <div class="cta" style="justify-content:flex-start;margin-top:18px">${btns.join("")}</div>
