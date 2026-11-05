@@ -15,9 +15,7 @@
     { id: "dilution", icon: "calc", t: { ar: "حاسبة التخفيف والتركيز", en: "Dilution & concentration calculator" }, d: { ar: "C1V1 = C2V2 وتحويل ppm ↔ % باستخدام بيانات ملصق المنتج.", en: "C1V1 = C2V2 and ppm ↔ % using your product label data." } },
     { id: "compliance", icon: "percent", t: { ar: "حاسبة نسبة الامتثال", en: "Compliance % calculator" }, d: { ar: "احسب نسبة الامتثال من عدد البنود المطابقة وغير المطابقة.", en: "Compute compliance % from conforming and non-conforming items." } },
   ];
-  const planned = [
-    ["مصفوفة تقييم الموردين", "Supplier evaluation matrix"], ["خطة أخذ العينات", "Sampling plan"], ["مولد خطة التنظيف والتطهير", "Cleaning & sanitation plan builder"], ["نموذج تقييم مسببات الحساسية", "Allergen assessment form"], ["تمرين الاستدعاء التجريبي", "Mock recall exercise"], ["مولد محضر اجتماع الجودة", "Quality meeting minutes"], ["لوحة مؤشرات KPI", "KPI dashboard"], ["مخطط تدفق العمليات", "Process flow diagram"],
-  ];
+  const planned = [["مخطط تدفق العمليات", "Process flow diagram"]];
 
   const crumbsFor = (tool) => [[t("toolsT"), "#/tools"], [L(tool.t)]];
   const disclaimer = () => `<div class="disclaimer">${I.warn}<div>${esc(t("disclaimer"))}<br><span style="opacity:.8">${esc(t("localNote"))}</span></div></div>`;

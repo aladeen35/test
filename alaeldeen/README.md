@@ -51,7 +51,7 @@ public/               images, CV PDFs, manifest, service worker (copied as-is)
 | Home: 3D hero, specialties marquee, pinned horizontal chapters, scrubbed numbers, book scene, scroll-read quote | `#/` |
 | Profile: summary, experience timeline (experience since 2020), education, 16 certificates, skills, achievements, AR/EN CV download | `#/about` |
 | Quality Lamp: 12 modules (5 full lessons with quizzes), learner dashboard, badges | `#/lamp` |
-| Toolkit: inspection checklist, NCR, RCA/CAPA, risk matrix, temperature log, dilution & compliance calculators | `#/tools` |
+| Toolkit (27 tools): inspection checklist, NCR, RCA/CAPA, risk matrix, temperature log, dilution & compliance calculators, HACCP plan builder, CFU calculator, KPI dashboard; logs for calibration, swab/ATP, pest control, complaints, training, shelf life (`js/tools-logs.js`); allergen matrix, mock recall, sampling plan, goods receiving, supplier evaluation, cleaning plan (`js/tools-plans.js`); cooling, recipe nutrition, label checker, meeting minutes, branch visit planner (`js/tools-calc.js`) | `#/tools` |
 | Dictionary: 25 terms, AR/EN search | `#/dictionary` |
 | Knowledge Center, Projects, Books, All links, Contact, Privacy | `#/knowledge`, `#/projects`, `#/books`, `#/links`, `#/contact`, `#/privacy` |
 
