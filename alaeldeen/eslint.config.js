@@ -12,4 +12,5 @@ export default [
   { files: ["js/**/*.js"], languageOptions: { sourceType: "script" } },
   { files: ["public/sw.js"], languageOptions: { sourceType: "script", globals: { ...globals.serviceworker } } },
   { files: ["vite.config.js", "eslint.config.js"], languageOptions: { globals: { ...globals.node } } },
+  { files: ["tools/**/*.cjs"], languageOptions: { sourceType: "commonjs", globals: { ...globals.node, ...globals.browser } } },
 ];
