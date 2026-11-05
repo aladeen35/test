@@ -53,7 +53,7 @@ window.SITE = (function () {
       {
         role: { ar: "مسؤول جودة", en: "Quality Officer" },
         org: { ar: "شركة دايت سنتر — السعودية", en: "Diet Center Company — Saudi Arabia" },
-        from: "2024-10", to: "2025-05",
+        from: "2021-10", to: "2025-05",
         points: [
           { ar: "تطوير وتنفيذ وصفات للوجبات الصحية اليومية والبرامج الغذائية والقوائم المتخصصة للأندية الرياضية والمستشفيات وأصحاب الاحتياجات الغذائية الخاصة.", en: "Developed and implemented recipes for daily healthy meals, dietary programs and specialized menus for sports clubs, hospitals and clients with special nutritional needs." },
           { ar: "ضمان الالتزام الصارم بمعايير الجودة في مراحل الإنتاج والمناولة والتخزين والتوزيع.", en: "Enforced strict quality standards across production, handling, storage and distribution." },

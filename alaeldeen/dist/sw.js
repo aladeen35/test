@@ -1,6 +1,6 @@
 /* Offline cache. Built JS/CSS have hashed names, so they are cached as they are
    fetched (network first) instead of from a fixed list. Bump VERSION on release. */
-const VERSION = "ab-v4";
+const VERSION = "ab-v5";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "assets/logo-mark.png", "assets/headshot.webp", "assets/fullbody.jpg",
   "assets/favicon.png", "assets/icon-192.png", "assets/icon-512.png", "assets/book-stolen-gold.webp", "assets/book-kingdoms.webp"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });

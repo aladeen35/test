@@ -58,7 +58,9 @@ export function boot() {
 }
 
 /* ---------- per-route scene setup ---------- */
+const ctxCleanups = [];
 function apply(main) {
+  ctxCleanups.splice(0).forEach((f) => f());
   if (ctx) ctx.revert();
   if (hero3d) { hero3d.destroy(); hero3d = null; }
   scrollTo(0);
@@ -232,7 +234,7 @@ function splits(main) {
 const REVEAL = [".card", ".fact", ".tl", ".kv > div", "details.faq", ".disclaimer", ".searchbar", ".filters", ".link-group h3",
   ".article > p", ".article > ul", ".article > ol", ".lsec > :not(h2)", ".profile-top > div > :not(h2)", ".sec-hd p", ".eyebrow"].join(",");
 function reveals(main) {
-  const els = [...main.querySelectorAll(REVEAL)].filter((el) => !el.closest(".hero, .ph, .ch-track, [data-scene='numbers'], [data-scene='book'], #rList, #iList, #terms, #quiz, #secs, #rBelow, .toc") && !el.parentElement.closest(".card"));
+  const els = [...main.querySelectorAll(REVEAL)].filter((el) => !el.closest(".hero, .ph, .ch-track, .profile-photo, .book-thumb, .video, [data-scene='numbers'], [data-scene='book'], #rList, #iList, #terms, #quiz, #secs, #rBelow, .toc") && !el.parentElement.closest(".card"));
   if (!els.length) return;
   gsap.set(els, { autoAlpha: 0, y: 42 });
   ScrollTrigger.batch(els, {
@@ -244,8 +246,14 @@ function reveals(main) {
 /* ---------- image curtains, scrubbed ---------- */
 function curtains(main) {
   main.querySelectorAll(".profile-photo img, .book-thumb img, .video img").forEach((img) => {
-    gsap.fromTo(img, { clipPath: "inset(0% 0% 100% 0%)", scale: 1.15 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1, ease: "none",
-      scrollTrigger: { trigger: img.parentElement, start: "top 92%", end: "top 40%", scrub: 0.8 } });
+    const from = { clipPath: "inset(0% 0% 100% 0%)", scale: 1.12 }, to = { clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: 1.4, ease: "cineInOut" };
+    // already on screen when the page opens (e.g. the profile photo on phones): play as soon as the page is revealed
+    gsap.set(img, from);
+    if (img.parentElement.getBoundingClientRect().top < window.innerHeight * 0.95) { ready.then(() => gsap.to(img, { ...to, delay: 0.35 })); return; }
+    // below the fold: the browser's own visibility check on the (unclipped) frame works the same on touch devices
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.disconnect(); gsap.to(img, to); } }), { threshold: 0.15 });
+    io.observe(img.parentElement);
+    ctxCleanups.push(() => io.disconnect());
   });
 }
 

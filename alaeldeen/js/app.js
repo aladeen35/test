@@ -156,7 +156,7 @@
     const certs = (g) => pr.certs.filter((c) => c.g === g).map((c) => `<div class="card cert"><span class="ic">${I.award}</span><div><h4>${esc(L(c.n))}</h4>${c.by ? `<small>${esc(L(c.by))}</small>` : ""}</div></div>`).join("");
     const html = `${pageHead(t("profileT"), t("profileSub"), [[t("nav.profile")]], "", { after: `<div class="cta" style="justify-content:flex-start"><a class="btn btn-gold" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "AR" : "EN"}.pdf" download>${I.download}<span>${esc(t("downloadCV"))} — ${esc(lang === "ar" ? t("cvAr") : t("cvEn"))}</span></a><a class="btn btn-ghost" href="cv/Alaeldeen_Omer_CV_${lang === "ar" ? "EN" : "AR"}.pdf" download>${I.download}<span>${esc(lang === "ar" ? t("cvEn") : t("cvAr"))}</span></a><a class="btn btn-ghost" href="https://youtu.be/-ETJpZbi5O4" target="_blank" rel="noopener">${I.play}<span>${esc(t("aboutVideo"))}</span></a><a class="btn btn-ghost" href="https://linkedin.com/in/aladeen35/" target="_blank" rel="noopener">${I.linkedin}<span>LinkedIn</span></a></div>` })}
     <section class="sec" id="about"><div class="wrap profile-top">
-      <div class="profile-photo"><img src="assets/fullbody.jpg" alt="${esc(L(pr.name))}" width="620" height="970"></div>
+      <div class="profile-photo"><img src="assets/fullbody-cut.webp" alt="${esc(L(pr.name))}" width="473" height="1385"></div>
       <div>
         <span class="eyebrow">${esc(t("summary"))}</span>
         <h2 style="font-size:30px">${esc(L(pr.name))}</h2>
