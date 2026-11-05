@@ -59,7 +59,7 @@
     if (target === 0) window.scrollTo(0, 0); else if (target) target.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "auto" });
   };
   const yearsExp = () => new Date().getFullYear() - S.profile.careerStart;
-  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["library", "#/library"], ["projects", "#/projects"], ["contact", "#/contact"]];
+  const NAV = [["home", "#/"], ["profile", "#/about"], ["lamp", "#/lamp"], ["tools", "#/tools"], ["dictionary", "#/dictionary"], ["knowledge", "#/knowledge"], ["library", "#/library"], ["community", "#/community"], ["projects", "#/projects"], ["contact", "#/contact"]];
   function renderChrome() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -80,7 +80,7 @@
         <p style="color:var(--muted);margin-top:14px;max-width:340px;font-size:14.5px">${esc(t("footerTag"))}</p>
         <div class="social">${socialRow()}</div></div>
       <div><h4>${esc(t("explore"))}</h4><ul><li><a href="#/about">${esc(t("nav.profile"))}</a></li><li><a href="#/experience">${esc(t("navLong.experience"))}</a></li><li><a href="#/certifications">${esc(t("navLong.certifications"))}</a></li><li><a href="#/projects">${esc(t("nav.projects"))}</a></li></ul></div>
-      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li><li><a href="#/library">${esc(t("nav.library"))}</a></li><li><a href="#/books">${esc(t("books.t"))}</a></li><li><a href="#/assistant">${esc(lang === "ar" ? "مساعد الجودة الذكي" : "AI assistant")}</a></li></ul></div>
+      <div><h4>${esc(t("platform"))}</h4><ul><li><a href="#/lamp">${esc(t("nav.lamp"))}</a></li><li><a href="#/tools">${esc(t("toolsT"))}</a></li><li><a href="#/dictionary">${esc(t("dictT"))}</a></li><li><a href="#/knowledge">${esc(t("knowT"))}</a></li><li><a href="#/library">${esc(t("nav.library"))}</a></li><li><a href="#/books">${esc(t("books.t"))}</a></li><li><a href="#/news">${esc(lang === "ar" ? "أخبار الجودة والغذاء" : "Quality & food news")}</a></li><li><a href="#/community">${esc(t("nav.community"))}</a></li><li><a href="#/assistant">${esc(lang === "ar" ? "مساعد الجودة الذكي" : "AI assistant")}</a></li></ul></div>
       <div><h4>${esc(t("connect"))}</h4><ul><li><a href="#/contact">${esc(t("contactMe"))}</a></li><li><a href="#/links">${esc(t("linksT"))}</a></li><li><a href="#/privacy">${esc(t("privacyT"))}</a></li></ul></div>
     </div><div class="base"><span>© ${yr} Eng. Alaeldeen — ${esc(t("rights"))}</span><span>${esc(t("footerNote"))}</span>
       <a class="credit" href="https://aladeen35.github.io/Games/bushra-tech/" target="_blank" rel="noopener"><img src="assets/bt-brand-mark.webp" alt="" width="30" height="29"><span>${esc(lang === "ar" ? "من إنتاج" : "Made by")} <b>${esc(lang === "ar" ? "البشري للتكنولوجيا" : "Al-Bushra Technology")}</b></span></a></div></div>`;
@@ -416,10 +416,12 @@
 
   P.privacy = () => {
     const ar = lang === "ar";
-    const eff = "2026-11-04";
+    const eff = "2026-11-05";
     const sec = ar ? [
       ["من نحن", "هذا الموقع هو الموقع المهني للمهندس علاء الدين البشرى عمر، أخصائي جودة وسلامة الغذاء، ويضم منصة «مصباح الجودة» وأدوات الجودة والقاموس والمكتبة والمساعد الذكي. للتواصل في أي أمر يخص الخصوصية: aladeen35@gmail.com."],
-      ["البيانات التي نجمعها", "لا نطلب منك إنشاء حساب ولا نجمع اسمك أو بريدك أو موقعك. لا نستخدم ملفات تعريف الارتباط (Cookies) للتتبع ولا أدوات تحليلات أو إعلانات."],
+      ["البيانات التي نجمعها", "تصفح الموقع واستخدام الأدوات لا يتطلب حسابًا، ولا نستخدم ملفات تعريف الارتباط (Cookies) للتتبع ولا أدوات تحليلات أو إعلانات. الحساب مطلوب فقط إذا أردت الكتابة أو التعليق في المجتمع (انظر أدناه)."],
+      ["مجتمع مصباح الجودة", "عند التسجيل نحفظ بريدك الإلكتروني لإرسال رابط الدخول فقط، واسمك الظاهر الذي تختاره، ومشاركاتك وتعليقاتك وبلاغاتك. يظهر اسمك الظاهر مع ما تنشره، ولا يُعرض بريدك لأحد. تُراجَع المقالات قبل نشرها، ويحق للمشرف رفض أو إخفاء أي محتوى مخالف. يمكنك حذف مشاركاتك وتعليقاتك بنفسك، ولحذف حسابك بالكامل راسلنا على aladeen35@gmail.com. تُخزَّن هذه البيانات لدى Supabase (خوادم في الاتحاد الأوروبي) بحماية على مستوى الصفوف."],
+      ["الإعجابات والأخبار", "لعرض عدد الإعجابات العام يُنشأ على جهازك رقم عشوائي مجهول لا يرتبط باسمك أو بريدك، ويُحفظ مع المحتوى الذي أعجبك فقط. صفحة الأخبار تعرض عناوين وروابط من مصادرها الرسمية والإخبارية، وفتح الخبر ينقلك لموقع المصدر وسياسته."],
       ["ما يُحفظ على جهازك فقط", "ما تدخله في الأدوات (التفتيش، NCR، تحليل السبب الجذري، المخاطر، سجل الحرارة، خطط HACCP، نتائج CFU) وتقدمك في الدروس والمفضلة واللغة المختارة يُحفظ في متصفحك (التخزين المحلي) على جهازك فقط، ولا يصل إلينا. يمكنك حذفه من زر الحذف في كل أداة أو بمسح بيانات الموقع من إعدادات المتصفح."],
       ["الصور والتقارير", "الصور التي تضيفها إلى تقارير عدم المطابقة تُصغَّر وتبقى على جهازك. لا تضف صور منشأة أو تقاريرها دون موافقتها، ولا تضف صورًا تُظهر وجوه أشخاص دون إذنهم."],
       ["المساعد الذكي", "عند استخدام المساعد يُرسَل نص سؤالك ومحادثتك الحالية إلى مزود خدمة الذكاء الاصطناعي (Puter، أو خادم وسيط يتصل بخدمة Anthropic) لتوليد الرد، وتخضع لسياسات ذلك المزود. قد يطلب Puter موافقة أو تسجيل دخول مجاني. لا تكتب بيانات شخصية أو سرية أو معلومات داخلية لجهة عملك. تُحفظ المحادثة في متصفحك أثناء الجلسة فقط."],
@@ -430,7 +432,9 @@
       ["التعديلات", "قد نحدّث هذه السياسة عند إضافة خدمات جديدة، ويظهر تاريخ آخر تحديث أدناه."],
     ] : [
       ["Who we are", "This is the professional site of Eng. Alaeldeen Albushra Omer, a food quality & safety specialist. It includes the Quality Lamp platform, quality tools, dictionary, library and AI assistant. For any privacy question: aladeen35@gmail.com."],
-      ["What we collect", "No account is needed and we don't collect your name, email or location. We use no tracking cookies, analytics or advertising tools."],
+      ["What we collect", "Browsing the site and using the tools need no account, and we use no tracking cookies, analytics or advertising tools. An account is needed only to write or comment in the community (see below)."],
+      ["Quality Lamp community", "When you join we keep your email (only to send sign-in links), the display name you choose, and your posts, comments and reports. Your display name appears with what you publish; your email is never shown. Posts are reviewed before publishing, and the moderator may reject or hide content that breaks the rules. You can delete your own posts and comments; to delete your whole account, email aladeen35@gmail.com. This data is stored with Supabase (EU servers) behind row-level security."],
+      ["Likes and news", "To show public like counts, your browser gets a random anonymous id that is not linked to your name or email and is stored only with the items you liked. The news page shows headlines and links from official and news sources; opening a story takes you to the source site and its own policy."],
       ["What stays on your device", "What you enter in the tools (inspections, NCRs, root cause analysis, risks, temperature log, HACCP plans, CFU results), your lesson progress, favourites and language are kept in your browser's local storage on your device only and never reach us. Delete it with each tool's delete button or by clearing this site's data in your browser."],
       ["Photos and reports", "Photos added to NCRs are resized and stay on your device. Don't add photos or reports of a facility without its consent, or photos showing people's faces without their permission."],
       ["AI assistant", "When you use the assistant, your question and the current conversation are sent to the AI provider (Puter, or a relay server connected to Anthropic) to generate the reply, under that provider's policies. Puter may ask for approval or a free sign-in. Don't enter personal, confidential or internal company information. The conversation is kept in your browser for the session only."],

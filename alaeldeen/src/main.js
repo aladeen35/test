@@ -10,6 +10,7 @@ import "../css/library.css";
 import "../css/assistant.css";
 import "../css/book.css";
 import "../css/share.css";
+import "../css/cloud.css";
 import "./styles/tailwind.css";
 import "./styles/cinema.css";
 
@@ -30,3 +31,4 @@ import "./pages/library.js";
 import "./pages/assistant.js";
 import "./pages/book.js";
 import "./pages/share.js";
+import "./pages/cloud.js";

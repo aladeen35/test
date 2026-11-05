@@ -30,7 +30,7 @@ const paintLikes = (root) => (root || document).querySelectorAll("[data-like]").
   const on = LIKES.has(b.dataset.like); b.setAttribute("aria-pressed", on); b.classList.toggle("on", on);
   const lt = b.querySelector(".lk-t"), txt = on ? W("أعجبك", "Liked") : W("أعجبني", "Like");
   if (lt.textContent !== txt) lt.textContent = txt; // only touch the DOM when it changes (the observer below watches it)
-  if (LIKES.backend) LIKES.backend.count(b.dataset.like).then((n) => { const el = b.querySelector(".lk-n"); el.hidden = !n; el.textContent = n; }).catch(() => {});
+  if (LIKES.backend) LIKES.backend.count(b.dataset.like).then((n) => { const el = b.querySelector(".lk-n"); if (el.hidden !== !n) el.hidden = !n; if (el.textContent !== String(n)) el.textContent = n; }).catch(() => {});
 });
 A.paintLikes = paintLikes;
 
