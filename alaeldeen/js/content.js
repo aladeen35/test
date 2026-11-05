@@ -11,7 +11,7 @@ window.SITE = (function () {
       ar: "أخصائي مراقبة جودة وسلامة غذاء | ميكروبيولوجيا الأغذية",
       en: "Quality Control & Food Safety Officer | Food Microbiology Specialist",
     },
-    location: { ar: "مكة المكرمة، المملكة العربية السعودية", en: "Makkah, Saudi Arabia" },
+    location: { ar: "المملكة العربية السعودية", en: "Saudi Arabia" },
     careerStart: 2020,
     email: "aladeen35@gmail.com",
     phone: "+966 59 172 3483",
@@ -40,7 +40,7 @@ window.SITE = (function () {
     experience: [
       {
         role: { ar: "مسؤول جودة", en: "Quality Officer" },
-        org: { ar: "هاف مليون (خدمات المشروبات) — مكة المكرمة", en: "Half Million (Beverage Services) — Makkah" },
+        org: { ar: "هاف مليون (خدمات المشروبات)", en: "Half Million (Beverage Services)" },
         from: "2025-05", to: null,
         points: [
           { ar: "إدارة عمليات مراقبة الجودة اليومية لتحضير المشروبات وتعبئتها وتوصيلها، بما يضمن وصول المنتج للعميل بالمواصفات ودرجة الحرارة المطلوبة.", en: "Manage day-to-day quality control for beverage preparation, packaging and delivery, so products reach the customer within the required quality and temperature standards." },
