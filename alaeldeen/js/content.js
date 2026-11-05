@@ -11,7 +11,7 @@ window.SITE = (function () {
       ar: "أخصائي مراقبة جودة وسلامة غذاء | ميكروبيولوجيا الأغذية",
       en: "Quality Control & Food Safety Officer | Food Microbiology Specialist",
     },
-    location: { ar: "المملكة العربية السعودية", en: "Saudi Arabia" },
+    location: { ar: "الرياض، المملكة العربية السعودية", en: "Riyadh, Saudi Arabia" },
     careerStart: 2020,
     email: "aladeen35@gmail.com",
     phone: "+966 59 172 3483",
