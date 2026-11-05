@@ -1,0 +1,20 @@
+/* Practical tools: product label, batch code, prep label and EAN-13 tools */
+.pt-page [hidden] { display: none !important; }
+.pt-split { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; margin-top: 18px; }
+@media (max-width: 960px) { .pt-split { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 961px) { .pt-side { position: sticky; top: 88px; } }
+.pt-h { grid-column: 1 / -1; font-size: 15px; margin: 10px 0 -4px; color: var(--gold); }
+.pt-h:first-child { margin-top: 0; }
+.pt-stagehost { display: flex; justify-content: center; align-items: center; padding: 14px; border-radius: 10px; min-height: 120px; overflow: hidden; background: repeating-conic-gradient(#2c2c2c 0 25%, #252525 0 50%) 0 0 / 16px 16px; }
+.pl-stage { position: relative; overflow: hidden; flex: 0 0 auto; direction: ltr; box-shadow: 0 6px 20px rgba(0, 0, 0, .45); }
+.pl-scale { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.pt-seg button[aria-pressed="true"] { background: rgba(221, 176, 63, .2); color: var(--gold); }
+.pt-tg { cursor: pointer; font: inherit; font-size: 12.5px; }
+.pt-tg[aria-pressed="true"] { background: rgba(221, 176, 63, .16); color: var(--gold); border-color: rgba(221, 176, 63, .45); }
+.pt-tokens .pt-tk { font-weight: 500; opacity: .8; }
+.pt-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; text-align: start; }
+.pt-code { font-size: 26px; font-weight: 700; color: var(--gold); letter-spacing: .04em; }
+.pt-bc { background: #fff; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; align-items: center; max-width: 100%; overflow: hidden; }
+.pt-bc svg { max-width: 100%; display: block; }
+.pt-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+.pt-days input[type="color"] { width: 100%; height: 38px; padding: 2px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--bg-2); }
