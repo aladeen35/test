@@ -19,6 +19,7 @@ boot(); // defines window.MOTION before the app renders its first route
 
 import "../js/i18n.js";
 import "../js/content.js";
+import "../js/dict-extra.js";
 import "../js/app.js";
 import "../js/tools.js";
 import "../js/tools-extra.js";
