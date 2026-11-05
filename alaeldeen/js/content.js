@@ -5,7 +5,7 @@ window.SITE = (function () {
   const REVIEWED = "2026-11-04";
 
   const profile = {
-    name: { ar: "علاء الدين البشرى عمر", en: "Alaeldeen Albushra Omer" },
+    name: { ar: "علاء الدين البشري محمد الحسن عمر", en: "Alaeldeen Albushra Mohamed Elhassan Omer" },
     display: "Eng. Alaeldeen",
     title: {
       ar: "أخصائي مراقبة جودة وسلامة غذاء | ميكروبيولوجيا الأغذية",
@@ -60,6 +60,7 @@ window.SITE = (function () {
           { ar: "تنفيذ عمليات التفتيش الدورية وقياس درجات الحرارة وسحب العينات الميكروبيولوجية.", en: "Carried out routine inspections, temperature checks and microbiological sampling." },
           { ar: "التعاون مع الفرق المختلفة لتحسين انسيابية الإنتاج وتنظيم المخزون وتقليل الفاقد.", en: "Worked with cross-functional teams to optimize production flow, streamline inventory and reduce food waste." },
           { ar: "تدريب العاملين في المطبخ والتعبئة على النظافة وضبط مسببات الحساسية والتوثيق الصحيح.", en: "Trained kitchen and packing staff on hygiene, allergen control and correct documentation." },
+          { ar: "العمل متعاقدًا من دايت سنتر لإدارة جودة المطابخ داخل مستشفيات مجموعة د. سليمان الحبيب الطبية: سلامة الغذاء والتغذية العلاجية وخدمات الطعام للمرضى.", en: "Contracted by Diet Center to manage the quality of the kitchens inside Dr. Sulaiman Al Habib Medical Group hospitals: food safety, clinical nutrition and patient food services." },
         ],
       },
       {
@@ -71,6 +72,14 @@ window.SITE = (function () {
           { ar: "تنسيق خدمات التموين لحفلات الزفاف والمناسبات الكبيرة مع الحفاظ على الجودة ومستوى التقديم.", en: "Coordinated catering for weddings and large events while maintaining food quality and presentation." },
           { ar: "تطبيق إجراءات مراقبة الجودة لمتابعة سلامة الغذاء والنظافة خلال الإنتاج والتقديم.", en: "Implemented quality control measures for food safety and hygiene through production and service." },
           { ar: "الإشراف على ظروف التخزين ودوران المخزون (FIFO) ومتابعة توريدات الموردين.", en: "Supervised storage conditions, stock rotation (FIFO) and supplier deliveries." },
+        ],
+      },
+      {
+        training: true, year: "2020",
+        role: { ar: "متدرب في إدارة الجودة", en: "Quality Management Trainee" },
+        org: { ar: "كوكاكولا السودان — مجموعة دال", en: "Coca-Cola Sudan — Dal Group" },
+        points: [
+          { ar: "تدريب عملي على إدارة الجودة في بيئة تصنيع مشروبات (شهادة تدريب).", en: "Hands-on quality management training in a beverage manufacturing environment (training certificate)." },
         ],
       },
     ],

@@ -105,7 +105,7 @@
       ["qDict", "#/dictionary", "book"], ["qKnow", "#/knowledge", "stack"], ["qLib", "#/library", "shelf"], ["qProj", "#/projects", "trophy"],
     ];
     const mq = sp.map((x, i) => `<span class="mq-item ${i % 2 ? "" : "solid"}">${I[icons[i]]}${esc(x[0])}<small>${esc(x[1])}</small></span>`).join("");
-    const nums = [[yearsExp(), "+", t("fYears")], [S.profile.experience.length, "", t("fOrgs")], [S.profile.certs.length, "", t("fCerts")], [S.books.length, "", t("books.t")], [1, "", t("fPatent")]];
+    const nums = [[yearsExp(), "+", t("fYears")], [S.profile.experience.filter((e) => !e.training).length, "", t("fOrgs")], [S.profile.certs.length, "", t("fCerts")], [S.books.length, "", t("books.t")], [1, "", t("fPatent")]];
     return `
     <section class="hero" data-scene="hero"><canvas class="hero-gl" aria-hidden="true"></canvas><div class="swoosh"></div><div class="wrap">
       <div class="hero-copy">
@@ -174,7 +174,7 @@
     <section class="sec" id="experience" style="padding-top:0"><div class="wrap">
       <div class="sec-hd"><div><span class="eyebrow">${esc(t("navLong.experience"))}</span><h2>${esc(t("experience"))}</h2></div></div>
       <div class="timeline">${pr.experience.map((e) => `<div class="tl"><div class="card">
-        <div class="meta"><span class="chip gold">${esc(fmtDate(e.from, { year: "numeric", month: "short" }))} — ${esc(e.to ? fmtDate(e.to, { year: "numeric", month: "short" }) : t("present"))}</span><span class="chip">${esc(duration(e.from, e.to))}</span></div>
+        <div class="meta"><span class="chip gold">${e.year ? esc(e.year) : `${esc(fmtDate(e.from, { year: "numeric", month: "short" }))} — ${esc(e.to ? fmtDate(e.to, { year: "numeric", month: "short" }) : t("present"))}`}</span>${e.year ? `<span class="chip">${esc(lang === "ar" ? "تدريب" : "Training")}</span>` : `<span class="chip">${esc(duration(e.from, e.to))}</span>`}</div>
         <h3>${esc(L(e.role))}</h3><span class="org">${esc(L(e.org))}</span>
         <ul class="ticks">${e.points.map((p) => `<li>${esc(L(p))}</li>`).join("")}</ul></div></div>`).join("")}</div>
     </div></section>
