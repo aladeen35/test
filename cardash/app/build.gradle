@@ -1,0 +1,26 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'com.aladeen.cardash'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.aladeen.cardash'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+    signingConfigs {
+        // Optional private key (not in git). Put cardash.jks next to this file and set the
+        // CARDASH_KEY_PASS environment variable; otherwise the debug key is used.
+        cardash {
+            storeFile file('cardash.jks')
+            storePassword System.getenv('CARDASH_KEY_PASS') ?: ''
+            keyAlias 'cardash'
+            keyPassword System.getenv('CARDASH_KEY_PASS') ?: ''
+        }
+    }
+    buildTypes {
+        release { minifyEnabled false; signingConfig(file('cardash.jks').exists() && System.getenv('CARDASH_KEY_PASS') ? signingConfigs.cardash : signingConfigs.debug) }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
