@@ -10,6 +10,8 @@ import { I18nProvider } from "@/lib/i18n/client";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 import { BottomNav } from "@/components/bottom-nav";
 import { OfflineBanner, ServiceWorkerRegister } from "@/components/pwa";
+import { Splash, SPLASH_SCRIPT } from "@/components/splash";
+import { IntroCards } from "@/components/intro-cards";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getDict();
@@ -32,10 +34,14 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { locale } = await getDict();
+  const { locale, t } = await getDict();
   return (
-    <html lang={locale} dir={dirOf(locale)} className="h-full antialiased">
+    <html lang={locale} dir={dirOf(locale)} className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SPLASH_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
+        <Splash t={t} />
         <I18nProvider locale={locale}>
           <OfflineBanner />
           <SiteHeader />
@@ -43,6 +49,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <SiteFooter />
           <BottomNav />
           <ServiceWorkerRegister />
+          <IntroCards />
         </I18nProvider>
       </body>
     </html>
