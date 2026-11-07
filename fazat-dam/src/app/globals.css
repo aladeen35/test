@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* Brand tokens — FAZAT DAM design system (see docs/06-design-system.md) */
+@theme {
+  --color-brand: #C62828;
+  --color-brand-600: #B71C1C;
+  --color-brand-400: #E53935;
+  --color-brand-50: #FDECEC;
+  --color-navy: #172B4D;
+  --color-navy-700: #0F1E38;
+  --color-navy-100: #E3E8F0;
+  --color-surface: #F4F6F8;
+  --color-success: #2E7D32;
+  --color-success-50: #E8F5E9;
+  --color-warning: #F9A825;
+  --color-warning-50: #FFF8E1;
+  --color-ink: #172B4D;
+  --color-muted: #5B6B82;
+  --color-line: #DDE3EA;
+
+  --font-sans: "IBM Plex Sans Arabic", "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-latin: "Inter Variable", "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgb(23 43 77 / 0.06), 0 4px 16px rgb(23 43 77 / 0.06);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--color-surface);
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+}
+
+html[lang="en"] body {
+  font-family: var(--font-latin);
+}
+
+/* Latin runs inside Arabic text (blood groups, references, phone numbers) */
+.latin {
+  font-family: var(--font-latin);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+/* Component-level utilities (Tailwind v4 @utility so they can be composed with @apply) */
+@utility card {
+  @apply rounded-[var(--radius-card)] bg-white p-4 shadow-[var(--shadow-card)];
+}
+
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[0.95rem] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand text-white hover:bg-brand-600;
+}
+
+@utility btn-navy {
+  @apply btn bg-navy text-white hover:bg-navy-700;
+}
+
+@utility btn-outline {
+  @apply btn border border-line bg-white text-navy hover:bg-surface;
+}
+
+@utility btn-ghost {
+  @apply btn text-navy hover:bg-navy-100;
+}
+
+@utility btn-danger {
+  @apply btn border border-brand/30 bg-brand-50 text-brand-600 hover:bg-brand/10;
+}
+
+@utility field {
+  @apply flex flex-col gap-1.5;
+}
+
+@utility label {
+  @apply text-sm font-semibold text-navy;
+}
+
+@utility hint {
+  @apply text-xs text-muted;
+}
+
+@utility input {
+  @apply min-h-11 w-full rounded-xl border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/30;
+}
+
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+@utility page-title {
+  @apply text-2xl font-bold text-navy;
+}
+
+@utility section-title {
+  @apply text-lg font-bold text-navy;
+}
