@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        buildUi(); // refresh tiles (e.g. an app installed meanwhile)
         refreshPermissionCard();
     }
 
@@ -69,6 +70,7 @@ public class MainActivity extends Activity {
         addTile(grid, "🚗", "وضع القيادة", "خرائط + كاميرا + يوتيوب", 0xFF1E88E5, v -> driveMode());
         addTile(grid, "🗺️", "الخرائط", "فتح تطبيق الخرائط", 0xFF2E7D32, v -> openMaps());
         addTile(grid, "▶️", "يوتيوب عائم", "إظهار / إخفاء", 0xFFC62828, v -> FloatingService.send(this, FloatingService.ACTION_YOUTUBE));
+        addAppTile(grid, "com.albushra.player", "البشرى", 0xFF00695C);
         addTile(grid, "📷", "مرآة الكاميرا", "إظهار / إخفاء", 0xFF6A1B9A, v -> FloatingService.send(this, FloatingService.ACTION_CAMERA));
         addTile(grid, "⏹", "إغلاق النوافذ", "إيقاف كل النوافذ العائمة", 0xFF37474F, v -> FloatingService.send(this, FloatingService.ACTION_STOP));
         addTile(grid, "🧹", "تنظيف النظام", "تعطيل التطبيقات الزائدة", 0xFFEF6C00, v -> startActivity(new Intent(this, DebloatActivity.class)));
@@ -230,6 +232,42 @@ public class MainActivity extends Activity {
         p.width = 0;
         p.setMargins(dp(6), dp(6), dp(6), dp(6));
         grid.addView(t, p);
+    }
+
+    /**
+     * Tile that launches another installed app, showing that app's own icon and name
+     * (read from the system at runtime, like any launcher). If it is not installed, explains how.
+     */
+    private void addAppTile(GridLayout grid, String pkg, String fallbackName, int color) {
+        android.content.pm.PackageManager pm = getPackageManager();
+        Intent launch = pm.getLaunchIntentForPackage(pkg);
+        if (launch == null) launch = pm.getLeanbackLaunchIntentForPackage(pkg);
+        final Intent target = launch;
+        if (target == null) {
+            addTile(grid, "📺", fallbackName, "غير مثبت — اضغط للتعليمات", color, v ->
+                    Toast.makeText(this, "انسخ ملف " + fallbackName + " (APK) للشاشة وثبّته من مدير الملفات، ثم ارجع هنا.",
+                            Toast.LENGTH_LONG).show());
+            return;
+        }
+        String name = fallbackName;
+        android.graphics.drawable.Drawable icon = null;
+        try {
+            android.content.pm.ApplicationInfo ai = pm.getApplicationInfo(pkg, 0);
+            name = String.valueOf(pm.getApplicationLabel(ai));
+            icon = pm.getApplicationIcon(ai);
+        } catch (Exception ignored) {}
+        addTile(grid, "📺", name, "فتح التطبيق", color, v -> {
+            target.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(target);
+        });
+        if (icon != null) {
+            // Replace the emoji with the app's real icon.
+            LinearLayout tile = (LinearLayout) grid.getChildAt(grid.getChildCount() - 1);
+            android.widget.ImageView iv = new android.widget.ImageView(this);
+            iv.setImageDrawable(icon);
+            tile.removeViewAt(0);
+            tile.addView(iv, 0, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        }
     }
 
     private TextView text(String s, float sp, int color) {
