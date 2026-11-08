@@ -112,3 +112,12 @@ html.cine .card.hover:hover { box-shadow: 0 22px 40px -20px rgba(0,0,0,.9), 0 0 
   #grain, #preloader, .scroll-bar, .hero-gl, .scroll-cue { display: none !important; }
   [style*="opacity"], [style*="transform"] { opacity: 1 !important; transform: none !important; visibility: visible !important; }
 }
+
+/* swarm rebuild cursors (home + About, first view per visit) */
+.swarm-layer { position: fixed; inset: 0; z-index: 300; pointer-events: none; overflow: hidden; }
+.swarm-cur { position: absolute; top: 0; left: 0; will-change: transform; }
+.swarm-cur svg { width: 22px; height: 22px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
+.swarm-cur i { position: absolute; top: 18px; left: 14px; font: 600 11px/1.5 var(--font-en, Inter, sans-serif); font-style: normal; padding: 1px 7px; border-radius: 999px; color: #111; white-space: nowrap; direction: ltr; }
+[data-swarm] { will-change: transform; }
+.sw-w { display: inline-block; }
+h1[tabindex="-1"]:focus { outline: none; } /* route focus target: no ring when focused by the router */

@@ -9,6 +9,7 @@ import { SplitText } from "gsap/SplitText";
 import { CustomEase } from "gsap/CustomEase";
 import { initGrain } from "./grain.js";
 import { runPreloader } from "./preloader.js";
+import { prepareSwarm, runSwarm } from "./swarm.js";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, CustomEase);
 CustomEase.create("cine", "M0,0 C0.16,0.84 0.24,1 1,1");
@@ -74,16 +75,24 @@ function apply(main) {
     });
   }
 
+  // swarm rebuild: home page and the About page, first view of each per visit
+  const route = location.hash.replace(/^#\/?/, "");
+  const page = hero ? "home" : route === "about" ? "about" : "";
+  let seen;
+  try { seen = !page || sessionStorage.getItem("ab:swarm:" + page) === "1"; } catch { seen = true; }
+  const sw = !reduce && !seen;
+
   ctx = gsap.context(() => {
     chrome();
     if (reduce) return;
-    if (hero) heroScene(hero);
+    if (hero) heroScene(hero, sw);
     marquee(main.querySelector('[data-scene="marquee"]'));
     chapters(main.querySelector('[data-scene="chapters"]'));
     numbers(main.querySelector('[data-scene="numbers"]'));
     book(main.querySelector('[data-scene="book"]'));
     manifesto(main.querySelector('[data-scene="quote"]'));
-    pageHeader(main.querySelector(".ph"));
+    pageHeader(main.querySelector(".ph"), sw);
+    if (sw) startSwarm(main, page);
     splits(main);
     reveals(main);
     curtains(main);
@@ -101,10 +110,20 @@ function chrome() {
 }
 
 /* ---------- hero: entrance timeline + pinned scrub ---------- */
-function heroScene(hero) {
+function heroScene(hero, sw) {
   const photo = hero.querySelector(".hero-photo img");
   const halo = hero.querySelector(".hero-photo");
   const copy = hero.querySelector(".hero-copy");
+  if (sw) {
+    // the swarm builds the copy, photo and badge; only the swoosh keeps its own entrance
+    SplitText.create(hero.querySelectorAll("h1 [data-split]"), { type: "words", wordsClass: "sw-w" });
+    gsap.set(hero.querySelector(".swoosh"), { autoAlpha: 0, rotate: isRTL() ? 14 : -14 });
+    ready.then(() => gsap.to(hero.querySelector(".swoosh"), { autoAlpha: 1, rotate: 0, duration: 2.4, ease: "cine" }));
+  } else heroIntro(hero, photo);
+  heroExit(hero, halo, copy);
+}
+
+function heroIntro(hero, photo) {
   const lines = [...hero.querySelectorAll("h1 [data-split]")].map((el) => SplitText.create(el, { type: "words,lines", mask: "lines", linesClass: "split-mask" }));
   const words = lines.flatMap((s) => s.words);
 
@@ -128,7 +147,9 @@ function heroScene(hero) {
     .to(hero.querySelectorAll("[data-intro-cta] .btn"), { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1 }, 1.3)
     .to(hero.querySelector(".hero-badge"), { autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: "cineBack" }, 1.6);
   ready.then(() => intro.play());
+}
 
+function heroExit(hero, halo, copy) {
   // scrubbed exit: pinned on large screens, plain parallax on phones
   const mm = gsap.matchMedia();
   mm.add({ big: "(min-width: 900px) and (min-height: 620px)", small: "(max-width: 899px), (max-height: 619px)" }, (c) => {
@@ -209,16 +230,37 @@ function manifesto(sec) {
 }
 
 /* ---------- inner page header: masked title reveal + scrubbed exit ---------- */
-function pageHeader(ph) {
+function pageHeader(ph, sw) {
   if (!ph) return;
   const h1 = ph.querySelector("h1");
+  if (sw) SplitText.create(h1, { type: "words", wordsClass: "sw-w" }); // the swarm builds the header
+  else {
   const s = SplitText.create(h1, { type: "words,lines", mask: "lines", linesClass: "split-mask" });
   const rest = ph.querySelectorAll(".crumbs, .eyebrow, p, .cta");
   ready.then(() => {
     gsap.from(s.words, { yPercent: 115, duration: 1.1, stagger: 0.06, ease: "cine" });
     gsap.from(rest, { y: 24, autoAlpha: 0, duration: 0.9, stagger: 0.08, ease: "cine", delay: 0.15 });
   });
+  }
   gsap.to(ph.querySelector(".wrap"), { yPercent: 22, autoAlpha: 0.15, ease: "none", scrollTrigger: { trigger: ph, start: "top top", end: "bottom top", scrub: true } });
+}
+
+/* ---------- swarm rebuild (home + About) ---------- */
+function startSwarm(main, page) {
+  const q = (s) => [...main.querySelectorAll(s)];
+  const hdr = document.getElementById("hdr");
+  const head = hdr && window.innerWidth >= 760 ? [hdr.querySelector(".brand"), ...hdr.querySelectorAll(".nav a")] : [];
+  const list = page === "home"
+    ? [...head, ...q(".hero .hero-kicker, .hero h1 .sw-w, .hero .role, .hero .rule, .hero .lead, .hero .cta .btn, .hero-photo img, .hero-badge")]
+    : [...head, ...q(".ph .crumbs, .ph .eyebrow, .ph h1 .sw-w, .ph p, .ph .cta .btn, #about .profile-photo, #about .profile-top > div > *:not(.kv), #about .kv > div")];
+  const pieces = prepareSwarm([...new Set(list)]);
+  if (!pieces.length) return;
+  ready.then(() => {
+    if (!pieces[0].isConnected) return;
+    try { sessionStorage.setItem("ab:swarm:" + page, "1"); } catch { /* private mode */ }
+    const run = runSwarm(pieces, { onDone: () => ScrollTrigger.refresh() });
+    if (run) ctxCleanups.push(run.cancel);
+  });
 }
 
 /* ---------- section headings: words rise out of line masks ---------- */
@@ -234,7 +276,7 @@ function splits(main) {
 const REVEAL = [".card", ".fact", ".tl", ".kv > div", "details.faq", ".disclaimer", ".searchbar", ".filters", ".link-group h3",
   ".article > p", ".article > ul", ".article > ol", ".lsec > :not(h2)", ".profile-top > div > :not(h2)", ".sec-hd p", ".eyebrow"].join(",");
 function reveals(main) {
-  const els = [...main.querySelectorAll(REVEAL)].filter((el) => !el.closest(".hero, .ph, .ch-track, .profile-photo, .book-thumb, .video, [data-scene='numbers'], [data-scene='book'], #rList, #iList, #terms, #quiz, #secs, #rBelow, .toc") && !el.parentElement.closest(".card"));
+  const els = [...main.querySelectorAll(REVEAL)].filter((el) => !el.closest("[data-swarm], .hero, .ph, .ch-track, .profile-photo, .book-thumb, .video, [data-scene='numbers'], [data-scene='book'], #rList, #iList, #terms, #quiz, #secs, #rBelow, .toc") && !el.parentElement.closest(".card"));
   if (!els.length) return;
   gsap.set(els, { autoAlpha: 0, y: 42 });
   ScrollTrigger.batch(els, {
@@ -246,6 +288,7 @@ function reveals(main) {
 /* ---------- image curtains, scrubbed ---------- */
 function curtains(main) {
   main.querySelectorAll(".profile-photo img, .book-thumb img, .video img").forEach((img) => {
+    if (img.closest("[data-swarm]")) return; // built by the swarm
     const from = { clipPath: "inset(0% 0% 100% 0%)", scale: 1.12 }, to = { clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: 1.4, ease: "cineInOut" };
     // already on screen when the page opens (e.g. the profile photo on phones): play as soon as the page is revealed
     gsap.set(img, from);
