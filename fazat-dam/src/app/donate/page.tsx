@@ -72,8 +72,8 @@ export default async function DonatePage() {
           <Field label={t.onboarding.fullName} hint={t.onboarding.fullNameHint} htmlFor="full_name">
             <input id="full_name" name="full_name" className="input" required minLength={2} maxLength={120} defaultValue={profile?.full_name ?? ""} />
           </Field>
-          <Field label={t.auth.phone}>
-            <input className="input latin bg-surface" value={viewer.phone ? `+${viewer.phone.replace(/^\+/, "")}` : ""} readOnly aria-readonly />
+          <Field label={t.onboarding.contactPhone} hint={t.onboarding.contactPhoneHint}>
+            <input className="input latin bg-surface" value={`+${(viewer.phone ?? viewer.contactPhone ?? "").replace(/^\+/, "")}`} readOnly aria-readonly />
           </Field>
           <CountryCitySelect cities={cities} defaultCountry={donor?.country_code ?? viewer.countryCode} defaultCity={donor?.city_id ?? viewer.cityId} />
           <BloodGroupPicker defaultValue={donor?.blood_group} />

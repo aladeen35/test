@@ -23,6 +23,7 @@ export function Splash({ t }: { t: Dict }) {
         <span className="latin">Your Support Saves Lives.</span>
       </div>
       <div className="mt-6"><Dots /></div>
+      <p className="fd-slogan absolute bottom-6 text-xs text-navy/60">{t.common.designedBy}</p>
     </div>
   );
 }

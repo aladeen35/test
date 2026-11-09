@@ -332,6 +332,17 @@ begin
   perform t.ok((select count(*) from public.search_donors('SA', riyadh, 'A+', false)) = 0, 'suspended donors disappear from search');
   perform t.root();
 
+  -- ---------- email users: contact phone
+  insert into auth.users (email) values ('mail-only@example.org') returning id into x;
+  perform t.ok((select phone is null and email = 'mail-only@example.org' from public.profiles where id = x.id), 'email-only signup creates a profile without phone');
+  perform t.act(x.id);
+  perform public.set_contact_phone('+966 50 123 4567');
+  perform t.root();
+  perform t.ok((select contact_phone from public.profiles where id = x.id) = '966501234567', 'contact phone is normalised');
+  perform t.fails(x.id, 'select public.set_contact_phone(''123'')', 'invalid_input', 'short contact phone rejected');
+  perform t.fails(x.id, 'update public.profiles set contact_phone = ''999999999999'' where id = auth.uid(); select 1/(select count(*) from public.profiles where contact_phone = ''999999999999'')',
+    'division by zero', 'contact phone cannot be written directly');
+
   -- ---------- account deletion
   perform t.act(dsd);
   perform public.delete_my_account();

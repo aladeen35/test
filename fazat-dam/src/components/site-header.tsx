@@ -71,6 +71,7 @@ export async function SiteFooter() {
           <Link href="/sponsors" className="underline-offset-4 hover:underline">{t.nav.sponsors}</Link>
           <Link href="/institution" className="underline-offset-4 hover:underline">{t.nav.institution}</Link>
         </nav>
+        <p className="border-t border-line pt-3 text-xs">{t.common.designedBy}</p>
       </div>
     </footer>
   );

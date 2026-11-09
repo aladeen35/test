@@ -10,12 +10,21 @@ function safeNext(next: string | null) {
   return next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
 }
 
+/** Email sign-in has no verified number, so the user provides a private contact number. */
+async function saveContactPhone(fd: FormData): Promise<ActionState> {
+  const phone = str(fd, "contact_phone");
+  if (phone === null) return null;
+  return callRpc("set_contact_phone", { p_phone: phone });
+}
+
 export async function completeOnboarding(_: ActionState, fd: FormData): Promise<ActionState> {
   const res = await callRpc("complete_onboarding", {
     p_full_name: str(fd, "full_name"), p_country: str(fd, "country"), p_city: str(fd, "city"),
     p_language: str(fd, "language") ?? "ar", p_accept_privacy: bool(fd, "consent"),
   });
   if (res.error) return res;
+  const phoneRes = await saveContactPhone(fd);
+  if (phoneRes?.error) return phoneRes;
   redirect(safeNext(str(fd, "next")));
 }
 
@@ -24,8 +33,10 @@ export async function updateProfile(_: ActionState, fd: FormData): Promise<Actio
     p_full_name: str(fd, "full_name"), p_country: str(fd, "country"), p_city: str(fd, "city"),
     p_language: str(fd, "language") ?? "ar", p_accept_privacy: true,
   });
+  if (res.error) return res;
+  const phoneRes = await saveContactPhone(fd);
   revalidatePath("/", "layout");
-  return res;
+  return phoneRes?.error ? phoneRes : res;
 }
 
 export async function signOut() {

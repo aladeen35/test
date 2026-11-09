@@ -20,6 +20,7 @@ export default async function AboutPage() {
         <p>{t.legal.crossBorder}</p>
         <p>{t.legal.free}</p>
       </div>
+      <p className="card text-center text-sm font-semibold text-navy">{t.common.designedBy}</p>
       <MedicalNotice t={t} />
     </div>
   );

@@ -31,6 +31,11 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
             <input id="full_name" name="full_name" className="input" required minLength={2} maxLength={120} autoComplete="name" />
           </Field>
           <CountryCitySelect cities={cities} defaultCountry={viewer.phone?.startsWith("249") ? "SD" : viewer.phone?.startsWith("966") ? "SA" : null} />
+          {!viewer.phone && (
+            <Field label={t.onboarding.contactPhone} hint={t.onboarding.contactPhoneHint} htmlFor="contact_phone">
+              <input id="contact_phone" name="contact_phone" className="input latin" inputMode="tel" autoComplete="tel" required pattern="\+?[0-9 ]{8,18}" defaultValue={viewer.contactPhone ?? ""} />
+            </Field>
+          )}
           <Field label={t.onboarding.language} htmlFor="language">
             <select id="language" name="language" className="input" defaultValue={locale}>
               <option value="ar">العربية</option>

@@ -8,6 +8,7 @@ const en: Dict = {
     slogan: "Your Support Saves Lives.",
   },
   common: {
+    designedBy: "Designed and developed by Al-Bishri Company",
     save: "Save",
     saved: "Saved",
     cancel: "Cancel",
@@ -121,6 +122,18 @@ const en: Dict = {
     switchNetwork: "Switch network",
   },
   auth: {
+    titleEmail: "Sign in with your email",
+    subtitleEmail: "We email you a secure sign-in link — no password. Your email is never shown to anyone.",
+    email: "Email address",
+    sendLink: "Send sign-in link",
+    linkSent: "We sent a sign-in link to {email}",
+    linkHelp: "Open the email and tap the link on this device. If the email contains a 6-digit code you can enter it here.",
+    checkSpam: "Nothing yet? Check your spam folder, then resend after a minute.",
+    invalidEmail: "The email address is not valid.",
+    useEmail: "Use email",
+    usePhone: "Use mobile number",
+    changeEmail: "Change email",
+    linkFailed: "The sign-in link is invalid or expired. Request a new one.",
     title: "Sign in with your mobile number",
     subtitle: "We send you a verification code by SMS. Your number is never shown to anyone.",
     phone: "Mobile number",
@@ -138,6 +151,8 @@ const en: Dict = {
     agree: "By continuing you agree to the {privacy} and {terms}.",
   },
   onboarding: {
+    contactPhone: "Mobile number for contact",
+    contactPhoneHint: "Shown to no one. Revealed to the other side only after you both approve for a specific request. Include the country code, e.g. 9665xxxxxxxx",
     title: "Complete your profile",
     subtitle: "We need these details to connect you to the right network.",
     fullName: "Full name",
@@ -306,6 +321,7 @@ const en: Dict = {
     iosHint: "On iPhone: add the app to your Home Screen first to enable notifications.",
   },
   profile: {
+    email: "Email (for sign-in)",
     title: "My account",
     personal: "Personal information",
     phone: "Mobile number (verified)",

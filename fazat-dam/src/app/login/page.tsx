@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     <div className="mx-auto flex max-w-md flex-col gap-4">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/brand/logo-full.png" alt={t.meta.name} className="mx-auto w-48" width={495} height={510} />
-      {!isSupabaseConfigured() ? <SetupMissing t={t} /> : <LoginForm next={next} />}
+      {!isSupabaseConfigured() ? <SetupMissing t={t} /> : <LoginForm next={next} linkError={sp.error === "link"} />}
     </div>
   );
 }

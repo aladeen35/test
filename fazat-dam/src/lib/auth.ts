@@ -8,6 +8,8 @@ import type { Role } from "./constants";
 export type Viewer = {
   id: string;
   phone: string | null;
+  email: string | null;
+  contactPhone: string | null;
   fullName: string | null;
   countryCode: "SD" | "SA" | null;
   cityId: string | null;
@@ -26,7 +28,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   const uid = data?.claims?.sub;
   if (!uid) return null;
   const [{ data: profile }, { data: roles }] = await Promise.all([
-    supabase.from("profiles").select("id, phone, full_name, country_code, city_id, preferred_language, account_status, onboarded_at").eq("id", uid).maybeSingle(),
+    supabase.from("profiles").select("id, phone, email, contact_phone, full_name, country_code, city_id, preferred_language, account_status, onboarded_at").eq("id", uid).maybeSingle(),
     supabase.from("user_roles").select("role").eq("user_id", uid),
   ]);
   if (!profile) return null;
@@ -34,6 +36,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   return {
     id: profile.id,
     phone: profile.phone,
+    email: profile.email,
+    contactPhone: profile.contact_phone,
     fullName: profile.full_name,
     countryCode: profile.country_code,
     cityId: profile.city_id,

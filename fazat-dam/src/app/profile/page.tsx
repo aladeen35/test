@@ -34,9 +34,20 @@ export default async function ProfilePage() {
           <Field label={t.onboarding.fullName} htmlFor="full_name">
             <input id="full_name" name="full_name" className="input" required minLength={2} maxLength={120} defaultValue={viewer.fullName ?? ""} />
           </Field>
-          <Field label={t.profile.phone}>
-            <input className="input latin bg-surface" readOnly value={viewer.phone ? `+${viewer.phone.replace(/^\+/, "")}` : ""} />
-          </Field>
+          {viewer.phone ? (
+            <Field label={t.profile.phone}>
+              <input className="input latin bg-surface" readOnly value={`+${viewer.phone.replace(/^\+/, "")}`} />
+            </Field>
+          ) : (
+            <>
+              <Field label={t.profile.email}>
+                <input className="input latin bg-surface" readOnly value={viewer.email ?? ""} />
+              </Field>
+              <Field label={t.onboarding.contactPhone} hint={t.onboarding.contactPhoneHint} htmlFor="contact_phone">
+                <input id="contact_phone" name="contact_phone" className="input latin" inputMode="tel" required pattern="\+?[0-9 ]{8,18}" defaultValue={viewer.contactPhone ?? ""} />
+              </Field>
+            </>
+          )}
           <CountryCitySelect cities={cities} defaultCountry={viewer.countryCode} defaultCity={viewer.cityId} />
           <Field label={t.common.language} htmlFor="language">
             <select id="language" name="language" className="input" defaultValue={locale}>
