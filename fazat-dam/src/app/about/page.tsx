@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getDict } from "@/lib/i18n/server";
 import { MedicalNotice, PageHeader } from "@/components/ui";
+import { Credit } from "@/components/credit";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getDict();
@@ -20,7 +21,7 @@ export default async function AboutPage() {
         <p>{t.legal.crossBorder}</p>
         <p>{t.legal.free}</p>
       </div>
-      <p className="card text-center text-sm font-semibold text-navy">{t.common.designedBy}</p>
+      <p className="card flex justify-center text-sm font-semibold text-navy"><Credit t={t} size={132} full className="flex-col text-center" /></p>
       <MedicalNotice t={t} />
     </div>
   );

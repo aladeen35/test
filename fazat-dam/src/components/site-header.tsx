@@ -3,6 +3,7 @@ import { getDict } from "@/lib/i18n/server";
 import { getViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Logo } from "./ui";
+import { Credit } from "./credit";
 import { BellIcon } from "./icons";
 import { LangSwitch } from "./header-controls";
 
@@ -71,7 +72,7 @@ export async function SiteFooter() {
           <Link href="/sponsors" className="underline-offset-4 hover:underline">{t.nav.sponsors}</Link>
           <Link href="/institution" className="underline-offset-4 hover:underline">{t.nav.institution}</Link>
         </nav>
-        <p className="border-t border-line pt-3 text-xs">{t.common.designedBy}</p>
+        <p className="border-t border-line pt-3 text-xs"><Credit t={t} /></p>
       </div>
     </footer>
   );
