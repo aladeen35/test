@@ -498,7 +498,8 @@ create view public.public_campaign_sponsors as
    where cs.status = 'approved';
 
 -- Table privileges (RLS still applies on top of these)
-revoke all on all tables in schema public from anon;
+-- Supabase grants ALL to API roles by default: start from nothing, then grant what is needed
+revoke all on all tables in schema public from anon, authenticated;
 grant select on public.countries, public.cities, public.app_settings, public.initiative_updates,
   public.public_institutions, public.public_initiatives, public.public_sponsors, public.public_campaign_sponsors
   to anon;

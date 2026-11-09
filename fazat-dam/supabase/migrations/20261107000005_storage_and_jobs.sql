@@ -77,3 +77,12 @@ end $$;
 
 revoke execute on function public._storage_entity(text) from public, anon;
 grant execute on function public._storage_entity(text) to authenticated;
+
+-- Pin search_path on the remaining helper functions (Supabase security advisor).
+alter function public._storage_entity(text) set search_path = public;
+alter function public._request_contact_open(public.request_status, timestamptz) set search_path = public;
+alter function public._allowed_transition(public.request_status, public.request_status) set search_path = public;
+alter function public.tg_set_updated_at() set search_path = public;
+alter function public._code(integer) set search_path = public;
+alter function public.tg_guard_notification() set search_path = public;
+alter function public._donor_is_available(public.donor_profiles) set search_path = public;
