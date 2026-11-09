@@ -60,7 +60,7 @@ export async function SiteHeader() {
 export async function SiteFooter() {
   const { t } = await getDict();
   return (
-    <footer className="mt-10 border-t border-line bg-white pb-24 md:pb-6">
+    <footer className="mt-10 border-t border-line bg-white pb-28 md:pb-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted">
         <p className="font-semibold text-navy">{t.meta.slogan}</p>
         <p>{t.legal.medical}</p>

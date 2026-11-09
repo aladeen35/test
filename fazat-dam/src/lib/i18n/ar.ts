@@ -65,6 +65,7 @@ const ar = {
     setupMissing: "لم يتم ربط قاعدة البيانات بعد. أضف مفاتيح Supabase في ملف البيئة (.env.local) — راجع README.",
   },
   nav: {
+    requestShort: "طلب دم",
     home: "الرئيسية",
     findDonor: "ابحث عن متبرع",
     donate: "أريد التبرع",
@@ -82,6 +83,13 @@ const ar = {
     menu: "القائمة",
   },
   home: {
+    hoursLeft: "متبقٍ {n} ساعة",
+    daysLeft: "متبقٍ {n} يوم",
+    minutesLeft: "متبقٍ {n} دقيقة",
+    overdue: "تجاوز الموعد",
+    stepOf: "الخطوة {n} من {total}",
+    nextStep: "التالي: {s}",
+    helpNow: "ساعد الآن",
     welcome: "أهلاً بك في فزعة دم",
     welcomeUser: "أهلاً {name}",
     intro: "شبكة مجتمعية تربط المتبرعين بالدم بمن يحتاجونه — عبر منشآت صحية معتمدة فقط.",

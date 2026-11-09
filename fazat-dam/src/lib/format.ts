@@ -25,3 +25,13 @@ export function cityName(c: { name_ar: string; name_en: string } | null | undefi
 export function pick<T extends string>(locale: Locale, ar: T | null | undefined, en: T | null | undefined) {
   return (locale === "en" ? en || ar : ar || en) ?? "";
 }
+
+/** Remaining time until a deadline, as a dictionary key + number (computed at request time). */
+export function timeLeft(deadline: string): { key: "minutesLeft" | "hoursLeft" | "daysLeft" | "overdue"; n: number } {
+  const ms = new Date(deadline).getTime() - Date.now();
+  if (ms <= 0) return { key: "overdue", n: 0 };
+  const h = ms / 3600_000;
+  if (h < 1) return { key: "minutesLeft", n: Math.max(1, Math.round(ms / 60_000)) };
+  if (h < 48) return { key: "hoursLeft", n: Math.round(h) };
+  return { key: "daysLeft", n: Math.round(h / 24) };
+}

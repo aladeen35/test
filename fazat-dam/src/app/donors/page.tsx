@@ -60,7 +60,7 @@ export default async function DonorsPage({ searchParams }: PageProps<"/donors">)
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Chip tone={d.is_available ? "green" : "gray"}>{d.is_available ? t.common.available : t.common.unavailable}</Chip>
+                  <Chip tone={d.is_available ? "green" : "gray"}>{d.is_available && <span className="fd-live-dot" aria-hidden />}{d.is_available ? t.common.available : t.common.unavailable}</Chip>
                   {d.is_verified && <Chip tone="navy">{t.common.verified}</Chip>}
                   {d.is_demo && <DemoBadge t={t} />}
                 </div>

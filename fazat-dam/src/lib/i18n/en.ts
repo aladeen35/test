@@ -66,6 +66,7 @@ const en: Dict = {
     setupMissing: "The database is not connected yet. Add your Supabase keys to .env.local — see the README.",
   },
   nav: {
+    requestShort: "Request",
     home: "Home",
     findDonor: "Find a donor",
     donate: "I want to donate",
@@ -83,6 +84,13 @@ const en: Dict = {
     menu: "Menu",
   },
   home: {
+    hoursLeft: "{n} h left",
+    daysLeft: "{n} d left",
+    minutesLeft: "{n} min left",
+    overdue: "Overdue",
+    stepOf: "Step {n} of {total}",
+    nextStep: "Next: {s}",
+    helpNow: "Help now",
     welcome: "Welcome to FAZAT DAM",
     welcomeUser: "Welcome, {name}",
     intro: "A community network connecting blood donors with people in need — through authorised healthcare facilities only.",
