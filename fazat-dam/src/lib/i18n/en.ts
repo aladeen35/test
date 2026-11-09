@@ -8,7 +8,7 @@ const en: Dict = {
     slogan: "Your Support Saves Lives.",
   },
   common: {
-    designedBy: "Designed and developed by Al-Bishri Company",
+    designedBy: "Designed and developed by Al-Bushra Technology",
     save: "Save",
     saved: "Saved",
     cancel: "Cancel",

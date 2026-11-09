@@ -1,5 +1,6 @@
 import type { Dict } from "@/lib/i18n";
 import { Dots, EcgLine } from "./brand-motion";
+import { Credit } from "./credit";
 
 /** Inline, runs before first paint: the splash shows only on the first page load of a session. */
 export const SPLASH_SCRIPT = `try{if(sessionStorage.getItem('fd:splash')){document.documentElement.dataset.splash='done'}else{sessionStorage.setItem('fd:splash','1')}}catch(e){}`;
@@ -23,7 +24,7 @@ export function Splash({ t }: { t: Dict }) {
         <span className="latin">Your Support Saves Lives.</span>
       </div>
       <div className="mt-6"><Dots /></div>
-      <p className="fd-slogan absolute bottom-6 text-xs text-navy/60">{t.common.designedBy}</p>
+      <p className="fd-slogan absolute bottom-6 text-xs text-navy/70"><Credit t={t} size={28} /></p>
     </div>
   );
 }

@@ -12,7 +12,7 @@ const UPDATED = "2026-11-09";
 type Section = { h: string; p?: string; list?: string[] };
 
 const AR: Section[] = [
-  { h: "1. من نحن", p: "«فزعة دم» منصة مجتمعية إنسانية تربط المتبرعين بالدم بالمرضى وأسرهم داخل السودان وداخل المملكة العربية السعودية. المنصة ليست مقدّم خدمة طبية ولا بنك دم. المنصة من تصميم وتطوير شركة البشري." },
+  { h: "1. من نحن", p: "«فزعة دم» منصة مجتمعية إنسانية تربط المتبرعين بالدم بالمرضى وأسرهم داخل السودان وداخل المملكة العربية السعودية. المنصة ليست مقدّم خدمة طبية ولا بنك دم. المنصة من تصميم وتطوير البشري للتكنولوجيا." },
   { h: "2. البيانات التي نجمعها", list: [
     "بيانات الحساب: البريد الإلكتروني أو رقم الجوال المستخدم للدخول، والاسم، والدولة والمدينة، ولغة الواجهة.",
     "رقم جوال للتواصل تدخله بنفسك إن سجّلت بالبريد الإلكتروني.",
@@ -55,7 +55,7 @@ const AR: Section[] = [
 ];
 
 const EN: Section[] = [
-  { h: "1. Who we are", p: "FAZAT DAM is a humanitarian community platform that connects blood donors with patients and their families within Sudan and within Saudi Arabia. It is not a medical service provider or a blood bank. The platform is designed and developed by Al-Bishri Company." },
+  { h: "1. Who we are", p: "FAZAT DAM is a humanitarian community platform that connects blood donors with patients and their families within Sudan and within Saudi Arabia. It is not a medical service provider or a blood bank. The platform is designed and developed by Al-Bushra Technology." },
   { h: "2. Data we collect", list: [
     "Account data: the email address or mobile number you sign in with, your name, country and city, and interface language.",
     "A contact mobile number that you enter yourself if you sign in by email.",
