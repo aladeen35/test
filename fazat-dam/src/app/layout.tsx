@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/ibm-plex-sans-arabic/400.css";
-import "@fontsource/ibm-plex-sans-arabic/600.css";
-import "@fontsource/ibm-plex-sans-arabic/700.css";
 import "@fontsource-variable/inter";
+import "@fontsource-variable/el-messiri";
 import "./globals.css";
 import { getDict } from "@/lib/i18n/server";
 import { dirOf } from "@/lib/i18n";

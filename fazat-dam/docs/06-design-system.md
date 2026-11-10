@@ -63,14 +63,19 @@ Derived neutrals: `--color-muted #5B6B82` (secondary text, 5.6:1 on white), `--c
 
 | Use | Arabic | English | Size / line-height | Weight |
 |---|---|---|---|---|
-| Display | IBM Plex Sans Arabic | Inter | 28/36 | 700 |
-| H1 | | | 22/30 | 700 |
-| H2 | | | 18/26 | 600 |
-| Body | | | 16/26 (Arabic) · 16/24 (English) | 400 |
-| Small / meta | | | 14/22 | 500 |
-| Button | | | 16/24 | 600 |
+| Display (hero) | El Messiri | Inter | 24–28 / 1.35 | 700 |
+| H1 / page title | El Messiri | Inter | 28 / 1.35 | 700 |
+| H2 / section title | El Messiri | Inter | 21 / 1.45 | 700 |
+| H3 / card title | El Messiri | Inter | 18 / 1.5 | 700 |
+| Body | El Messiri | Inter | 17 / 1.75 | 400 |
+| Small / meta (`text-sm`) | El Messiri | Inter | 15 / 1.65 | 400 |
+| Hint / caption (`text-xs`) | El Messiri | Inter | 13 / 1.6 | 400 |
+| Label | El Messiri | Inter | 14.7 / 1.6 | 600 |
+| Button | El Messiri | Inter | 17 | 600 |
 
-Fonts are self-hosted with `@fontsource/ibm-plex-sans-arabic` and `@fontsource-variable/inter` (no third-party font requests, works offline). Font stack: `"IBM Plex Sans Arabic", "Inter Variable", system-ui, sans-serif`; Latin glyphs inside Arabic text fall through to Inter. Numerals: Western digits (0-9) in both languages for phone numbers, references and blood units.
+The Arabic interface uses one family, El Messiri (SIL OFL, self-hosted via `@fontsource-variable/el-messiri`), across all text; hierarchy comes from weight (700 headings, 600 labels and buttons, 400 text) and size. The small Tailwind sizes are stepped up (`--text-xs`, `--text-sm`, `--text-base` in `globals.css`) because El Messiri has a compact x-height. The English interface uses Inter, because El Messiri's capital "I" reads like a lowercase "l". References, phone numbers and other codes (`.latin`) always use Inter for unambiguous digits. Western digits (0-9) are used in both languages.
+
+Font licensing rule: only use fonts whose license allows web embedding and hosting in a public repository. The Thmanyah font was considered and rejected because its license forbids hosting the files on any server, making them downloadable through web embedding, and converting them. Font stack: `"IBM Plex Sans Arabic", "Inter Variable", system-ui, sans-serif`; Latin glyphs inside Arabic text fall through to Inter. Numerals: Western digits (0-9) in both languages for phone numbers, references and blood units.
 
 ## Spacing, radius, elevation
 
