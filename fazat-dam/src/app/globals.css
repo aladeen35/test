@@ -18,10 +18,19 @@
   --color-muted: #5B6B82;
   --color-line: #DDE3EA;
 
-  --font-sans: "IBM Plex Sans Arabic", "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-latin: "Inter Variable", "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
-  /* Display font for Arabic headings (El Messiri, SIL OFL). Latin falls back to Inter. */
-  --font-display: "El Messiri Variable", "IBM Plex Sans Arabic", "Inter Variable", system-ui, sans-serif;
+  /* One family for the whole interface (El Messiri, SIL OFL, Arabic + Latin).
+     Hierarchy comes from weight and size, not from mixing fonts. */
+  --font-sans: "El Messiri Variable", "Inter Variable", system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  /* El Messiri has a compact x-height: step the small sizes up so body and meta text stay readable */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.6;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.65;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.75;
+  /* Codes, references and phone numbers stay in Inter for unambiguous digits */
+  --font-latin: "Inter Variable", "Inter", system-ui, sans-serif;
 
   --radius-card: 1rem;
   --shadow-card: 0 1px 2px rgb(23 43 77 / 0.06), 0 4px 16px rgb(23 43 77 / 0.06);
@@ -40,17 +49,25 @@ body {
   background: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   min-height: 100dvh;
 }
 
+/* English: El Messiri's capital "I" reads like a lowercase "l", so the English interface uses Inter */
 html[lang="en"] body {
   font-family: var(--font-latin);
 }
 
-/* Headings use the display font in Arabic; English keeps Inter. */
-html[lang="ar"] :is(h1, h2, h3, .page-title, .section-title) {
-  font-family: var(--font-display);
-  letter-spacing: 0;
+/* Type scale: headings are larger and bold; body text is regular weight.
+   In @layer base so utility classes can still adjust a single element. */
+@layer base {
+  h1 { font-size: 1.75rem; line-height: 1.35; font-weight: 700; }
+  h2 { font-size: 1.3rem; line-height: 1.45; font-weight: 700; }
+  h3 { font-size: 1.1rem; line-height: 1.5; font-weight: 700; }
+  p, li { font-weight: 400; }
+  strong, b { font-weight: 700; }
 }
 
 /* Latin runs inside Arabic text (blood groups, references, phone numbers) */
@@ -71,7 +88,7 @@ html[lang="ar"] :is(h1, h2, h3, .page-title, .section-title) {
 }
 
 @utility btn {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[0.95rem] font-semibold transition-[background-color,transform] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-semibold transition-[background-color,transform] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 @utility btn-primary {
@@ -99,11 +116,11 @@ html[lang="ar"] :is(h1, h2, h3, .page-title, .section-title) {
 }
 
 @utility label {
-  @apply text-sm font-semibold text-navy;
+  @apply text-[0.92rem] leading-6 font-semibold text-navy;
 }
 
 @utility hint {
-  @apply text-xs text-muted;
+  @apply text-[0.8rem] leading-6 font-normal text-muted;
 }
 
 @utility input {
@@ -111,15 +128,15 @@ html[lang="ar"] :is(h1, h2, h3, .page-title, .section-title) {
 }
 
 @utility chip {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.78rem] leading-5 font-semibold;
 }
 
 @utility page-title {
-  @apply text-2xl font-bold text-navy;
+  @apply text-[1.75rem] leading-[1.35] font-bold text-navy;
 }
 
 @utility section-title {
-  @apply text-lg font-bold text-navy;
+  @apply text-[1.3rem] leading-[1.45] font-bold text-navy;
 }
 
 /* ---------------------------------------------------------------
