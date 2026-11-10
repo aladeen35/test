@@ -16,7 +16,7 @@ export function Splash({ t }: { t: Dict }) {
       <img src="/brand/symbol.png" alt="" width={132} height={132} className="fd-logo h-32 w-32 rounded-[2rem] bg-white p-2 shadow-[0_10px_40px_rgb(198_40_40/0.25)]" />
       <EcgLine className="h-8 w-48" />
       <div className="fd-name flex flex-col items-center leading-tight">
-        <span className="text-4xl font-bold text-navy" lang="ar">فزعة دم</span>
+        <span className="text-4xl font-bold text-navy" lang="ar" style={{ fontFamily: "var(--font-display)" }}>فزعة دم</span>
         <span className="latin text-lg font-extrabold tracking-[0.2em] text-navy">FAZAT DAM</span>
       </div>
       <div className="fd-slogan flex flex-col items-center gap-0.5 text-sm text-navy/80">

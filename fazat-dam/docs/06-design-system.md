@@ -63,14 +63,16 @@ Derived neutrals: `--color-muted #5B6B82` (secondary text, 5.6:1 on white), `--c
 
 | Use | Arabic | English | Size / line-height | Weight |
 |---|---|---|---|---|
-| Display | IBM Plex Sans Arabic | Inter | 28/36 | 700 |
-| H1 | | | 22/30 | 700 |
-| H2 | | | 18/26 | 600 |
-| Body | | | 16/26 (Arabic) · 16/24 (English) | 400 |
+| Display | El Messiri | Inter | 28/36 | 700 |
+| H1 | El Messiri | Inter | 22/30 | 700 |
+| H2 | El Messiri | Inter | 18/26 | 700 |
+| Body | IBM Plex Sans Arabic | Inter | 16/26 (Arabic) · 16/24 (English) | 400 |
 | Small / meta | | | 14/22 | 500 |
 | Button | | | 16/24 | 600 |
 
-Fonts are self-hosted with `@fontsource/ibm-plex-sans-arabic` and `@fontsource-variable/inter` (no third-party font requests, works offline). Font stack: `"IBM Plex Sans Arabic", "Inter Variable", system-ui, sans-serif`; Latin glyphs inside Arabic text fall through to Inter. Numerals: Western digits (0-9) in both languages for phone numbers, references and blood units.
+Fonts are self-hosted with `@fontsource/ibm-plex-sans-arabic`, `@fontsource-variable/el-messiri` and `@fontsource-variable/inter` (no third-party font requests, works offline). All three are SIL Open Font License. Arabic headings (`h1`–`h3`, `.page-title`, `.section-title`) use `--font-display` (El Messiri); English headings stay in Inter.
+
+Font licensing rule: only use fonts whose license allows web embedding and hosting in a public repository. The Thmanyah font was considered and rejected because its license forbids hosting the files on any server, making them downloadable through web embedding, and converting them. Font stack: `"IBM Plex Sans Arabic", "Inter Variable", system-ui, sans-serif`; Latin glyphs inside Arabic text fall through to Inter. Numerals: Western digits (0-9) in both languages for phone numbers, references and blood units.
 
 ## Spacing, radius, elevation
 
