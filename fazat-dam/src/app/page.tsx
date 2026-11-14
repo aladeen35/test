@@ -10,7 +10,7 @@ import { BLOOD_GROUPS, TIMEZONE } from "@/lib/constants";
 import { DemoBadge, Empty, MedicalNotice, SetupMissing } from "@/components/ui";
 import { CountUp } from "@/components/count-up";
 import { NetworkSwitch } from "@/components/header-controls";
-import { ArrowIcon, ClockIcon, DropIcon, HeartIcon, PinIcon, SearchIcon, ShieldIcon, SlidersIcon, SparkIcon, UsersIcon } from "@/components/icons";
+import { ArrowIcon, ClockIcon, DropIcon, HeartIcon, PinIcon, SearchIcon, ShieldIcon, SlidersLineIcon, SparkIcon, UsersIcon, BloodBagIcon } from "@/components/icons";
 
 type Emergency = { id: string; reference: string; blood_group: string; units: number; city_ar: string; city_en: string; hospital_name: string; urgency: "normal" | "urgent" | "critical"; required_by: string; is_demo: boolean };
 
@@ -55,11 +55,11 @@ export default async function HomePage() {
           <p className="mt-1 text-muted">{t.home.howHelp}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/donors" className="flex min-h-14 flex-1 items-center gap-3 rounded-full bg-white px-5 text-muted shadow-[var(--shadow-card)]">
-            <SearchIcon className="h-5 w-5 shrink-0" />
+          <Link href="/donors" className="lift flex min-h-14 flex-1 items-center gap-3 rounded-full bg-white px-5 text-muted shadow-[var(--shadow-card)]">
+            <SearchIcon className="h-6 w-6 shrink-0" color="#172B4D" />
             <span className="truncate text-sm">{t.home.searchPlaceholder}</span>
           </Link>
-          <Link href="/donors" className="icon-btn h-14 w-14 bg-navy text-white" aria-label={t.search.title}><SlidersIcon className="h-5 w-5" /></Link>
+          <Link href="/donors" className="icon-btn navy-disc h-14 w-14 text-white" aria-label={t.search.title}><SlidersLineIcon className="h-5 w-5" /></Link>
         </div>
       </section>
 
@@ -73,13 +73,13 @@ export default async function HomePage() {
             <p className="text-xs text-white/60">{t.home.networkLabel}</p>
             <h2 id="net" className="text-2xl font-bold text-white">{networkName}</h2>
           </div>
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10"><DropIcon className="fd-heart h-6 w-6 text-sand" /></span>
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 shadow-[inset_0_1px_0_rgb(255_255_255/0.15)]"><BloodBagIcon className="h-8 w-8" color="#D9B07C" /></span>
         </div>
         {stats && (
           <dl className="relative mt-5 grid grid-cols-3 gap-2">
             {([[UsersIcon, stats.available_donors, t.home.availableShort], [ShieldIcon, stats.verified_requests, t.home.verifiedShort], [HeartIcon, stats.confirmed_donations, t.home.donationsShort]] as const).map(([Icon, v, label]) => (
               <div key={label} className="rounded-2xl bg-white/[0.07] px-3 py-3">
-                <Icon className="h-4 w-4 text-white/60" />
+                <Icon className="h-5 w-5" color="#D9B07C" />
                 <dd className="mt-1 text-2xl font-bold leading-none text-white"><CountUp value={v ?? 0} /></dd>
                 <dt className="mt-1 text-xs text-white/60">{label}</dt>
               </div>
@@ -93,15 +93,15 @@ export default async function HomePage() {
       <section aria-labelledby="qa" className="flex flex-col gap-3">
         <h2 id="qa" className="section-title">{t.home.quickActions}</h2>
         <div className="fd-stagger grid grid-cols-2 gap-3">
-          <Link href="/requests/new" className="group card flex min-h-44 flex-col justify-between transition-transform active:scale-[0.98]">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-[0_10px_22px_-10px_rgb(198_40_40/0.8)]"><DropIcon className="h-7 w-7" /></span>
+          <Link href="/requests/new" className="group card flex min-h-44 flex-col justify-between">
+            <span className="icon-well h-16 w-16 bg-brand-50"><DropIcon className="h-9 w-9" color="#C62828" /></span>
             <span>
               <span className="block text-lg font-bold text-navy">{t.home.needBlood}</span>
               <span className="mt-0.5 block text-xs leading-5 text-muted">{t.home.needBloodSub}</span>
             </span>
           </Link>
-          <Link href="/donate" className="group flex min-h-44 flex-col justify-between rounded-[var(--radius-card)] bg-sand p-5 text-navy-700 shadow-[var(--shadow-card)] transition-transform active:scale-[0.98]">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/60"><HeartIcon className="fd-heart h-7 w-7 text-brand" /></span>
+          <Link href="/donate" className="lift sand-tile group flex min-h-44 flex-col justify-between rounded-[var(--radius-card)] p-5 text-navy-700">
+            <span className="icon-well h-16 w-16 bg-white/70"><HeartIcon className="h-9 w-9" color="#C62828" /></span>
             <span>
               <span className="block text-lg font-bold">{t.home.wantDonate}</span>
               <span className="mt-0.5 block text-xs leading-5 text-navy-700/75">{t.home.wantDonateSub}</span>
@@ -123,8 +123,8 @@ export default async function HomePage() {
             {emergencies.map((r) => {
               const left = timeLeft(r.required_by);
               return (
-                <li key={r.id} className="card flex items-center gap-4 p-4">
-                  <span className={`latin flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white ${r.urgency === "critical" ? "fd-critical bg-brand" : r.urgency === "urgent" ? "bg-brand" : "bg-navy"}`}>{r.blood_group}</span>
+                <li key={r.id} className="card lift flex items-center gap-4 p-4">
+                  <span className={`latin flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white ${r.urgency === "critical" ? "fd-critical blood-disc" : r.urgency === "urgent" ? "blood-disc" : "navy-disc"}`}>{r.blood_group}</span>
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className={`chip ${r.urgency === "critical" ? "bg-brand text-white" : r.urgency === "urgent" ? "bg-brand-50 text-brand-600" : "bg-navy-100 text-navy"}`}>{t.request[`urgency_${r.urgency}`]}</span>
@@ -137,7 +137,7 @@ export default async function HomePage() {
                       <span className="truncate">{locale === "ar" ? r.city_ar : r.city_en} · <span className="latin">{r.units}</span> {t.common.units} · {fmtDateTime(r.required_by, locale, TIMEZONE[network])}</span>
                     </p>
                   </div>
-                  <Link href="/donate" aria-label={`${t.home.helpNow} — ${r.hospital_name}`} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-navy text-white transition-transform active:scale-95">
+                  <Link href="/donate" aria-label={`${t.home.helpNow} — ${r.hospital_name}`} className="navy-disc flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white transition-transform active:scale-95">
                     <ArrowIcon className="h-5 w-5 rtl:-scale-x-100" />
                   </Link>
                 </li>
@@ -153,7 +153,7 @@ export default async function HomePage() {
         <h2 id="bg" className="section-title">{t.home.browseGroups}</h2>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
           {BLOOD_GROUPS.map((g) => (
-            <Link key={g} href={`/donors?country=${network}&group=${encodeURIComponent(g)}`} className="latin flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-lg font-bold text-navy shadow-[var(--shadow-card)] transition-colors hover:bg-brand hover:text-white">
+            <Link key={g} href={`/donors?country=${network}&group=${encodeURIComponent(g)}`} className="latin icon-btn h-16 w-16 text-lg font-bold transition-colors hover:bg-brand hover:text-white">
               {g}
             </Link>
           ))}
@@ -187,8 +187,8 @@ export default async function HomePage() {
         <h2 id="aw" className="section-title">{t.home.awarenessShort}</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {([[SparkIcon, t.home.aware1Title, t.home.aware1], [ShieldIcon, t.home.aware2Title, t.home.aware2], [DropIcon, t.home.aware3Title, t.home.aware3]] as const).map(([Icon, h, p]) => (
-            <div key={h} className="card flex gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface-2 text-navy"><Icon className="h-5 w-5" /></span>
+            <div key={h} className="card lift flex gap-4">
+              <span className="icon-well h-12 w-12 bg-surface-2"><Icon className="h-7 w-7" color="#172B4D" /></span>
               <div><h3 className="text-base font-bold text-navy">{h}</h3><p className="mt-0.5 text-sm text-muted">{p}</p></div>
             </div>
           ))}

@@ -17,6 +17,18 @@ Inspired by calm dashboard UIs: a cool grey canvas, large white tiles, one dark 
 | `--radius-card` / `--radius-tile` | 28px / 20px | Cards / inner tiles and notices |
 | `--shadow-card` / `--shadow-float` | soft, long, low-opacity | Tiles / floating bar and dark tile |
 
+### Depth, icons and motion (v4)
+
+- **Elevation** `--elev-1/2/3`: each level stacks a contact shadow, a key shadow and a soft ambient one. Cards add a hairline ring (`--edge`) and a top light-catch (`--edge-light`). Inputs and tiles are slightly recessed (inset shadow).
+- **Glossy surfaces**: `.blood-disc` and `.navy-disc` are radial-lit discs with an inner highlight. `.sand-tile` is the warm action tile. `.icon-well` is a recessed disc that holds an icon. Primary and navy buttons use a vertical gradient, a top highlight and a pressed inset state.
+- **Icons**: [Kubai Icons](https://github.com/kubai087/kubai-icons) (`kubai-icons-react`, MIT). They are layered and outlined, and every colour comes from one accent. Each plays a short "object" motion when its parent link or button is hovered. Line icons (`*LineIcon`) stay for tiny sizes and for white icons on colour.
+- **Motion** follows the web-animation-skills rules. Only `transform` and `opacity` animate, and shadows change by fading a pseudo-element.
+  - Interactive cards lift 3px on hover and sink on press.
+  - Buttons lift 1px.
+  - Pages settle in on every navigation (`app/template.tsx`, 380ms ease-out).
+  - Skeletons shimmer.
+  - Reduced motion is tiered: movement is removed, fades stay, and icon motion is skipped by the icon runtime.
+
 Components: `.btn*` are full pills (48px high); `.input` is a borderless filled field (48px) that turns white with a soft ring on focus; `.icon-btn` is a 44px white disc used in the header; `.pill` is a tab/filter that turns navy when `aria-pressed`/`aria-current`; the mobile tab bar floats as a white pill, the active tab expands into a navy pill with its label, and the request action is a raised red disc. Blood groups always appear in circles.
 
 ## Brand

@@ -73,3 +73,8 @@ src/lib/                 Supabase clients, auth, i18n dictionaries (ar/en), push
 There is no fabricated data in the app or the migrations. Any demonstration rows must set `is_demo = true`. These rows show a **"بيانات تجريبية / Demo data"** badge and are left out of public statistics. See `docs/09-test-data-policy.md`.
 
 > Brand note: the logo files are PNG crops of the official logo sheet (`docs/brand/logo-concept-sheet.png`). Ask the designer for vector (SVG/AI) masters before using them in print.
+
+## Third-party
+
+- Icons: [Kubai Icons](https://github.com/kubai087/kubai-icons) via `kubai-icons-react` (MIT).
+- Fonts: El Messiri and Inter via Fontsource (SIL Open Font License).

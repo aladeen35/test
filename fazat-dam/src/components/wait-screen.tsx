@@ -11,7 +11,7 @@ export function WaitScreen({ t }: { t: Dict }) {
       {/* content-shaped placeholders hint at what is coming */}
       <div className="mt-2 flex w-full max-w-md flex-col gap-3" aria-hidden="true">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="card flex animate-pulse items-center gap-3">
+          <div key={i} className="card fd-shimmer flex items-center gap-3">
             <span className="h-10 w-10 rounded-full bg-brand-50" />
             <span className="flex flex-1 flex-col gap-2">
               <span className="h-3 w-2/3 rounded bg-navy-100" />

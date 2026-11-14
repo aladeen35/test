@@ -5,7 +5,7 @@ import { revealContact, setContactConsent, scheduleAppointment, recordDonation, 
 import { blockUser, reportMatchParty } from "@/app/actions/account";
 import { ActionForm, FormMessage, SubmitButton } from "./forms";
 import { REPORT_REASONS } from "@/lib/constants";
-import { PhoneIcon } from "./icons";
+import { PhoneLineIcon } from "./icons";
 
 export function RevealContact({ matchId }: { matchId: string }) {
   const { t } = useI18n();
@@ -18,7 +18,7 @@ export function RevealContact({ matchId }: { matchId: string }) {
         <span className="font-semibold text-navy">{d.name}</span>
         <span className="latin text-lg font-bold text-navy">+{digits}</span>
         <div className="flex flex-wrap gap-2">
-          <a className="btn-navy min-h-10 text-sm" href={`tel:+${digits}`}><PhoneIcon className="h-5 w-5" />{t.donor.contact_phone_call}</a>
+          <a className="btn-navy min-h-10 text-sm" href={`tel:+${digits}`}><PhoneLineIcon className="h-5 w-5" />{t.donor.contact_phone_call}</a>
           <a className="btn-outline min-h-10 text-sm" href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer">{t.donor.contact_whatsapp}</a>
           <a className="btn-outline min-h-10 text-sm" href={`sms:+${digits}`}>{t.donor.contact_sms}</a>
         </div>
