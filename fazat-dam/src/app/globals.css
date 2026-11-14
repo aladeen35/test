@@ -342,8 +342,55 @@ select.input { background-position: left 1rem center; }
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45), inset 0 -2px 0 rgb(0 0 0 / 0.06), var(--elev-2);
 }
 
-/* Kubai icons: keep them crisp and centred inside discs */
-svg[data-kubai], .icon-well svg { display: block; }
+/* ---------------------------------------------------------------
+   Icon motion: the app's own line icons, each with a small gesture
+   that matches its object. Plays when the surrounding link/button is
+   hovered (pointer devices) or pressed (touch). Uses the individual
+   translate/rotate/scale properties so it composes with any transform
+   already on the icon (e.g. the RTL-mirrored arrow).
+   --------------------------------------------------------------- */
+@keyframes fdi-drip   { 0% { translate: 0 0; scale: 1 1; } 35% { translate: 0 2px; scale: 0.92 1.1; } 65% { translate: 0 -1px; scale: 1.06 0.94; } 100% { translate: 0 0; scale: 1 1; } }
+@keyframes fdi-beat   { 0%, 100% { scale: 1; } 20% { scale: 1.2; } 40% { scale: 0.96; } 60% { scale: 1.1; } }
+@keyframes fdi-swing  { 0%, 100% { rotate: 0deg; } 20% { rotate: 16deg; } 40% { rotate: -12deg; } 60% { rotate: 7deg; } 80% { rotate: -4deg; } }
+@keyframes fdi-tilt   { 0%, 100% { rotate: 0deg; scale: 1; } 40% { rotate: -14deg; scale: 1.12; } 70% { rotate: 4deg; } }
+@keyframes fdi-lift   { 0%, 100% { translate: 0 0; } 40% { translate: 0 -3px; } 70% { translate: 0 1px; } }
+@keyframes fdi-pop    { 0%, 100% { scale: 1; } 40% { scale: 1.18; } 70% { scale: 0.95; } }
+@keyframes fdi-nudge  { 0%, 100% { translate: 0 0; } 45% { translate: 4px 0; } }
+@keyframes fdi-ring   { 0%, 100% { rotate: 0deg; } 15%, 45%, 75% { rotate: -12deg; } 30%, 60%, 90% { rotate: 12deg; } }
+@keyframes fdi-turn   { from { rotate: 0deg; } to { rotate: 360deg; } }
+@keyframes fdi-slide  { 0%, 100% { translate: 0 0; } 50% { translate: 0 -2px; } }
+
+svg[data-icon] { transform-box: fill-box; transform-origin: center; }
+svg[data-icon="bell"] { transform-origin: 50% 8%; }
+svg[data-icon="drop"] { transform-origin: 50% 100%; }
+
+:is(a, button, label, summary):is(:hover, :active) svg[data-icon] {
+  animation-duration: 560ms;
+  animation-timing-function: var(--ease-out);
+  animation-iteration-count: 1;
+}
+@media (hover: none) {
+  /* touch: only on press, so scrolling past does not trigger it */
+  :is(a, button, label, summary):hover:not(:active) svg[data-icon] { animation-name: none !important; }
+}
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="drop"], svg[data-icon="alert"]) { animation-name: fdi-drip; }
+:is(a, button, label, summary):is(:hover, :active) svg[data-icon="heart"]   { animation-name: fdi-beat; }
+:is(a, button, label, summary):is(:hover, :active) svg[data-icon="bell"]    { animation-name: fdi-swing; animation-duration: 700ms; }
+:is(a, button, label, summary):is(:hover, :active) svg[data-icon="search"]  { animation-name: fdi-tilt; }
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="home"], svg[data-icon="user"], svg[data-icon="users"], svg[data-icon="hospital"]) { animation-name: fdi-lift; }
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="shield"], svg[data-icon="check"], svg[data-icon="list"], svg[data-icon="pin"]) { animation-name: fdi-pop; }
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="arrow"], svg[data-icon="chevron"]) { animation-name: fdi-nudge; }
+:is(a, button, label, summary):is(:hover, :active) svg[data-icon="phone"]   { animation-name: fdi-ring; animation-duration: 650ms; }
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="globe"], svg[data-icon="spark"]) { animation-name: fdi-turn; animation-duration: 700ms; }
+:is(a, button, label, summary):is(:hover, :active) :is(svg[data-icon="sliders"], svg[data-icon="clock"]) { animation-name: fdi-slide; }
+
+/* The tab that just became current greets you once */
+[aria-current="page"] svg[data-icon] { animation: fdi-pop 420ms var(--ease-spring) 1; }
+/* Unread notifications: the bell rings once on load (own keyframes, so hovering later can replay the swing) */
+@keyframes fdi-swing-once { 0%, 100% { rotate: 0deg; } 20% { rotate: 16deg; } 40% { rotate: -12deg; } 60% { rotate: 7deg; } 80% { rotate: -4deg; } }
+a[aria-label*="("]:not(:hover):not(:active) > svg[data-icon="bell"] { animation: fdi-swing-once 900ms var(--ease-out) 600ms 1; }
+
+.icon-well svg { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   /* Tier 1/2: no lift, no slide; Tier 3 fades stay */
@@ -351,4 +398,5 @@ svg[data-kubai], .icon-well svg { display: block; }
   :is(.btn-primary, .btn-navy, .btn-outline, .btn-sand, .icon-btn):hover { transform: none !important; }
   .fd-page { animation: fd-fade-in 150ms ease-out both; }
   .fd-shimmer::after { animation: none; }
+  svg[data-icon] { animation: none !important; } /* icon gestures are decorative */
 }

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n/client";
-import { HomeIcon, SearchIcon, DropLineIcon, ListIcon, UserIcon } from "./icons";
+import { HomeIcon, SearchIcon, DropIcon, ListIcon, UserIcon } from "./icons";
 
 /** Floating pill tab bar. The active tab grows into a navy pill with its label; the request action is a red disc. */
 export function BottomNav() {
@@ -25,7 +25,7 @@ export function BottomNav() {
               <li key="fab">
                 <Link href="/requests/new" aria-current={active ? "page" : undefined} aria-label={t.nav.request}
                   className="blood-disc flex h-14 w-14 items-center justify-center rounded-full text-white transition-transform active:scale-95">
-                  <DropLineIcon className="h-7 w-7" />
+                  <DropIcon className="h-7 w-7" />
                 </Link>
               </li>
             );
@@ -37,7 +37,7 @@ export function BottomNav() {
               <Link href={href} aria-current={active ? "page" : undefined} aria-label={label}
                 className={`flex h-12 items-center justify-center gap-2 rounded-full transition-all duration-300 ${
                   active ? "bg-navy px-3.5 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_8px_18px_-8px_rgb(23_43_77/0.6)]" : "w-12 text-muted hover:bg-surface-2"}`}>
-                <Icon className="h-7 w-7" color={active ? "#D9B07C" : "#172B4D"} variant={active ? "soft" : undefined} />
+                <Icon className="h-6 w-6" />
                 {active && <span className="max-w-[5.5rem] truncate text-xs font-semibold">{label}</span>}
               </Link>
             </li>

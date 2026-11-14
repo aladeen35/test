@@ -76,5 +76,4 @@ There is no fabricated data in the app or the migrations. Any demonstration rows
 
 ## Third-party
 
-- Icons: [Kubai Icons](https://github.com/kubai087/kubai-icons) via `kubai-icons-react` (MIT).
 - Fonts: El Messiri and Inter via Fontsource (SIL Open Font License).
