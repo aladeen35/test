@@ -6,7 +6,7 @@ export function Logo({ size = 40, withText = true, label }: { size?: number; wit
   return (
     <span className="inline-flex items-center gap-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/symbol.png" alt="" width={size} height={size} className="rounded-lg" style={{ width: size, height: size }} />
+      <img src="/brand/symbol.png" alt="" width={size} height={size} className="rounded-full bg-white" style={{ width: size, height: size }} />
       {withText && <span className="text-lg font-bold leading-none text-navy">{label}</span>}
     </span>
   );
@@ -14,8 +14,8 @@ export function Logo({ size = 40, withText = true, label }: { size?: number; wit
 
 const STATUS_STYLE: Record<RequestStatus, string> = {
   submitted: "bg-navy-100 text-navy",
-  under_review: "bg-warning-50 text-navy",
-  verified: "bg-blue-50 text-blue-800",
+  under_review: "bg-sand-50 text-sand-600",
+  verified: "bg-navy text-white",
   matching_donors: "bg-brand-50 text-brand-600",
   donors_responding: "bg-brand-50 text-brand-600",
   donation_arranged: "bg-success-50 text-success",
@@ -29,13 +29,14 @@ export function StatusBadge({ status, t }: { status: RequestStatus; t: Dict }) {
   return <span className={`chip ${STATUS_STYLE[status]}`}>{t.status[status]}</span>;
 }
 
-export function Chip({ tone = "navy", children }: { tone?: "navy" | "red" | "green" | "amber" | "gray"; children: React.ReactNode }) {
+export function Chip({ tone = "navy", children }: { tone?: "navy" | "red" | "green" | "amber" | "gray" | "sand"; children: React.ReactNode }) {
   const tones = {
     navy: "bg-navy-100 text-navy",
     red: "bg-brand-50 text-brand-600",
     green: "bg-success-50 text-success",
-    amber: "bg-warning-50 text-navy",
-    gray: "bg-zinc-100 text-zinc-600",
+    amber: "bg-sand-50 text-sand-600",
+    sand: "bg-sand-50 text-sand-600",
+    gray: "bg-surface-2 text-muted",
   };
   return <span className={`chip ${tones[tone]}`}>{children}</span>;
 }
@@ -50,13 +51,16 @@ export function BloodChip({ group, size = "md" }: { group: string; size?: "md" |
 }
 
 export function DemoBadge({ t }: { t: Dict }) {
-  return <span className="chip border border-dashed border-warning bg-warning-50 text-navy">{t.common.demo}</span>;
+  return <span className="chip border border-dashed border-sand bg-sand-50 text-sand-600">{t.common.demo}</span>;
 }
 
 export function Empty({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div className="card flex flex-col items-center gap-3 py-8 text-center text-muted">
-      <p>{children}</p>
+    <div className="card flex flex-col items-center gap-3 py-10 text-center text-muted">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-2" aria-hidden>
+        <svg viewBox="0 0 24 24" className="h-6 w-6 text-muted/70" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" /></svg>
+      </span>
+      <p className="max-w-xs text-sm">{children}</p>
       {action}
     </div>
   );
@@ -64,10 +68,10 @@ export function Empty({ children, action }: { children: React.ReactNode; action?
 
 export function PageHeader({ title, intro, action }: { title: string; intro?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 className="page-title">{title}</h1>
-        {intro && <p className="mt-1 max-w-2xl text-sm text-muted">{intro}</p>}
+        {intro && <p className="mt-1.5 max-w-2xl text-sm text-muted">{intro}</p>}
       </div>
       {action}
     </div>
@@ -76,12 +80,12 @@ export function PageHeader({ title, intro, action }: { title: string; intro?: st
 
 export function Notice({ tone = "info", children }: { tone?: "info" | "warn" | "error" | "ok"; children: React.ReactNode }) {
   const tones = {
-    info: "border-navy/15 bg-navy-100/60 text-navy",
-    warn: "border-warning/50 bg-warning-50 text-navy",
-    error: "border-brand/30 bg-brand-50 text-brand-600",
-    ok: "border-success/30 bg-success-50 text-success",
+    info: "bg-navy-100/70 text-navy",
+    warn: "bg-sand-50 text-navy",
+    error: "bg-brand-50 text-brand-600",
+    ok: "bg-success-50 text-success",
   };
-  return <div role={tone === "error" ? "alert" : "status"} className={`rounded-xl border px-3 py-2.5 text-sm ${tones[tone]}`}>{children}</div>;
+  return <div role={tone === "error" ? "alert" : "status"} className={`rounded-[var(--radius-tile)] px-4 py-3 text-sm leading-6 ${tones[tone]}`}>{children}</div>;
 }
 
 export function MedicalNotice({ t }: { t: Dict }) {
@@ -96,16 +100,16 @@ export function MedicalNotice({ t }: { t: Dict }) {
 export function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="card flex flex-col gap-1">
-      <span className="latin text-2xl font-bold text-navy">{value}</span>
+      <span className="latin text-3xl font-bold text-navy">{value}</span>
       <span className="text-xs text-muted">{label}</span>
     </div>
   );
 }
 
 export function LinkCard({ href, title, sub, icon, tone = "white" }: { href: string; title: string; sub?: string; icon?: React.ReactNode; tone?: "red" | "navy" | "white" }) {
-  const tones = { red: "bg-brand text-white", navy: "bg-navy text-white", white: "bg-white text-navy" };
+  const tones = { red: "bg-brand text-white", navy: "bg-navy-800 text-white", white: "bg-white text-navy" };
   return (
-    <Link href={href} className={`flex min-h-24 items-center gap-3 rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-card)] transition-transform active:scale-[0.99] ${tones[tone]}`}>
+    <Link href={href} className={`flex min-h-24 items-center gap-4 rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-card)] transition-transform active:scale-[0.99] ${tones[tone]}`}>
       {icon}
       <span className="flex flex-col">
         <span className="text-lg font-bold">{title}</span>

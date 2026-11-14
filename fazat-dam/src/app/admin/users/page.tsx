@@ -56,7 +56,7 @@ export default async function AdminUsers({ searchParams }: PageProps<"/admin/use
                       <input type="hidden" name="user_id" value={u.id} />
                       <input type="hidden" name="role" value={r} />
                       <input type="hidden" name="grant" value={has ? "false" : "true"} />
-                      <SubmitButton className={`chip min-h-8 ${has ? "bg-navy text-white" : "border border-line bg-white text-muted"}`} title={has ? t.admin.revoke : t.admin.grant}>
+                      <SubmitButton className={`chip min-h-8 ${has ? "bg-navy text-white" : "bg-surface-2 text-muted"}`} title={has ? t.admin.revoke : t.admin.grant}>
                         {has ? "✓ " : "+ "}{t.profile[`role_${r}`]}
                       </SubmitButton>
                     </ActionForm>

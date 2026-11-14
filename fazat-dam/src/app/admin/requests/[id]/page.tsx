@@ -118,7 +118,7 @@ export default async function ReviewRequest({ params }: PageProps<"/admin/reques
               <h3 className="font-bold text-navy">{t.search.title}</h3>
               <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {(candidates as { donor_id: string; display_name: string; blood_group: string; is_verified: boolean }[]).filter((c) => !matchedAliases.has(c.display_name.split(" · ").pop()!)).map((c) => (
-                  <li key={c.donor_id} className="flex items-center gap-2 rounded-xl border border-line p-2">
+                  <li key={c.donor_id} className="tile flex items-center gap-2 p-2">
                     <BloodChip group={c.blood_group} />
                     <span className="latin flex-1 text-sm font-semibold">{c.display_name}</span>
                     <SendRequestButton donorId={c.donor_id} requests={[{ id, reference: r.reference }]} />

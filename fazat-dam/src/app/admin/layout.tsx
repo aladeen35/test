@@ -17,9 +17,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex flex-col gap-4 md:flex-row">
       <nav aria-label={t.admin.title} className="md:w-56 md:shrink-0">
-        <ul className="flex gap-1 overflow-x-auto pb-1 md:sticky md:top-20 md:flex-col md:overflow-visible">
+        <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:px-0 md:sticky md:top-20 md:flex-col md:overflow-visible">
           {items.map(([href, label]) => (
-            <li key={href}><Link href={href} className="block whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold text-navy hover:bg-white">{label}</Link></li>
+            <li key={href}><Link href={href} className="pill min-h-10 whitespace-nowrap md:w-full md:justify-start md:bg-transparent md:shadow-none md:hover:bg-white">{label}</Link></li>
           ))}
         </ul>
       </nav>

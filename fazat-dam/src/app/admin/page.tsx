@@ -29,7 +29,7 @@ function Bar({ label, value, max }: { label: string; value: number; max: number 
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className="w-28 shrink-0 truncate">{label}</span>
-      <span className="h-3 flex-1 overflow-hidden rounded-full bg-surface"><span className="block h-full rounded-full bg-brand" style={{ width: `${max ? (value / max) * 100 : 0}%` }} /></span>
+      <span className="h-3 flex-1 overflow-hidden rounded-full bg-surface-2"><span className="block h-full rounded-full bg-brand" style={{ width: `${max ? (value / max) * 100 : 0}%` }} /></span>
       <span className="latin w-10 text-end font-semibold">{value}</span>
     </div>
   );

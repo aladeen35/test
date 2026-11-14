@@ -32,7 +32,7 @@ export default async function MessagesPage({ params }: PageProps<"/messages/[mat
         {(messages ?? []).map((m) => {
           const mine = m.sender_id === viewer.id;
           return (
-            <div key={m.id} className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${mine ? "self-end bg-navy text-white" : "self-start bg-surface text-navy"}`}>
+            <div key={m.id} className={`max-w-[80%] rounded-3xl px-4 py-2.5 text-sm ${mine ? "self-end bg-navy text-white" : "self-start bg-surface-2 text-navy"}`}>
               <p className="whitespace-pre-wrap break-words" dir="auto">{m.body}</p>
               <p className={`mt-1 text-[0.65rem] ${mine ? "text-white/70" : "text-muted"}`}>{fmtDateTime(m.created_at, locale)}</p>
             </div>

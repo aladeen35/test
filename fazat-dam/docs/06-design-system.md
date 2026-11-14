@@ -2,6 +2,23 @@
 
 Direction: **modern humanitarian healthcare** — clean white surfaces, strong medical red for action, dark navy for text and trust, rounded cards, clear status labels, large touch targets. Arabic first.
 
+
+## Visual language v3 — "Soft Pulse" (current)
+
+Inspired by calm dashboard UIs: a cool grey canvas, large white tiles, one dark navy status tile, one warm accent, and pill-shaped controls everywhere.
+
+| Token | Value | Use |
+|---|---|---|
+| `--color-surface` | `#EDF0F4` | Page canvas |
+| `--color-surface-2` | `#F6F7FA` | Inputs, inner tiles (`.tile`), quiet chips |
+| `--color-navy-800` | `#1E2E52` | Dark status tile (`.card-dark`), e.g. the network card on Home |
+| `--color-sand` / `-50` / `-600` | `#D9B07C` / `#F7EEE1` / `#A97E47` | Warm accent: "I want to donate", active pill on dark tiles, time-left chips, notices |
+| `--color-brand` | `#C62828` | Primary actions (pill buttons, request FAB), blood-group discs |
+| `--radius-card` / `--radius-tile` | 28px / 20px | Cards / inner tiles and notices |
+| `--shadow-card` / `--shadow-float` | soft, long, low-opacity | Tiles / floating bar and dark tile |
+
+Components: `.btn*` are full pills (48px high); `.input` is a borderless filled field (48px) that turns white with a soft ring on focus; `.icon-btn` is a 44px white disc used in the header; `.pill` is a tab/filter that turns navy when `aria-pressed`/`aria-current`; the mobile tab bar floats as a white pill, the active tab expands into a navy pill with its label, and the request action is a raised red disc. Blood groups always appear in circles.
+
 ## Brand
 
 **Name:** FAZAT DAM · فزعة دم

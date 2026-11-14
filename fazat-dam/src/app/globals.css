@@ -8,15 +8,21 @@
   --color-brand-50: #FDECEC;
   --color-navy: #172B4D;
   --color-navy-700: #0F1E38;
-  --color-navy-100: #E3E8F0;
-  --color-surface: #F4F6F8;
+  --color-navy-800: #1E2E52;
+  --color-navy-100: #E6EAF1;
+  /* Soft Pulse: cool grey canvas, white tiles, one warm accent */
+  --color-surface: #EDF0F4;
+  --color-surface-2: #F6F7FA;
+  --color-sand: #D9B07C;
+  --color-sand-600: #A97E47;
+  --color-sand-50: #F7EEE1;
   --color-success: #2E7D32;
   --color-success-50: #E8F5E9;
   --color-warning: #F9A825;
   --color-warning-50: #FFF8E1;
   --color-ink: #172B4D;
   --color-muted: #5B6B82;
-  --color-line: #DDE3EA;
+  --color-line: #E4E8EE;
 
   /* One family for the whole interface (El Messiri, SIL OFL, Arabic + Latin).
      Hierarchy comes from weight and size, not from mixing fonts. */
@@ -32,8 +38,10 @@
   /* Codes, references and phone numbers stay in Inter for unambiguous digits */
   --font-latin: "Inter Variable", "Inter", system-ui, sans-serif;
 
-  --radius-card: 1rem;
-  --shadow-card: 0 1px 2px rgb(23 43 77 / 0.06), 0 4px 16px rgb(23 43 77 / 0.06);
+  --radius-card: 1.75rem;
+  --radius-tile: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(23 43 77 / 0.04), 0 14px 32px -14px rgb(23 43 77 / 0.16);
+  --shadow-float: 0 18px 40px -16px rgb(23 43 77 / 0.28), 0 2px 6px rgb(23 43 77 / 0.06);
 }
 
 :root {
@@ -84,15 +92,39 @@ html[lang="en"] body {
 
 /* Component-level utilities (Tailwind v4 @utility so they can be composed with @apply) */
 @utility card {
-  @apply rounded-[var(--radius-card)] bg-white p-4 shadow-[var(--shadow-card)];
+  @apply rounded-[var(--radius-card)] bg-white p-5 shadow-[var(--shadow-card)];
+}
+
+/* Dark navy tile (hero / highlights) */
+@utility card-dark {
+  @apply rounded-[var(--radius-card)] bg-navy-800 p-5 text-white shadow-[var(--shadow-float)];
+}
+
+/* Quiet inner tile on white cards */
+@utility tile {
+  @apply rounded-[var(--radius-tile)] bg-surface-2 p-4;
+}
+
+/* Round icon button (header, back, actions) */
+@utility icon-btn {
+  @apply relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-navy shadow-[var(--shadow-card)] transition-transform duration-150 active:scale-95;
+}
+
+/* Pill tabs / filters; add aria-pressed / aria-current for the active one */
+@utility pill {
+  @apply inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white px-4 text-sm font-semibold text-muted shadow-[0_1px_2px_rgb(23_43_77/0.05)] transition-colors aria-pressed:bg-navy aria-pressed:text-white aria-[current=page]:bg-navy aria-[current=page]:text-white;
 }
 
 @utility btn {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-semibold transition-[background-color,transform] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-base font-semibold transition-[background-color,transform,box-shadow] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 @utility btn-primary {
-  @apply btn bg-brand text-white hover:bg-brand-600;
+  @apply btn bg-brand text-white shadow-[0_10px_22px_-10px_rgb(198_40_40/0.7)] hover:bg-brand-600;
+}
+
+@utility btn-sand {
+  @apply btn bg-sand text-navy-700 hover:bg-sand-600 hover:text-white;
 }
 
 @utility btn-navy {
@@ -100,35 +132,35 @@ html[lang="en"] body {
 }
 
 @utility btn-outline {
-  @apply btn border border-line bg-white text-navy hover:bg-surface;
+  @apply btn bg-white text-navy shadow-[0_0_0_1px_var(--color-line)] hover:bg-surface-2;
 }
 
 @utility btn-ghost {
-  @apply btn text-navy hover:bg-navy-100;
+  @apply btn text-navy hover:bg-white/70;
 }
 
 @utility btn-danger {
-  @apply btn border border-brand/30 bg-brand-50 text-brand-600 hover:bg-brand/10;
+  @apply btn bg-brand-50 text-brand-600 hover:bg-brand/10;
 }
 
 @utility field {
-  @apply flex flex-col gap-1.5;
+  @apply flex flex-col gap-2;
 }
 
 @utility label {
-  @apply text-[0.92rem] leading-6 font-semibold text-navy;
+  @apply ps-1 text-[0.92rem] leading-6 font-semibold text-navy;
 }
 
 @utility hint {
-  @apply text-[0.8rem] leading-6 font-normal text-muted;
+  @apply ps-1 text-[0.8rem] leading-6 font-normal text-muted;
 }
 
 @utility input {
-  @apply min-h-11 w-full rounded-xl border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/30;
+  @apply min-h-12 w-full rounded-2xl border border-transparent bg-surface-2 px-4 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-brand-400/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-400/10;
 }
 
 @utility chip {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.78rem] leading-5 font-semibold;
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-[0.78rem] leading-5 font-semibold;
 }
 
 @utility page-title {
@@ -136,7 +168,11 @@ html[lang="en"] body {
 }
 
 @utility section-title {
-  @apply text-[1.3rem] leading-[1.45] font-bold text-navy;
+  @apply text-[1.2rem] leading-[1.45] font-bold text-navy;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-wide text-muted;
 }
 
 /* ---------------------------------------------------------------
@@ -154,7 +190,7 @@ html[lang="en"] body {
 .fd-splash {
   position: fixed; inset: 0; z-index: 100;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
-  background: radial-gradient(120% 80% at 50% 35%, #ffffff 0%, #fdecec 55%, #f4f6f8 100%);
+  background: radial-gradient(120% 80% at 50% 35%, #ffffff 0%, #f6f7fa 55%, #edf0f4 100%);
   animation: fd-splash-out 0.45s ease-in 2.1s forwards;
 }
 /* shown once per browser session; an inline script marks later page loads */
@@ -205,3 +241,9 @@ html[dir="rtl"] .fd-track svg { transform: scaleX(-1); }
   .fd-splash *, .fd-wait *, .fd-intro, .fd-card-in, .fd-heart, .fd-ripple { animation: none !important; }
   .fd-ecg path { stroke-dashoffset: 0; }
 }
+
+/* Inputs sitting on a grey tile need a white fill to stay visible */
+.tile .input { background: #fff; }
+.tile .input:focus { background: #fff; }
+/* Native select arrow sits on the logical end in RTL */
+select.input { background-position: left 1rem center; }
