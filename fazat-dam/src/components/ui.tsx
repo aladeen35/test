@@ -44,7 +44,7 @@ export function Chip({ tone = "navy", children }: { tone?: "navy" | "red" | "gre
 export function BloodChip({ group, size = "md" }: { group: string; size?: "md" | "lg" }) {
   const s = size === "lg" ? "h-14 w-14 text-xl" : "h-10 w-10 text-sm";
   return (
-    <span className={`latin inline-flex shrink-0 items-center justify-center rounded-full bg-brand font-bold text-white ${s}`} aria-label={group}>
+    <span className={`blood-disc latin inline-flex shrink-0 items-center justify-center rounded-full font-bold text-white ${s}`} aria-label={group}>
       {group}
     </span>
   );

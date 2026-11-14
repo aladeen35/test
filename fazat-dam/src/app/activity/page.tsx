@@ -47,7 +47,7 @@ export default async function ActivityPage() {
             return (
               <article key={m.match_id} className="card flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="latin flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-white">{m.blood_group}</span>
+                  <span className="blood-disc latin flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white">{m.blood_group}</span>
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="font-bold leading-6 text-navy">{m.hospital_name}</span>
                     <span className="text-xs text-muted">{locale === "ar" ? m.city_ar : m.city_en} · {t.request.requiredBy} {fmtDateTime(m.required_by, locale, tz)}</span>

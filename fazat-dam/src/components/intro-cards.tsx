@@ -20,9 +20,9 @@ export function IntroCards() {
   const cards = [
     // eslint-disable-next-line @next/next/no-img-element
     { title: t.intro.c1Title, body: t.intro.c1Body, art: <img src="/brand/logo-full.png" alt="" className="h-44 w-auto rounded-2xl bg-white" />, tone: "from-white to-brand-50" },
-    { title: t.intro.c2Title, body: t.intro.c2Body, art: <DropIcon className="h-24 w-24 text-white" />, tone: "from-brand-400 to-brand-600", dark: true },
-    { title: t.intro.c3Title, body: t.intro.c3Body, art: <HeartIcon className="fd-heart h-24 w-24 text-white" />, tone: "from-navy to-navy-700", dark: true },
-    { title: t.intro.c4Title, body: t.intro.c4Body, art: <ShieldIcon className="h-24 w-24 text-success" />, tone: "from-white to-success-50" },
+    { title: t.intro.c2Title, body: t.intro.c2Body, art: <span className="icon-well h-36 w-36 bg-white"><DropIcon className="h-20 w-20" color="#C62828" /></span>, tone: "from-brand-400 to-brand-600", dark: true },
+    { title: t.intro.c3Title, body: t.intro.c3Body, art: <span className="icon-well h-36 w-36 bg-white"><HeartIcon className="h-20 w-20" color="#C62828" /></span>, tone: "from-navy to-navy-700", dark: true },
+    { title: t.intro.c4Title, body: t.intro.c4Body, art: <span className="icon-well h-36 w-36 bg-white"><ShieldIcon className="h-20 w-20" color="#2E7D32" /></span>, tone: "from-white to-success-50" },
   ];
   const last = index === cards.length - 1;
 
