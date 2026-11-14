@@ -70,10 +70,10 @@ export function LoginForm({ next, linkError = false }: { next: string; linkError
         <p className="mt-1 text-sm text-muted">{mode === "email" ? t.auth.subtitleEmail : t.auth.subtitle}</p>
       </div>
       {PHONE_ENABLED && (
-        <div role="tablist" className="inline-flex self-start rounded-xl bg-navy-100 p-1">
+        <div role="tablist" className="inline-flex self-start rounded-full bg-surface-2 p-1">
           {(["email", "phone"] as const).map((m) => (
             <button key={m} role="tab" type="button" aria-selected={mode === m} onClick={() => switchMode(m)}
-              className={`min-h-9 rounded-lg px-3 text-sm font-semibold ${mode === m ? "bg-white text-navy shadow" : "text-muted"}`}>
+              className={`min-h-9 rounded-full px-4 text-sm font-semibold ${mode === m ? "bg-navy text-white" : "text-muted"}`}>
               {m === "email" ? t.auth.useEmail : t.auth.usePhone}
             </button>
           ))}
@@ -112,7 +112,7 @@ export function LoginForm({ next, linkError = false }: { next: string; linkError
         </form>
       ) : (
         <form onSubmit={verify} className="flex flex-col gap-4">
-          <div role="status" className="rounded-xl border border-success/30 bg-success-50 px-3 py-2.5 text-sm text-navy">
+          <div role="status" className="rounded-[var(--radius-tile)] bg-success-50 px-4 py-3 text-sm text-navy">
             <p className="font-semibold">{fmt(mode === "email" ? t.auth.linkSent : t.auth.sent, { email: "", phone: "" })}<span className="latin">{mode === "email" ? emailClean : phone}</span></p>
             {mode === "email" && <p className="mt-1 text-muted">{t.auth.linkHelp}</p>}
           </div>

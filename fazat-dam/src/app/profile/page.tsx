@@ -36,12 +36,12 @@ export default async function ProfilePage() {
           </Field>
           {viewer.phone ? (
             <Field label={t.profile.phone}>
-              <input className="input latin bg-surface" readOnly value={`+${viewer.phone.replace(/^\+/, "")}`} />
+              <input className="input latin opacity-80" readOnly value={`+${viewer.phone.replace(/^\+/, "")}`} />
             </Field>
           ) : (
             <>
               <Field label={t.profile.email}>
-                <input className="input latin bg-surface" readOnly value={viewer.email ?? ""} />
+                <input className="input latin opacity-80" readOnly value={viewer.email ?? ""} />
               </Field>
               <Field label={t.onboarding.contactPhone} hint={t.onboarding.contactPhoneHint} htmlFor="contact_phone">
                 <input id="contact_phone" name="contact_phone" className="input latin" inputMode="tel" required pattern="\+?[0-9 ]{8,18}" defaultValue={viewer.contactPhone ?? ""} />

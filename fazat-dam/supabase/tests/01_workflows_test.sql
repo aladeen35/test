@@ -332,6 +332,14 @@ begin
   perform t.ok((select count(*) from public.search_donors('SA', riyadh, 'A+', false)) = 0, 'suspended donors disappear from search');
   perform t.root();
 
+  -- ---------- demo accounts: their rows inherit the demo flag
+  update public.profiles set is_demo = true where id = outsider;
+  perform t.act(outsider);
+  select r.id into req from public.submit_blood_request('self', 'AB-', 1, 'SA', riyadh, 'Demo Hospital', now() + interval '1 day', 'normal', true) r;
+  perform t.root();
+  perform t.ok((select is_demo from public.blood_requests where id = req), 'requests from demo accounts are flagged demo');
+  update public.profiles set is_demo = false where id = outsider;
+
   -- ---------- email users: contact phone
   insert into auth.users (email) values ('mail-only@example.org') returning id into x;
   perform t.ok((select phone is null and email = 'mail-only@example.org' from public.profiles where id = x.id), 'email-only signup creates a profile without phone');

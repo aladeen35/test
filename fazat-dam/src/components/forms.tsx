@@ -17,8 +17,8 @@ export function SubmitButton({ children, className = "btn-primary", pendingText,
 
 export function FormMessage({ state }: { state: ActionState }) {
   if (!state) return null;
-  if (state.error) return <p role="alert" className="rounded-xl border border-brand/30 bg-brand-50 px-3 py-2 text-sm text-brand-600">{state.error}</p>;
-  if (state.message) return <p role="status" className="rounded-xl border border-success/30 bg-success-50 px-3 py-2 text-sm text-success">{state.message}</p>;
+  if (state.error) return <p role="alert" className="rounded-[var(--radius-tile)] bg-brand-50 px-4 py-3 text-sm text-brand-600">{state.error}</p>;
+  if (state.message) return <p role="status" className="rounded-[var(--radius-tile)] bg-success-50 px-4 py-3 text-sm text-success">{state.message}</p>;
   return null;
 }
 
@@ -108,13 +108,13 @@ export function BloodGroupPicker({ name = "blood_group", defaultValue, allowAny 
         {allowAny && (
           <label className="col-span-4 sm:col-span-1">
             <input type="radio" name={name} value="" defaultChecked={!defaultValue} className="peer sr-only" />
-            <span className="flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-line bg-white text-sm font-semibold text-navy peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400">{t.common.anyGroup}</span>
+            <span className="flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-surface-2 text-sm font-semibold text-navy peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400">{t.common.anyGroup}</span>
           </label>
         )}
         {groups.map((g) => (
           <label key={g}>
             <input type="radio" name={name} value={g} defaultChecked={defaultValue === g} required={required && !allowAny} className="peer sr-only" />
-            <span className="latin flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-line bg-white font-bold text-navy peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400">{g}</span>
+            <span className="latin flex min-h-12 cursor-pointer items-center justify-center rounded-full bg-surface-2 font-bold text-navy transition-colors peer-checked:bg-brand peer-checked:shadow-[0_8px_18px_-8px_rgb(198_40_40/0.8)] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400">{g}</span>
           </label>
         ))}
       </div>

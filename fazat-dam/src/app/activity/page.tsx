@@ -46,12 +46,15 @@ export default async function ActivityPage() {
             const active = live.includes(m.request_status);
             return (
               <article key={m.match_id} className="card flex flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <BloodChip group={m.blood_group} />
-                  <div className="flex flex-1 flex-col">
-                    <span className="font-bold text-navy">{m.hospital_name} · {locale === "ar" ? m.city_ar : m.city_en}</span>
-                    <span className="text-xs text-muted"><span className="latin">{m.reference}</span> · {t.request.requiredBy} {fmtDateTime(m.required_by, locale, tz)}</span>
+                <div className="flex items-center gap-3">
+                  <span className="latin flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-white">{m.blood_group}</span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="font-bold leading-6 text-navy">{m.hospital_name}</span>
+                    <span className="text-xs text-muted">{locale === "ar" ? m.city_ar : m.city_en} · {t.request.requiredBy} {fmtDateTime(m.required_by, locale, tz)}</span>
+                    <span className="latin text-xs text-muted/80">{m.reference}</span>
                   </div>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
                   <Chip tone={m.urgency === "critical" ? "red" : m.urgency === "urgent" ? "amber" : "navy"}>{t.request[`urgency_${m.urgency}`]}</Chip>
                   <Chip tone={m.match_status === "accepted" ? "green" : m.match_status === "pending" ? "amber" : "gray"}>{t.match[m.match_status as "pending"]}</Chip>
                   {m.is_demo && <DemoBadge t={t} />}
@@ -59,7 +62,7 @@ export default async function ActivityPage() {
                 {m.appointment_at && <p className="text-sm"><strong>{t.match.appointment}:</strong> {fmtDateTime(m.appointment_at, locale, tz)} {m.appointment_note && `— ${m.appointment_note}`}</p>}
                 {m.donation_status && <Chip tone={m.donation_status === "confirmed" ? "green" : "amber"}>{m.donation_status === "confirmed" ? t.match.donationConfirmed : t.match.donationPending}</Chip>}
                 {active && (m.match_status === "pending" || m.match_status === "accepted") && (
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="tile grid grid-cols-1 gap-4 md:grid-cols-2">
                     <RespondForm matchId={m.match_id} accepted={m.match_status === "accepted"} />
                     {m.match_status === "accepted" && (
                       <ConsentControls matchId={m.match_id} side="donor" mine={m.donor_contact_consent} theirs={m.requester_contact_consent} shared={Boolean(m.contact_shared_at)} />

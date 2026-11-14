@@ -14,7 +14,7 @@ export function RevealContact({ matchId }: { matchId: string }) {
   if (d) {
     const digits = d.phone.replace(/\D/g, "");
     return (
-      <div className="flex flex-col gap-2 rounded-xl bg-success-50 p-3 text-sm">
+      <div className="flex flex-col gap-2 rounded-[var(--radius-tile)] bg-success-50 p-4 text-sm">
         <span className="font-semibold text-navy">{d.name}</span>
         <span className="latin text-lg font-bold text-navy">+{digits}</span>
         <div className="flex flex-wrap gap-2">
@@ -110,7 +110,7 @@ export function RecordDonationForm({ matchId, requestId }: { matchId: string; re
   const { t } = useI18n();
   const today = new Date().toISOString().slice(0, 10);
   return (
-    <details className="rounded-xl border border-line p-3">
+    <details className="tile">
       <summary className="cursor-pointer text-sm font-semibold text-navy">{t.match.recordDonation}</summary>
       <ActionForm action={recordDonation} className="mt-2 flex flex-col gap-2">
         <input type="hidden" name="match_id" value={matchId} />
