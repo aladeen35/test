@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="request" android:enabled="true" android:icon="@drawable/shortcut_request"
+        android:shortcutShortLabel="@string/shortcut_request_short" android:shortcutLongLabel="@string/shortcut_request">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="com.albushra.fazatdam"
+            android:targetClass="com.albushra.fazatdam.LauncherActivity" android:data="https://fazat-dam-51e1.vercel.app/requests/new?source=shortcut" />
+    </shortcut>
+    <shortcut android:shortcutId="donate" android:enabled="true" android:icon="@drawable/shortcut_donate"
+        android:shortcutShortLabel="@string/shortcut_donate_short" android:shortcutLongLabel="@string/shortcut_donate">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="com.albushra.fazatdam"
+            android:targetClass="com.albushra.fazatdam.LauncherActivity" android:data="https://fazat-dam-51e1.vercel.app/donate?source=shortcut" />
+    </shortcut>
+    <shortcut android:shortcutId="activity" android:enabled="true" android:icon="@drawable/shortcut_activity"
+        android:shortcutShortLabel="@string/shortcut_activity_short" android:shortcutLongLabel="@string/shortcut_activity">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="com.albushra.fazatdam"
+            android:targetClass="com.albushra.fazatdam.LauncherActivity" android:data="https://fazat-dam-51e1.vercel.app/activity?source=shortcut" />
+    </shortcut>
+</shortcuts>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assetStatements" translatable="false">
+        [{
+            \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+            \"target\": {\"namespace\": \"web\", \"site\": \"https://fazat-dam-51e1.vercel.app\"}
+        }]
+    </string>
+    <string name="shortcut_request">Urgent blood request</string>
+    <string name="shortcut_request_short">Need blood</string>
+    <string name="shortcut_donate">I want to donate</string>
+    <string name="shortcut_donate_short">Donate</string>
+    <string name="shortcut_activity">My activity</string>
+    <string name="shortcut_activity_short">Activity</string>
+</resources>
