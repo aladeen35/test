@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_request">طلب دم عاجل</string>
+    <string name="shortcut_request_short">أحتاج دماً</string>
+    <string name="shortcut_donate">أريد التبرع</string>
+    <string name="shortcut_donate_short">تبرع</string>
+    <string name="shortcut_activity">نشاطي</string>
+    <string name="shortcut_activity_short">نشاطي</string>
+</resources>

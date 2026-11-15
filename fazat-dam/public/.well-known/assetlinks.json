@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.albushra.fazatdam",
+      "sha256_cert_fingerprints": [
+        "8F:66:88:7E:AD:22:03:39:DA:DD:3A:84:52:C2:16:53:75:9E:43:09:85:B5:8C:00:F0:F9:92:89:A5:BF:5C:1E"
+      ]
+    }
+  }
+]

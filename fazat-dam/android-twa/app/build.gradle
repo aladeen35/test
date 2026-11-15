@@ -1,0 +1,85 @@
+/*
+ * FAZAT DAM — Trusted Web Activity wrapper for Google Play.
+ * Based on Google's Bubblewrap template (Apache-2.0).
+ * The app opens https://fazat-dam-51e1.vercel.app full screen (no URL bar)
+ * once Digital Asset Links verify (public/.well-known/assetlinks.json).
+ */
+plugins {
+    id 'com.android.application'
+}
+
+def twa = [
+    applicationId : 'com.albushra.fazatdam',
+    hostName      : 'fazat-dam-51e1.vercel.app',
+    launchUrl     : '/?source=twa',
+    name          : 'فزعة دم',
+    launcherName  : 'فزعة دم',
+    themeColor    : '#C62828',
+    navigationColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF',
+]
+
+// Release signing comes from keystore.properties (kept OUT of git).
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) { keystoreProps.load(new FileInputStream(keystorePropsFile)) }
+
+android {
+    namespace 'com.albushra.fazatdam'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId twa.applicationId
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '1.0.0'
+
+        resValue 'string', 'appName', twa.name
+        resValue 'string', 'launcherName', twa.launcherName
+        resValue 'string', 'launchUrl', 'https://' + twa.hostName + twa.launchUrl
+        resValue 'string', 'hostName', twa.hostName
+        resValue 'string', 'providerAuthority', twa.applicationId + '.fileprovider'
+        resValue 'color', 'colorPrimary', twa.themeColor
+        resValue 'color', 'colorPrimaryDark', twa.themeColor
+        resValue 'color', 'navigationColor', twa.navigationColor
+        resValue 'color', 'navigationColorDark', '#1E2E52'
+        resValue 'color', 'navigationDividerColor', '#E4E8EE'
+        resValue 'color', 'navigationDividerColorDark', '#1E2E52'
+        resValue 'color', 'backgroundColor', twa.backgroundColor
+        resValue 'integer', 'splashScreenFadeOutDuration', '300'
+        resValue 'string', 'fallbackType', 'customtabs'
+        resValue 'string', 'generatorApp', 'fazat-dam-twa'
+        resValue 'string', 'orientation', 'portrait'
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropsFile.exists()) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            if (keystorePropsFile.exists()) { signingConfig signingConfigs.release }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint { checkReleaseBuilds false }
+    buildFeatures { resValues true }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.7.4'
+}
