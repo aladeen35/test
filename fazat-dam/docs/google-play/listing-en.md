@@ -44,7 +44,7 @@ In a single moment, a family's world can change: a patient waiting for surgery, 
 ⚕️ Important
 Fazat Dam is a community coordination platform, not a medical provider. Matching is preliminary (city, declared blood group, availability). Donor eligibility and blood compatibility are decided only by the blood bank or hospital. A donation counts as confirmed only after the facility confirms it.
 
-🔒 Privacy: https://fazat-dam-51e1.vercel.app/privacy
+🔒 Privacy: https://fazatdam.albushra.app/privacy
 
 Designed & developed by Al-Bushra Technology.
 

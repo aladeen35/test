@@ -4,8 +4,9 @@
 |---|---|
 | اسم الحزمة (Package) | `com.albushra.fazatdam` |
 | الإصدار | 1.0.0 (versionCode 1) |
-| نوع التطبيق | Trusted Web Activity، يفتح الموقع https://fazat-dam-51e1.vercel.app بملء الشاشة |
+| نوع التطبيق | Trusted Web Activity، يفتح الموقع https://fazatdam.albushra.app بملء الشاشة |
 | الحد الأدنى / الهدف | Android 7.0 (API 24) / Android 16 (API 36) |
+| الدومين | يجب ربط الدومين قبل الرفع، راجع `DOMAIN-SETUP-AR.md` |
 | التوقيع | مفتاح رفع (Upload key) خاص. يُرسل في ملف منفصل ولا يُنشر أبداً |
 
 ## محتويات الحزمة
@@ -32,7 +33,7 @@
    - الحساب **الشخصي** الجديد يشترط اختباراً مغلقاً بـ12 مختبِراً لمدة 14 يوماً قبل الإنتاج.
 2. **إنشاء التطبيق:** Create app ← الاسم «فزعة دم - تبرع بالدم» ← اللغة الافتراضية العربية ← App ← Free.
 3. **إعداد التطبيق (App content):**
-   - Privacy policy: `https://fazat-dam-51e1.vercel.app/privacy`
+   - Privacy policy: `https://fazatdam.albushra.app/privacy`
    - App access: كل الميزات تتطلب تسجيل دخول بالبريد. أعطِ المراجعين بريداً تجريبياً، فهو يستقبل رمز الدخول.
    - Ads: لا يحتوي إعلانات.
    - Content rating: املأ الاستبيان حسب `data-safety-ar.md`.
