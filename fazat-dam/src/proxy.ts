@@ -3,8 +3,21 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED = ["/onboarding", "/donate", "/requests", "/activity", "/notifications", "/profile", "/institution", "/admin", "/initiatives/new", "/initiatives/mine", "/donors"];
 
+/** Old addresses that should forward to the official domain once CANONICAL_HOST is set. */
+const LEGACY_HOSTS = ["fazat-dam-51e1.vercel.app"];
+
 /** Refreshes the Supabase session cookie and gates signed-in areas. */
 export async function proxy(request: NextRequest) {
+  const canonical = process.env.CANONICAL_HOST;
+  const host = request.headers.get("host") ?? "";
+  if (canonical && host !== canonical && LEGACY_HOSTS.includes(host)) {
+    const to = request.nextUrl.clone();
+    to.protocol = "https:";
+    to.host = canonical;
+    to.port = "";
+    return NextResponse.redirect(to, 308);
+  }
+
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

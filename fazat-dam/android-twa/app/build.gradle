@@ -1,7 +1,7 @@
 /*
  * FAZAT DAM — Trusted Web Activity wrapper for Google Play.
  * Based on Google's Bubblewrap template (Apache-2.0).
- * The app opens https://fazat-dam-51e1.vercel.app full screen (no URL bar)
+ * The app opens https://fazatdam.albushra.app full screen (no URL bar)
  * once Digital Asset Links verify (public/.well-known/assetlinks.json).
  */
 plugins {
@@ -10,7 +10,7 @@ plugins {
 
 def twa = [
     applicationId : 'com.albushra.fazatdam',
-    hostName      : 'fazat-dam-51e1.vercel.app',
+    hostName      : 'fazatdam.albushra.app',
     launchUrl     : '/?source=twa',
     name          : 'فزعة دم',
     launcherName  : 'فزعة دم',

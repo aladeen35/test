@@ -3,7 +3,7 @@
     <string name="assetStatements" translatable="false">
         [{
             \"relation\": [\"delegate_permission/common.handle_all_urls\"],
-            \"target\": {\"namespace\": \"web\", \"site\": \"https://fazat-dam-51e1.vercel.app\"}
+            \"target\": {\"namespace\": \"web\", \"site\": \"https://fazatdam.albushra.app\"}
         }]
     </string>
     <string name="shortcut_request">Urgent blood request</string>
