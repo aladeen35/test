@@ -121,6 +121,35 @@
         "abujanan",
         "fullmark"
       ]
+    },
+    "store": {
+      "featured": [
+        "bushra",
+        "amir",
+        "fazatdam",
+        "abujanan",
+        "news"
+      ],
+      "fresh": [
+        "kids-games",
+        "tools",
+        "fullmark",
+        "khulood",
+        "video",
+        "maab"
+      ],
+      "picks": [
+        "bushra",
+        "fazatdam",
+        "amir",
+        "abujanan",
+        "fullmark",
+        "news",
+        "quality",
+        "maab",
+        "wolaat",
+        "hamli"
+      ]
     }
   },
   "hub": {
@@ -337,7 +366,11 @@
       "notes": {
         "ar": "المصدر في مستودع FSM (فرع القرآن)، والنسخة المنشورة في مستودع mushaf. مفتاح التوقيع وكلمة مروره موجودان في المستودع: يجب نقلهما إلى أسرار GitHub.",
         "en": "Source lives in FSM (quran branch); the published build is in the mushaf repo. The signing keystore and its password are committed: move them to GitHub secrets."
-      }
+      },
+      "screenshots": [
+        "bushra-1.webp",
+        "bushra-2.webp"
+      ]
     },
     {
       "id": "khulood",
@@ -388,7 +421,10 @@
       "notes": {
         "ar": "أضف khulood.albushra.app إلى النطاقات المصرّح بها في Firebase Authentication إن كان التطبيق يستخدم تسجيل الدخول.",
         "en": "Add khulood.albushra.app to Firebase Authentication authorized domains if sign-in is used."
-      }
+      },
+      "screenshots": [
+        "khulood-1.webp"
+      ]
     },
     {
       "id": "maab",
@@ -455,7 +491,10 @@
       "notes": {
         "ar": "يعرض النطاق الآن نسخة العرض. maab-academy.vercel.app يعيد 404، فالنسخة الحية لم تُنشر بعد؛ عند نشرها غيّر route.target إليها.",
         "en": "Serves the static demo for now. maab-academy.vercel.app returns 404 (live build not deployed); point route.target there once it is."
-      }
+      },
+      "screenshots": [
+        "maab-1.webp"
+      ]
     },
     {
       "id": "education",
@@ -494,7 +533,10 @@
         "target": "https://aladeen35.github.io/bushra-academy-demo/"
       },
       "backend": "None (localStorage)",
-      "envVars": []
+      "envVars": [],
+      "screenshots": [
+        "education-1.webp"
+      ]
     },
     {
       "id": "altafaoul",
@@ -659,7 +701,10 @@
       "notes": {
         "ar": "يعمل الآن عبر الموجّه دون انتظار Vercel. عند إضافة النطاق في Vercel (docs/google-play/DOMAIN-SETUP-AR.md) غيّر الربط إلى dns بسجل CNAME رمادي.",
         "en": "Served through the router now, without waiting for Vercel. Once the domain is added in Vercel (fazat-dam/docs/google-play/DOMAIN-SETUP-AR.md), switch to mode dns with a grey-cloud CNAME."
-      }
+      },
+      "screenshots": [
+        "fazatdam-1.webp"
+      ]
     },
     {
       "id": "quality",
@@ -698,7 +743,10 @@
         "target": "https://aladeen35.github.io/test/alaeldeen/"
       },
       "backend": "Supabase (community, likes)",
-      "envVars": []
+      "envVars": [],
+      "screenshots": [
+        "quality-1.webp"
+      ]
     },
     {
       "id": "foodguard",
@@ -815,7 +863,10 @@
         "ACLED_PASSWORD",
         "DATABASE_URL"
       ],
-      "android": "sa.albushra.news"
+      "android": "sa.albushra.news",
+      "screenshots": [
+        "news-1.webp"
+      ]
     },
     {
       "id": "video",
@@ -871,7 +922,10 @@
       "notes": {
         "ar": "التطبيق 1.6.0 في فرع ccr-fe24ce26، والويب المنشور 1.5.",
         "en": "App 1.6.0 is on branch ccr-fe24ce26; the published web build is 1.5."
-      }
+      },
+      "screenshots": [
+        "video-1.webp"
+      ]
     },
     {
       "id": "amir",
@@ -935,7 +989,11 @@
       "notes": {
         "ar": "يجب إضافة amir.albushra.app إلى Authorized domains في Firebase Authentication وإلا يفشل تسجيل الدخول بجوجل على النطاق الجديد. تطبيق أندرويد (TWA) يبقى على aladeen35.github.io حتى تُحدَّث assetlinks.",
         "en": "Add amir.albushra.app to Firebase Authentication authorized domains or Google sign-in fails on the new domain. The Android TWA stays on aladeen35.github.io until assetlinks are moved."
-      }
+      },
+      "screenshots": [
+        "amir-1.webp",
+        "amir-2.webp"
+      ]
     },
     {
       "id": "store",
@@ -1129,7 +1187,10 @@
         "KEY_ALIAS (CI)",
         "KEY_PASSWORD (CI)"
       ],
-      "android": "sd.abujanan.games"
+      "android": "sd.abujanan.games",
+      "screenshots": [
+        "abujanan-1.webp"
+      ]
     },
     {
       "id": "keyboard",
@@ -1225,7 +1286,10 @@
         "FM_KEY_ALIAS (CI)",
         "FM_KEY_PASSWORD (CI)"
       ],
-      "android": "com.albushra.fullmark"
+      "android": "com.albushra.fullmark",
+      "screenshots": [
+        "fullmark-1.webp"
+      ]
     },
     {
       "id": "wolaat",
@@ -1264,7 +1328,10 @@
         "target": "https://aladeen35.github.io/Games/wolaat/"
       },
       "backend": "PeerJS",
-      "envVars": []
+      "envVars": [],
+      "screenshots": [
+        "wolaat-1.webp"
+      ]
     },
     {
       "id": "tools",
@@ -1357,7 +1424,10 @@
         "target": "https://aladeen35.github.io/Games/"
       },
       "backend": "None (RSS via rss2json)",
-      "envVars": []
+      "envVars": [],
+      "screenshots": [
+        "hamli-1.webp"
+      ]
     },
     {
       "id": "natija",
