@@ -1,0 +1,174 @@
+{
+  "apex": "albushra.app",
+  "generated": "2026-11-19T19:46:06.664Z",
+  "hosts": {
+    "@": {
+      "id": "hub",
+      "mode": "proxy",
+      "target": "https://albushra-app.pages.dev/"
+    },
+    "dash": {
+      "id": "dash",
+      "mode": "proxy",
+      "target": "https://albushra-app.pages.dev/dash/",
+      "rootPrefixes": [
+        "/assets/",
+        "/brand/",
+        "/icons/",
+        "/dash/"
+      ]
+    },
+    "quran": {
+      "id": "bushra",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/mushaf/",
+      "rootPrefixes": [
+        "/mushaf/"
+      ]
+    },
+    "khulood": {
+      "id": "khulood",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/mushaf/khulood/",
+      "rootPrefixes": [
+        "/mushaf/"
+      ]
+    },
+    "maab": {
+      "id": "maab",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/Maab/",
+      "rootPrefixes": [
+        "/Maab/"
+      ]
+    },
+    "education": {
+      "id": "education",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/bushra-academy-demo/",
+      "rootPrefixes": [
+        "/bushra-academy-demo/"
+      ]
+    },
+    "altafaoul": {
+      "id": "altafaoul",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/altafaoul/",
+      "keepPath": false
+    },
+    "nibras": {
+      "id": "nibras",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/nibras/",
+      "keepPath": false
+    },
+    "fazatdam": {
+      "id": "fazatdam",
+      "mode": "proxy",
+      "target": "https://fazat-dam-51e1.vercel.app/",
+      "rewriteHtml": true
+    },
+    "quality": {
+      "id": "quality",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/test/alaeldeen/",
+      "rootPrefixes": [
+        "/test/"
+      ]
+    },
+    "foodguard": {
+      "id": "foodguard",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/foodguard/",
+      "keepPath": false
+    },
+    "news": {
+      "id": "news",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/albushra-news/",
+      "rootPrefixes": [
+        "/albushra-news/"
+      ]
+    },
+    "video": {
+      "id": "video",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/Games/bushra-player/",
+      "rootPrefixes": [
+        "/Games/"
+      ]
+    },
+    "amir": {
+      "id": "amir",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/ameer-gift/",
+      "rootPrefixes": [
+        "/ameer-gift/"
+      ]
+    },
+    "store": {
+      "id": "store",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/store/",
+      "keepPath": false
+    },
+    "jenan": {
+      "id": "jenan",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/jenan/",
+      "keepPath": false
+    },
+    "kids": {
+      "id": "kids-games",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/kids-games/",
+      "keepPath": false
+    },
+    "abujanan": {
+      "id": "abujanan",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/Games/nut-alkalb/",
+      "rootPrefixes": [
+        "/Games/"
+      ]
+    },
+    "keyboard": {
+      "id": "keyboard",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/keyboard/",
+      "keepPath": false
+    },
+    "fullmark": {
+      "id": "fullmark",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/test/fullmark/",
+      "rootPrefixes": [
+        "/test/"
+      ]
+    },
+    "wolaat": {
+      "id": "wolaat",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/Games/wolaat/",
+      "rootPrefixes": [
+        "/Games/"
+      ]
+    },
+    "tools": {
+      "id": "tools",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/test/",
+      "rootPrefixes": [
+        "/test/"
+      ]
+    },
+    "hamli": {
+      "id": "hamli",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/Games/",
+      "rootPrefixes": [
+        "/Games/"
+      ]
+    }
+  }
+}
