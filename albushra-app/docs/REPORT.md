@@ -46,7 +46,7 @@ Pages        (mushaf, Maab, ameer-gift,     (fazat-dam)            (Android-only
 | 12 | Ameer Gift — 3D memory museums | 1.0.0 | ameer-gift `main` | GitHub Pages | Firebase `ameer-gift` | amir | proxy |
 | 13 | Albushra Store | 0.1.0 | Albushra-store | **not deployed** (D1 not created) | Workers + D1 + R2 | store | page only |
 | 14 | Jenan's World of Colours | 1.0 | Games `main` | APK on Pages | none | jenan | page + APK |
-| 15 | Our Kids Games (Atheer & Bushra) | 3.0 public / 7.6 branch | Games `ccr-85c475b1` | APK | none | kids | page + APK |
+| 15 | Our Kids Games (Atheer & Bushra) | 7.6 branch / 3.0 main | Games `ccr-85c475b1` | Google Play closed testing `com.atheer.games` | none | kids | page + Play testing |
 | 16 | Abu Janan Heritage Games | 1.5.1 | Games `claude/sudanese-dog-jump-game-hmiama` | GitHub Pages `/Games/nut-alkalb/` | Supabase | abujanan | proxy |
 | 17 | Abu Janan Keyboard Challenge | 2.1 public / 2.2 branch | Games `claude/new-session-leujen` | APK | Node server (not deployed) | keyboard | page + APK |
 | 18 | Full Mark | 1.1 | test `fullmark/` | GitHub Pages + Google Play | PeerJS | fullmark | proxy |
@@ -98,7 +98,7 @@ Duplicates resolved in favour of the newest stable build: Bushra (FSM source →
 3. Deploy Altafaoul (same two secrets in its repo), Albushra Store (create D1/R2), Maab live on Vercel, then switch their routes to `proxy`.
 4. Quality Eye needs a server; decide on hosting and confirm ownership (`sa.halfm` package id).
 5. Merge pending newer builds: Our Kids 7.6, Nibras 0.8, Keyboard 2.2, Bushra Video web 1.6.
-6. Kids Games APK link points to a private repo (`github.com/.../raw/...`) and fails for visitors; host it publicly.
+6. Google Play closed testing (group `albushratc`) is linked for Our Kids Games, Ameer Tools, Bushra, Abu Janan and Full Mark: home-page "Become a tester" section and each app page. Switch each app to its public store link when it leaves testing.
 7. Security: the Bushra signing keystore password is committed in FSM; move it to secrets (do not change the key).
 
 ## 7. Limits of this session

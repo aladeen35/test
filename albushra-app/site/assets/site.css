@@ -196,3 +196,16 @@ p { margin: 0 0 1em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Google Play closed testing */
+.testers { margin-top: 20px; padding: 18px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.testers ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 18px; }
+.testers li > b { display: block; margin-bottom: 10px; }
+.testers .btn { min-height: 44px; }
+.tester-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.tester-app { display: flex; gap: 12px; align-items: center; padding: 12px; min-height: 64px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); text-decoration: none; }
+.tester-app:hover { border-color: var(--blue); }
+.tester-app img { border-radius: 10px; flex: none; }
+.tester-app span { display: grid; }
+.tester-app small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+section[id], .group { scroll-margin-top: 80px; }

@@ -120,6 +120,7 @@ function header(base) {
     </a>
     <nav class="nav" aria-label="main">
       <a href="${base}#apps">${bi({ ar: "التطبيقات", en: "Apps" })}</a>
+      <a href="${base}#testers">${bi({ ar: "المختبرون", en: "Testers" })}</a>
       <a href="${base}#about">${bi({ ar: "عن الشركة", en: "About" })}</a>
       <a href="${base}#contact">${bi({ ar: "تواصل", en: "Contact" })}</a>
     </nav>
@@ -187,6 +188,7 @@ function home() {
     { n: apps.filter((a) => (a.platforms || []).includes("Android")).length, l: { ar: "تطبيقات أندرويد", en: "Android apps" } },
     { n: categories.filter((k) => apps.some((a) => a.category === k.id)).length, l: { ar: "مجالات", en: "domains" } },
   ];
+  const testers = (company.testers?.apps || []).map((id) => apps.find((a) => a.id === id)).filter((a) => a?.links?.testing);
   const body = `
 <section class="hero">
   <div class="hero-bg" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="grid-lines"></span></div>
@@ -226,6 +228,14 @@ function home() {
     .join("")}
 </section>
 
+${testers.length ? `<section id="testers" class="wrap section">
+  <div class="sec-head">
+    <h2>${bi({ ar: "كن من المختبرين", en: "Become a tester" })}</h2>
+    <p class="muted">${bi({ ar: "جرّب تطبيقاتنا على Google Play قبل الجميع وساعدنا في تحسينها.", en: "Try our apps on Google Play before everyone else and help us improve them." })}</p>
+  </div>
+  ${testersBox(testers, base)}
+</section>` : ""}
+
 <section id="about" class="section about">
   <div class="wrap about-in">
     <div>
@@ -260,6 +270,23 @@ function home() {
   });
 }
 
+// ---------- Google Play testing ----------
+// Closed testing needs two steps: join the Google Group, then opt in per app.
+function testersBox(list, base) {
+  const g = company.testers?.group;
+  if (!g) return "";
+  return `<div class="testers">
+  <ol>
+    <li><b>${bi({ ar: "انضم لقروب المختبرين (خطوة أساسية)", en: "Join the testers group (required)" })}</b>
+      <a class="btn" href="${esc(g)}" rel="noopener">${bi({ ar: "الانضمام للقروب", en: "Join the group" })}</a></li>
+    <li><b>${bi(list.length > 1 ? { ar: "حمّل وجرّب التطبيقات", en: "Install and try the apps" } : { ar: "انضم للتجربة وحمّل التطبيق", en: "Opt in and install the app" })}</b>
+      <div class="tester-apps">${list
+        .map((a) => `<a class="tester-app" href="${esc(a.links.testing)}" rel="noopener"><img src="${icon(a, base)}" width="40" height="40" alt="" loading="lazy"><span><b>${bi(a.name)}</b><small>${bi(a.tagline)}</small></span></a>`)
+        .join("")}</div></li>
+  </ol>
+</div>`;
+}
+
 // ---------- app page ----------
 function appPage(a) {
   const base = "../../";
@@ -267,7 +294,8 @@ function appPage(a) {
   const f = t2(a.features);
   const L = a.links || {};
   const actions = [
-    a.subdomain || L.web ? `<a class="btn" href="${esc(appUrl(a))}">${bi({ ar: "افتح التطبيق", en: "Open the app" })}</a>` : "",
+    // Redirect-mode subdomains point back at this page, so only link real apps.
+    a.route?.mode === "proxy" || a.route?.mode === "dns" || L.web ? `<a class="btn" href="${esc(appUrl(a))}">${bi({ ar: "افتح التطبيق", en: "Open the app" })}</a>` : "",
     L.play ? `<a class="btn btn-alt" href="${esc(L.play)}" rel="noopener">${bi({ ar: "Google Play", en: "Google Play" })}</a>` : "",
     L.apk ? `<a class="btn btn-alt" href="${esc(L.apk)}" rel="noopener">${bi({ ar: "تنزيل APK", en: "Download APK" })}</a>` : "",
     ...(L.extra || []).map((x) => `<a class="btn btn-alt" href="${esc(x.url)}" rel="noopener">${bi(x.label)}</a>`),
@@ -289,6 +317,7 @@ function appPage(a) {
       </div>
     </div>
     <div class="cta">${actions}</div>
+    ${L.testing ? testersBox([a], base) : ""}
     ${a.subdomain ? `<p class="muted mono small">${esc(a.subdomain)}.${esc(APEX)}</p>` : ""}
   </div>
 </section>
@@ -348,7 +377,7 @@ function appPage(a) {
 function publicRegistry() {
   return {
     generated: new Date().toISOString(),
-    company: { name: company.name, domain: APEX },
+    company: { name: company.name, domain: APEX, testers: company.testers || null },
     categories,
     apps: apps.map((a) => ({
       id: a.id,

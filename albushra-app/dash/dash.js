@@ -10,7 +10,7 @@
   var T = {
     apps: { ar: "تطبيقات", en: "Apps" }, live: { ar: "منشورة", en: "Live" }, up: { ar: "تستجيب الآن", en: "Responding now" },
     sub: { ar: "على نطاقات فرعية", en: "On subdomains" }, all: { ar: "الكل", en: "All" },
-    open: { ar: "فتح", en: "Open" }, page: { ar: "صفحة التطبيق", en: "App page" }, admin: { ar: "الإدارة", en: "Admin" },
+    open: { ar: "فتح", en: "Open" }, page: { ar: "صفحة التطبيق", en: "App page" }, admin: { ar: "الإدارة", en: "Admin" }, testing: { ar: "اختبار Play", en: "Play testing" },
     repo: { ar: "المستودع", en: "Repository" }, host: { ar: "الاستضافة", en: "Hosting" }, origin: { ar: "المصدر الأصلي", en: "Origin" },
     backend: { ar: "الخلفية", en: "Backend" }, env: { ar: "متغيرات البيئة (أسماء فقط)", en: "Env vars (names only)" },
     version: { ar: "الإصدار", en: "Version" }, route: { ar: "الربط", en: "Routing" }, notes: { ar: "ملاحظات", en: "Notes" },
@@ -80,6 +80,7 @@
     var links = [
       a.url && a.url !== "#" ? '<a class="btn" href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(tx(T.open)) + "</a>" : "",
       '<a class="btn btn-alt" href="https://albushra.app/apps/' + esc(a.id) + '/" target="_blank" rel="noopener">' + esc(tx(T.page)) + "</a>",
+      a.links && a.links.testing ? '<a class="btn btn-alt" href="' + esc(a.links.testing) + '" target="_blank" rel="noopener">' + esc(tx(T.testing)) + "</a>" : "",
       a.links && a.links.admin ? '<a class="btn btn-alt" href="' + esc(a.links.admin) + '" target="_blank" rel="noopener">' + esc(tx(T.admin)) + "</a>" : "",
       host.repo ? '<a class="btn btn-alt" href="https://github.com/' + esc(host.repo) + '" target="_blank" rel="noopener">' + esc(tx(T.repo)) + "</a>" : "",
     ].concat((host.consoles || []).map(function (c) { return '<a class="btn btn-alt" href="' + esc(c.url) + '" target="_blank" rel="noopener">' + esc(c.label) + "</a>"; })).join("");
