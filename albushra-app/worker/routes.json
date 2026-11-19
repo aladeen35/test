@@ -1,6 +1,30 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-19T19:47:48.884Z",
+  "generated": "2026-11-19T22:45:42.820Z",
+  "appIds": [
+    "bushra",
+    "khulood",
+    "maab",
+    "education",
+    "altafaoul",
+    "nibras",
+    "fazatdam",
+    "quality",
+    "foodguard",
+    "news",
+    "video",
+    "amir",
+    "store",
+    "jenan",
+    "kids-games",
+    "abujanan",
+    "keyboard",
+    "fullmark",
+    "wolaat",
+    "tools",
+    "hamli",
+    "natija"
+  ],
   "hosts": {
     "@": {
       "id": "hub",

@@ -16,15 +16,44 @@
     version: { ar: "الإصدار", en: "Version" }, route: { ar: "الربط", en: "Routing" }, notes: { ar: "ملاحظات", en: "Notes" },
     checking: { ar: "يفحص…", en: "checking…" }, down: { ar: "لا يستجيب", en: "Not responding" }, ok: { ar: "يعمل", en: "Up" },
     gen: { ar: "آخر بناء للسجل:", en: "Registry built:" }, newer: { ar: "إصدار أحدث منشور:", en: "Newer release published:" },
+    shown: { ar: "ظاهر في albushra.app", en: "Shown on albushra.app" }, hiddenPub: { ar: "مخفي عن العامة", en: "Hidden from public" },
+    hideIt: { ar: "إخفاء من الموقع العام", en: "Hide from the public site" }, showIt: { ar: "إظهار في الموقع العام", en: "Show on the public site" },
+    visErr: { ar: "تعذّر حفظ الإظهار/الإخفاء", en: "Could not save visibility" }, visOff: { ar: "التحكم بالإظهار غير متاح", en: "Visibility control unavailable" },
   };
   var STATUS = { live: { ar: "منشور", en: "Live" }, beta: { ar: "تجريبي", en: "Beta" }, prototype: { ar: "نموذج أولي", en: "Prototype" }, soon: { ar: "قريبًا", en: "Soon" }, archived: { ar: "مؤرشف", en: "Archived" }, hidden: { ar: "مخفي", en: "Hidden" } };
 
   var data = null, filter = "all", health = {}, liveVer = {};
+  // Public visibility, stored by the router (Workers KV). null = not loaded / unavailable.
+  var vis = null, visBusy = {};
 
   function load() {
     fetch("/dash/registry.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       data = d; render(); probeAll();
     }).catch(function () { document.getElementById("list").textContent = "registry.json unavailable"; });
+    fetch("/__admin/visibility", { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { vis = j && j.ok ? j.hidden : null; render(); }).catch(function () { vis = null; render(); });
+  }
+
+  function setVisible(id, hide) {
+    visBusy[id] = true; render();
+    fetch("/__admin/visibility", {
+      method: "POST", credentials: "same-origin", cache: "no-store",
+      headers: { "content-type": "application/json", "x-albushra-admin": "1" },
+      body: JSON.stringify({ id: id, hidden: hide }),
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) throw new Error(j && j.error);
+      vis = j.hidden;
+    }).catch(function () { alert(tx(T.visErr)); }).finally(function () { delete visBusy[id]; render(); });
+  }
+
+  function visControl(a) {
+    if (a.status === "hidden") return "";
+    if (!vis) return '<p class="vis-off small muted">' + esc(tx(T.visOff)) + "</p>";
+    var isHidden = vis.indexOf(a.id) !== -1;
+    return '<div class="vis' + (isHidden ? " is-hidden" : "") + '"><span class="vis-state">' +
+      '<span class="dot ' + (isHidden ? "down" : "up") + '"></span>' + esc(tx(isHidden ? T.hiddenPub : T.shown)) + "</span>" +
+      '<button type="button" class="btn btn-alt vis-btn" data-vis="' + esc(a.id) + '" data-hide="' + (isHidden ? "0" : "1") + '"' + (visBusy[a.id] ? " disabled" : "") +
+      ' aria-pressed="' + isHidden + '">' + esc(tx(isHidden ? T.showIt : T.hideIt)) + "</button></div>";
   }
 
   function probe(app) {
@@ -88,7 +117,7 @@
     return '<article class="dash-row" style="--accent:' + esc(a.color || "#3b82f6") + '">' +
       '<div class="dr-head"><img class="app-icon" src="' + (a.icon ? "/icons/" + esc(a.icon) : "/brand/mark-192.png") + '" width="48" height="48" alt="">' +
       "<div><h3>" + esc(tx(a.name)) + '</h3><div class="card-meta"><span class="badge s-' + esc(a.status) + '">' + esc(tx(STATUS[a.status] || STATUS.live)) + '</span><span class="chip mono">' + esc(a.subdomain ? a.subdomain + "." + data.apex : "—") + "</span></div></div>" +
-      '<div class="health">' + hs + "</div></div>" +
+      '<div class="health">' + hs + "</div></div>" + visControl(a) +
       '<dl class="dr-facts">' +
       "<dt>" + esc(tx(T.version)) + '</dt><dd class="mono">' + esc(ver) + newer + "</dd>" +
       "<dt>" + esc(tx(T.host)) + "</dt><dd>" + esc(host.provider || "—") + "</dd>" +
@@ -107,7 +136,11 @@
       return (filter === "all" || a.category === filter) &&
         (!q || JSON.stringify([a.name, a.subdomain, a.id]).toLowerCase().indexOf(q) !== -1);
     });
-    document.getElementById("list").innerHTML = list.map(row).join("");
+    var listEl = document.getElementById("list");
+    listEl.innerHTML = list.map(row).join("");
+    listEl.querySelectorAll("[data-vis]").forEach(function (b) {
+      b.onclick = function () { setVisible(b.dataset.vis, b.dataset.hide === "1"); };
+    });
     document.getElementById("gen").textContent = tx(T.gen) + " " + new Date(data.generated).toLocaleString(L() === "ar" ? "ar" : "en");
   }
 
