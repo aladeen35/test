@@ -158,7 +158,12 @@ export default {
 // ---------- "back to albushra.app" button on every app ----------
 // A small fixed link added to every proxied app page. Opt out per route with
 // "homeButton": false, or move it with "top-left" / "top-right" / "bottom-right".
+// "middle-left" is a small icon-only tab on the left edge, for full-screen
+// games whose corners are all taken by their own controls.
 function homeButton(pos) {
+  if (pos === "middle-left") {
+    return `<a id="albushra-home" href="https://${APEX}/" title="${APEX}" aria-label="البشرى للتكنولوجيا — ${APEX}" style="position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:2147483646;display:block;padding:5px 5px 5px 3px;border-radius:0 12px 12px 0;background:rgba(7,13,36,.7);line-height:0;opacity:.8"><img src="https://${APEX}/brand/mark-192.png" width="22" height="22" alt="" style="width:22px;height:22px;border-radius:50%;margin:0;padding:0;border:0"></a><style>@media print{#albushra-home{display:none!important}}</style>`;
+  }
   const corner = typeof pos === "string" ? pos : "bottom-left";
   const v = corner.startsWith("top") ? "top:calc(10px + env(safe-area-inset-top,0px))" : "bottom:calc(10px + env(safe-area-inset-bottom,0px))";
   const h = corner.endsWith("right") ? "right:10px" : "left:10px";

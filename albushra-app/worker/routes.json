@@ -1,6 +1,6 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-19T22:45:42.820Z",
+  "generated": "2026-11-19T23:07:34.343Z",
   "appIds": [
     "bushra",
     "khulood",
@@ -23,7 +23,8 @@
     "wolaat",
     "tools",
     "hamli",
-    "natija"
+    "natija",
+    "rug-empire"
   ],
   "hosts": {
     "@": {
@@ -193,6 +194,12 @@
       "rootPrefixes": [
         "/Games/"
       ]
+    },
+    "rug": {
+      "id": "rug-empire",
+      "mode": "proxy",
+      "target": "https://albushra-app.pages.dev/play/rug-empire/",
+      "homeButton": "middle-left"
     }
   }
 }
