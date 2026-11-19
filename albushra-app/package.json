@@ -1,0 +1,18 @@
+{
+  "name": "albushra-app",
+  "private": true,
+  "type": "module",
+  "description": "albushra.app: main site, dashboard, application registry and edge router",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:offline": "node scripts/build.mjs --offline",
+    "dns:plan": "node scripts/dns-sync.mjs --dry-run",
+    "dns:sync": "node scripts/dns-sync.mjs",
+    "verify": "node scripts/verify.mjs",
+    "verify:origins": "node scripts/verify.mjs --origins",
+    "test": "node --test tests/registry.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.155.0"
+  }
+}

@@ -1,0 +1,119 @@
+# albushra.app: build the main site + dashboard from the Application Registry,
+# deploy them to Cloudflare Pages, sync DNS, deploy the edge router, verify.
+#
+# Needs two repository secrets (Settings > Secrets and variables > Actions):
+#   CLOUDFLARE_API_TOKEN  - token with: Account / Cloudflare Pages: Edit,
+#                           Account / Workers Scripts: Edit,
+#                           Zone (albushra.app) / Workers Routes: Edit, DNS: Edit,
+#                           Zone Settings: Edit, Zone: Read
+#   CLOUDFLARE_ACCOUNT_ID - the account id shown on the Cloudflare dashboard
+# Without them the workflow still builds and tests, and skips deployment.
+#
+# It runs every 6 hours too, so a new release of any app (its version.json)
+# appears on albushra.app and dash.albushra.app without editing anything.
+
+name: albushra.app
+
+on:
+  push:
+    branches: [main]
+    paths: ["albushra-app/**", ".github/workflows/albushra-app.yml"]
+  pull_request:
+    paths: ["albushra-app/**", ".github/workflows/albushra-app.yml"]
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy to Cloudflare (Pages + DNS + router)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: albushra-app-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: albushra-app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: albushra-app/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Check the origins the router points at
+        run: node scripts/verify.mjs --origins
+      - uses: actions/upload-artifact@v4
+        with:
+          name: albushra-site
+          path: |
+            albushra-app/dist/site
+            albushra-app/worker/routes.json
+            albushra-app/dist/verify-origins.json
+          retention-days: 7
+        continue-on-error: true
+
+  deploy:
+    needs: build
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.deploy))
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: albushra-app/package-lock.json
+      - name: Stop here if the Cloudflare secrets are missing
+        id: gate
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are not set; skipping deployment. See albushra-app/docs/OWNER-STEPS-AR.md"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.ok == 'true'
+        run: npm ci
+      - if: steps.gate.outputs.ok == 'true'
+        run: npm run build
+      - name: Deploy the site to Cloudflare Pages
+        if: steps.gate.outputs.ok == 'true'
+        run: |
+          npx wrangler pages project create albushra-app --production-branch main 2>/dev/null || true
+          npx wrangler pages deploy dist/site --project-name albushra-app --branch main --commit-dirty=true
+      - name: DNS records and SSL settings (additive, never deletes)
+        if: steps.gate.outputs.ok == 'true'
+        run: npm run dns:sync
+      - name: Deploy the edge router
+        if: steps.gate.outputs.ok == 'true'
+        run: npx wrangler deploy
+      - name: Verify every subdomain over HTTPS
+        if: steps.gate.outputs.ok == 'true'
+        run: |
+          sleep 20
+          node scripts/verify.mjs
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.ok == 'true'
+        with:
+          name: albushra-verify
+          path: albushra-app/dist/verify.json
+        continue-on-error: true

@@ -1,0 +1,11 @@
+# Edge router for albushra.app (see worker/router.js).
+# Deployed by .github/workflows/albushra-app.yml; routes are attached to the
+# albushra.app zone, so every proxied host in that zone reaches this Worker.
+name = "albushra-router"
+main = "worker/router.js"
+compatibility_date = "2025-10-01"
+workers_dev = false
+routes = [
+  { pattern = "albushra.app/*", zone_name = "albushra.app" },
+  { pattern = "*.albushra.app/*", zone_name = "albushra.app" }
+]
