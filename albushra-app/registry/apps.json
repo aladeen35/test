@@ -1588,29 +1588,86 @@
     },
     {
       "id": "rug-empire",
-      "subdomain": null,
+      "subdomain": "rug",
       "name": {
         "ar": "إمبراطورية السجاد",
         "en": "Rug Empire"
       },
       "tagline": {
-        "ar": "محاكاة أعمال ثلاثية الأبعاد",
-        "en": "3D business sim"
+        "ar": "اغسل السجاد وابنِ مغسلتك من حوش البيت إلى صالة عرض في خرطوم خيالية",
+        "en": "Wash rugs and grow your shop from a backyard to a showroom in a fictional Khartoum"
+      },
+      "description": {
+        "ar": "لعبة محاكاة ثلاثية الأبعاد لغسيل السجاد وإدارة مغسلة في نسخة خيالية مستوحاة من الخرطوم. اختر المنظف المناسب لكل خامة وبقعة، واضبط حرارة الماء وزمن المكوث، وأنقذ الألوان قبل أن تنزف، ثم جفّف وسلّم وساوم الزبائن. ابنِ سمعتك من الحوش إلى الورشة ثم صالة العرض، ووظّف العمال، واحفظ أجمل سجاجيدك في صالة العرض، وشاهد عملك كاملًا في تايم لابس من كاميرا علوية. تعمل في المتصفح على الجوال والحاسوب وبدون إنترنت بعد أول فتح، ومتوفرة كتطبيق أندرويد.",
+        "en": "A 3D simulation of rug washing and running a laundry in a fictional, Khartoum-inspired city. Pick the right cleaner for each fibre and stain, set water temperature and dwell time, rescue colours before they bleed, then dry, deliver and haggle with customers. Grow your reputation from a backyard to a workshop and a showroom, hire workers, keep your best rugs in the showroom, and replay each job as a top-down time-lapse. Plays in the browser on phone and desktop, works offline after the first visit, and is available as an Android app."
+      },
+      "features": {
+        "ar": [
+          "كيمياء تنظيف حقيقية: الحموضة، زمن المكوث، حرارة الماء، ومنع الخلط الخطر",
+          "نزف ألوان ينتشر ويمكن إنقاذه، وبقع تتثبت بالماء الحار",
+          "وبر سجاد ثلاثي الأبعاد يميل مع التمشيط ويتلبّد بالبلل",
+          "ثلاث بيئات: الحوش، الورشة، وصالة العرض",
+          "تحذيرات حية ونصائح «عم الطيب» وأنت تعمل",
+          "تايم لابس لكل سجادة من كاميرا علوية مع تصدير فيديو",
+          "مساومة، سمعة، رتب، مهارات، عمال، تأمين، وسوق السجاد المستعمل",
+          "التقويم الهجري وزحمة ما قبل العيد",
+          "ثلاث لغات: فصحى، وسودانية، وإنجليزية",
+          "تعمل بدون إنترنت، بلا إعلانات ولا حساب"
+        ],
+        "en": [
+          "Real cleaning chemistry: pH, dwell time, water temperature and unsafe-mix protection",
+          "Dye bleed that spreads and can be rescued; stains that set in hot water",
+          "3D rug pile that leans with brushing and mats when wet",
+          "Three settings: backyard, workshop and showroom",
+          "Live warnings and tips from “Uncle Tayeb” while you work",
+          "Top-down time-lapse of every rug, with video export",
+          "Haggling, reputation, ranks, skills, workers, insurance and a used-rug market",
+          "Hijri calendar and the pre-Eid rush",
+          "Three languages: Modern Standard Arabic, Sudanese Arabic and English",
+          "Works offline, no ads and no account"
+        ]
       },
       "category": "games",
-      "status": "hidden",
+      "status": "beta",
+      "platforms": [
+        "Web",
+        "Android"
+      ],
+      "icon": "rug-empire.webp",
+      "color": "#c8913a",
+      "schemaCategory": "GameApplication",
+      "audience": {
+        "ar": "للجميع",
+        "en": "Everyone"
+      },
+      "screenshots": [
+        "rug-empire-1.jpg",
+        "rug-empire-2.jpg",
+        "rug-empire-3.jpg",
+        "rug-empire-4.jpg"
+      ],
       "version": {
-        "current": "1.0"
+        "current": "1.0.0"
       },
-      "links": {},
+      "links": {
+        "apk": "https://albushra.app/downloads/RugEmpire-1.0.apk"
+      },
       "hosting": {
-        "provider": "Not published (APK artifact)",
-        "repo": "aladeen35/Games@ccr-ee024873-be1afq"
+        "provider": "Cloudflare Pages (albushra.app/play/rug-empire/)",
+        "repo": "aladeen35/Games"
       },
-      "route": null,
-      "backend": "None",
+      "route": {
+        "mode": "proxy",
+        "target": "https://albushra-app.pages.dev/play/rug-empire/",
+        "homeButton": "middle-left"
+      },
+      "backend": "None (offline PWA)",
       "envVars": [],
-      "android": "com.rugempire.game"
+      "android": "com.rugempire.game",
+      "notes": {
+        "ar": "الكود في فرع ccr-ee024873-be1afq من aladeen35/Games ولم يُدمج في main. نسخة الويب (www/) والـAPK منسوختان إلى albushra-app/site. مفتاح التوقيع android/rugempire.keystore مرفوع في المستودع العام.",
+        "en": "Code is on branch ccr-ee024873-be1afq of aladeen35/Games, not merged into main. The web build (www/) and the APK are copied into albushra-app/site. The signing key android/rugempire.keystore is committed to the public repo."
+      }
     },
     {
       "id": "bell",
