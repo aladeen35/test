@@ -208,4 +208,10 @@ p { margin: 0 0 1em; }
 .tester-app img { border-radius: 10px; flex: none; }
 .tester-app span { display: grid; }
 .tester-app small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.play-area { margin-top: 20px; padding: 18px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.play-area .play-title { margin: 0 0 6px; font-size: 18px; }
+.play-area .muted { margin: 0; line-height: 1.7; }
+.play-area .cta { margin-top: 14px; }
+.btn svg { margin-inline-end: 6px; flex: none; }
+.chip-test { color: #22c58b; border-color: rgba(34, 197, 139, 0.35); }
 section[id], .group { scroll-margin-top: 80px; }

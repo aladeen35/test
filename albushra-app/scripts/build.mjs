@@ -159,7 +159,7 @@ function footer(base) {
 
 function card(a, base) {
   const v = a.resolvedVersion?.value;
-  return `<article class="card" data-cat="${esc(a.category)}" data-status="${esc(a.status)}" style="--accent:${esc(a.color || "#3b82f6")}">
+  return `<article class="card" data-app="${esc(a.id)}" data-cat="${esc(a.category)}" data-status="${esc(a.status)}" style="--accent:${esc(a.color || "#3b82f6")}">
   <a class="card-link" href="${base}apps/${esc(a.id)}/" aria-label="${esc(t2(a.name).ar)} — ${esc(t2(a.name).en)}"></a>
   <div class="card-top">
     <img class="app-icon" src="${icon(a, base)}" width="56" height="56" alt="" loading="lazy">
@@ -171,6 +171,7 @@ function card(a, base) {
     <span class="chip">${bi(cat(a.category).name)}</span>
     ${v ? `<span class="chip mono">v${esc(v)}</span>` : ""}
     ${(a.platforms || []).map((p) => `<span class="chip">${esc(p)}</span>`).join("")}
+    ${a.links?.testing ? `<span class="chip chip-test">${bi({ ar: "تجربة Google Play", en: "Google Play testing" })}</span>` : ""}
   </div>
 </article>`;
 }
@@ -281,7 +282,7 @@ function testersBox(list, base) {
       <a class="btn" href="${esc(g)}" rel="noopener">${bi({ ar: "الانضمام للقروب", en: "Join the group" })}</a></li>
     <li><b>${bi(list.length > 1 ? { ar: "حمّل وجرّب التطبيقات", en: "Install and try the apps" } : { ar: "انضم للتجربة وحمّل التطبيق", en: "Opt in and install the app" })}</b>
       <div class="tester-apps">${list
-        .map((a) => `<a class="tester-app" href="${esc(a.links.testing)}" rel="noopener"><img src="${icon(a, base)}" width="40" height="40" alt="" loading="lazy"><span><b>${bi(a.name)}</b><small>${bi(a.tagline)}</small></span></a>`)
+        .map((a) => `<a class="tester-app" data-app="${esc(a.id)}" href="${esc(a.links.testing)}" rel="noopener"><img src="${icon(a, base)}" width="40" height="40" alt="" loading="lazy"><span><b>${bi(a.name)}</b><small>${bi(a.tagline)}</small></span></a>`)
         .join("")}</div></li>
   </ol>
 </div>`;
@@ -293,10 +294,18 @@ function appPage(a) {
   const v = a.resolvedVersion;
   const f = t2(a.features);
   const L = a.links || {};
+  const group = company.testers?.group;
+  const playIcon = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.5v19a1 1 0 0 0 1.5.86L21 12.86a1 1 0 0 0 0-1.72L5.5 1.64A1 1 0 0 0 4 2.5z"/></svg>`;
+  // Google Play area. Closed testing on Play needs two steps, in this order:
+  // join the testers Google Group, then opt in from the app's testing page.
+  const play = [
+    L.play ? `<a class="btn btn-alt" href="${esc(L.play)}" rel="noopener">${playIcon} ${bi({ ar: "Google Play", en: "Google Play" })}</a>` : "",
+    L.testing && group ? `<a class="btn btn-alt" href="${esc(group)}" rel="noopener">${bi({ ar: "١. انضم لقروب المختبرين", en: "1. Join the testers group" })}</a>` : "",
+    L.testing ? `<a class="btn${L.play ? " btn-alt" : ""}" href="${esc(L.testing)}" rel="noopener">${playIcon} ${bi(group ? { ar: "٢. انضم للتجربة على Google Play", en: "2. Join the Google Play test" } : { ar: "انضم للتجربة على Google Play", en: "Join the Google Play test" })}</a>` : "",
+  ].join("");
   const actions = [
     // Redirect-mode subdomains point back at this page, so only link real apps.
     a.route?.mode === "proxy" || a.route?.mode === "dns" || L.web ? `<a class="btn" href="${esc(appUrl(a))}">${bi({ ar: "افتح التطبيق", en: "Open the app" })}</a>` : "",
-    L.play ? `<a class="btn btn-alt" href="${esc(L.play)}" rel="noopener">${bi({ ar: "Google Play", en: "Google Play" })}</a>` : "",
     L.apk ? `<a class="btn btn-alt" href="${esc(L.apk)}" rel="noopener">${bi({ ar: "تنزيل APK", en: "Download APK" })}</a>` : "",
     ...(L.extra || []).map((x) => `<a class="btn btn-alt" href="${esc(x.url)}" rel="noopener">${bi(x.label)}</a>`),
   ].join("");
@@ -317,7 +326,11 @@ function appPage(a) {
       </div>
     </div>
     <div class="cta">${actions}</div>
-    ${L.testing ? testersBox([a], base) : ""}
+    ${play ? `<div class="play-area" id="play">
+      <h2 class="play-title">${bi(L.testing && !L.play ? { ar: "Google Play — نسخة تجريبية", en: "Google Play — testing" } : { ar: "Google Play", en: "Google Play" })}</h2>
+      ${L.testing ? `<p class="muted small">${bi(group ? { ar: "التطبيق في الاختبار المغلق: انضم للقروب أولًا بنفس حساب Google، ثم افتح صفحة التجربة واضغط «أصبح مختبِرًا» وحمّل التطبيق.", en: "The app is in closed testing: join the group first with the same Google account, then open the testing page, tap “Become a tester” and install." } : { ar: "افتح صفحة التجربة واضغط «أصبح مختبِرًا» ثم حمّل التطبيق.", en: "Open the testing page, tap “Become a tester”, then install." })}</p>` : ""}
+      <div class="cta">${play}</div>
+    </div>` : ""}
     ${a.subdomain ? `<p class="muted mono small">${esc(a.subdomain)}.${esc(APEX)}</p>` : ""}
   </div>
 </section>
@@ -428,7 +441,9 @@ function routes() {
     if (r.mode === "proxy" && m) r.rootPrefixes = [...new Set([...(r.rootPrefixes || []), `/${m[1]}/`])];
     hosts[a.subdomain] = r;
   }
-  return { apex: APEX, generated: new Date().toISOString(), hosts };
+  // Ids the dashboard may hide/show on the public site.
+  const appIds = apps.map((a) => a.id);
+  return { apex: APEX, generated: new Date().toISOString(), appIds, hosts };
 }
 
 // ---------- write ----------

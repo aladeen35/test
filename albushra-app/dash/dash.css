@@ -20,3 +20,9 @@
 .warn { color: var(--gold); }
 .dash-row .cta { margin-top: 14px; }
 .dash-row .btn { min-height: 40px; padding: 0 14px; font-size: 14px; }
+.vis { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.vis-state { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.vis.is-hidden { border-color: rgba(255, 90, 90, 0.4); }
+.dash-row .vis-btn { min-height: 36px; font-size: 13px; }
+.vis-btn[disabled] { opacity: 0.5; cursor: progress; }
+.vis-off { margin: 12px 0 0; }
