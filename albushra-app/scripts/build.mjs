@@ -11,6 +11,7 @@
 // Usage: node scripts/build.mjs [--offline]
 
 import { readFile, writeFile, mkdir, cp, rm, readdir } from "node:fs/promises";
+import { bundleAmeer } from "./ameer-bundle.mjs";
 import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
@@ -130,6 +131,8 @@ for (const a of apps) {
 await writeFile(join(OUT, "registry.json"), JSON.stringify(publicRegistry(), null, 2));
 await writeFile(join(OUT, "dash", "registry.json"), JSON.stringify(dashRegistry(), null, 2));
 await writeFile(join(ROOT, "worker", "routes.json"), JSON.stringify(routes(), null, 2) + "\n");
+// The private dashboard (ameer.albushra.app) is bundled into the Worker, never into dist/site.
+await bundleAmeer();
 
 // Cache busting: /assets is cached for a day, so every page links its CSS/JS
 // with ?v=<content hash>. A new build changes the URL and browsers fetch the

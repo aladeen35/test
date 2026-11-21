@@ -16,6 +16,18 @@ routes = [
 [[kv_namespaces]]
 binding = "VISIBILITY"
 
+# Data of the owner's private dashboard ameer.albushra.app (worker/ameer.js).
+# Created on the first deploy, like VISIBILITY.
+[[kv_namespaces]]
+binding = "AMEER"
+
+# Secrets (set by the workflow from GitHub secrets, never stored here):
+#   AMEER_OWNER_EMAILS  - the only email(s) allowed into ameer.albushra.app
+#   AMEER_INGEST_TOKEN  - bearer token for https://albushra.app/__ameer/ingest
+# ameer.albushra.app uses the same Access application as dash.albushra.app
+# (add it as a second hostname there), so ACCESS_AUD below covers both. If you
+# make a separate Access application instead, add AMEER_ACCESS_AUD here.
+
 # The dashboard's owner API only trusts requests signed by this Cloudflare
 # Access application (dash.albushra.app). Neither value is a secret.
 [vars]

@@ -1,0 +1,59 @@
+# ameer.albushra.app: collect GitHub activity (everything Claude did, PRs, CI)
+# and the health of every albushra.app site, and post it to the private
+# dashboard every 30 minutes. See albushra-app/docs/AMEER-AR.md.
+#
+# Secrets (Settings > Secrets and variables > Actions):
+#   AMEER_GH_TOKEN      - fine-grained token, all repositories, read-only:
+#                         Contents, Metadata, Pull requests, Actions
+#   AMEER_INGEST_TOKEN  - the same random token the router has
+#
+# This repository is public: the collector prints counts only, and the
+# snapshot is never uploaded as an artifact.
+
+name: ameer
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["albushra-app/scripts/ameer-collect.mjs", ".github/workflows/ameer.yml"]
+
+concurrency:
+  group: ameer-collect
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: albushra-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Stop here if the secrets are missing
+        id: gate
+        env:
+          AMEER_GH_TOKEN: ${{ secrets.AMEER_GH_TOKEN }}
+          AMEER_INGEST_TOKEN: ${{ secrets.AMEER_INGEST_TOKEN }}
+        run: |
+          if [ -z "$AMEER_GH_TOKEN" ] || [ -z "$AMEER_INGEST_TOKEN" ]; then
+            echo "::warning::AMEER_GH_TOKEN / AMEER_INGEST_TOKEN are not set. See albushra-app/docs/AMEER-AR.md"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Collect and post
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          AMEER_GH_TOKEN: ${{ secrets.AMEER_GH_TOKEN }}
+          AMEER_INGEST_TOKEN: ${{ secrets.AMEER_INGEST_TOKEN }}
+        run: node scripts/ameer-collect.mjs

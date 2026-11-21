@@ -10,6 +10,7 @@ The main site, the apps dashboard, the Application Registry and the edge router 
 | `scripts/dns-sync.mjs` | Adds the apex, wildcard and `www` records (and per-app records for `mode: "dns"`) and sets SSL Full-strict. Never deletes. |
 | `scripts/verify.mjs` | Checks every subdomain (or, with `--origins`, every origin) over HTTPS. |
 | `dash/` | Dashboard UI (live status + version per app). Put it behind Cloudflare Access. |
+| `ameer/`, `worker/ameer.js` | **ameer.albushra.app**: the owner's private dashboard (Claude's work, repos, CI, sites, computers, notes). Served by the Worker only, behind Cloudflare Access + an owner-email check. Data from `scripts/ameer-collect.mjs` (`.github/workflows/ameer.yml`, every 30 min) and `ameer/agent/*` via `POST https://albushra.app/__ameer/ingest`. Steps: `docs/AMEER-AR.md`. |
 | `docs/OWNER-STEPS-AR.md` | Console steps for the owner (Arabic). |
 | `docs/REPORT.md` | Inventory and deployment report. |
 

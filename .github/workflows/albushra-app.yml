@@ -8,6 +8,8 @@
 #                           Zone (albushra.app) / Workers Routes: Edit, DNS: Edit,
 #                           Zone Settings: Edit, Zone: Read
 #   CLOUDFLARE_ACCOUNT_ID - the account id shown on the Cloudflare dashboard
+# Optional, for the private dashboard ameer.albushra.app (docs/AMEER-AR.md):
+#   AMEER_OWNER_EMAILS, AMEER_INGEST_TOKEN
 # Without them the workflow still builds and tests, and skips deployment.
 #
 # It runs every 6 hours too, so a new release of any app (its version.json)
@@ -107,6 +109,19 @@ jobs:
       - name: Deploy the edge router
         if: steps.gate.outputs.ok == 'true'
         run: npx wrangler deploy
+      - name: Secrets of the private dashboard (ameer.albushra.app)
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          AMEER_OWNER_EMAILS: ${{ secrets.AMEER_OWNER_EMAILS }}
+          AMEER_INGEST_TOKEN: ${{ secrets.AMEER_INGEST_TOKEN }}
+        run: |
+          for name in AMEER_OWNER_EMAILS AMEER_INGEST_TOKEN; do
+            if [ -n "${!name}" ]; then
+              printf '%s' "${!name}" | npx wrangler secret put "$name" >/dev/null && echo "set $name"
+            else
+              echo "::warning::$name is not set; ameer.albushra.app stays locked / without data. See albushra-app/docs/AMEER-AR.md"
+            fi
+          done
       - name: Verify every subdomain over HTTPS
         if: steps.gate.outputs.ok == 'true'
         run: |

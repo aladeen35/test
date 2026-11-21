@@ -10,7 +10,8 @@
     "dns:sync": "node scripts/dns-sync.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:origins": "node scripts/verify.mjs --origins",
-    "test": "node --test tests/registry.test.mjs"
+    "test": "node scripts/ameer-bundle.mjs && node --test tests/registry.test.mjs tests/ameer.test.mjs",
+    "ameer:collect": "node scripts/ameer-collect.mjs"
   },
   "devDependencies": {
     "wrangler": "4.155.0"

@@ -16,6 +16,7 @@
 // Hosts not in the table get a friendly 404 that links back to the hub.
 
 import ROUTES from "./routes.json";
+import { ameerHost, ameerIngest, AMEER_SUB } from "./ameer.js";
 
 const APEX = ROUTES.apex; // "albushra.app"
 
@@ -38,6 +39,10 @@ export default {
     if (url.pathname === "/__router/health") {
       return json({ ok: true, host, sub, route: route ? route.mode : null, generated: ROUTES.generated });
     }
+
+    // The owner's private dashboard (worker/ameer.js): served by the Worker only.
+    if (sub === AMEER_SUB) return ameerHost(request, env, url, accessIdentity);
+    if (sub === "@" && url.pathname === "/__ameer/ingest") return ameerIngest(request, env);
 
     if (!route) return notFound(host);
 
@@ -215,9 +220,9 @@ async function readHidden(env) {
 
 // Verifies the Cloudflare Access JWT (header or cookie) against the team's keys.
 let certCache = null;
-async function accessIdentity(request, env) {
+async function accessIdentity(request, env, audOverride) {
   const team = env.ACCESS_TEAM_DOMAIN;
-  const aud = env.ACCESS_AUD;
+  const aud = audOverride || env.ACCESS_AUD;
   if (!team || !aud) return null;
   const token = request.headers.get("cf-access-jwt-assertion") || cookie(request, "CF_Authorization");
   if (!token) return null;
