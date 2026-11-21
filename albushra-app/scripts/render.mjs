@@ -190,8 +190,8 @@ ${tabbar(base)}
   // ---------- store building blocks ----------
   // Compact store tile: icon, name, category, one action.
   function tile(a, base, opts = {}) {
-    return `<article class="tile${opts.rank ? " ranked" : ""}" data-cat="${esc(a.category)}" style="--accent:${esc(a.color || "#2f6bff")}" ${opts.reveal === false ? "" : "data-reveal"}>
-  ${opts.rank ? `<span class="rank">${opts.rank}</span>` : ""}
+    return `<article class="tile${opts.rank ? " ranked" : ""}" data-app="${esc(a.id)}" data-cat="${esc(a.category)}" style="--accent:${esc(a.color || "#2f6bff")}" ${opts.reveal === false ? "" : "data-reveal"}>
+  ${opts.rank ? `<span class="rank" aria-hidden="true"></span>` : ""}
   <a class="tile-link" href="${page(a, base)}"><span class="sr">${esc(t2(a.name).ar)} — ${esc(t2(a.name).en)}</span></a>
   <img class="app-icon" src="${icon(a, base)}" width="64" height="64" alt="" loading="lazy">
   <div class="tile-txt">
@@ -206,14 +206,14 @@ ${tabbar(base)}
   function bigCard(a, base) {
     const v = a.resolvedVersion?.value;
     const isNew = a.status === "beta" || a.links?.testing;
-    return `<article class="bcard" style="--accent:${esc(a.color || "#2f6bff")}" data-reveal>
+    return `<article class="bcard" data-app="${esc(a.id)}" style="--accent:${esc(a.color || "#2f6bff")}" data-reveal>
   ${isNew ? `<span class="ribbon">${bi({ ar: "جديد", en: "New" })}</span>` : ""}
   <a class="tile-link" href="${page(a, base)}"><span class="sr">${esc(t2(a.name).ar)}</span></a>
   <div class="bcard-top">
     <img class="app-icon" src="${icon(a, base)}" width="72" height="72" alt="" loading="lazy">
     <div>
       <h3>${bi(a.name)}</h3>
-      <div class="chips"><span class="chip">${bi(cat(a.category).name)}</span>${v ? `<span class="chip gold">v${esc(v)}</span>` : ""}</div>
+      <div class="chips"><span class="chip">${bi(cat(a.category).name)}</span>${v ? `<span class="chip gold">v${esc(v)}</span>` : ""}${a.links?.testing ? `<span class="chip chip-test">${bi({ ar: "تجربة Google Play", en: "Play testing" })}</span>` : ""}</div>
     </div>
   </div>
   <p class="clamp3">${bi(a.description || a.tagline)}</p>
@@ -224,7 +224,7 @@ ${tabbar(base)}
   // Featured slide: brand-coloured banner with a phone showing the real app.
   function slide(a, base, i) {
     const shot = a.screenshots?.[0];
-    return `<article class="slide" style="--accent:${esc(a.color || "#2f6bff")}" aria-roledescription="slide" aria-label="${i + 1}">
+    return `<article class="slide" data-app="${esc(a.id)}" style="--accent:${esc(a.color || "#2f6bff")}" aria-roledescription="slide" aria-label="${i + 1}">
   <div class="slide-txt">
     <span class="eyebrow">${svg(a.category, 16)}${bi(cat(a.category).name)}</span>
     <div class="slide-id"><img class="app-icon" src="${icon(a, base)}" width="64" height="64" alt="" ${i ? 'loading="lazy"' : ""}><h3>${bi(a.name)}</h3></div>
@@ -254,7 +254,7 @@ ${tabbar(base)}
       <a class="btn" href="${esc(g)}" rel="noopener">${svg("users", 18)}${bi({ ar: "الانضمام للقروب", en: "Join the group" })}</a></div></li>
     <li><span class="step">2</span><div><b>${bi(list.length > 1 ? { ar: "حمّل وجرّب التطبيقات", en: "Install and try the apps" } : { ar: "انضم للتجربة وحمّل التطبيق", en: "Opt in and install the app" })}</b>
       <div class="tester-apps">${list
-        .map((a) => `<a class="tester-app" href="${esc(a.links.testing)}" rel="noopener" style="--accent:${esc(a.color || "#2f6bff")}"><img src="${icon(a, base)}" width="44" height="44" alt="" loading="lazy"><span><b>${bi(a.name)}</b><small>${bi(a.tagline)}</small></span>${svg("play", 16, "go")}</a>`)
+        .map((a) => `<a class="tester-app" data-app="${esc(a.id)}" href="${esc(a.links.testing)}" rel="noopener" style="--accent:${esc(a.color || "#2f6bff")}"><img src="${icon(a, base)}" width="44" height="44" alt="" loading="lazy"><span><b>${bi(a.name)}</b><small>${bi(a.tagline)}</small></span>${svg("play", 16, "go")}</a>`)
         .join("")}</div></div></li>
   </ol>
 </div>`;
@@ -306,7 +306,7 @@ ${tabbar(base)}
 <section class="featured wrap" aria-label="featured" data-carousel>
   <div class="sec-head" data-reveal><h2>${bi({ ar: "مختارات البشري", en: "Albushra picks" })}</h2></div>
   <div class="slides" data-slides>${featured.map((a, i) => slide(a, base, i)).join("")}</div>
-  <div class="slide-dots" role="tablist">${featured.map((a, i) => `<button type="button" role="tab" aria-label="${i + 1}" data-dot="${i}"${i ? "" : ' aria-selected="true"'}><i></i></button>`).join("")}</div>
+  <div class="slide-dots" role="tablist">${featured.map((a, i) => `<button type="button" role="tab" aria-label="${esc(t2(a.name).ar)}" data-app="${esc(a.id)}" data-dot="${i}"${i ? "" : ' aria-selected="true"'}><i></i></button>`).join("")}</div>
 </section>
 
 <section class="wrap cats" aria-label="categories">

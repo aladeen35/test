@@ -240,7 +240,7 @@ section[id], .group { scroll-margin-top: 90px; }
 @media (max-width: 480px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* ---------- app icon ---------- */
-.app-icon { flex: none; border-radius: 22%; background: var(--surface-2); object-fit: cover; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06); }
+.app-icon { flex: none; aspect-ratio: 1 / 1; height: auto; border-radius: 22%; background: var(--surface-2); object-fit: contain; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06); }
 .app-icon.xl { width: 120px; height: 120px; border-radius: 26%; box-shadow: 0 24px 50px -20px color-mix(in srgb, var(--accent) 70%, #000), 0 0 0 1px rgba(255, 255, 255, 0.08); }
 
 /* ---------- store tile ---------- */
@@ -256,6 +256,8 @@ section[id], .group { scroll-margin-top: 90px; }
 .tile p { margin: 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
 @media (max-width: 400px) { .tiles { grid-template-columns: 1fr; } }
+.charts { counter-reset: rank; }
+.rank::before { counter-increment: rank; content: counter(rank); }
 .rank { flex: none; width: 28px; text-align: center; font: 800 22px var(--display); background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px 14px; }
 @media (max-width: 400px) { .charts { grid-template-columns: 1fr; } }
@@ -269,6 +271,7 @@ section[id], .group { scroll-margin-top: 90px; }
 .clamp3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .chips, .card-meta { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip, .badge { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 500 12px var(--display); background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.chip-test { color: var(--ok); border-color: rgba(46, 211, 154, 0.35); }
 .chip.gold { color: var(--gold); border-color: rgba(245, 184, 46, 0.4); background: rgba(245, 184, 46, 0.08); }
 .badge.s-live { color: var(--ok); border-color: rgba(46, 211, 154, 0.35); }
 .badge.s-beta { color: var(--cyan); border-color: rgba(34, 199, 242, 0.35); }

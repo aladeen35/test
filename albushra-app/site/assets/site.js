@@ -78,10 +78,11 @@
 
   // ---- featured carousel ----
   var car = $("[data-carousel]");
-  if (car) {
+  if (car && !$(".slide", car)) car.hidden = true;
+  else if (car) {
     var track = $("[data-slides]", car);
     var slides = $$(".slide", car);
-    var dots = $$("[data-dot]", car);
+    var dots = $$("[data-dot]", car); // the router removes a hidden app's slide and dot together
     var idx = 0, timer = null, MS = 6000;
     car.style.setProperty("--slide-ms", MS + "ms");
     function mark(i) {

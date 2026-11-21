@@ -1,6 +1,31 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-19T20:37:11.240Z",
+  "generated": "2026-11-21T13:01:02.439Z",
+  "appIds": [
+    "bushra",
+    "khulood",
+    "maab",
+    "education",
+    "altafaoul",
+    "nibras",
+    "fazatdam",
+    "quality",
+    "foodguard",
+    "news",
+    "video",
+    "amir",
+    "store",
+    "jenan",
+    "kids-games",
+    "abujanan",
+    "keyboard",
+    "fullmark",
+    "wolaat",
+    "tools",
+    "hamli",
+    "natija",
+    "rug-empire"
+  ],
   "hosts": {
     "@": {
       "id": "hub",
@@ -169,6 +194,12 @@
       "rootPrefixes": [
         "/Games/"
       ]
+    },
+    "rug": {
+      "id": "rug-empire",
+      "mode": "proxy",
+      "target": "https://albushra-app.pages.dev/play/rug-empire/",
+      "homeButton": "middle-left"
     }
   }
 }

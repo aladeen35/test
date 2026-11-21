@@ -110,7 +110,9 @@ function routes() {
     if (r.mode === "proxy" && m) r.rootPrefixes = [...new Set([...(r.rootPrefixes || []), `/${m[1]}/`])];
     hosts[a.subdomain] = r;
   }
-  return { apex: APEX, generated: new Date().toISOString(), hosts };
+  // Ids the dashboard may hide/show on the public site.
+  const appIds = apps.map((a) => a.id);
+  return { apex: APEX, generated: new Date().toISOString(), appIds, hosts };
 }
 
 // ---------- write ----------

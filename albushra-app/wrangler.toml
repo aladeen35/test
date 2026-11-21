@@ -9,3 +9,15 @@ routes = [
   { pattern = "albushra.app/*", zone_name = "albushra.app" },
   { pattern = "*.albushra.app/*", zone_name = "albushra.app" }
 ]
+
+# Which apps the owner hid from the public site (dashboard toggle).
+# No id on purpose: wrangler creates the namespace on the first deploy and
+# reuses it afterwards (needs "Workers KV Storage: Edit" on the CI token).
+[[kv_namespaces]]
+binding = "VISIBILITY"
+
+# The dashboard's owner API only trusts requests signed by this Cloudflare
+# Access application (dash.albushra.app). Neither value is a secret.
+[vars]
+ACCESS_TEAM_DOMAIN = "tiny-recipe-f690.cloudflareaccess.com"
+ACCESS_AUD = "8a3bc4cec75935968f95f632eddbc499a9829a376cdd339c595593ee9d452657"

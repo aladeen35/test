@@ -4,6 +4,7 @@
 # Needs two repository secrets (Settings > Secrets and variables > Actions):
 #   CLOUDFLARE_API_TOKEN  - token with: Account / Cloudflare Pages: Edit,
 #                           Account / Workers Scripts: Edit,
+#                           Account / Workers KV Storage: Edit (dashboard show/hide),
 #                           Zone (albushra.app) / Workers Routes: Edit, DNS: Edit,
 #                           Zone Settings: Edit, Zone: Read
 #   CLOUDFLARE_ACCOUNT_ID - the account id shown on the Cloudflare dashboard
