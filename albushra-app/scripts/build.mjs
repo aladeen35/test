@@ -12,6 +12,7 @@
 
 import { readFile, writeFile, mkdir, cp, rm, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRenderer } from "./render.mjs";
@@ -129,6 +130,27 @@ for (const a of apps) {
 await writeFile(join(OUT, "registry.json"), JSON.stringify(publicRegistry(), null, 2));
 await writeFile(join(OUT, "dash", "registry.json"), JSON.stringify(dashRegistry(), null, 2));
 await writeFile(join(ROOT, "worker", "routes.json"), JSON.stringify(routes(), null, 2) + "\n");
+
+// Cache busting: /assets is cached for a day, so every page links its CSS/JS
+// with ?v=<content hash>. A new build changes the URL and browsers fetch the
+// new file at once instead of pairing new HTML with yesterday's stylesheet.
+{
+  const ASSETS = ["assets/site.css", "assets/site.js", "dash/dash.css", "dash/dash.js"];
+  const hash = {};
+  for (const f of ASSETS) hash[f] = createHash("sha256").update(await readFile(join(OUT, f))).digest("hex").slice(0, 10);
+  const walk = async (dir) => {
+    for (const e of await readdir(dir, { withFileTypes: true })) {
+      const full = join(dir, e.name);
+      if (e.isDirectory()) await walk(full);
+      else if (e.name.endsWith(".html")) {
+        let html = await readFile(full, "utf8");
+        for (const f of ASSETS) html = html.replace(new RegExp(`(["'(/])(${f.replace(/[./]/g, "\\$&")})(["')])`, "g"), `$1$2?v=${hash[f]}$3`);
+        await writeFile(full, html);
+      }
+    }
+  };
+  await walk(OUT);
+}
 
 const urls = [`https://${APEX}/`, ...apps.map((a) => `https://${APEX}/apps/${a.id}/`)];
 await writeFile(
