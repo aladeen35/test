@@ -1,0 +1,404 @@
+/* نظام البشرى لإدارة الشركة — الهيكل العام، التوجيه، الدخول، ومعالج الإعداد */
+(function(){
+"use strict";
+const D = window.BOS_DATA;
+const $ = (s, r) => (r||document).querySelector(s);
+const $$ = (s, r) => Array.from((r||document).querySelectorAll(s));
+const esc = v => String(v==null?"":v).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate = iso => { if(!iso) return "—"; const d = new Date(iso); return isNaN(d) ? esc(iso) : d.toLocaleDateString("ar-SD-u-nu-latn",{year:"numeric",month:"short",day:"numeric"}); };
+const fmtDT = iso => { if(!iso) return "—"; const d = new Date(iso); return d.toLocaleString("ar-SD-u-nu-latn",{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); };
+const money = (n, cur) => Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2}) + " " + esc(cur || (BOS.S.settings||{}).currency || "");
+const initials = n => String(n||"؟").trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("");
+const avatar = e => `<span class="avatar" title="${esc(e?e.name:"")}">${esc(initials(e?e.name:"—"))}</span>`;
+const empName = id => { const e = BOS.byId(id); return e ? esc(e.name) : "<span class='muted'>—</span>"; };
+
+const REQ_STATUS = {
+  in_review:["قيد المراجعة","info"], executing:["قيد التنفيذ","accent"], returned:["معاد للتعديل","warn"],
+  info_requested:["بانتظار معلومات","warn"], rejected:["مرفوض","bad"], cancelled:["ملغى","bad"], closed:["مغلق","ok"]
+};
+const statusBadge = s => { const x = REQ_STATUS[s] || [s,""]; return `<span class="badge ${x[1]}">${x[0]}</span>`; };
+
+/* ---------- التنبيهات والنوافذ ---------- */
+function toast(msg, kind){
+  const t = document.createElement("div"); t.className = "toast " + (kind||""); t.textContent = msg;
+  $("#toasts").appendChild(t); setTimeout(()=>t.remove(), kind==="gold" ? 12000 : 4200);
+}
+function modal(title, body, buttons, wide){
+  const bg = document.createElement("div"); bg.className = "modal-bg";
+  bg.innerHTML = `<div class="modal ${wide?"wide":""}" role="dialog" aria-modal="true"><div class="modal-h"><h2>${esc(title)}</h2><button class="icon-btn" data-x aria-label="إغلاق">✕</button></div>
+    <div class="modal-b">${body}</div><div class="modal-f"></div></div>`;
+  const close = () => bg.remove();
+  const f = $(".modal-f", bg);
+  (buttons||[]).forEach(b=>{
+    const el = document.createElement("button"); el.className = "btn " + (b.cls||""); el.textContent = b.label;
+    el.onclick = () => { try{ if(b.onClick && b.onClick(bg) === false) return; close(); } catch(e){ toast(e.message,"bad"); } };
+    f.appendChild(el);
+  });
+  const cancel = document.createElement("button"); cancel.className="btn"; cancel.textContent = buttons && buttons.length ? "إلغاء" : "إغلاق"; cancel.onclick = close; f.appendChild(cancel);
+  $("[data-x]", bg).onclick = close;
+  bg.addEventListener("mousedown", e=>{ if(e.target===bg) close(); });
+  document.body.appendChild(bg);
+  const first = $("input,select,textarea", bg); if(first) setTimeout(()=>first.focus(), 30);
+  return bg;
+}
+/* نافذة سؤال داخل الصفحة بدل prompt/confirm (المتصفحات المدمجة تحجبهما) */
+function ask(title, label, onOk, o){
+  o = o || {};
+  const field = o.confirmOnly ? "" : `<div class="field"><label class="f">${esc(label)}${o.optional?"":" *"}</label>${o.type==="number" ? `<input class="input" type="number" name="v" value="${esc(o.value||"")}">` : `<textarea class="input" name="v">${esc(o.value||"")}</textarea>`}</div>`;
+  modal(title, (o.confirmOnly ? `<p>${esc(label)}</p>` : "") + field,
+    [{label:o.okLabel||"تأكيد", cls:o.cls||"primary", onClick:bg=>{ const el = $("[name=v]",bg); const v = el ? el.value.trim() : true;
+      if(!o.confirmOnly && !o.optional && !v) throw new Error("هذا الحقل إلزامي"); return onOk(v); }}]);
+}
+function formData(root){
+  const o = {};
+  $$("[name]", root).forEach(el=>{
+    if(el.type==="checkbox") o[el.name] = el.checked;
+    else if(el.type==="number") o[el.name] = el.value==="" ? "" : Number(el.value);
+    else o[el.name] = el.value.trim();
+  });
+  return o;
+}
+function userOptions(sel, filter){
+  return BOS.S.employees.filter(e=>BOS.active(e) && (!filter || filter(e)))
+    .map(e=>`<option value="${e.id}" ${e.id===sel?"selected":""}>${esc(e.name)} — ${esc(BOS.posTitle(e.positionId))}</option>`).join("");
+}
+
+/* ---------- السمة ---------- */
+function applyTheme(){
+  let t = "auto"; try{ t = localStorage.getItem("bos-theme") || "auto"; }catch(e){}
+  const dark = t==="dark" || (t==="auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+}
+function toggleTheme(){
+  const dark = document.documentElement.dataset.theme === "dark";
+  try{ localStorage.setItem("bos-theme", dark ? "light" : "dark"); }catch(e){}
+  applyTheme();
+}
+
+/* ---------- التنقل ---------- */
+const NAV = [
+  {g:"مساحتي"},
+  {h:"home", ic:"🏠", t:"الرئيسية"},
+  {h:"approvals", ic:"✅", t:"ينتظر موافقتي", badge:()=>myQueue().length},
+  {h:"mail", ic:"✉️", t:"البريد الداخلي", mod:"mail", act:"view", badge:()=>window.BOS_MAIL ? BOS_MAIL.unreadCount(BOS.me()) : 0},
+  {h:"requests", ic:"📨", t:"الطلبات", mod:"requests"},
+  {h:"notifications", ic:"🔔", t:"الإشعارات", badge:()=>unread().length},
+  {g:"الإدارة"},
+  {h:"dashboard", ic:"📊", t:"لوحة المدير العام", mod:"dashboard", act:"view"},
+  {h:"org", ic:"🏢", t:"الهيكل التنظيمي", mod:"org", act:"view"},
+  {h:"people", ic:"👥", t:"الموظفون", mod:"people", act:"view"},
+  {h:"policies", ic:"🔀", t:"مسارات الموافقة", mod:"policies", act:"view"},
+  {g:"الأعمال"},
+  {h:"documents", ic:"📁", t:"المستندات", mod:"documents", act:"view"},
+  {h:"customers", ic:"🤝", t:"العملاء", mod:"customers", act:"view"},
+  {h:"finance", ic:"💳", t:"العروض والفواتير", mod:"finance", act:"view"},
+  {g:"الإنتاج والجودة"},
+  {h:"projects", ic:"🗂️", t:"المشاريع", mod:"projects", act:"view"},
+  {h:"testing", ic:"🧪", t:"الاختبار والعيوب", mod:"testing", act:"view"},
+  {h:"quality", ic:"🏅", t:"الجودة", mod:"quality", act:"view"},
+  {h:"support", ic:"🎧", t:"خدمة العملاء والدعم", mod:"support", act:"view", badge:()=>{ const u = BOS.me(); return window.BOS_OPS ? BOS.S.tickets.filter(t=>t.status!=="closed" && (t.ownerId===u.id||t.referredTo===u.id)).length : 0; }},
+  {g:"الموارد البشرية والعلاقات"},
+  {h:"hr", ic:"🧑‍💼", t:"الموارد البشرية", mod:"people", act:"view"},
+  {h:"training", ic:"🎓", t:"التدريب والتطوير", mod:"training", act:"view"},
+  {h:"content", ic:"📣", t:"العلاقات العامة والمحتوى", mod:"content", act:"view"},
+  {g:"الحوكمة"},
+  {h:"privacy", ic:"🔏", t:"الخصوصية", mod:"privacy", act:"view"},
+  {h:"security", ic:"🛡", t:"الأمن والنسخ الاحتياطي", mod:"security", act:"view"},
+  {h:"audit", ic:"🛡️", t:"سجل التدقيق", mod:"audit", act:"view"},
+  {h:"settings", ic:"⚙️", t:"الإعدادات", mod:"settings", act:"view"}
+];
+function myQueue(){
+  const u = BOS.me(); if(!u) return [];
+  return BOS.S.requests.filter(r=>{ const st = BOS.currentStep(r); return st && st.assigneeId===u.id && ["in_review","executing","info_requested"].includes(r.status); });
+}
+function unread(){ const u = BOS.me(); return u ? BOS.S.notifications.filter(n=>n.userId===u.id && !n.read) : []; }
+
+function shell(){
+  const u = BOS.me(); const S = BOS.S;
+  let nav = "", pendingGroup = "";
+  for(const n of NAV){
+    if(n.g){ pendingGroup = `<div class="nav-group">${n.g}</div>`; continue; }
+    if(n.mod && !BOS.can(u, n.mod, n.act||"view")) continue;
+    const b = n.badge ? n.badge() : 0;
+    nav += pendingGroup + `<a href="#/${n.h}" data-h="${n.h}"><span class="ic">${n.ic}</span>${n.t}${b?`<span class="badge solid">${b}</span>`:""}</a>`;
+    pendingGroup = "";
+  }
+  document.getElementById("app").innerHTML = `
+  <div class="shell">
+    <aside class="side">
+      <div class="brand"><img src="${esc(S.company.logo)}" alt=""><div><b>${esc(S.company.tradeName)}</b><span>Company OS</span></div></div>
+      <nav class="nav">${nav}</nav>
+      <div class="side-foot">نظام البشرى لإدارة الشركة<br>نسخة أولية — البيانات محفوظة على هذا الجهاز</div>
+    </aside>
+    <div class="main">
+      <header class="top">
+        <button class="menu-btn" id="menu" aria-label="القائمة">☰</button>
+        <div class="title" id="page-title"></div>
+        ${window.BOS_SYNC && BOS_SYNC.shared ? `<span class="badge ${BOS_SYNC.readOnly?"warn":"ok"}" id="sync-pill" title="البيانات مشتركة مع زملائك وتتحدث مباشرة">${BOS_SYNC.readOnly?"👁 عرض فقط":"● مشترك"}</span>` : ""}
+        <button class="icon-btn" id="theme" title="الوضع الليلي">◐</button>
+        <a class="icon-btn" href="#/notifications" title="الإشعارات">🔔${unread().length?`<span class="dot">${unread().length}</span>`:""}</a>
+        <button class="user-chip" id="user-chip">${avatar(u)}<span class="who"><b>${esc(u.name)}</b><span>${esc(BOS.posTitle(u.positionId))}</span></span></button>
+      </header>
+      <main class="page" id="page"></main>
+    </div>
+  </div>
+  <nav class="bottom-nav" aria-label="التنقل السريع">
+    <a href="#/home" data-h="home"><span>🏠</span>الرئيسية</a>
+    <a href="#/approvals" data-h="approvals"><span>✅</span>موافقاتي${myQueue().length?`<i>${myQueue().length}</i>`:""}</a>
+    <a href="#/mail" data-h="mail"><span>✉️</span>البريد${window.BOS_MAIL && BOS_MAIL.unreadCount(u)?`<i>${BOS_MAIL.unreadCount(u)}</i>`:""}</a>
+    <a href="#/notifications" data-h="notifications"><span>🔔</span>الإشعارات${unread().length?`<i>${unread().length}</i>`:""}</a>
+    <button type="button" id="bn-menu"><span>☰</span>القائمة</button>
+  </nav>`;
+  $("#menu").onclick = () => document.body.classList.toggle("nav-open");
+  if(window.BOS_SYNC && BOS_SYNC.shared){ const pill = $("#sync-pill"); const lbl = {live:"● مشترك", saving:"⟳ يحفظ…", connecting:"⟳ اتصال…", error:"⚠ تعذر الحفظ — إعادة المحاولة", readonly:"👁 عرض فقط"};
+    BOS_SYNC.onStatus(st=>{ const p = document.getElementById("sync-pill"); if(p){ p.textContent = lbl[st]||st; p.className = "badge " + (st==="live"?"ok":st==="error"||st==="readonly"?"warn":"info"); } }); }
+  $("#bn-menu").onclick = () => document.body.classList.toggle("nav-open");
+  $("#theme").onclick = toggleTheme;
+  $("#user-chip").onclick = () => modal("الحساب", `
+    <div class="row">${avatar(u)}<div><b>${esc(u.name)}</b><div class="muted small">${esc(BOS.posTitle(u.positionId))} · ${esc((BOS.dept(u.deptId)||{}).name||"")}</div></div></div>
+    <dl class="kv" style="margin-top:14px"><dt>نطاق الرؤية</dt><dd>${esc(D.SCOPES[BOS.scopeOf(u)])}</dd><dt>مستوى السرية</dt><dd>${esc(D.CLEARANCE[BOS.clearance(u)])}</dd>
+    <dt>انتهاء الجلسة</dt><dd>بعد ${esc(S.settings.sessionMinutes)} دقيقة من عدم النشاط</dd></dl>`,
+    [...(installEvt ? [{label:"📲 تثبيت التطبيق على الجهاز", onClick:()=>{ installEvt.prompt(); installEvt = null; }}] : []),
+     {label:"تسجيل الخروج / تبديل المستخدم", cls:"primary", onClick:()=>{ BOS.logout(); render(); }}]);
+}
+
+/* تثبيت التطبيق (PWA) عندما يتيحه المتصفح */
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); installEvt = e; });
+
+/* ---------- الموجه ---------- */
+function route(){
+  if(!BOS.S.setupDone) return render();
+  if(!BOS.S.session) return render();
+  if(BOS.sessionExpired()){ BOS.logout("انتهاء الجلسة"); toast("انتهت الجلسة لعدم النشاط — سجل الدخول مجدداً","warn"); return render(); }
+  const u = BOS.me();
+  if(!u || !BOS.active(u)){ BOS.logout("إيقاف وصول مستخدم غير نشط"); toast("هذا الحساب موقوف","bad"); return render(); }
+  if(window.BOS_SYNC && BOS_SYNC.shared && BOS_SYNC.boundEmployee() && BOS_SYNC.boundEmployee() !== u.id){ BOS.S.session = null; BOS.save(); return render(); }
+  BOS.touch(); BOS.save();
+  if(!$(".shell")) shell();
+  const parts = (location.hash.replace(/^#\/?/,"") || "home").split("/");
+  const name = parts[0], arg = parts[1], arg2 = parts[2];
+  document.body.classList.remove("nav-open");
+  $$(".bottom-nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name));
+  $$(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.h===name || (name==="request"&&a.dataset.h==="requests") || (name==="doc"&&a.dataset.h==="documents") || (name==="person"&&a.dataset.h==="people") || (["quote","invoice"].includes(name)&&a.dataset.h==="finance") || (["project","delivery","readiness"].includes(name)&&a.dataset.h==="projects") || (name==="bug"&&a.dataset.h==="testing") || (["ncr","quality-report"].includes(name)&&a.dataset.h==="quality") || (name==="ticket"&&a.dataset.h==="support") || (name==="program"&&a.dataset.h==="training") || (name==="customer"&&a.dataset.h==="customers") || (name==="dsr"&&a.dataset.h==="privacy")));
+  const V = window.BOS_VIEWS;
+  const view = V[name] || V.home;
+  const page = $("#page");
+  try{
+    const out = view(arg, arg2);
+    $("#page-title").textContent = out.title;
+    page.innerHTML = out.html;
+    out.bind && out.bind(page);
+  }catch(e){
+    console.error(e);
+    page.innerHTML = `<div class="note bad">${esc(e.message)}</div>`;
+  }
+  window.scrollTo(0,0);
+}
+/* يعيد رسم الهيكل (لتحديث الشارات) ثم الصفحة */
+function refresh(){ const s = $(".shell"); if(s) s.remove(); route(); }
+
+function render(){
+  applyTheme();
+  const app = document.getElementById("app");
+  const SY = window.BOS_SYNC;
+  if(!BOS.S.setupDone && SY && SY.shared && !SY.owner) return waitingView(app);
+  if(!BOS.S.setupDone && SY && SY.shared && BOS.S._localCandidate) return adoptView(app);
+  if(!BOS.S.setupDone) return wizard(app);
+  if(!BOS.S.session) return loginView(app);
+  app.innerHTML = ""; route();
+}
+
+/* ---------- الدخول (نسخة أولية: اختيار المستخدم + مصادقة ثنائية محاكاة) ---------- */
+function loginView(app){
+  const S = BOS.S;
+  const users = S.employees.slice().sort((a,b)=>(BOS.pos(a.positionId).level||9)-(BOS.pos(b.positionId).level||9));
+  app.innerHTML = `
+  <div class="auth">
+    <div class="auth-panel">
+      <img class="logo" src="${esc(S.company.logo)}" alt="">
+      <div><h1>${esc(S.company.tradeName)}</h1><div class="tag">نظام البشرى لإدارة الشركة — Company OS</div></div>
+      <input class="input" id="q" placeholder="ابحث بالاسم أو المنصب…">
+      <div class="user-pick" id="pick">${users.map(e=>`
+        <button data-id="${e.id}" ${BOS.active(e)?"":"disabled"}>${avatar(e)}<span style="flex:1"><b>${esc(e.name)}</b><br><span class="muted small">${esc(BOS.posTitle(e.positionId))}</span></span>
+        ${BOS.active(e)?(needsMfa(e)?'<span class="badge accent">MFA</span>':""):'<span class="badge bad">موقوف</span>'}</button>`).join("")}</div>
+      <p class="muted small">نسخة تجريبية تعمل على هذا الجهاز فقط. في التشغيل الفعلي يتم الدخول بالبريد وكلمة المرور والمصادقة متعددة العوامل عبر خادم الشركة.</p>
+    </div>
+    <div class="auth-hero"></div>
+  </div>`;
+  $("#q").oninput = e => { const q = e.target.value.trim(); $$("#pick button").forEach(b=>b.classList.toggle("hidden", q && !b.textContent.includes(q))); };
+  const SY = window.BOS_SYNC;
+  if(SY && SY.shared){
+    const mine = SY.boundEmployee();
+    $$("#pick button").forEach(b=>{ const t = SY.boundTo(b.dataset.id);
+      if(mine && b.dataset.id!==mine) b.classList.add("hidden");
+      else if(!mine && t){ b.disabled = true; b.insertAdjacentHTML("beforeend",'<span class="badge">مرتبط بزميل</span>'); } });
+    $("#q").classList.toggle("hidden", !!mine);
+    $(".auth-panel p.muted").innerHTML = mine ? "حسابك مرتبط بهذا الموظف. اضغط للدخول." : "اختر اسمك من القائمة لربط حسابك به مرة واحدة. بعد الربط لا يستطيع غيرك الدخول باسمك. إن اخترت اسماً خاطئاً اطلب من المدير العام أو الموارد البشرية فك الربط.";
+  }
+  $$("#pick button").forEach(b=>b.onclick = () => {
+    const e = BOS.byId(b.dataset.id);
+    const SEC = window.BOS_SEC;
+    if(SY && SY.shared && !SY.boundEmployee()){
+      return ask("ربط حسابك بـ " + e.name, "سيرتبط حسابك بهذا الموظف (" + BOS.posTitle(e.positionId) + ") ولن يستطيع غيرك الدخول باسمه.", ()=>{ SY.bind(e.id); BOS.save(); if(SEC && SEC.needsPassword(e)) return passwordStep(e, () => mfaStep(e)); mfaStep(e); }, {confirmOnly:true, okLabel:"ربط والدخول"});
+    }
+    if(SEC && SEC.needsPassword(e)) return passwordStep(e, () => mfaStep(e));
+    mfaStep(e);
+  });
+}
+/* كلمة المرور المحلية: تُعيَّن عند أول دخول وتُحفظ بصمتها فقط (PBKDF2) */
+function passwordStep(e, next){
+  const SEC = window.BOS_SEC;
+  const first = !SEC.hasPassword(e);
+  const locked = SEC.lockedFor(e);
+  if(locked) return toast("الحساب مقفل مؤقتاً — حاول بعد " + locked + " دقيقة","bad");
+  const bg = modal(first ? "تعيين كلمة المرور" : "كلمة المرور — " + e.name, first
+    ? `<p class="small">أول دخول لك. اختر كلمة مرور من 8 أحرف على الأقل تجمع أرقاماً وحروفاً. لا يطّلع عليها أحد، ولا تُرسل بالبريد.</p>
+       <div class="field"><label class="f">كلمة المرور</label><input class="input" type="password" name="p1" autocomplete="new-password" dir="ltr"></div>
+       <div class="field"><label class="f">تأكيدها</label><input class="input" type="password" name="p2" autocomplete="new-password" dir="ltr"></div>`
+    : `<div class="field"><label class="f">كلمة المرور</label><input class="input" type="password" name="p1" autocomplete="current-password" dir="ltr"></div>`,
+    [{label: first ? "حفظ ومتابعة" : "متابعة", cls:"primary", onClick:bg=>{
+      const p1 = $("[name=p1]",bg).value, p2 = first ? $("[name=p2]",bg).value : null;
+      if(first && p1 !== p2) throw new Error("كلمتا المرور غير متطابقتين");
+      const btn = $(".modal-f .btn.primary",bg); btn.disabled = true;
+      (first ? SEC.setPassword(e,p1) : SEC.checkPassword(e,p1)).then(()=>{ bg.remove(); next(); }).catch(err=>{ btn.disabled = false; toast(err.message,"bad"); });
+      return false;
+    }}]);
+  const f = $("[name=p1]",bg); f.addEventListener("keydown", ev=>{ if(ev.key==="Enter" && !first) $(".modal-f .btn.primary",bg).click(); });
+}
+function mfaStep(e){
+    if(!needsMfa(e)) { BOS.login(e.id); location.hash = "#/home"; render(); return; }
+    const code = String(Math.floor(100000 + Math.random()*900000));
+    toast("رمز التحقق (محاكاة إرسال إلى " + (e.email||e.phone||"جهاز المستخدم") + "): " + code, "gold");
+    modal("المصادقة متعددة العوامل", `<p class="small">منصب «${esc(BOS.posTitle(e.positionId))}» يتطلب رمز تحقق.</p>
+      <div class="field"><label class="f">رمز التحقق</label><input class="input mono" name="code" inputmode="numeric" maxlength="6" dir="ltr"></div>`,
+      [{label:"دخول", cls:"primary", onClick:(bg)=>{
+        if($("[name=code]",bg).value.trim() !== code){ BOS.audit("فشل التحقق الثنائي","session",e.id,"",e.id); BOS.save(); throw new Error("رمز غير صحيح"); }
+        BOS.login(e.id); location.hash = "#/home"; render();
+      }}]);
+}
+function needsMfa(e){ return BOS.S.settings.mfa && (BOS.pos(e.positionId)||{}).mfa; }
+
+/* ---------- معالج الإعداد الأولي (القسم 4.1) ---------- */
+const WZ = {step:0, cfg:{departments:D.DEPARTMENTS.map(d=>d.key), positions:D.POSITIONS.map(p=>p.key), modules:{}, demo:true, masterDocs:true, mfa:true, autoEscalate:true, currency:"SDG", gmThreshold:1000000, sessionMinutes:30, template:"navy", tradeName:"البشرى للتكنولوجيا", nameEn:"AI-Bushra Technology", activity:"تطوير التطبيقات والحلول الرقمية والذكاء الاصطناعي"}};
+const WZ_STEPS = ["بيانات الشركة","الهوية البصرية","المدير العام","الهيكل والمناصب","الوحدات والموافقات","الأمان والفريق"];
+function wizard(app){
+  const c = WZ.cfg, s = WZ.step;
+  const inp = (k,l,t,ph,extra) => `<div class="field"><label class="f">${l}</label><input class="input" name="${k}" type="${t||"text"}" value="${esc(c[k]==null?"":c[k])}" placeholder="${esc(ph||"")}" ${extra||""}></div>`;
+  let body = "";
+  if(s===0) body = `<div class="grid g2">
+      ${inp("tradeName","اسم الشركة التجاري *")}${inp("legalName","الاسم القانوني (إن كان مختلفاً)","text","يُعبأ بعد التسجيل")}
+      ${inp("nameEn","الاسم بالإنجليزية")}<div class="field"><label class="f">الدولة</label><input class="input" value="السودان" disabled></div>
+      ${inp("state","الولاية","text","مثال: الخرطوم")}${inp("locality","المحلية")}
+      </div>${inp("address","العنوان")}<div class="grid g3">${inp("email","البريد","email")}${inp("phone","الهاتف","tel")}${inp("website","الموقع","url")}</div>
+      <div class="grid g3"><div class="field"><label class="f">العملة الافتراضية</label><select class="input" name="currency">${["SDG","USD","SAR","AED","EUR"].map(x=>`<option ${c.currency===x?"selected":""}>${x}</option>`).join("")}</select></div>
+      ${inp("fiscalStart","بداية السنة المالية (شهر-يوم)","text","01-01")}${inp("activity","مجال النشاط")}</div>`;
+  if(s===1) body = `<div class="row" style="gap:18px;align-items:flex-start">
+      <img src="${esc(c.logo||"assets/logo.png")}" style="width:140px;height:140px;border-radius:18px;border:1px solid var(--line)" id="logo-prev">
+      <div style="flex:1;min-width:240px"><p class="small">الشعار الرسمي المعتمد من حزمة الشركة محمّل مسبقاً. يمكنك رفع نسخة أخرى إن لزم.</p>
+      <input type="file" accept="image/*" id="logo-file" class="input">
+      <div class="note" style="margin-top:12px">كل فاتورة وعرض سعر ومستند يصدر من النظام يحمل الشعار ورقم المستند وتاريخه وحالته واسم المنشئ والمعتمد، مع الختم الإداري كعنصر هوية داخلي.</div></div></div>
+      <h3 style="margin:18px 0 8px">القالب البصري</h3>
+      <div class="grid g3">${[["navy","الكحلي الرسمي","linear-gradient(135deg,#0B1B3A,#123A7A)"],["cyan","السماوي الكهربائي","linear-gradient(135deg,#0B1B3A,#18CDEF)"],["gold","كحلي وذهبي","linear-gradient(135deg,#0B1B3A 60%,#F3B83F)"]].map(([k,n,g])=>`<div class="theme-opt ${c.template===k?"on":""}" data-t="${k}"><div class="sw" style="background:${g}"></div>${n}</div>`).join("")}</div>`;
+  if(s===2) body = `<p class="small muted">الممثل الأول للشركة. يملك رؤية شاملة لكل الوحدات، لكنه لا يستطيع تجاوز سجل الموافقات أو محو أثر التدقيق.</p>
+      <div class="grid g2">${inp("gmName","اسم المدير العام *")}${inp("gmEmail","البريد","email")}${inp("gmPhone","الهاتف","tel")}</div>`;
+  if(s===3) body = `<h3>الأقسام</h3><p class="small muted">يُحافظ على التسلسل: القسم الملغى تنتقل أقسامه الفرعية إلى أقرب قسم أعلى.</p>
+      <div class="pick-grid">${D.DEPARTMENTS.map(d=>`<label class="check"><input type="checkbox" data-dep="${d.key}" ${c.departments.includes(d.key)?"checked":""} ${["board","mgmt"].includes(d.key)?"disabled":""}>${esc(d.name)}</label>`).join("")}</div>
+      <h3 style="margin-top:18px">المناصب وتسلسلها</h3><p class="small muted">كل مستخدم يرتبط بمنصب؛ الصلاحيات تُمنح للمنصب لا للشخص.</p>
+      <div class="pick-grid">${D.POSITIONS.map(p=>`<label class="check"><input type="checkbox" data-pos="${p.key}" ${c.positions.includes(p.key)?"checked":""} ${["gm","owner"].includes(p.key)?"disabled":""}><span>${esc(p.title)}<br><span class="muted small">يتبع: ${esc((D.POSITIONS.find(x=>x.key===p.reportsTo)||{title:"—"}).title)}</span></span></label>`).join("")}</div>`;
+  if(s===4) body = `<h3>الوحدات</h3><div class="pick-grid">${D.MODULES.map(m=>`<label class="check"><input type="checkbox" data-mod="${m.key}" ${c.modules[m.key]!==false?"checked":""} ${m.core?"disabled":""}>${m.icon} ${esc(m.name)}${m.core?' <span class="muted small">(أساسية)</span>':""}</label>`).join("")}</div>
+      <h3 style="margin-top:18px">مسارات الموافقة الافتراضية</h3>
+      <div class="grid g2">${inp("gmThreshold","حد اعتماد المدير العام (المبالغ ≥ هذا الحد تتطلب موافقته)","number")}
+      <label class="check" style="margin-top:24px"><input type="checkbox" name="autoEscalate" ${c.autoEscalate?"checked":""}>تصعيد تلقائي عند تجاوز مهلة المرحلة (يومان)</label></div>
+      <p class="small muted">يتم تحميل مسارات القسم 7.2 (الفواتير، الشراء، الإجازة، الإطلاق، العقود، النشر، التدريب، الشكاوى، الحوادث) ويمكن تعديلها لاحقاً من «مسارات الموافقة».</p>`;
+  if(s===5) body = `<label class="check"><input type="checkbox" name="mfa" ${c.mfa?"checked":""}>تفعيل المصادقة متعددة العوامل للمدير العام والمالية والموارد البشرية والأمن</label>
+      <div class="grid g2" style="margin-top:8px">${inp("sessionMinutes","انتهاء الجلسة بعد عدم النشاط (دقيقة)","number")}${inp("recovery","سياسة استعادة الحساب (بريد / هاتف احتياطي)","text","مثال: البريد الاحتياطي للمالك")}</div>
+      <h3 style="margin-top:16px">الموظفون</h3>
+      <label class="check"><input type="checkbox" name="demo" ${c.demo?"checked":""}>إضافة فريق تجريبي يشغل كل المناصب (لتجربة مسارات الموافقة فوراً — يمكن تعطيله لاحقاً)</label>
+      <label class="check"><input type="checkbox" name="masterDocs" ${c.masterDocs?"checked":""}>استيراد المستندات الرئيسية من حزمة الشركة (${D.MASTER_DOCS.length} مستند: العقود، السياسات، النماذج، الختم، السجلات)</label>
+      <div class="note warn" style="margin-top:12px">هذه مواصفات منتج ونسخة أولية. نماذج الضرائب والفواتير والعقود تحتاج مراجعة وفق كيان الشركة ومتطلبات السودان قبل استخدامها رسمياً.</div>`;
+
+  app.innerHTML = `<div class="wiz">
+    <div class="wiz-head"><img src="assets/logo.png" alt=""><div><h1>إعداد حساب الشركة</h1><div class="muted">الخطوة ${s+1} من ${WZ_STEPS.length}: ${WZ_STEPS[s]}</div></div>
+      <span class="spacer"></span><button class="icon-btn" id="theme">◐</button></div>
+    <div class="steps-bar">${WZ_STEPS.map((_,i)=>`<i class="${i<s?"done":i===s?"on":""}"></i>`).join("")}</div>
+    <div class="card" id="wz">${body}</div>
+    <div class="row" style="margin-top:14px">${s?'<button class="btn" id="back">السابق</button>':""}<span class="spacer"></span>
+      ${s===0?'<button class="btn" id="import">استعادة نسخة احتياطية</button>':""}
+      <button class="btn primary" id="next">${s===WZ_STEPS.length-1?"إنشاء الحساب":"التالي"}</button></div>
+  </div>`;
+  $("#theme").onclick = toggleTheme;
+  const collect = () => {
+    Object.assign(c, formData($("#wz")));
+    if(s===3){ c.departments = $$("[data-dep]").filter(x=>x.checked).map(x=>x.dataset.dep); c.positions = $$("[data-pos]").filter(x=>x.checked).map(x=>x.dataset.pos); }
+    if(s===4){ $$("[data-mod]").forEach(x=>c.modules[x.dataset.mod] = x.checked); }
+  };
+  $$(".theme-opt").forEach(x=>x.onclick=()=>{ c.template = x.dataset.t; wizard(app); });
+  const lf = $("#logo-file"); if(lf) lf.onchange = () => { const f = lf.files[0]; if(!f) return; if(f.size>600000) return toast("حجم الشعار كبير — الحد 600KB","bad"); const rd = new FileReader(); rd.onload = () => { c.logo = rd.result; wizard(app); }; rd.readAsDataURL(f); };
+  if($("#back")) $("#back").onclick = () => { collect(); WZ.step--; wizard(app); };
+  if($("#import")) $("#import").onclick = importBackup;
+  $("#next").onclick = () => {
+    collect();
+    if(s===0 && !c.tradeName) return toast("اسم الشركة إلزامي","bad");
+    if(s===2 && !c.gmName) return toast("اسم المدير العام إلزامي","bad");
+    if(s < WZ_STEPS.length-1){ WZ.step++; return wizard(app); }
+    BOS_SETUP.initCompany(c);
+    if(window.BOS_SYNC && BOS_SYNC.shared){ delete BOS.S._localCandidate; BOS_SYNC.bind(BOS.S.session.userId); BOS.save(); }
+    toast("تم إنشاء حساب الشركة — أهلاً " + c.gmName, "ok");
+    location.hash = "#/dashboard"; render();
+  };
+}
+
+function importBackup(){
+  const i = document.createElement("input"); i.type = "file"; i.accept = ".json,application/json";
+  i.onchange = () => { const f = i.files[0]; if(!f) return; const rd = new FileReader();
+    rd.onload = () => { try{ const o = JSON.parse(rd.result); if(!o.company || !Array.isArray(o.audit)) throw new Error("ملف غير صالح");
+      localStorage.setItem("bushra-os-v1", JSON.stringify(Object.assign(o,{session:null}))); BOS.load(); toast("تمت الاستعادة","ok"); render(); }catch(e){ toast("تعذرت الاستعادة: " + e.message, "bad"); } };
+    rd.readAsText(f); };
+  i.click();
+}
+
+window.BOS_UI = {ask, $, $$, esc, fmtDate, fmtDT, money, avatar, empName, statusBadge, REQ_STATUS, toast, modal, formData, userOptions, myQueue, unread, route, refresh, render, importBackup, initials};
+
+/* ---------- التشغيل ---------- */
+window.addEventListener("hashchange", route);
+["click","keydown"].forEach(ev=>document.addEventListener(ev, ()=>{ if(BOS.S && BOS.S.session){ BOS.touch(); } }, {passive:true}));
+setInterval(()=>{ if(BOS.S.session && BOS.sessionExpired()){ BOS.logout("انتهاء الجلسة"); toast("انتهت الجلسة لعدم النشاط","warn"); render(); } }, 30000);
+/* داخل إطار مدمج (رابط تجربة): الطباعة والتنزيل محجوبان — نوضح ذلك بدل أن يفشل الزر بصمت */
+let EMBEDDED = false; try{ EMBEDDED = window.self !== window.top; }catch(e){ EMBEDDED = true; }
+if(EMBEDDED) document.addEventListener("click", e=>{
+  const el = e.target.closest('[onclick="print()"], a[download]');
+  if(!el) return;
+  e.preventDefault(); e.stopPropagation();
+  toast(el.hasAttribute("download") ? "تنزيل الملفات غير متاح في رابط التجربة — الملف متوفر في مجلد library بالمستودع" : "الطباعة غير متاحة في رابط التجربة — شغّل التطبيق من المستودع للطباعة وحفظ PDF", "gold");
+}, true);
+function sweeps(){
+  if(!BOS.S.setupDone) return;
+  // في الوضع المشترك يشغّل المالك وحده المهام الدورية حتى لا تتكرر السجلات
+  if(window.BOS_SYNC && BOS_SYNC.shared && !BOS_SYNC.owner) return;
+  const n = BOS.autoEscalate(); if(n) console.info("auto-escalated", n); if(window.BOS_OPS) BOS_OPS.slaSweep(); if(window.BOS_HR){ BOS_HR.absenceSweep(); BOS_HR.trainingSweep(); } if(window.BOS_SEC){ BOS_SEC.dsrSweep(); BOS_SEC.backupSweep(); }
+}
+function waitingView(app){
+  app.innerHTML = `<div class="auth"><div class="auth-panel"><img class="logo" src="assets/logo.png" alt=""><h1>نظام البشرى لإدارة الشركة</h1>
+    <p>لم يُنشئ مالك الرابط حساب الشركة بعد. عندما ينتهي من الإعداد تظهر لك الشاشة تلقائياً دون إعادة تحميل.</p><p class="muted small">البيانات هنا مشتركة بين كل من شورك معه الرابط.</p></div><div class="auth-hero"></div></div>`;
+}
+function adoptView(app){
+  const c = BOS.S._localCandidate;
+  app.innerHTML = `<div class="wiz"><div class="wiz-head"><img src="assets/logo.png" alt=""><div><h1>بدء التجربة المشتركة</h1><div class="muted">كل ما تُدخله من الآن يراه زملاؤك الذين تشاركهم الرابط</div></div></div>
+    <div class="card"><p>وجدنا في هذا المتصفح بيانات تجربة سابقة لـ <b>${esc(c.company.tradeName)}</b>: ${c.employees.length} موظفاً و${(c.requests||[]).length} طلباً. هل تريد مشاركتها مع زملائك أم البدء بحساب شركة جديد؟</p>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="adopt">مشاركة بياناتي الحالية</button><button class="btn" id="fresh">البدء من جديد</button></div>
+    <p class="small muted" style="margin-top:10px">عند المشاركة يُعاد تسجيل الدخول، ويربط كل زميل حسابه بموظف مرة واحدة.</p></div></div>`;
+  $("#adopt").onclick = () => { BOS_SYNC.adoptLocal(); toast("شُوركت البيانات","ok"); render(); };
+  $("#fresh").onclick = () => { delete BOS.S._localCandidate; render(); };
+}
+document.addEventListener("DOMContentLoaded", async ()=>{
+  BOS.load();
+  if(window.BOS_SYNC && BOS_SYNC.embedded()){
+    document.getElementById("app").innerHTML = `<div class="auth"><div class="auth-panel"><img class="logo" src="assets/logo.png" alt=""><h1>نظام البشرى لإدارة الشركة</h1><p class="tag">جارٍ الاتصال بالبيانات المشتركة…</p></div><div class="auth-hero"></div></div>`;
+    try{ await BOS_SYNC.init(); }catch(e){ console.warn("sync init", e); }
+  }
+  sweeps();
+  render();
+  if("serviceWorker" in navigator && location.protocol.startsWith("http") && !(window.BOS_SYNC && BOS_SYNC.shared)) navigator.serviceWorker.register("sw.js").catch(()=>{});
+});
+})();
