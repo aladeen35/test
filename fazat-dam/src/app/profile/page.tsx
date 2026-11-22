@@ -85,7 +85,7 @@ export default async function ProfilePage() {
         <h2 className="section-title">{t.profile.privacy}</h2>
         <p className="text-sm text-muted">{t.profile.privacyText}</p>
         <p className="text-sm"><strong>{t.profile.blocked}:</strong> <span className="latin">{blocked ?? 0}</span></p>
-        <Link href="/privacy" className="text-sm font-semibold text-brand-600">{t.nav.privacy}</Link>
+        <Link href="/privacy" className="inline-flex min-h-11 items-center text-sm font-semibold text-brand-600">{t.nav.privacy}</Link>
       </section>
 
       <InstallCard />
@@ -94,6 +94,7 @@ export default async function ProfilePage() {
         <Link href="/institution" className="font-semibold text-navy">{t.profile.institutionLink}</Link>
         <Link href="/initiatives/mine" className="font-semibold text-navy">{t.initiative.mine}</Link>
         {viewer.isAdmin && <Link href="/admin" className="font-semibold text-brand-600">{t.nav.admin}</Link>}
+        <Link href="/about" className="font-semibold text-navy">{t.nav.about}</Link>
       </section>
 
       <section className="card flex flex-col gap-3 border border-brand/20">
