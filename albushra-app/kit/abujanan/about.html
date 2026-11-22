@@ -39,7 +39,7 @@ main{max-width:720px;margin:0 auto;padding:0 16px}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:10px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--text);font:700 16px inherit;text-decoration:none;cursor:pointer;width:100%}
 .btn.primary{background:linear-gradient(90deg,#0f5d6b,#14b8a6);border-color:transparent;color:#fff;box-shadow:0 12px 30px -16px rgba(20,184,166,.9)}
 .btn svg{color:var(--teal)}.btn.primary svg{color:#fff}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .linkbox{display:flex;align-items:center;gap:12px;margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
 .linkbox .grow{flex:1;min-width:0}.linkbox small{display:block;color:var(--muted);font-size:12.5px}
 .linkbox b{direction:ltr;unicode-bidi:isolate;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -104,7 +104,7 @@ function toast(){var t=document.querySelector('.toast');t.classList.add('on');se
   <h3><span lang="ar" class="ar">تنزيل التطبيقات والموقع الرسمي</span><span lang="en" class="en">Apps and the official website</span></h3>
   <p class="hint"><span lang="ar" class="ar">روابط الوصول المباشر والتحميل السريع</span><span lang="en" class="en">Direct access and quick downloads</span></p>
   <a class="btn primary" href="https://albushra.app/"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg><span lang="ar" class="ar">زيارة موقع وتطبيقات البشرى (Albushra.app)</span><span lang="en" class="en">Visit Albushra apps (Albushra.app)</span></a>
-  <div class="grid2">
+  <div class="grid2" style="margin-top:10px">
     <a class="btn" href="https://play.google.com/apps/testing/sd.abujanan.games" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5l14 8.5-14 8.5z" fill="currentColor"/></svg>Google Play</a>
     <button class="btn" type="button" data-act="share" data-url="https://albushra.app/"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg><span lang="ar" class="ar">مشاركة الرابط</span><span lang="en" class="en">Share link</span></button>
   </div>

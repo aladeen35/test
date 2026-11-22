@@ -84,7 +84,7 @@ main{max-width:720px;margin:0 auto;padding:0 16px}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:10px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--text);font:700 16px inherit;text-decoration:none;cursor:pointer;width:100%}
 .btn.primary{background:linear-gradient(90deg,#0f5d6b,#14b8a6);border-color:transparent;color:#fff;box-shadow:0 12px 30px -16px rgba(20,184,166,.9)}
 .btn svg{color:var(--teal)}.btn.primary svg{color:#fff}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .linkbox{display:flex;align-items:center;gap:12px;margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
 .linkbox .grow{flex:1;min-width:0}.linkbox small{display:block;color:var(--muted);font-size:12.5px}
 .linkbox b{direction:ltr;unicode-bidi:isolate;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -161,7 +161,8 @@ ${body}
   function about(app = null, mode = "hub") {
     const home = app ? appUrl(app) : `https://${APEX}/`;
     const L = app?.links || {};
-    const play = L.play || L.testing || "https://play.google.com/store/apps/details?id=sa.mushaf.albushra";
+    // Only the app's own listing; without one, the button is not shown.
+    const play = app ? L.play || L.testing || null : "https://play.google.com/store/apps/details?id=sa.mushaf.albushra";
     const privacyHref = link(app, "privacy", mode);
     const body = `
 <section class="card hero">
@@ -190,8 +191,8 @@ ${
   <h3>${bi({ ar: "تنزيل التطبيقات والموقع الرسمي", en: "Apps and the official website" })}</h3>
   <p class="hint">${bi({ ar: "روابط الوصول المباشر والتحميل السريع", en: "Direct access and quick downloads" })}</p>
   <a class="btn primary" href="https://${APEX}/">${ic("open")}${bi({ ar: "زيارة موقع وتطبيقات البشرى (Albushra.app)", en: "Visit Albushra apps (Albushra.app)" })}</a>
-  <div class="grid2">
-    <a class="btn" href="${esc(play)}" rel="noopener">${ic("play")}Google Play</a>
+  <div class="${play ? "grid2" : ""}" style="margin-top:10px">
+    ${play ? `<a class="btn" href="${esc(play)}" rel="noopener">${ic("play")}Google Play</a>` : ""}
     <button class="btn" type="button" data-act="share" data-url="https://${APEX}/">${ic("share")}${bi({ ar: "مشاركة الرابط", en: "Share link" })}</button>
   </div>
   <div class="linkbox">${ic("link", 22)}<div class="grow"><small>${bi({ ar: "رابط الموقع والتحميل المباشر", en: "Website and direct downloads" })}</small><b>https://${APEX}</b></div><button class="copy" type="button" data-act="copy" data-url="https://${APEX}/" aria-label="نسخ / Copy">${ic("copy")}</button></div>

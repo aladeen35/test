@@ -23,23 +23,29 @@
       "data": {
         "ar": [
           "عند إنشاء حساب: الاسم والبريد الإلكتروني (أو حساب Google) ومعرّف المستخدم.",
-          "تقدّمك في الموسوعة وتفضيلاتك المرتبطة بحسابك."
+          "القصص المفضلة والعلامات وموضع القراءة ونتائج الاختبارات، تُزامن مع حسابك.",
+          "بلا حساب: هذه البيانات وإعدادات العرض (حجم الخط والمظهر والقارئ) تبقى في متصفحك على جهازك فقط."
         ],
         "en": [
           "If you create an account: your name, email address (or Google account) and user id.",
-          "Your progress and preferences linked to that account."
+          "Favourite stories, bookmarks, reading position and quiz results, synced to your account.",
+          "Without an account, this data and your display settings (font size, theme, reciter) stay in your browser on this device only."
         ]
       },
       "where": {
-        "ar": "خدمة Firebase من Google، لتسجيل الدخول وقاعدة البيانات. التصفح بلا حساب لا يرسل بيانات شخصية.",
-        "en": "Google Firebase (Authentication and the database). Browsing without an account sends no personal data."
+        "ar": "خدمة Firebase من Google لتسجيل الدخول وبيانات الحساب. القراءة الصوتية تستخدم محرك النطق في جهازك.",
+        "en": "Google Firebase for sign-in and account data. Read-aloud uses your device's own speech engine."
       },
       "third": {
         "ar": [
-          "Google Firebase"
+          "Google Firebase (تسجيل الدخول وبيانات الحساب)",
+          "Google Fonts (تحميل الخطوط)",
+          "everyayah.com (صوت التلاوة عند طلبه فقط)"
         ],
         "en": [
-          "Google Firebase"
+          "Google Firebase (sign-in and account data)",
+          "Google Fonts (loading fonts)",
+          "everyayah.com (recitation audio, only when you ask for it)"
         ]
       }
     },
@@ -324,30 +330,7 @@
       }
     },
     "abujanan": {
-      "data": {
-        "ar": [
-          "عداد زيارات وتنزيلات مجهول (بلا اسم ولا حساب).",
-          "في اللعب أونلاين: اسم اللاعب الذي تكتبه ورمز الغرفة فقط، طوال الجولة.",
-          "اللعب المحلي والبلوتوث لا يرسل شيئًا إلى الإنترنت."
-        ],
-        "en": [
-          "An anonymous visit and download counter (no name, no account).",
-          "Online play: only the player name you type and the room code, for the round.",
-          "Local and Bluetooth play send nothing to the internet."
-        ]
-      },
-      "where": {
-        "ar": "Supabase للعب أونلاين والعدّاد.",
-        "en": "Supabase for online rooms and the counter."
-      },
-      "third": {
-        "ar": [
-          "Supabase"
-        ],
-        "en": [
-          "Supabase"
-        ]
-      }
+      "existing": "https://aladeen35.github.io/Games/abujanan/privacy.html"
     },
     "keyboard": {
       "data": {
