@@ -58,6 +58,18 @@ export default {
       if (m && hidden.includes(decodeURIComponent(m[1]))) return Response.redirect(`https://${APEX}/#apps`, 302);
     }
 
+    // About the developer & privacy policy, served on the app's own subdomain
+    // (same origin = an internal link from inside the app). The pages are
+    // built per app into the hub's /kit/<id>/ (scripts/kit.mjs).
+    if (sub !== "@" && sub !== "dash" && /^\/_albushra\/(about|privacy)\/?$/.test(url.pathname)) {
+      const page = url.pathname.includes("privacy") ? "privacy" : "about";
+      const hub = new URL(ROUTES.hosts["@"].target);
+      const r = await fetch(new URL(`/kit/${encodeURIComponent(route.id || sub)}/${page}.html`, hub.origin).toString());
+      if (!r.ok) return Response.redirect(`https://${APEX}/${page}/`, 302);
+      const h = new Headers({ "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300", "x-albushra-app": route.id || sub });
+      return new Response(r.body, { status: 200, headers: h });
+    }
+
     if (route.mode === "redirect") {
       const target = new URL(route.target);
       if (route.keepPath !== false) {
@@ -161,13 +173,26 @@ export default {
 // "middle-left" is a small icon-only tab on the left edge, for full-screen
 // games whose corners are all taken by their own controls.
 function homeButton(pos) {
-  if (pos === "middle-left") {
-    return `<a id="albushra-home" href="https://${APEX}/" title="${APEX}" aria-label="البشرى للتكنولوجيا — ${APEX}" style="position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:2147483646;display:block;padding:5px 5px 5px 3px;border-radius:0 12px 12px 0;background:rgba(7,13,36,.7);line-height:0;opacity:.8"><img src="https://${APEX}/brand/mark-192.png" width="22" height="22" alt="" style="width:22px;height:22px;border-radius:50%;margin:0;padding:0;border:0"></a><style>@media print{#albushra-home{display:none!important}}</style>`;
-  }
-  const corner = typeof pos === "string" ? pos : "bottom-left";
-  const v = corner.startsWith("top") ? "top:calc(10px + env(safe-area-inset-top,0px))" : "bottom:calc(10px + env(safe-area-inset-bottom,0px))";
-  const h = corner.endsWith("right") ? "right:10px" : "left:10px";
-  return `<a id="albushra-home" href="https://${APEX}/" title="${APEX}" aria-label="البشرى للتكنولوجيا — ${APEX}" style="position:fixed;${v};${h};z-index:2147483646;display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 5px;border-radius:999px;background:rgba(7,13,36,.86);color:#fff!important;font:600 12px/1 system-ui,-apple-system,'Segoe UI',sans-serif;text-decoration:none!important;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;opacity:.92"><img src="https://${APEX}/brand/mark-192.png" width="22" height="22" alt="" style="width:22px;height:22px;border-radius:50%;margin:0;padding:0;border:0">البشرى</a><style>@media print{#albushra-home{display:none!important}}</style>`;
+  // A small "Albushra" pill (or a left-edge tab for full-screen games) that
+  // opens a menu: the store, About the developer, Privacy policy. Pure
+  // HTML/CSS (<details>), so it needs no script and cannot break the app.
+  const side = pos === "middle-left";
+  const corner = typeof pos === "string" && !side ? pos : "bottom-left";
+  const v = side ? "top:50%;transform:translateY(-50%)" : corner.startsWith("top") ? "top:calc(10px + env(safe-area-inset-top,0px))" : "bottom:calc(10px + env(safe-area-inset-bottom,0px))";
+  const h = side ? "left:0" : corner.endsWith("right") ? "right:10px" : "left:10px";
+  const menuV = side ? "top:0" : corner.startsWith("top") ? "top:40px" : "bottom:40px";
+  const menuH = corner.endsWith("right") && !side ? "right:0" : "left:0";
+  const summary = side
+    ? `padding:5px 5px 5px 3px;border-radius:0 12px 12px 0;background:rgba(7,13,36,.7);opacity:.8`
+    : `display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 5px;border-radius:999px;background:rgba(7,13,36,.86);color:#fff;font:600 12px/1 system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);opacity:.92`;
+  const item = "display:block;padding:11px 14px;color:#eef4ff!important;text-decoration:none!important;border-radius:10px;font:600 14px/1.3 system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;white-space:nowrap";
+  return `<details id="albushra-home" style="position:fixed;${v};${h};z-index:2147483646;direction:rtl;margin:0">` +
+    `<summary aria-label="البشرى للتكنولوجيا — ${APEX}" style="list-style:none;cursor:pointer;line-height:0;${summary}"><img src="https://${APEX}/brand/mark-192.png" width="22" height="22" alt="" style="width:22px;height:22px;border-radius:50%;margin:0;padding:0;border:0">${side ? "" : `<span style="line-height:1">البشرى</span>`}</summary>` +
+    `<nav style="position:absolute;${menuV};${menuH};${side ? "margin-left:34px;" : ""}min-width:210px;padding:6px;border-radius:14px;background:rgba(10,20,38,.97);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 40px rgba(0,0,0,.45)">` +
+    `<a href="https://${APEX}/" style="${item}">🏠 متجر البشرى — ${APEX}</a>` +
+    `<a href="/_albushra/about" style="${item}">ℹ️ عن المطور والمنظومة</a>` +
+    `<a href="/_albushra/privacy" style="${item}">🛡️ سياسة الخصوصية</a>` +
+    `</nav></details><style>#albushra-home summary::-webkit-details-marker{display:none}#albushra-home:not([open]) nav{display:none}#albushra-home a:hover{background:rgba(255,255,255,.08)}@media print{#albushra-home{display:none!important}}</style>`;
 }
 
 // ---------- visibility (Workers KV, key "hidden" = JSON array of app ids) ----------

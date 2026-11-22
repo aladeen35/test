@@ -39,3 +39,16 @@ test("no secrets in the registry", () => {
   for (const p of patterns) assert.doesNotMatch(text, p);
   for (const a of reg.apps) for (const v of a.envVars || []) assert.doesNotMatch(v, /=/, `${a.id}: envVars holds names only`);
 });
+
+test("every public app has privacy facts", async () => {
+  const priv = JSON.parse(await readFile(new URL("../registry/privacy.json", import.meta.url), "utf8"));
+  for (const a of reg.apps) {
+    if (a.status === "hidden") continue;
+    const p = priv.apps[a.id];
+    assert.ok(p, `${a.id}: missing in registry/privacy.json`);
+    if (!p.existing) {
+      assert.ok(p.data?.ar?.length && p.data?.en?.length, `${a.id}: privacy data needs ar + en`);
+      assert.ok(p.where?.ar && p.where?.en, `${a.id}: privacy "where" needs ar + en`);
+    }
+  }
+});

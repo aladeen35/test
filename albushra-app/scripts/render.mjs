@@ -177,6 +177,8 @@ ${tabbar(base)}
     <div>
       <h3>${bi({ ar: "روابط", en: "Links" })}</h3>
       <ul>
+        <li><a href="${base}about/">${bi({ ar: "عن المطور والمنظومة", en: "About the developer" })}</a></li>
+        <li><a href="${base}privacy/">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></li>
         <li><a href="${base}#testers">${bi({ ar: "برنامج المختبرين", en: "Testers program" })}</a></li>
         <li><a href="${base}registry.json">${bi({ ar: "سجل الإصدارات (JSON)", en: "Release registry (JSON)" })}</a></li>
         ${company.contact?.email ? `<li><a href="mailto:${esc(company.contact.email)}">${esc(company.contact.email)}</a></li>` : ""}
@@ -444,7 +446,8 @@ ${L.testing ? `<section class="wrap shelf" id="test">${testersBox([a], base)}</s
       <dt>${bi({ ar: "الإصدار", en: "Version" })}</dt><dd class="mono">${esc(v || "—")}</dd>
       <dt>${bi({ ar: "المنصات", en: "Platforms" })}</dt><dd>${esc(platforms(a))}</dd>
       ${a.audience ? `<dt>${bi({ ar: "الفئة", en: "Audience" })}</dt><dd>${bi(a.audience)}</dd>` : ""}
-      ${L.privacy ? `<dt>${bi({ ar: "الخصوصية", en: "Privacy" })}</dt><dd><a href="${esc(L.privacy)}">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></dd>` : ""}
+      <dt>${bi({ ar: "الخصوصية", en: "Privacy" })}</dt><dd><a href="privacy/">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></dd>
+      <dt>${bi({ ar: "المطوّر", en: "Developer" })}</dt><dd><a href="about/">${bi({ ar: "عن المطور والمنظومة", en: "About the developer" })}</a></dd>
       ${company.contact?.email ? `<dt>${bi({ ar: "الدعم", en: "Support" })}</dt><dd><a href="mailto:${esc(company.contact.email)}">${esc(company.contact.email)}</a></dd>` : ""}
     </dl>
   </aside>
