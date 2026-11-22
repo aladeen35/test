@@ -50,44 +50,21 @@
       }
     },
     "maab": {
+      "existing": "https://maab.albushra.app/legal/privacy/",
       "account": true,
-      "kids": true,
-      "data": {
-        "ar": [
-          "بيانات ولي الأمر أو الطالبة: الاسم والبريد ورقم الجوال.",
-          "بيانات الطالب أو الطالبة اللازمة للحلقات: الاسم والعمر والمستوى والحضور والتقييم والشهادات.",
-          "روابط حصص Google Meet ومواعيدها."
-        ],
-        "en": [
-          "Parent or student details: name, email and phone number.",
-          "What the classes need about the student: name, age, level, attendance, progress and certificates.",
-          "Google Meet class links and times."
-        ]
-      },
-      "where": {
-        "ar": "قاعدة بيانات وتخزين Supabase في النسخة الحية. نسخة العرض على هذا العنوان لا ترسل شيئًا وتحفظ على جهازك فقط.",
-        "en": "Supabase database and storage in the live version. The demo at this address sends nothing and keeps data on your device only."
-      },
-      "third": {
-        "ar": [
-          "Supabase",
-          "Google (تسجيل الدخول وGoogle Meet)",
-          "مزوّد رسائل واتساب أو SMS أو البريد عند تفعيل الإشعارات"
-        ],
-        "en": [
-          "Supabase",
-          "Google (sign-in and Google Meet)",
-          "WhatsApp, SMS or email provider when notifications are enabled"
-        ]
-      }
+      "kids": true
     },
     "education": {
       "data": {
         "ar": [
-          "الحسابات والأدوار والقسائم في نسخة العرض تُحفظ على جهازك فقط (التخزين المحلي للمتصفح)."
+          "الحسابات والأدوار والقسائم، وتقدّم الدروس وإجابات الاختبارات ونتائجها، والملاحظات والكتب المحفوظة: كلها في التخزين المحلي لمتصفحك.",
+          "جلسة الدخول التجريبية في تخزين الجلسة وتُمسح بإغلاق المتصفح.",
+          "الطلبات والإيصالات في نسخة العرض وهمية ولا يُرفع شيء. يمكنك تصدير بياناتك أو مسحها من دليل التجربة."
         ],
         "en": [
-          "Demo accounts, roles and coupons are stored on your device only (browser local storage)."
+          "Accounts, roles and coupons, lesson progress, quiz answers and results, notes and saved books: all in your browser's local storage.",
+          "The demo sign-in session is in session storage and clears when the browser closes.",
+          "Demo orders and receipts are fictional and nothing is uploaded. You can export or erase your data from the testing guide."
         ]
       },
       "where": {
@@ -96,10 +73,12 @@
       },
       "third": {
         "ar": [
-          "YouTube (عند تشغيل دروس الفيديو المضمّنة)"
+          "YouTube عبر youtube-nocookie.com (بعد الضغط على تشغيل الفيديو فقط)",
+          "مواقع المناهج الرسمية (عند فتح روابط الكتب)"
         ],
         "en": [
-          "YouTube (when you play embedded video lessons)"
+          "YouTube via youtube-nocookie.com (only after you tap play)",
+          "Official curriculum sites (when you open book links)"
         ]
       }
     },
@@ -256,14 +235,16 @@
         "ar": [
           "للمشتري: الاسم والبريد أو حساب Google، ورقم الجوال (واتساب)، وصورة إيصال التحويل.",
           "محتوى المتحف: الصور وتواريخها وعناوينها وتعليقاتها، والإهداء، وشعار الشركة إن وُجد.",
-          "للزائر: اسم ظاهر وصورة اختيارية، والإعجابات والتعليقات، وموقع الصورة الرمزية أثناء الزيارة.",
-          "للتجربة المجانية: الاسم ورقم الجوال (تجربة واحدة لكل رقم)."
+          "للزائر: اسم ظاهر وصورة اختيارية واختيار الشخصية (تُحفظ أيضًا في متصفحك للزيارة التالية)، والإعجابات والتعليقات، وموقع الصورة الرمزية أثناء الزيارة.",
+          "للتجربة المجانية: الاسم ورقم الجوال (تجربة واحدة لكل رقم).",
+          "عند الضغط على «اقتراح عنوان وتعليق بالذكاء الاصطناعي» فقط: تُرسل الصورة وتاريخها وعنوانها واسما المُهدي والمُهدى إليه إلى Google Gemini لاقتراح النص."
         ],
         "en": [
           "Buyers: name and email or Google account, phone number (WhatsApp) and the payment receipt image.",
           "Museum content: photos with their dates, titles and captions, the dedication, and a company logo if any.",
-          "Visitors: a display name and optional photo, likes and comments, and avatar position during a visit.",
-          "Free trials: name and phone number (one trial per number)."
+          "Visitors: a display name, optional photo and character choice (also kept in your browser for the next visit), likes and comments, and avatar position during a visit.",
+          "Free trials: name and phone number (one trial per number).",
+          "Only when you tap “Suggest a title and caption with AI”: the photo, its date and title, and the sender and recipient names are sent to Google Gemini to suggest the text."
         ]
       },
       "where": {
@@ -273,11 +254,13 @@
       "third": {
         "ar": [
           "Google Firebase",
+          "Google Gemini عبر Firebase AI Logic (اقتراحات الذكاء الاصطناعي فقط)",
           "YouTube (إن اخترت موسيقى من يوتيوب)",
           "بنك الخرطوم — بنكك (التحويل يتم خارج التطبيق)"
         ],
         "en": [
           "Google Firebase",
+          "Google Gemini via Firebase AI Logic (AI suggestions only)",
           "YouTube (if you choose YouTube music)",
           "Bank of Khartoum — Bankak (payment happens outside the app)"
         ]

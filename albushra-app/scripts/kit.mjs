@@ -256,7 +256,7 @@ ${
   <h3>${bi({ ar: app ? "مبادئ عامة في كل تطبيقات البشري" : "مبادئ الخصوصية في منظومة البشري", en: app ? "Principles across all Albushra apps" : "Privacy across the Albushra ecosystem" })}</h3>
   <p>${bi({ ar: "الخصوصية افتراضيًا: لا حسابات إلا عند الحاجة، ولا بيانات تُجمع دون سبب، وأغلب تطبيقاتنا تحفظ بياناتها على جهازك فقط.", en: "Private by default: accounts only when needed, no data collected without a reason, and most of our apps keep their data on your device only." })}</p>
   <p>${bi({ ar: `تُقدَّم المواقع عبر Cloudflare تحت نطاق ${APEX}، وتُستضاف على GitHub Pages أو Vercel أو Cloudflare. هذه الخدمات تسجّل بيانات تقنية مؤقتة (مثل عنوان IP ونوع المتصفح) لأغراض الأمان والتشغيل فقط.`, en: `Sites are served through Cloudflare under ${APEX} and hosted on GitHub Pages, Vercel or Cloudflare. These services keep short-lived technical logs (such as IP address and browser type) for security and operation only.` })}</p>
-  <p>${bi({ ar: "تفضيلات اللغة والمظهر تُحفظ في متصفحك فقط.", en: "Language and theme preferences stay in your browser." })}</p>
+  <p>${bi({ ar: "تفضيلات اللغة والمظهر تُحفظ في متصفحك فقط. قد تُحمَّل الخطوط من خدمة Google Fonts، وهي لا تتلقى بياناتك الشخصية.", en: "Language and theme preferences stay in your browser. Fonts may load from Google Fonts, which receives none of your personal data." })}</p>
   ${!app ? `<p>${bi({ ar: "لكل تطبيق صفحة خصوصية تبيّن ما يتعامل معه بالتحديد:", en: "Each app has a privacy page that states exactly what it handles:" })}</p>
   <ul class="list">${apps.map((a) => `<li>${ic("shield", 16)}<a href="https://${APEX}/apps/${a.id}/privacy/">${bi(a.name)}</a></li>`).join("")}</ul>` : ""}
   <h4>${bi({ ar: "التواصل", en: "Contact" })}</h4>
