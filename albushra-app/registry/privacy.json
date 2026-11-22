@@ -195,10 +195,14 @@
       "third": {
         "ar": [
           "مواقع مصادر الأخبار (عند عرض صورها)",
+          "Open-Meteo وAladhan وcurrency-api وUSGS للطقس والمواقيت والصرف والزلازل: تتلقى إحداثيات المدن التي تختارها فقط، لا موقعك",
+          "MyMemory عند الضغط على «ترجمة» فقط: عنوان الخبر وملخصه",
           "Telegram (للقنوات التي تتابعها)"
         ],
         "en": [
           "News source sites (when their images load)",
+          "Open-Meteo, Aladhan, currency-api and USGS for weather, prayer times, rates and earthquakes: they get only the coordinates of cities you pick, never your location",
+          "MyMemory, only when you tap Translate: the story's title and summary",
           "Telegram (channels you choose to follow)"
         ]
       }
