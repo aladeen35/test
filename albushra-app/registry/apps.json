@@ -131,6 +131,7 @@
         "news"
       ],
       "fresh": [
+        "literature",
         "rug-empire",
         "kids-games",
         "tools",
@@ -542,6 +543,68 @@
       "screenshots": [
         "education-1.webp"
       ]
+    },
+    {
+      "id": "literature",
+      "subdomain": "literature",
+      "name": {
+        "ar": "البشرى للأدب",
+        "en": "Albushra Literature"
+      },
+      "tagline": {
+        "ar": "تعلّم الإنجليزية من خلال الأدب",
+        "en": "Learn English through literature"
+      },
+      "description": {
+        "ar": "تطبيق ثنائي اللغة لتعلّم الإنجليزية بقراءة روائع الأدب العالمي: نصوص الروايات مع ترجمتها العربية، والاستماع إلى السرد بسرعات مختلفة، ومعجم للكلمات، ومذاكرة وقواعد واختبارات، وفيديوهات قصيرة لكل كتاب. يعمل على الجهاز دون حساب، ويمكن تشغيله دون إنترنت.",
+        "en": "A bilingual app for learning English by reading classic literature: novel texts with Arabic translation, narration at adjustable speeds, a vocabulary lookup, study packs, grammar and quizzes, and short videos for each book. Works on the device without an account, and offline."
+      },
+      "features": {
+        "ar": [
+          "روايات كلاسيكية مع ترجمة عربية فقرة بفقرة",
+          "سرد صوتي ونطق بسرعات من 0.75 إلى 1.25",
+          "معجم فوري للكلمات ومراجعة المفردات",
+          "مذاكرة وقواعد واختبارات وتحديد المستوى",
+          "فيديوهات قصيرة لكل كتاب",
+          "يعمل دون حساب ودون إنترنت"
+        ],
+        "en": [
+          "Classic novels with paragraph-by-paragraph Arabic translation",
+          "Narration and pronunciation at 0.75–1.25×",
+          "Instant word lookup and vocabulary review",
+          "Study packs, grammar, quizzes and a placement test",
+          "Short videos for each book",
+          "Works without an account and offline"
+        ]
+      },
+      "category": "education",
+      "status": "beta",
+      "platforms": [
+        "Web"
+      ],
+      "icon": "literature.webp",
+      "color": "#c0262d",
+      "version": {
+        "current": "1.0"
+      },
+      "links": {
+        "web": "https://aladeen35.github.io/bushra-academy-demo/literature/"
+      },
+      "hosting": {
+        "provider": "GitHub Pages",
+        "repo": "aladeen35/bushra-academy-demo (literature/)"
+      },
+      "route": {
+        "mode": "proxy",
+        "target": "https://aladeen35.github.io/bushra-academy-demo/literature/",
+        "expect": "Albushra Literature"
+      },
+      "backend": "None today (device storage); optional Firebase for accounts, sync, CMS and the AI tutor",
+      "envVars": [],
+      "notes": {
+        "ar": "يُقدَّم الآن من GitHub Pages عبر موجّه albushra.app، فلا يلزم مشروع Cloudflare Pages ولا سجل DNS. إن أنشأت لاحقًا مشروع Pages باسم albushra-literature فغيّر route.target إليه.",
+        "en": "Served from GitHub Pages through the albushra.app router, so no Cloudflare Pages project or DNS record is needed. If a Pages project albushra-literature is created later, point route.target at it."
+      }
     },
     {
       "id": "altafaoul",

@@ -424,6 +424,39 @@
         "ar": [],
         "en": []
       }
+    },
+    "literature": {
+      "account": true,
+      "data": {
+        "ar": [
+          "تقدّمك في القراءة ومفرداتك المحفوظة ونتائج الاختبارات وتفضيلاتك: تُحفظ على جهازك.",
+          "عند تفعيل الحسابات: الاسم والبريد أو حساب Google، وتُزامن البيانات السابقة مع حسابك.",
+          "عند البحث عن معنى كلمة غير موجودة في المعجم المدمج: تُرسل الكلمة وحدها إلى Free Dictionary API.",
+          "عند استخدام المعلّم الذكي (إذا كان مفعّلًا): يُرسل سؤالك والمقطع الذي تقرؤه إلى Google Gemini للإجابة."
+        ],
+        "en": [
+          "Reading progress, saved vocabulary, quiz results and preferences: stored on your device.",
+          "When accounts are enabled: your name and email or Google account, with the data above synced to it.",
+          "When you look up a word that is not in the built-in dictionary: only that word is sent to Free Dictionary API.",
+          "When you use the AI tutor (if enabled): your question and the passage you are reading are sent to Google Gemini for the answer."
+        ]
+      },
+      "where": {
+        "ar": "جهازك اليوم. عند تفعيل الحسابات: خدمة Firebase من Google لتسجيل الدخول وحفظ التقدّم. السرد الصوتي يستخدم محرك النطق في جهازك.",
+        "en": "Your device today. When accounts are enabled: Google Firebase for sign-in and saved progress. Narration uses your device's own speech engine."
+      },
+      "third": {
+        "ar": [
+          "Free Dictionary API (الكلمة التي تبحث عنها فقط)",
+          "YouTube (فيديوهات الكتب، تُحمَّل بعد الضغط على تشغيل فقط)",
+          "Google Firebase وGoogle Gemini (عند تفعيل الحسابات والمعلّم الذكي)"
+        ],
+        "en": [
+          "Free Dictionary API (only the word you look up)",
+          "YouTube (book videos, loaded only after you tap play)",
+          "Google Firebase and Google Gemini (when accounts and the AI tutor are enabled)"
+        ]
+      }
     }
   }
 }
