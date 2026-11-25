@@ -1,6 +1,6 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-25T11:18:51.354Z",
+  "generated": "2026-11-25T11:24:01.302Z",
   "appIds": [
     "bushra",
     "khulood",
@@ -80,6 +80,7 @@
       "id": "literature",
       "mode": "proxy",
       "target": "https://aladeen35.github.io/bushra-academy-demo/literature/",
+      "homeButton": "middle-left",
       "rootPrefixes": [
         "/bushra-academy-demo/"
       ]
@@ -120,6 +121,7 @@
       "id": "news",
       "mode": "proxy",
       "target": "https://aladeen35.github.io/albushra-news/",
+      "homeButton": "middle-left",
       "rootPrefixes": [
         "/albushra-news/"
       ]
