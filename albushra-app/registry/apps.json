@@ -151,6 +151,10 @@
         "wolaat",
         "hamli"
       ]
+    },
+    "adsense": {
+      "client": "ca-pub-9020986096955143",
+      "$comment": "Google AdSense on albushra.app pages only: never on child-directed app pages (privacy.json kids:true), the dashboard, or pages served inside apps."
     }
   },
   "hub": {

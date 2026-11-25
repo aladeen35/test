@@ -52,3 +52,8 @@ test("every public app has privacy facts", async () => {
     }
   }
 });
+
+test("AdSense id is well formed when present", () => {
+  const c = reg.company.adsense?.client;
+  if (c) assert.match(c, /^ca-pub-\d{16}$/);
+});

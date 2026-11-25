@@ -54,7 +54,9 @@ for (const app of apps) app.resolvedVersion = await resolveVersion(app);
 
 // ---------- pages ----------
 const appUrl = (a) => (a.subdomain ? `https://${a.subdomain}.${APEX}/` : a.links?.web || "#");
-const { home, appPage } = createRenderer({ company, categories, apps, APEX });
+// Apps marked child-directed in registry/privacy.json get no ads on their pages.
+const kidsIds = new Set(Object.entries(JSON.parse(await readFile(join(ROOT, "registry", "privacy.json"), "utf8")).apps).filter(([, p]) => p.kids).map(([id]) => id));
+const { home, appPage } = createRenderer({ company, categories, apps, APEX, kidsIds });
 
 // ---------- public registry ----------
 // Only public fields leave the build. Hosting internals stay for the dashboard.
@@ -183,6 +185,11 @@ await writeFile(
   join(OUT, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`
 );
+// ads.txt: authorises Google AdSense to sell ads on albushra.app.
+if (company.adsense?.client) {
+  const pub = company.adsense.client.replace(/^ca-/, "");
+  await writeFile(join(OUT, "ads.txt"), `google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`);
+}
 await writeFile(join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /dash/\nSitemap: https://${APEX}/sitemap.xml\n`);
 await writeFile(
   join(OUT, "_headers"),

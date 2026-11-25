@@ -121,7 +121,11 @@ function copy(u){(navigator.clipboard?navigator.clipboard.writeText(u):Promise.r
 function toast(){var t=document.querySelector('.toast');t.classList.add('on');setTimeout(function(){t.classList.remove('on')},1600);}})();`;
 
   // Ecosystem-wide page shell. `home` = where "back" goes when there is no history.
-  function shell({ title, h1, sub, home, body, canonical }) {
+  // Google AdSense (albushra.app only). Off on child-directed app pages.
+  const ADS = company.adsense?.client
+    ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${company.adsense.client}" crossorigin="anonymous"></script>`
+    : "";
+  function shell({ title, h1, sub, home, body, canonical, ads = false }) {
     return `<!doctype html>
 <html lang="ar" dir="rtl" data-lang="ar">
 <head>
@@ -129,6 +133,7 @@ function toast(){var t=document.querySelector('.toast');t.classList.add('on');se
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d1828">
 <title>${esc(title)}</title>
+${ads ? ADS : ""}
 ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ""}
 <link rel="icon" href="${logo}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -217,6 +222,7 @@ ${
       home,
       body,
       canonical: app ? `https://${APEX}/apps/${app.id}/about/` : `https://${APEX}/about/`,
+      ads: mode === "hub" && !(app && priv.apps[app.id]?.kids),
     });
   }
 
@@ -257,6 +263,10 @@ ${
   <p>${bi({ ar: "الخصوصية افتراضيًا: لا حسابات إلا عند الحاجة، ولا بيانات تُجمع دون سبب، وأغلب تطبيقاتنا تحفظ بياناتها على جهازك فقط.", en: "Private by default: accounts only when needed, no data collected without a reason, and most of our apps keep their data on your device only." })}</p>
   <p>${bi({ ar: `تُقدَّم المواقع عبر Cloudflare تحت نطاق ${APEX}، وتُستضاف على GitHub Pages أو Vercel أو Cloudflare. هذه الخدمات تسجّل بيانات تقنية مؤقتة (مثل عنوان IP ونوع المتصفح) لأغراض الأمان والتشغيل فقط.`, en: `Sites are served through Cloudflare under ${APEX} and hosted on GitHub Pages, Vercel or Cloudflare. These services keep short-lived technical logs (such as IP address and browser type) for security and operation only.` })}</p>
   <p>${bi({ ar: "تفضيلات اللغة والمظهر تُحفظ في متصفحك فقط. قد تُحمَّل الخطوط من خدمة Google Fonts، وهي لا تتلقى بياناتك الشخصية.", en: "Language and theme preferences stay in your browser. Fonts may load from Google Fonts, which receives none of your personal data." })}</p>
+  ${mode === "hub" && company.adsense?.client ? `<h4>${bi({ ar: "الإعلانات على موقع albushra.app", en: "Advertising on the albushra.app website" })}</h4>
+  <p>${bi({ ar: "يعرض موقع albushra.app (المتجر وصفحاته) إعلانات من Google AdSense. تستخدم Google ومورّدوها ملفات تعريف الارتباط (الكوكيز) لعرض الإعلانات بناءً على زياراتك السابقة لهذا الموقع أو لمواقع أخرى، ويتيح ملف تعريف الارتباط الإعلاني من Google لها ولشركائها عرض إعلانات بناءً على ذلك.", en: "The albushra.app website (the store and its pages) shows ads from Google AdSense. Google and its vendors use cookies to serve ads based on your previous visits to this or other websites, and Google's advertising cookies let it and its partners serve ads based on those visits." })}</p>
+  <p>${bi({ ar: "يمكنك إيقاف الإعلانات المخصّصة من إعدادات إعلانات Google، أو إيقاف ملفات تعريف الارتباط لدى مورّدين آخرين عبر aboutads.info.", en: "You can turn off personalised ads in Google's Ads Settings, or opt out of other vendors' cookies at aboutads.info." })} <a href="https://adssettings.google.com/" rel="noopener" dir="ltr">adssettings.google.com</a> · <a href="https://www.aboutads.info/" rel="noopener" dir="ltr">aboutads.info</a> · <a href="https://policies.google.com/technologies/ads" rel="noopener">${bi({ ar: "كيف تستخدم Google الإعلانات", en: "How Google uses advertising" })}</a></p>
+  <p>${bi({ ar: "هذه الإعلانات خاصة بصفحات موقع albushra.app، ولا تظهر على صفحات تطبيقات الأطفال فيه. وصفحة الخصوصية لكل تطبيق تبيّن هل يعرض التطبيق نفسه إعلانات.", en: "These ads are limited to albushra.app's own pages and never appear on its pages for children's apps. Each app's privacy page says whether that app shows ads." })}</p>` : ""}
   ${!app ? `<p>${bi({ ar: "لكل تطبيق صفحة خصوصية تبيّن ما يتعامل معه بالتحديد:", en: "Each app has a privacy page that states exactly what it handles:" })}</p>
   <ul class="list">${apps.map((a) => `<li>${ic("shield", 16)}<a href="https://${APEX}/apps/${a.id}/privacy/">${bi(a.name)}</a></li>`).join("")}</ul>` : ""}
   <h4>${bi({ ar: "التواصل", en: "Contact" })}</h4>
@@ -271,6 +281,7 @@ ${
       home,
       body: (inner || "") + general,
       canonical: app ? `https://${APEX}/apps/${app.id}/privacy/` : `https://${APEX}/privacy/`,
+      ads: mode === "hub" && !(app && priv.apps[app.id]?.kids),
     });
   }
 
