@@ -4,7 +4,12 @@
 // Both languages are rendered into the page and CSS shows the active one, so
 // switching is instant, there is no flash, and search engines see both.
 
-export function createRenderer({ company, categories, apps, APEX }) {
+export function createRenderer({ company, categories, apps, APEX, kidsIds = new Set() }) {
+  // Google AdSense (albushra.app only). Off on child-directed app pages.
+  const ADS = company.adsense?.client
+    ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${company.adsense.client}" crossorigin="anonymous"></script>`
+    : "";
+
   const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const t2 = (o) => (o && typeof o === "object" ? o : { ar: o || "", en: o || "" });
   const bi = (o, tag = "span", cls = "") => {
@@ -79,7 +84,7 @@ export function createRenderer({ company, categories, apps, APEX }) {
   const platforms = (a) => (a.platforms || ["Web"]).join(" · ");
 
   // ---------- shared chrome ----------
-  function layout({ title, description, canonical, body, base = "/", jsonld = null, image = null }) {
+  function layout({ title, description, canonical, body, base = "/", jsonld = null, image = null, ads = true }) {
     return `<!doctype html>
 <html lang="ar" dir="rtl" data-lang="ar">
 <head>
@@ -105,6 +110,7 @@ export function createRenderer({ company, categories, apps, APEX }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${base}assets/site.css">
+${ads ? ADS : ""}
 <script>(function(){var d=document.documentElement;d.classList.add('js');try{var q=new URLSearchParams(location.search).get('lang');var l=q||localStorage.getItem('ab-lang');if(l==='en'){d.setAttribute('data-lang','en');d.lang='en';d.dir='ltr';}var th=localStorage.getItem('ab-theme');if(th)d.setAttribute('data-theme',th);}catch(e){}})();</script>
 ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>` : ""}
 </head>
@@ -177,6 +183,8 @@ ${tabbar(base)}
     <div>
       <h3>${bi({ ar: "روابط", en: "Links" })}</h3>
       <ul>
+        <li><a href="${base}about/">${bi({ ar: "عن المطور والمنظومة", en: "About the developer" })}</a></li>
+        <li><a href="${base}privacy/">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></li>
         <li><a href="${base}#testers">${bi({ ar: "برنامج المختبرين", en: "Testers program" })}</a></li>
         <li><a href="${base}registry.json">${bi({ ar: "سجل الإصدارات (JSON)", en: "Release registry (JSON)" })}</a></li>
         ${company.contact?.email ? `<li><a href="mailto:${esc(company.contact.email)}">${esc(company.contact.email)}</a></li>` : ""}
@@ -444,7 +452,8 @@ ${L.testing ? `<section class="wrap shelf" id="test">${testersBox([a], base)}</s
       <dt>${bi({ ar: "الإصدار", en: "Version" })}</dt><dd class="mono">${esc(v || "—")}</dd>
       <dt>${bi({ ar: "المنصات", en: "Platforms" })}</dt><dd>${esc(platforms(a))}</dd>
       ${a.audience ? `<dt>${bi({ ar: "الفئة", en: "Audience" })}</dt><dd>${bi(a.audience)}</dd>` : ""}
-      ${L.privacy ? `<dt>${bi({ ar: "الخصوصية", en: "Privacy" })}</dt><dd><a href="${esc(L.privacy)}">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></dd>` : ""}
+      <dt>${bi({ ar: "الخصوصية", en: "Privacy" })}</dt><dd><a href="privacy/">${bi({ ar: "سياسة الخصوصية", en: "Privacy policy" })}</a></dd>
+      <dt>${bi({ ar: "المطوّر", en: "Developer" })}</dt><dd><a href="about/">${bi({ ar: "عن المطور والمنظومة", en: "About the developer" })}</a></dd>
       ${company.contact?.email ? `<dt>${bi({ ar: "الدعم", en: "Support" })}</dt><dd><a href="mailto:${esc(company.contact.email)}">${esc(company.contact.email)}</a></dd>` : ""}
     </dl>
   </aside>
@@ -459,6 +468,7 @@ ${more.length ? shelf("more", { ar: "قد يعجبك أيضًا", en: "You might
       canonical: `https://${APEX}/apps/${a.id}/`,
       base,
       body,
+      ads: !kidsIds.has(a.id),
       image: shot ? `https://${APEX}/shots/${shot}` : null,
       jsonld: {
         "@context": "https://schema.org",

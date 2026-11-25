@@ -1,11 +1,12 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-21T13:45:56.094Z",
+  "generated": "2026-11-25T11:18:51.354Z",
   "appIds": [
     "bushra",
     "khulood",
     "maab",
     "education",
+    "literature",
     "altafaoul",
     "nibras",
     "fazatdam",
@@ -71,6 +72,14 @@
       "id": "education",
       "mode": "proxy",
       "target": "https://aladeen35.github.io/bushra-academy-demo/",
+      "rootPrefixes": [
+        "/bushra-academy-demo/"
+      ]
+    },
+    "literature": {
+      "id": "literature",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/bushra-academy-demo/literature/",
       "rootPrefixes": [
         "/bushra-academy-demo/"
       ]
