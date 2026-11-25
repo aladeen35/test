@@ -597,7 +597,8 @@
       "route": {
         "mode": "proxy",
         "target": "https://aladeen35.github.io/bushra-academy-demo/literature/",
-        "expect": "Albushra Literature"
+        "expect": "Albushra Literature",
+        "homeButton": "middle-left"
       },
       "backend": "None today (device storage); optional Firebase for accounts, sync, CMS and the AI tutor",
       "envVars": [],
@@ -919,7 +920,8 @@
       },
       "route": {
         "mode": "proxy",
-        "target": "https://aladeen35.github.io/albushra-news/"
+        "target": "https://aladeen35.github.io/albushra-news/",
+        "homeButton": "middle-left"
       },
       "backend": "Static build from public sources; optional FastAPI + Postgres server (Render)",
       "envVars": [
