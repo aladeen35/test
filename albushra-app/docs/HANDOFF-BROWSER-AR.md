@@ -131,7 +131,7 @@ npx wrangler deploy
 
 | الرابط | المتوقع |
 |---|---|
-| `https://albushra.app` | الموقع الرئيسي «البشري للتكنولوجيا» |
+| `https://albushra.app` | الموقع الرئيسي «البشرى للتكنولوجيا» |
 | `https://www.albushra.app` | يحوّل إلى albushra.app |
 | `https://dash.albushra.app` | لوحة التطبيقات |
 | `https://quran.albushra.app` | صفحة تطبيق بُشرى، و`/app/` يفتح التطبيق |
