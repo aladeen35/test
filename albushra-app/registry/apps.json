@@ -3,11 +3,11 @@
   "company": {
     "domain": "albushra.app",
     "name": {
-      "ar": "البشري للتكنولوجيا",
+      "ar": "البشرى للتكنولوجيا",
       "en": "Albushra Technology"
     },
     "shortName": {
-      "ar": "البشري",
+      "ar": "البشرى",
       "en": "Albushra"
     },
     "tagline": {
@@ -19,12 +19,12 @@
       "en": "Arabic-first digital products for faith, learning, family and community"
     },
     "intro": {
-      "ar": "البشري للتكنولوجيا تصمّم وتبني وتشغّل تطبيقات ويب وأندرويد عربية: من قارئ القرآن الكريم إلى منصات التعليم، ومن شبكة المتبرعين بالدم إلى ألعاب الأسرة السودانية، وأدوات الجودة وسلامة الغذاء.",
+      "ar": "البشرى للتكنولوجيا تصمّم وتبني وتشغّل تطبيقات ويب وأندرويد عربية: من قارئ القرآن الكريم إلى منصات التعليم، ومن شبكة المتبرعين بالدم إلى ألعاب الأسرة السودانية، وأدوات الجودة وسلامة الغذاء.",
       "en": "Albushra Technology designs, builds and runs Arabic-first web and Android products: from a Quran reader to learning platforms, from a blood-donor network to Sudanese family games and food-safety tools."
     },
     "about": [
       {
-        "ar": "بدأت البشري للتكنولوجيا مشروعًا عائليًا صغيرًا يصنع تطبيقات عربية مجانية وخالية من الإعلانات، أغلبها يعمل دون إنترنت، ثم صارت منظومة منتجات متكاملة تجمعها هوية واحدة ونطاق واحد.",
+        "ar": "بدأت البشرى للتكنولوجيا مشروعًا عائليًا صغيرًا يصنع تطبيقات عربية مجانية وخالية من الإعلانات، أغلبها يعمل دون إنترنت، ثم صارت منظومة منتجات متكاملة تجمعها هوية واحدة ونطاق واحد.",
         "en": "Albushra Technology started as a small family effort making free, ad-free Arabic apps, most of which work offline. It has grown into an ecosystem of products under one identity and one domain."
       },
       {
@@ -879,7 +879,7 @@
       ],
       "android": "sa.halfm.qualityeye",
       "notes": {
-        "ar": "يحتاج خادمًا (Docker) ولا يمكن استضافته على Cloudflare Pages؛ يحتاج قرار استضافة مدفوعة. الحزمة باسم sa.halfm: تأكد من ملكية المنتج قبل نشره تحت البشري.",
+        "ar": "يحتاج خادمًا (Docker) ولا يمكن استضافته على Cloudflare Pages؛ يحتاج قرار استضافة مدفوعة. الحزمة باسم sa.halfm: تأكد من ملكية المنتج قبل نشره تحت البشرى.",
         "en": "Needs a Docker server; cannot run on Cloudflare Pages, so it needs a (paid) hosting decision. The package id is sa.halfm: confirm product ownership before publishing it under Albushra."
       }
     },
@@ -1575,7 +1575,7 @@
       "id": "bushra-tech",
       "subdomain": null,
       "name": {
-        "ar": "موقع البشري للتكنولوجيا (القديم)",
+        "ar": "موقع البشرى للتكنولوجيا (القديم)",
         "en": "Previous Albushra Technology site"
       },
       "tagline": {

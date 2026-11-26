@@ -183,7 +183,7 @@ ${
   app
     ? `<section class="sec">
   <h3>${bi({ ar: "عن هذا التطبيق", en: "About this app" })}</h3>
-  <p class="hint">${bi({ ar: "جزء من منظومة البشري للتكنولوجيا", en: "Part of the Albushra Technology ecosystem" })}</p>
+  <p class="hint">${bi({ ar: "جزء من منظومة البشرى للتكنولوجيا", en: "Part of the Albushra Technology ecosystem" })}</p>
   <div class="card app" style="margin-top:0">
     <img src="https://${APEX}/icons/${esc(app.icon || "albushra-news.webp")}" width="60" height="60" alt="" onerror="this.src='${logo}'">
     <div><h4>${bi(app.name)}</h4><p>${bi(app.tagline)}</p>${app.resolvedVersion?.value ? `<p dir="ltr" style="text-align:start">v${esc(app.resolvedVersion.value)}</p>` : ""}</div>
@@ -204,7 +204,7 @@ ${
 </section>
 
 <section class="sec">
-  <h3>${bi({ ar: "مؤشرات منظومة البشري", en: "The Albushra ecosystem in numbers" })}</h3>
+  <h3>${bi({ ar: "مؤشرات منظومة البشرى", en: "The Albushra ecosystem in numbers" })}</h3>
   <p class="hint">${bi({ ar: "منتجات منشورة تحت نطاق واحد", en: "Products published under one domain" })}</p>
   <div class="stats">${stats.map((s) => `<div class="stat"><b>${s.n}</b>${bi(s.l)}</div>`).join("")}</div>
 </section>
@@ -259,7 +259,7 @@ ${
 </section>`;
     }
     const general = `<section class="sec prose">
-  <h3>${bi({ ar: app ? "مبادئ عامة في كل تطبيقات البشري" : "مبادئ الخصوصية في منظومة البشري", en: app ? "Principles across all Albushra apps" : "Privacy across the Albushra ecosystem" })}</h3>
+  <h3>${bi({ ar: app ? "مبادئ عامة في كل تطبيقات البشرى" : "مبادئ الخصوصية في منظومة البشرى", en: app ? "Principles across all Albushra apps" : "Privacy across the Albushra ecosystem" })}</h3>
   <p>${bi({ ar: "الخصوصية افتراضيًا: لا حسابات إلا عند الحاجة، ولا بيانات تُجمع دون سبب، وأغلب تطبيقاتنا تحفظ بياناتها على جهازك فقط.", en: "Private by default: accounts only when needed, no data collected without a reason, and most of our apps keep their data on your device only." })}</p>
   <p>${bi({ ar: `تُقدَّم المواقع عبر Cloudflare تحت نطاق ${APEX}، وتُستضاف على GitHub Pages أو Vercel أو Cloudflare. هذه الخدمات تسجّل بيانات تقنية مؤقتة (مثل عنوان IP ونوع المتصفح) لأغراض الأمان والتشغيل فقط.`, en: `Sites are served through Cloudflare under ${APEX} and hosted on GitHub Pages, Vercel or Cloudflare. These services keep short-lived technical logs (such as IP address and browser type) for security and operation only.` })}</p>
   <p>${bi({ ar: "تفضيلات اللغة والمظهر تُحفظ في متصفحك فقط. قد تُحمَّل الخطوط من خدمة Google Fonts، وهي لا تتلقى بياناتك الشخصية.", en: "Language and theme preferences stay in your browser. Fonts may load from Google Fonts, which receives none of your personal data." })}</p>
@@ -270,7 +270,7 @@ ${
   ${!app ? `<p>${bi({ ar: "لكل تطبيق صفحة خصوصية تبيّن ما يتعامل معه بالتحديد:", en: "Each app has a privacy page that states exactly what it handles:" })}</p>
   <ul class="list">${apps.map((a) => `<li>${ic("shield", 16)}<a href="https://${APEX}/apps/${a.id}/privacy/">${bi(a.name)}</a></li>`).join("")}</ul>` : ""}
   <h4>${bi({ ar: "التواصل", en: "Contact" })}</h4>
-  <p>${bi({ ar: "الجهة المسؤولة: البشري للتكنولوجيا.", en: "Responsible party: Albushra Technology." })} ${email ? `<a href="mailto:${esc(email)}" dir="ltr">${esc(email)}</a>` : ""}</p>
+  <p>${bi({ ar: "الجهة المسؤولة: البشرى للتكنولوجيا.", en: "Responsible party: Albushra Technology." })} ${email ? `<a href="mailto:${esc(email)}" dir="ltr">${esc(email)}</a>` : ""}</p>
   <p>${bi({ ar: "قد نحدّث هذه الصفحة عند تغيّر التطبيق، ويظهر تاريخ آخر تحديث أعلاها.", en: "We may update this page when the app changes; the last-updated date is shown at the top." })}</p>
 </section>
 <section class="sec"><a class="btn" href="${esc(aboutHref)}">${ic("info")}${bi({ ar: "عن المطور والمنظومة", en: "About the developer" })}</a></section>`;

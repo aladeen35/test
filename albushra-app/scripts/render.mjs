@@ -312,7 +312,7 @@ ${tabbar(base)}
 </section>
 
 <section class="featured wrap" aria-label="featured" data-carousel>
-  <div class="sec-head" data-reveal><h2>${bi({ ar: "مختارات البشري", en: "Albushra picks" })}</h2></div>
+  <div class="sec-head" data-reveal><h2>${bi({ ar: "مختارات البشرى", en: "Albushra picks" })}</h2></div>
   <div class="slides" data-slides>${featured.map((a, i) => slide(a, base, i)).join("")}</div>
   <div class="slide-dots" role="tablist">${featured.map((a, i) => `<button type="button" role="tab" aria-label="${esc(t2(a.name).ar)}" data-app="${esc(a.id)}" data-dot="${i}"${i ? "" : ' aria-selected="true"'}><i></i></button>`).join("")}</div>
 </section>
@@ -357,7 +357,7 @@ ${testers.length ? shelf("testers", { ar: "كن من المختبرين", en: "B
   <div class="wrap about-in">
     <div data-reveal>
       <p class="eyebrow">${bi({ ar: "من نحن", en: "Who we are" })}</p>
-      <h2>${bi({ ar: "عن البشري للتكنولوجيا", en: "About Albushra Technology" })}</h2>
+      <h2>${bi({ ar: "عن البشرى للتكنولوجيا", en: "About Albushra Technology" })}</h2>
       ${(company.about || []).map((p) => `<p>${bi(p)}</p>`).join("")}
     </div>
     <ul class="values">${(company.values || []).map((v) => `<li data-reveal><b>${bi(v.title)}</b><span>${bi(v.text)}</span></li>`).join("")}</ul>
