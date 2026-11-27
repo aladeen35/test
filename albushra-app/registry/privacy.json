@@ -1,6 +1,6 @@
 {
   "$comment": "Per-app privacy facts for the generated privacy pages (scripts/kit.mjs). Keep each statement true to what the app's code does. Apps with their own detailed policy use \"existing\": the generated page then points to it instead of restating it.",
-  "updated": "2026-11-22",
+  "updated": "2026-11-27",
   "apps": {
     "bushra": {
       "existing": "https://quran.albushra.app/privacy.html"
@@ -455,6 +455,105 @@
           "Free Dictionary API (only the word you look up)",
           "YouTube (book videos, loaded only after you tap play)",
           "Google Firebase and Google Gemini (when accounts and the AI tutor are enabled)"
+        ]
+      }
+    },
+    "chinese": {
+      "account": true,
+      "data": {
+        "ar": [
+          "تقدّمك في الدروس والمفردات المحفوظة ونتائج التمارين والنطق والشهادات وتفضيلاتك: تُحفظ على جهازك، ومستقلة لكل أكاديمية.",
+          "عند تسجيل الدخول: الاسم والبريد أو حساب Google (حساب واحد لكل أكاديميات البشرى)، ويُزامن تقدّم كل أكاديمية منفصلًا.",
+          "عند استخدام «انطقها»: يتعرّف متصفحك على كلامك بخدمته الخاصة. تسجيلاتك تبقى على جهازك.",
+          "عند استخدام المعلّم الذكي: يُرسل سؤالك وسياق الدرس إلى Google Gemini. عند طلب فيديو نطق يُحفظ النص المطلوب فقط."
+        ],
+        "en": [
+          "Lesson progress, saved words, exercise, pronunciation and certificate results, preferences: stored on your device, separately per academy.",
+          "When you sign in: name and email or Google account (one account for all Albushra academies); each academy's progress syncs separately.",
+          "When you use \"Say it\": your browser's own speech service recognises your voice. Your recordings stay on the device.",
+          "When you use the AI tutor: your question and lesson context go to Google Gemini. A video request stores only the requested text."
+        ]
+      },
+      "where": {
+        "ar": "جهازك. عند تسجيل الدخول: Google Firebase (مشروع albushra-academies). النطق من محرّك الصوت في جهازك.",
+        "en": "Your device. When signed in: Google Firebase (project albushra-academies). Audio uses your device's speech engine."
+      },
+      "third": {
+        "ar": [
+          "Google Firebase وGoogle Gemini (عند تسجيل الدخول والمعلّم الذكي)",
+          "jsDelivr (بيانات ترتيب الخطوط)",
+          "Google Fonts"
+        ],
+        "en": [
+          "Google Firebase and Google Gemini (when signed in / using the tutor)",
+          "jsDelivr (stroke-order data)",
+          "Google Fonts"
+        ]
+      }
+    },
+    "korean": {
+      "account": true,
+      "data": {
+        "ar": [
+          "تقدّمك في الدروس والمفردات المحفوظة ونتائج التمارين والنطق والشهادات وتفضيلاتك: تُحفظ على جهازك، ومستقلة لكل أكاديمية.",
+          "عند تسجيل الدخول: الاسم والبريد أو حساب Google (حساب واحد لكل أكاديميات البشرى)، ويُزامن تقدّم كل أكاديمية منفصلًا.",
+          "عند استخدام «انطقها»: يتعرّف متصفحك على كلامك بخدمته الخاصة. تسجيلاتك تبقى على جهازك.",
+          "عند استخدام المعلّم الذكي: يُرسل سؤالك وسياق الدرس إلى Google Gemini. عند طلب فيديو نطق يُحفظ النص المطلوب فقط."
+        ],
+        "en": [
+          "Lesson progress, saved words, exercise, pronunciation and certificate results, preferences: stored on your device, separately per academy.",
+          "When you sign in: name and email or Google account (one account for all Albushra academies); each academy's progress syncs separately.",
+          "When you use \"Say it\": your browser's own speech service recognises your voice. Your recordings stay on the device.",
+          "When you use the AI tutor: your question and lesson context go to Google Gemini. A video request stores only the requested text."
+        ]
+      },
+      "where": {
+        "ar": "جهازك. عند تسجيل الدخول: Google Firebase (مشروع albushra-academies). النطق من محرّك الصوت في جهازك.",
+        "en": "Your device. When signed in: Google Firebase (project albushra-academies). Audio uses your device's speech engine."
+      },
+      "third": {
+        "ar": [
+          "Google Firebase وGoogle Gemini (عند تسجيل الدخول والمعلّم الذكي)",
+          "jsDelivr (بيانات ترتيب الخطوط)",
+          "Google Fonts"
+        ],
+        "en": [
+          "Google Firebase and Google Gemini (when signed in / using the tutor)",
+          "jsDelivr (stroke-order data)",
+          "Google Fonts"
+        ]
+      }
+    },
+    "japanese": {
+      "account": true,
+      "data": {
+        "ar": [
+          "تقدّمك في الدروس والمفردات المحفوظة ونتائج التمارين والنطق والشهادات وتفضيلاتك: تُحفظ على جهازك، ومستقلة لكل أكاديمية.",
+          "عند تسجيل الدخول: الاسم والبريد أو حساب Google (حساب واحد لكل أكاديميات البشرى)، ويُزامن تقدّم كل أكاديمية منفصلًا.",
+          "عند استخدام «انطقها»: يتعرّف متصفحك على كلامك بخدمته الخاصة. تسجيلاتك تبقى على جهازك.",
+          "عند استخدام المعلّم الذكي: يُرسل سؤالك وسياق الدرس إلى Google Gemini. عند طلب فيديو نطق يُحفظ النص المطلوب فقط."
+        ],
+        "en": [
+          "Lesson progress, saved words, exercise, pronunciation and certificate results, preferences: stored on your device, separately per academy.",
+          "When you sign in: name and email or Google account (one account for all Albushra academies); each academy's progress syncs separately.",
+          "When you use \"Say it\": your browser's own speech service recognises your voice. Your recordings stay on the device.",
+          "When you use the AI tutor: your question and lesson context go to Google Gemini. A video request stores only the requested text."
+        ]
+      },
+      "where": {
+        "ar": "جهازك. عند تسجيل الدخول: Google Firebase (مشروع albushra-academies). النطق من محرّك الصوت في جهازك.",
+        "en": "Your device. When signed in: Google Firebase (project albushra-academies). Audio uses your device's speech engine."
+      },
+      "third": {
+        "ar": [
+          "Google Firebase وGoogle Gemini (عند تسجيل الدخول والمعلّم الذكي)",
+          "jsDelivr (بيانات ترتيب الخطوط)",
+          "Google Fonts"
+        ],
+        "en": [
+          "Google Firebase and Google Gemini (when signed in / using the tutor)",
+          "jsDelivr (stroke-order data)",
+          "Google Fonts"
         ]
       }
     }

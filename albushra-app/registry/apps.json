@@ -188,6 +188,17 @@
       }
     },
     {
+      "id": "languages",
+      "name": {
+        "ar": "أكاديميات اللغات",
+        "en": "Language academies"
+      },
+      "desc": {
+        "ar": "أكاديميات مستقلة بحساب واحد: الصينية والكورية واليابانية",
+        "en": "Independent academies, one account: Chinese, Korean, Japanese"
+      }
+    },
+    {
       "id": "community",
       "name": {
         "ar": "المجتمع والصحة",
@@ -605,6 +616,153 @@
       "notes": {
         "ar": "يُقدَّم الآن من GitHub Pages عبر موجّه albushra.app، فلا يلزم مشروع Cloudflare Pages ولا سجل DNS. إن أنشأت لاحقًا مشروع Pages باسم albushra-literature فغيّر route.target إليه.",
         "en": "Served from GitHub Pages through the albushra.app router, so no Cloudflare Pages project or DNS record is needed. If a Pages project albushra-literature is created later, point route.target at it."
+      }
+    },
+    {
+      "id": "chinese",
+      "subdomain": "chinese",
+      "name": {
+        "ar": "أكاديمية البشرى للصينية",
+        "en": "Albushra Chinese Academy"
+      },
+      "tagline": {
+        "ar": "تعلّم الماندرين من الصفر بشرح عربي",
+        "en": "Learn Mandarin from zero, explained in Arabic"
+      },
+      "description": {
+        "ar": "أكاديمية مستقلة لتعلّم الصينية (الماندرين) من الصفر: البينيين والنغمات الأربع، الحروف الصينية وترتيب الخطوط، ١٩١ كلمة في ١٤ فئة، قواعد مشروحة بالعربية، محادثات واقعية، استوديو نطق بأصوات متعددة وسرعتين، معلّم ذكي، واختبارات متوافقة مع HSK 1–2 بشهادات إتمام.",
+        "en": "An independent academy for learning Mandarin Chinese from zero: pinyin and the four tones, Hanzi with stroke order, 191 words in 14 categories, grammar explained in Arabic, real-life conversations, a pronunciation studio with several voices and two speeds, an AI tutor, and HSK 1–2 aligned tests with completion certificates."
+      },
+      "features": {
+        "ar": [
+          "البينيين والنغمات مع تمرين تمييز النغمات",
+          "الحروف الصينية بترتيب خطوط متحرك وتدريب على الكتابة",
+          "مفردات بالأمثلة والنطق والمراجعة المتباعدة",
+          "قواعد ومحادثات بتمارين تفاعلية",
+          "استوديو نطق: بطيء/عادي، تقطيع المقاطع، قارن نطقك",
+          "معلّم ذكي واختبارات HSK وشهادات"
+        ],
+        "en": [
+          "Pinyin and tones with a tone-recognition drill",
+          "Hanzi with animated stroke order and writing practice",
+          "Vocabulary with examples, audio and spaced review",
+          "Grammar and conversations with interactive exercises",
+          "Pronunciation studio: slow/normal, syllables, compare yourself",
+          "AI tutor, HSK tests and certificates"
+        ]
+      },
+      "category": "languages",
+      "status": "beta",
+      "platforms": [
+        "Web"
+      ],
+      "icon": "chinese.webp",
+      "color": "#b3121b",
+      "version": {
+        "current": "1.0"
+      },
+      "links": {
+        "web": "https://aladeen35.github.io/bushra-academy-demo/academies/chinese/"
+      },
+      "hosting": {
+        "provider": "GitHub Pages",
+        "repo": "aladeen35/bushra-academy-demo (academies/chinese/)"
+      },
+      "route": {
+        "mode": "proxy",
+        "target": "https://aladeen35.github.io/bushra-academy-demo/academies/chinese/",
+        "expect": "Albushra Chinese Academy",
+        "homeButton": "middle-left"
+      },
+      "backend": "Device storage; optional shared Firebase project albushra-academies (accounts, per-academy progress, CMS, video queue, AI tutor)",
+      "envVars": [],
+      "notes": {
+        "ar": "كل أكاديمية تطبيق مستقل (منهج وتقدّم ولوحة ومعلّم ذكي خاص بها) مبني على أساس مشترك في academies/kit من مستودع bushra-academy-demo، بتصميم «البشرى للأدب». حساب واحد عبر مشروع Firebase المشترك albushra-academies.",
+        "en": "Each academy is an independent app (own curriculum, progress, dashboard and AI tutor) built on the shared foundation in academies/kit of bushra-academy-demo, using the Albushra Literature design. One account through the shared Firebase project albushra-academies."
+      }
+    },
+    {
+      "id": "korean",
+      "subdomain": "korean",
+      "name": {
+        "ar": "أكاديمية البشرى للكورية",
+        "en": "Albushra Korean Academy"
+      },
+      "tagline": {
+        "ar": "الهانغول والنطق أولًا، ثم المفردات والقواعد",
+        "en": "Hangul and pronunciation first, then vocabulary and grammar"
+      },
+      "description": {
+        "ar": "أكاديمية مستقلة للكورية: كل حرف من الهانغول بدرس تفاعلي (نطق بطيء وعادي، تقريب عربي، كتابة متحركة)، ثم قواعد النطق والباتشيم والمفردات والقواعد والمحادثات وفق تسلسل معهد الملك سيجونغ. قيد البناء.",
+        "en": "An independent Korean academy: every Hangul letter as an interactive lesson (slow and normal audio, Arabic approximation, animated writing), then batchim and sound changes, vocabulary, grammar and conversations following the King Sejong beginner sequence. In development."
+      },
+      "category": "languages",
+      "status": "soon",
+      "platforms": [
+        "Web"
+      ],
+      "icon": "korean.webp",
+      "color": "#8e0d14",
+      "version": {
+        "current": "0.1"
+      },
+      "links": {},
+      "hosting": {
+        "provider": "GitHub Pages (planned)",
+        "repo": "aladeen35/bushra-academy-demo (academies/korean/)"
+      },
+      "route": {
+        "mode": "redirect",
+        "target": "https://albushra.app/apps/korean/",
+        "keepPath": false
+      },
+      "backend": "Shared Firebase project albushra-academies (planned)",
+      "envVars": [],
+      "notes": {
+        "ar": "كل أكاديمية تطبيق مستقل (منهج وتقدّم ولوحة ومعلّم ذكي خاص بها) مبني على أساس مشترك في academies/kit من مستودع bushra-academy-demo، بتصميم «البشرى للأدب». حساب واحد عبر مشروع Firebase المشترك albushra-academies.",
+        "en": "Each academy is an independent app (own curriculum, progress, dashboard and AI tutor) built on the shared foundation in academies/kit of bushra-academy-demo, using the Albushra Literature design. One account through the shared Firebase project albushra-academies."
+      }
+    },
+    {
+      "id": "japanese",
+      "subdomain": "japanese",
+      "name": {
+        "ar": "أكاديمية البشرى لليابانية",
+        "en": "Albushra Japanese Academy"
+      },
+      "tagline": {
+        "ar": "الهيراغانا والكاتاكانا ثم الكانجي حتى N5–N4",
+        "en": "Hiragana, katakana, then kanji toward N5–N4"
+      },
+      "description": {
+        "ar": "أكاديمية مستقلة لليابانية: الهيراغانا ثم الكاتاكانا ثم الكانجي تدريجيًا، مع ترتيب الخطوط والنطق والمفردات والقواعد والمحادثات وفق تدرّج JLPT من N5 إلى N4. قيد البناء.",
+        "en": "An independent Japanese academy: hiragana, then katakana, then progressive kanji with stroke order, pronunciation, vocabulary, grammar and conversations along the JLPT N5→N4 path. In development."
+      },
+      "category": "languages",
+      "status": "soon",
+      "platforms": [
+        "Web"
+      ],
+      "icon": "japanese.webp",
+      "color": "#7d0b12",
+      "version": {
+        "current": "0.1"
+      },
+      "links": {},
+      "hosting": {
+        "provider": "GitHub Pages (planned)",
+        "repo": "aladeen35/bushra-academy-demo (academies/japanese/)"
+      },
+      "route": {
+        "mode": "redirect",
+        "target": "https://albushra.app/apps/japanese/",
+        "keepPath": false
+      },
+      "backend": "Shared Firebase project albushra-academies (planned)",
+      "envVars": [],
+      "notes": {
+        "ar": "كل أكاديمية تطبيق مستقل (منهج وتقدّم ولوحة ومعلّم ذكي خاص بها) مبني على أساس مشترك في academies/kit من مستودع bushra-academy-demo، بتصميم «البشرى للأدب». حساب واحد عبر مشروع Firebase المشترك albushra-academies.",
+        "en": "Each academy is an independent app (own curriculum, progress, dashboard and AI tutor) built on the shared foundation in academies/kit of bushra-academy-demo, using the Albushra Literature design. One account through the shared Firebase project albushra-academies."
       }
     },
     {
