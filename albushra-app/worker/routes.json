@@ -1,12 +1,15 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-25T11:24:01.302Z",
+  "generated": "2026-11-27T12:09:27.768Z",
   "appIds": [
     "bushra",
     "khulood",
     "maab",
     "education",
     "literature",
+    "chinese",
+    "korean",
+    "japanese",
     "altafaoul",
     "nibras",
     "fazatdam",
@@ -84,6 +87,27 @@
       "rootPrefixes": [
         "/bushra-academy-demo/"
       ]
+    },
+    "chinese": {
+      "id": "chinese",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/bushra-academy-demo/academies/chinese/",
+      "homeButton": "middle-left",
+      "rootPrefixes": [
+        "/bushra-academy-demo/"
+      ]
+    },
+    "korean": {
+      "id": "korean",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/korean/",
+      "keepPath": false
+    },
+    "japanese": {
+      "id": "japanese",
+      "mode": "redirect",
+      "target": "https://albushra.app/apps/japanese/",
+      "keepPath": false
     },
     "altafaoul": {
       "id": "altafaoul",
