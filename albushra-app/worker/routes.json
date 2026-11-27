@@ -1,11 +1,12 @@
 {
   "apex": "albushra.app",
-  "generated": "2026-11-21T13:45:56.094Z",
+  "generated": "2026-11-25T11:24:01.302Z",
   "appIds": [
     "bushra",
     "khulood",
     "maab",
     "education",
+    "literature",
     "altafaoul",
     "nibras",
     "fazatdam",
@@ -75,6 +76,15 @@
         "/bushra-academy-demo/"
       ]
     },
+    "literature": {
+      "id": "literature",
+      "mode": "proxy",
+      "target": "https://aladeen35.github.io/bushra-academy-demo/literature/",
+      "homeButton": "middle-left",
+      "rootPrefixes": [
+        "/bushra-academy-demo/"
+      ]
+    },
     "altafaoul": {
       "id": "altafaoul",
       "mode": "redirect",
@@ -111,6 +121,7 @@
       "id": "news",
       "mode": "proxy",
       "target": "https://aladeen35.github.io/albushra-news/",
+      "homeButton": "middle-left",
       "rootPrefixes": [
         "/albushra-news/"
       ]

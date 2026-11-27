@@ -17,6 +17,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRenderer } from "./render.mjs";
+import { createKit } from "./kit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "dist", "site");
@@ -54,7 +55,9 @@ for (const app of apps) app.resolvedVersion = await resolveVersion(app);
 
 // ---------- pages ----------
 const appUrl = (a) => (a.subdomain ? `https://${a.subdomain}.${APEX}/` : a.links?.web || "#");
-const { home, appPage } = createRenderer({ company, categories, apps, APEX });
+// Apps marked child-directed in registry/privacy.json get no ads on their pages.
+const kidsIds = new Set(Object.entries(JSON.parse(await readFile(join(ROOT, "registry", "privacy.json"), "utf8")).apps).filter(([, p]) => p.kids).map(([id]) => id));
+const { home, appPage } = createRenderer({ company, categories, apps, APEX, kidsIds });
 
 // ---------- public registry ----------
 // Only public fields leave the build. Hosting internals stay for the dashboard.
@@ -124,6 +127,31 @@ await cp(join(ROOT, "site"), OUT, { recursive: true });
 await cp(join(ROOT, "dash"), join(OUT, "dash"), { recursive: true });
 
 await writeFile(join(OUT, "index.html"), home());
+
+// About the developer & privacy: on the hub, per app, and as a copyable kit
+// (kit/<id>/about.html + privacy.html, self-contained for offline apps).
+{
+  const kit = await createKit({ ROOT, registry, apps });
+  if (kit.missing.length) throw new Error(`registry/privacy.json has no entry for: ${kit.missing.join(", ")}`);
+  const put = async (rel, html) => {
+    await mkdir(dirname(join(OUT, rel)), { recursive: true });
+    await writeFile(join(OUT, rel), html);
+  };
+  await put("about/index.html", kit.about());
+  await put("privacy/index.html", kit.privacy());
+  await rm(join(ROOT, "kit"), { recursive: true, force: true });
+  for (const a of apps) {
+    await put(`apps/${a.id}/about/index.html`, kit.about(a, "hub"));
+    await put(`apps/${a.id}/privacy/index.html`, kit.privacy(a, "hub"));
+    // served by the router at <sub>.albushra.app/_albushra/about|privacy
+    await put(`kit/${a.id}/about.html`, kit.about(a, "router"));
+    await put(`kit/${a.id}/privacy.html`, kit.privacy(a, "router"));
+    // committed copies to drop into an app's own files (links point at each other)
+    await mkdir(join(ROOT, "kit", a.id), { recursive: true });
+    await writeFile(join(ROOT, "kit", a.id, "about.html"), kit.about(a, "file"));
+    await writeFile(join(ROOT, "kit", a.id, "privacy.html"), kit.privacy(a, "file"));
+  }
+}
 for (const a of apps) {
   await mkdir(join(OUT, "apps", a.id), { recursive: true });
   await writeFile(join(OUT, "apps", a.id, "index.html"), appPage(a));
@@ -155,11 +183,16 @@ await bundleAmeer();
   await walk(OUT);
 }
 
-const urls = [`https://${APEX}/`, ...apps.map((a) => `https://${APEX}/apps/${a.id}/`)];
+const urls = [`https://${APEX}/`, `https://${APEX}/about/`, `https://${APEX}/privacy/`, ...apps.flatMap((a) => [`https://${APEX}/apps/${a.id}/`, `https://${APEX}/apps/${a.id}/privacy/`])];
 await writeFile(
   join(OUT, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`
 );
+// ads.txt: authorises Google AdSense to sell ads on albushra.app.
+if (company.adsense?.client) {
+  const pub = company.adsense.client.replace(/^ca-/, "");
+  await writeFile(join(OUT, "ads.txt"), `google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`);
+}
 await writeFile(join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /dash/\nSitemap: https://${APEX}/sitemap.xml\n`);
 await writeFile(
   join(OUT, "_headers"),

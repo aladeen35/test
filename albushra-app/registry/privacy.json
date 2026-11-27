@@ -1,0 +1,462 @@
+{
+  "$comment": "Per-app privacy facts for the generated privacy pages (scripts/kit.mjs). Keep each statement true to what the app's code does. Apps with their own detailed policy use \"existing\": the generated page then points to it instead of restating it.",
+  "updated": "2026-11-22",
+  "apps": {
+    "bushra": {
+      "existing": "https://quran.albushra.app/privacy.html"
+    },
+    "fazatdam": {
+      "existing": "https://fazatdam.albushra.app/privacy"
+    },
+    "fullmark": {
+      "existing": "https://fullmark.albushra.app/privacy.html"
+    },
+    "tools": {
+      "existing": "https://tools.albushra.app/privacy-policy.html"
+    },
+    "kids-games": {
+      "existing": "https://aladeen35.github.io/Games/ourkids/privacy.html",
+      "kids": true
+    },
+    "khulood": {
+      "account": true,
+      "data": {
+        "ar": [
+          "عند إنشاء حساب: الاسم والبريد الإلكتروني (أو حساب Google) ومعرّف المستخدم.",
+          "القصص المفضلة والعلامات وموضع القراءة ونتائج الاختبارات، تُزامن مع حسابك.",
+          "بلا حساب: هذه البيانات وإعدادات العرض (حجم الخط والمظهر والقارئ) تبقى في متصفحك على جهازك فقط."
+        ],
+        "en": [
+          "If you create an account: your name, email address (or Google account) and user id.",
+          "Favourite stories, bookmarks, reading position and quiz results, synced to your account.",
+          "Without an account, this data and your display settings (font size, theme, reciter) stay in your browser on this device only."
+        ]
+      },
+      "where": {
+        "ar": "خدمة Firebase من Google لتسجيل الدخول وبيانات الحساب. القراءة الصوتية تستخدم محرك النطق في جهازك.",
+        "en": "Google Firebase for sign-in and account data. Read-aloud uses your device's own speech engine."
+      },
+      "third": {
+        "ar": [
+          "Google Firebase (تسجيل الدخول وبيانات الحساب)",
+          "Google Fonts (تحميل الخطوط)",
+          "everyayah.com (صوت التلاوة عند طلبه فقط)"
+        ],
+        "en": [
+          "Google Firebase (sign-in and account data)",
+          "Google Fonts (loading fonts)",
+          "everyayah.com (recitation audio, only when you ask for it)"
+        ]
+      }
+    },
+    "maab": {
+      "existing": "https://maab.albushra.app/legal/privacy/",
+      "account": true,
+      "kids": true
+    },
+    "education": {
+      "data": {
+        "ar": [
+          "الحسابات والأدوار والقسائم، وتقدّم الدروس وإجابات الاختبارات ونتائجها، والملاحظات والكتب المحفوظة: كلها في التخزين المحلي لمتصفحك.",
+          "جلسة الدخول التجريبية في تخزين الجلسة وتُمسح بإغلاق المتصفح.",
+          "الطلبات والإيصالات في نسخة العرض وهمية ولا يُرفع شيء. يمكنك تصدير بياناتك أو مسحها من دليل التجربة."
+        ],
+        "en": [
+          "Accounts, roles and coupons, lesson progress, quiz answers and results, notes and saved books: all in your browser's local storage.",
+          "The demo sign-in session is in session storage and clears when the browser closes.",
+          "Demo orders and receipts are fictional and nothing is uploaded. You can export or erase your data from the testing guide."
+        ]
+      },
+      "where": {
+        "ar": "جهازك فقط. لا خادم ولا دفع حقيقي.",
+        "en": "Your device only. No server and no real payments."
+      },
+      "third": {
+        "ar": [
+          "YouTube عبر youtube-nocookie.com (بعد الضغط على تشغيل الفيديو فقط)",
+          "مواقع المناهج الرسمية (عند فتح روابط الكتب)"
+        ],
+        "en": [
+          "YouTube via youtube-nocookie.com (only after you tap play)",
+          "Official curriculum sites (when you open book links)"
+        ]
+      }
+    },
+    "altafaoul": {
+      "account": true,
+      "kids": true,
+      "data": {
+        "ar": [
+          "حسابات الأطفال بلا بريد ولا رقم جوال، وبصور رمزية جاهزة.",
+          "حسابات المعلمين وأولياء الأمور بحساب Google.",
+          "نتائج الأنشطة والتقدّم داخل الفصل."
+        ],
+        "en": [
+          "Child accounts without email or phone, with preset avatars.",
+          "Teacher and parent accounts via Google.",
+          "Activity results and classroom progress."
+        ]
+      },
+      "where": {
+        "ar": "Supabase مع صلاحيات على مستوى كل صف (RLS). لا محادثة بين الأطفال، ولا إعلانات أثناء اللعب.",
+        "en": "Supabase with row-level permissions. No chat between children and no ads during play."
+      },
+      "third": {
+        "ar": [
+          "Supabase",
+          "Google (تسجيل دخول الكبار)"
+        ],
+        "en": [
+          "Supabase",
+          "Google (adult sign-in)"
+        ]
+      }
+    },
+    "nibras": {
+      "kids": true,
+      "data": {
+        "ar": [
+          "لا شيء يُرسل: ملف لاعب محلي مجهول بلا حساب، والتقدّم محفوظ على الجهاز."
+        ],
+        "en": [
+          "Nothing is sent: an anonymous local player profile with no account; progress stays on the device."
+        ]
+      },
+      "where": {
+        "ar": "جهازك فقط، والتطبيق يعمل بلا إنترنت.",
+        "en": "Your device only; the app works offline."
+      },
+      "third": {
+        "ar": [],
+        "en": []
+      }
+    },
+    "quality": {
+      "account": true,
+      "data": {
+        "ar": [
+          "عند المشاركة في المجتمع: بريدك الإلكتروني (للدخول برمز يصل إليه) واسم العرض في ملفك.",
+          "المنشورات والتعليقات والبلاغات التي تكتبها."
+        ],
+        "en": [
+          "If you join the community: your email (for one-time-code sign-in) and the display name on your profile.",
+          "The posts, comments and reports you write."
+        ]
+      },
+      "where": {
+        "ar": "Supabase. القراءة والتعلّم والأدوات والكتاب تعمل بلا حساب ولا ترسل بيانات شخصية.",
+        "en": "Supabase. Reading, learning, the tools and the book work without an account and send no personal data."
+      },
+      "third": {
+        "ar": [
+          "Supabase"
+        ],
+        "en": [
+          "Supabase"
+        ]
+      }
+    },
+    "foodguard": {
+      "account": true,
+      "data": {
+        "ar": [
+          "صور ومقاطع التدقيق الميداني ومخالفات سلامة الغذاء وتقارير عدم المطابقة.",
+          "حسابات المدققين وصلاحياتهم حسب الفرع."
+        ],
+        "en": [
+          "Field audit photos, food-safety findings and non-conformity reports.",
+          "Auditor accounts and per-branch permissions."
+        ]
+      },
+      "where": {
+        "ar": "خوادم الجهة المشغّلة. التحليل يجري على الجهاز، والوجوه تُموَّه تلقائيًا قبل الحفظ، ولا تُقيَّم الأفراد.",
+        "en": "The operator's own servers. Analysis runs on the device, faces are blurred before saving, and individuals are never scored."
+      },
+      "third": {
+        "ar": [],
+        "en": []
+      }
+    },
+    "news": {
+      "data": {
+        "ar": [
+          "لا حساب للقرّاء. تفضيلاتك ومحفوظاتك على جهازك فقط.",
+          "لوحة الإدارة تحفظ رمز GitHub الخاص بالمدير في متصفحه فقط."
+        ],
+        "en": [
+          "Readers have no account. Your preferences and saved stories stay on your device.",
+          "The admin panel keeps the admin's GitHub token in their own browser only."
+        ]
+      },
+      "where": {
+        "ar": "جهازك. الأخبار تُجمع من مصادر عامة، وقد تُحمَّل صورها من مواقع تلك المصادر.",
+        "en": "Your device. News comes from public sources, and their images may load from those sources' sites."
+      },
+      "third": {
+        "ar": [
+          "مواقع مصادر الأخبار (عند عرض صورها)",
+          "Open-Meteo وAladhan وcurrency-api وUSGS للطقس والمواقيت والصرف والزلازل: تتلقى إحداثيات المدن التي تختارها فقط، لا موقعك",
+          "MyMemory عند الضغط على «ترجمة» فقط: عنوان الخبر وملخصه",
+          "Telegram (للقنوات التي تتابعها)"
+        ],
+        "en": [
+          "News source sites (when their images load)",
+          "Open-Meteo, Aladhan, currency-api and USGS for weather, prayer times, rates and earthquakes: they get only the coordinates of cities you pick, never your location",
+          "MyMemory, only when you tap Translate: the story's title and summary",
+          "Telegram (channels you choose to follow)"
+        ]
+      }
+    },
+    "video": {
+      "data": {
+        "ar": [
+          "قوائم التشغيل وبيانات حسابات Xtream التي تضيفها تُحفظ على جهازك فقط.",
+          "عند ربط التلفاز بالجوال يُمرَّر الرابط الذي تختاره عبر خدمة ntfy.sh مرة واحدة."
+        ],
+        "en": [
+          "Playlists and Xtream account details you add are stored on your device only.",
+          "Pairing a TV with your phone passes the link you choose once through the ntfy.sh service."
+        ]
+      },
+      "where": {
+        "ar": "جهازك. لا نوفّر محتوى، ولا نطّلع على قوائمك.",
+        "en": "Your device. We provide no content and never see your lists."
+      },
+      "third": {
+        "ar": [
+          "ntfy.sh (عند الربط بالتلفاز فقط)",
+          "مزوّدو البث الذين تضيفهم بنفسك"
+        ],
+        "en": [
+          "ntfy.sh (TV pairing only)",
+          "Stream providers you add yourself"
+        ]
+      }
+    },
+    "amir": {
+      "account": true,
+      "data": {
+        "ar": [
+          "للمشتري: الاسم والبريد أو حساب Google، ورقم الجوال (واتساب)، وصورة إيصال التحويل.",
+          "محتوى المتحف: الصور وتواريخها وعناوينها وتعليقاتها، والإهداء، وشعار الشركة إن وُجد.",
+          "للزائر: اسم ظاهر وصورة اختيارية واختيار الشخصية (تُحفظ أيضًا في متصفحك للزيارة التالية)، والإعجابات والتعليقات، وموقع الصورة الرمزية أثناء الزيارة.",
+          "للتجربة المجانية: الاسم ورقم الجوال (تجربة واحدة لكل رقم).",
+          "عند الضغط على «اقتراح عنوان وتعليق بالذكاء الاصطناعي» فقط: تُرسل الصورة وتاريخها وعنوانها واسما المُهدي والمُهدى إليه إلى Google Gemini لاقتراح النص."
+        ],
+        "en": [
+          "Buyers: name and email or Google account, phone number (WhatsApp) and the payment receipt image.",
+          "Museum content: photos with their dates, titles and captions, the dedication, and a company logo if any.",
+          "Visitors: a display name, optional photo and character choice (also kept in your browser for the next visit), likes and comments, and avatar position during a visit.",
+          "Free trials: name and phone number (one trial per number).",
+          "Only when you tap “Suggest a title and caption with AI”: the photo, its date and title, and the sender and recipient names are sent to Google Gemini to suggest the text."
+        ]
+      },
+      "where": {
+        "ar": "خدمة Firebase من Google، لتسجيل الدخول وقواعد البيانات. المتحف لا يُفتح إلا بالرابط ورمز الدخول، ولصاحب المتحف حذف أي تعليق.",
+        "en": "Google Firebase (Authentication, Firestore, Realtime Database). A museum opens only with its link and access code, and its owner can delete any comment."
+      },
+      "third": {
+        "ar": [
+          "Google Firebase",
+          "Google Gemini عبر Firebase AI Logic (اقتراحات الذكاء الاصطناعي فقط)",
+          "YouTube (إن اخترت موسيقى من يوتيوب)",
+          "بنك الخرطوم — بنكك (التحويل يتم خارج التطبيق)"
+        ],
+        "en": [
+          "Google Firebase",
+          "Google Gemini via Firebase AI Logic (AI suggestions only)",
+          "YouTube (if you choose YouTube music)",
+          "Bank of Khartoum — Bankak (payment happens outside the app)"
+        ]
+      }
+    },
+    "store": {
+      "account": false,
+      "data": {
+        "ar": [
+          "لإتمام الطلب: الاسم ورقم الجوال وعنوان التوصيل وصورة إشعار التحويل."
+        ],
+        "en": [
+          "To complete an order: name, phone number, delivery address and the transfer receipt image."
+        ]
+      },
+      "where": {
+        "ar": "خدمات Cloudflare لقاعدة البيانات وتخزين الصور. تُشارك بيانات التوصيل مع المورّد المنفّذ للطلب فقط.",
+        "en": "Cloudflare (D1 database and R2 storage). Delivery details are shared only with the supplier fulfilling the order."
+      },
+      "third": {
+        "ar": [
+          "Cloudflare",
+          "مورّدو المنتجات (لتوصيل الطلب)",
+          "Stripe (عند الدفع بالبطاقة)"
+        ],
+        "en": [
+          "Cloudflare",
+          "Product suppliers (to deliver your order)",
+          "Stripe (card payments)"
+        ]
+      }
+    },
+    "jenan": {
+      "kids": true,
+      "data": {
+        "ar": [
+          "لا شيء يُرسل. الرسومات محفوظة على الجهاز، والتطبيق بلا إنترنت ولا إعلانات."
+        ],
+        "en": [
+          "Nothing is sent. Drawings stay on the device; the app has no internet use and no ads."
+        ]
+      },
+      "where": {
+        "ar": "جهازك فقط.",
+        "en": "Your device only."
+      },
+      "third": {
+        "ar": [],
+        "en": []
+      }
+    },
+    "abujanan": {
+      "existing": "https://aladeen35.github.io/Games/abujanan/privacy.html"
+    },
+    "keyboard": {
+      "data": {
+        "ar": [
+          "في اللعب أونلاين: اسم اللاعب ونتيجة السباق فقط.",
+          "اللعب الفردي والبلوتوث لا يرسل شيئًا."
+        ],
+        "en": [
+          "Online play: only your player name and race result.",
+          "Solo and Bluetooth play send nothing."
+        ]
+      },
+      "where": {
+        "ar": "خادم اللعب الجماعي أثناء الجولة فقط.",
+        "en": "The multiplayer server, during the round only."
+      },
+      "third": {
+        "ar": [],
+        "en": []
+      }
+    },
+    "wolaat": {
+      "data": {
+        "ar": [
+          "لا حسابات. أجهزة اللاعبين تتصل ببعضها مباشرة (نظير لنظير) أثناء الجولة."
+        ],
+        "en": [
+          "No accounts. Players' devices connect directly to each other (peer-to-peer) during a round."
+        ]
+      },
+      "where": {
+        "ar": "لا يُحفظ شيء على خوادمنا. خدمة PeerJS تساعد الأجهزة في إيجاد بعضها فقط.",
+        "en": "Nothing is stored on our servers. PeerJS only helps devices find each other."
+      },
+      "third": {
+        "ar": [
+          "PeerJS (للربط بين الأجهزة)"
+        ],
+        "en": [
+          "PeerJS (to connect devices)"
+        ]
+      }
+    },
+    "hamli": {
+      "data": {
+        "ar": [
+          "تاريخ آخر دورة، ومذكراتك، وعداد الركلات، وحقيبة الولادة، وبيانات الأسرة: كلها على جهازك فقط."
+        ],
+        "en": [
+          "Your last period date, journal, kick counter, hospital bag and family details: all on your device only."
+        ]
+      },
+      "where": {
+        "ar": "جهازك فقط. المقالات تُجلب من مصادر صحية عامة دون إرسال بياناتك.",
+        "en": "Your device only. Articles are fetched from public health sources without sending your data."
+      },
+      "third": {
+        "ar": [
+          "rss2json (لجلب المقالات العامة فقط)"
+        ],
+        "en": [
+          "rss2json (fetching public articles only)"
+        ]
+      }
+    },
+    "natija": {
+      "data": {
+        "ar": [
+          "رقم الجلوس الذي تكتبه يُستخدم للبحث فقط ولا يُحفظ.",
+          "عداد زيارات مجهول حسب الدولة."
+        ],
+        "en": [
+          "The seat number you type is used for the lookup only and not stored.",
+          "An anonymous visit counter by country."
+        ]
+      },
+      "where": {
+        "ar": "Netlify.",
+        "en": "Netlify."
+      },
+      "third": {
+        "ar": [
+          "Netlify"
+        ],
+        "en": [
+          "Netlify"
+        ]
+      }
+    },
+    "rug-empire": {
+      "data": {
+        "ar": [
+          "لا حساب ولا إعلانات. حفظ اللعبة على جهازك فقط، وتعمل بلا إنترنت."
+        ],
+        "en": [
+          "No account and no ads. Saves stay on your device, and it works offline."
+        ]
+      },
+      "where": {
+        "ar": "جهازك فقط.",
+        "en": "Your device only."
+      },
+      "third": {
+        "ar": [],
+        "en": []
+      }
+    },
+    "literature": {
+      "account": true,
+      "data": {
+        "ar": [
+          "تقدّمك في القراءة ومفرداتك المحفوظة ونتائج الاختبارات وتفضيلاتك: تُحفظ على جهازك.",
+          "عند تفعيل الحسابات: الاسم والبريد أو حساب Google، وتُزامن البيانات السابقة مع حسابك.",
+          "عند البحث عن معنى كلمة غير موجودة في المعجم المدمج: تُرسل الكلمة وحدها إلى Free Dictionary API.",
+          "عند استخدام المعلّم الذكي (إذا كان مفعّلًا): يُرسل سؤالك والمقطع الذي تقرؤه إلى Google Gemini للإجابة."
+        ],
+        "en": [
+          "Reading progress, saved vocabulary, quiz results and preferences: stored on your device.",
+          "When accounts are enabled: your name and email or Google account, with the data above synced to it.",
+          "When you look up a word that is not in the built-in dictionary: only that word is sent to Free Dictionary API.",
+          "When you use the AI tutor (if enabled): your question and the passage you are reading are sent to Google Gemini for the answer."
+        ]
+      },
+      "where": {
+        "ar": "جهازك اليوم. عند تفعيل الحسابات: خدمة Firebase من Google لتسجيل الدخول وحفظ التقدّم. السرد الصوتي يستخدم محرك النطق في جهازك.",
+        "en": "Your device today. When accounts are enabled: Google Firebase for sign-in and saved progress. Narration uses your device's own speech engine."
+      },
+      "third": {
+        "ar": [
+          "Free Dictionary API (الكلمة التي تبحث عنها فقط)",
+          "YouTube (فيديوهات الكتب، تُحمَّل بعد الضغط على تشغيل فقط)",
+          "Google Firebase وGoogle Gemini (عند تفعيل الحسابات والمعلّم الذكي)"
+        ],
+        "en": [
+          "Free Dictionary API (only the word you look up)",
+          "YouTube (book videos, loaded only after you tap play)",
+          "Google Firebase and Google Gemini (when accounts and the AI tutor are enabled)"
+        ]
+      }
+    }
+  }
+}
